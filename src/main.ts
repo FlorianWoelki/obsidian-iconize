@@ -1,6 +1,6 @@
 import { Plugin, MenuItem } from 'obsidian';
 import IconsPickerModal from './iconsPickerModal';
-import { addToDOMWithElement, waitForNode } from './util';
+import { addToDOMWithElement, removeFromDOM, waitForNode } from './util';
 
 export default class IconFolderPlugin extends Plugin {
 	private folderIconData: Record<string, string>;
@@ -17,22 +17,38 @@ export default class IconFolderPlugin extends Plugin {
 		});
 
 		this.registerEvent(this.app.workspace.on('file-menu', (menu, file) => {
-			const menuItem = (item: MenuItem) => {
+			const addIconMenuItem = (item: MenuItem) => {
 				item.setTitle('Change icon');
 				item.setIcon('hashtag');
-				item.onClick((evt) => {
+				item.onClick(() => {
 					menu.hide();
 					const modal = new IconsPickerModal(this.app, this, file.path);
 					modal.open();
 				});
 			};
 
-			menu.addItem(menuItem);
+			const removeIconMenuItem = (item: MenuItem) => {
+				item.setTitle('Remove icon');
+				item.setIcon('trash');
+				item.onClick(() => {
+					menu.hide();
+					this.removeFolderIcon(file.path);
+					removeFromDOM(file.path);
+				});
+			};
+
+			menu.addItem(addIconMenuItem);
+			menu.addItem(removeIconMenuItem);
 		}));
 	}
 
 	onunload() {
 		console.log('unloading plugin obsidian-icon-folder');
+	}
+
+	removeFolderIcon(path: string): void {
+		delete this.folderIconData[path];
+		this.saveIconFolderData();
 	}
 
 	addFolderIcon(path: string, iconId: string): void {

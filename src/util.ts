@@ -23,6 +23,22 @@ export const waitForNode = (selector: string): Promise<Element> => {
   });
 }
 
+export const removeFromDOM = (path: string) => {
+  const node = document.querySelector(`[data-path="${path}"]`);
+  if (!node) {
+    console.error('element with data path not found', path);
+    return;
+  }
+
+  const iconNode = node.querySelector('.obsidian-icon-folder-icon');
+  if (!iconNode) {
+    console.error('icon element does not exist', path);
+    return;
+  }
+
+  iconNode.remove();
+};
+
 export const addToDOMWithElement = (plugin: IconFolderPlugin, path: string, iconId: string, node: Element): void => {
   const titleNode = node.querySelector('.nav-folder-title-content');
   if (!titleNode) {
