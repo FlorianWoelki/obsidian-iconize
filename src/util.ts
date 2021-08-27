@@ -18,10 +18,10 @@ export const waitForNode = (selector: string): Promise<Element> => {
 
     observer.observe(document.body, {
       childList: true,
-      subtree: true
+      subtree: true,
     });
   });
-}
+};
 
 export const removeFromDOM = (path: string) => {
   const node = document.querySelector(`[data-path="${path}"]`);
@@ -39,7 +39,12 @@ export const removeFromDOM = (path: string) => {
   iconNode.remove();
 };
 
-export const addToDOMWithElement = (plugin: IconFolderPlugin, path: string, iconId: string, node: Element): void => {
+export const addToDOMWithElement = (
+  plugin: IconFolderPlugin,
+  path: string,
+  iconId: string,
+  node: Element,
+): void => {
   const titleNode = node.querySelector('.nav-folder-title-content');
   if (!titleNode) {
     console.error('element with title not found');
@@ -53,13 +58,17 @@ export const addToDOMWithElement = (plugin: IconFolderPlugin, path: string, icon
     remixicons[iconId]({
       size: '16px',
     }),
-  )
-  
+  );
+
   node.insertBefore(iconNode, titleNode);
   plugin.addFolderIcon(path, iconId);
-}
+};
 
-export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string): void => {
+export const addToDOM = (
+  plugin: IconFolderPlugin,
+  path: string,
+  iconId: string,
+): void => {
   const node = document.querySelector(`[data-path="${path}"]`);
   if (!node) {
     console.error('element with data path not found', path);
