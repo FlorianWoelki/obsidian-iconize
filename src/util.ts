@@ -61,7 +61,6 @@ export const addToDOMWithElement = (
   );
 
   node.insertBefore(iconNode, titleNode);
-  plugin.addFolderIcon(path, iconId);
 };
 
 export const addToDOM = (

@@ -47,6 +47,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   onChooseItem(item: Icon): void {
     addToDOM(this.plugin, this.path, item.id);
+    this.plugin.addFolderIcon(this.path, item.id);
   }
 
   renderSuggestion(item: FuzzyMatch<Icon>, el: HTMLElement): void {
