@@ -1,5 +1,7 @@
 import * as remixicons from 'react-icons/ri/index';
-import { App, FuzzySuggestModal } from "obsidian";
+import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
+// @ts-ignore
+import { renderToString } from 'react-dom/server';
 import IconFolderPlugin from './main';
 import { addToDOM } from './util';
 
@@ -26,7 +28,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     let { contentEl } = this;
     contentEl.empty();
   }
-  
+
   getItemText(item: Icon): string {
     return item.name;
   }
@@ -42,8 +44,26 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
     return iconKeys;
   }
-  
+
   onChooseItem(item: Icon): void {
     addToDOM(this.plugin, this.path, item.id);
+  }
+
+  renderSuggestion(item: FuzzyMatch<Icon>, el: HTMLElement): void {
+    super.renderSuggestion(item, el);
+
+    if (item.item.id !== 'default') {
+      const iconPreviewNode = el.createDiv('div');
+      iconPreviewNode.innerHTML = renderToString(
+        // @ts-ignore
+        remixicons[item.item.id]({
+          size: '16px',
+        }),
+      );
+      iconPreviewNode.style.position = 'absolute';
+      iconPreviewNode.style.top = '0';
+      iconPreviewNode.style.left = '0';
+      iconPreviewNode.style.marginTop = '7px';
+    }
   }
 }
