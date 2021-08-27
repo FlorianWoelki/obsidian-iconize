@@ -1,6 +1,6 @@
 import * as remixicons from 'react-icons/ri/index';
 import { App, FuzzySuggestModal } from "obsidian";
-import IconFolderPlugin from "./main";
+import IconFolderPlugin from './main';
 import { addToDOM } from './util';
 
 export interface Icon {
