@@ -1,6 +1,5 @@
 import * as remixicons from 'react-icons/ri/index';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
-// @ts-ignore
 import { renderToString } from 'react-dom/server';
 import IconFolderPlugin from './main';
 import { addToDOM } from './util';

@@ -1,5 +1,4 @@
 import * as remixicons from 'react-icons/ri/index';
-// @ts-ignore
 import { renderToString } from 'react-dom/server';
 import IconFolderPlugin from './main';
 
