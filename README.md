@@ -7,7 +7,9 @@ Right now, the current iconsets are available:
 
 ## Screenshots
 
-Here is one way to 
+This is how your folders can look like:
+
+![Folder Preview](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/docs/folder-preview.png)
 
 ## How to use
 
