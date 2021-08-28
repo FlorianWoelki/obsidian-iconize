@@ -24,7 +24,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   onClose() {
-    let { contentEl } = this;
+    const { contentEl } = this;
     contentEl.empty();
   }
 
@@ -34,7 +34,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   getItems(): Icon[] {
     const iconKeys: Icon[] = [];
-    for (let icon in remixicons) {
+    for (const icon in remixicons) {
       iconKeys.push({
         id: icon,
         name: icon.substring(2),
@@ -55,6 +55,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     if (item.item.id !== 'default') {
       const iconPreviewNode = el.createDiv('div');
       iconPreviewNode.innerHTML = renderToString(
+        // eslint-disable-next-line
         // @ts-ignore
         remixicons[item.item.id]({
           size: '16px',

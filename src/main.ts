@@ -12,7 +12,7 @@ export default class IconFolderPlugin extends Plugin {
 
     Object.entries(this.folderIconData).forEach(([key, value]) => {
       waitForNode(`[data-path="${key}"]`).then((node) => {
-        addToDOMWithElement(this, key, value, node);
+        addToDOMWithElement(value, node);
       });
     });
 
