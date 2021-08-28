@@ -53,18 +53,14 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     super.renderSuggestion(item, el);
 
     if (item.item.id !== 'default') {
-      const iconPreviewNode = el.createDiv('div');
-      iconPreviewNode.innerHTML = renderToString(
+      const html = renderToString(
         // eslint-disable-next-line
         // @ts-ignore
         remixicons[item.item.id]({
           size: '16px',
         }),
       );
-      iconPreviewNode.style.position = 'absolute';
-      iconPreviewNode.style.top = '0';
-      iconPreviewNode.style.left = '0';
-      iconPreviewNode.style.marginTop = '7px';
+      el.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${html}</div>`;
     }
   }
 }

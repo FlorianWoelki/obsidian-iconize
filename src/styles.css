@@ -4,3 +4,10 @@
   display: flex;
   margin: auto 0;
 }
+
+.obsidian-icon-folder-icon-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: 7px;
+}
