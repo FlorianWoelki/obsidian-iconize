@@ -7,6 +7,7 @@
     "prepare": "husky install",
     "dev": "rollup --config rollup.config.js -w",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
+    "release": "mkdir dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "keywords": [],
