@@ -1,4 +1,5 @@
 import { Plugin, MenuItem } from 'obsidian';
+import CustomIconPickerModal from './customIconPickerModal';
 import IconsPickerModal from './iconsPickerModal';
 import { addToDOMWithElement, removeFromDOM, waitForNode } from './util';
 
@@ -23,7 +24,9 @@ export default class IconFolderPlugin extends Plugin {
           item.setIcon('hashtag');
           item.onClick(() => {
             menu.hide();
-            const modal = new IconsPickerModal(this.app, this, file.path);
+            //const modal = new IconsPickerModal(this.app, this, file.path);
+            //modal.open();
+            const modal = new CustomIconPickerModal(this.app, this, file.path);
             modal.open();
           });
         };
