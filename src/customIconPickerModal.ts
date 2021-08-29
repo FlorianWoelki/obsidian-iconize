@@ -9,6 +9,11 @@ export default class CustomIconPickerModal extends Modal {
   private plugin: IconFolderPlugin;
   private path: string;
 
+  private isKeyPressed = false;
+  private currentFocusedItemIndex = -1;
+
+  private titleNode!: HTMLInputElement;
+
   constructor(app: App, plugin: IconFolderPlugin, path: string) {
     super(app);
     this.plugin = plugin;
@@ -16,12 +21,55 @@ export default class CustomIconPickerModal extends Modal {
 
     this.modalEl.classList.add('prompt');
 
-    const titleNode = this.modalEl.createEl('input');
-    titleNode.classList.add('prompt-input');
-    titleNode.type = 'text';
-    titleNode.placeholder = 'Select an icon...';
-    this.modalEl.insertBefore(titleNode, this.modalEl.firstChild);
+    this.titleNode = this.modalEl.createEl('input');
+    this.titleNode.classList.add('prompt-input');
+    this.titleNode.type = 'text';
+    this.titleNode.placeholder = 'Select an icon...';
+    this.modalEl.insertBefore(this.titleNode, this.modalEl.firstChild);
+    this.handleKeyboardInput(this.titleNode);
 
+    this.modalEl.querySelector('.modal-close-button').remove();
+  }
+
+  handleUpAndDownNavigation(e: KeyboardEvent): void {
+    if (this.isKeyPressed) return;
+
+    this.isKeyPressed = true;
+    if (e.key === 'ArrowDown') {
+      const filteredChildren = Array.from(this.contentEl.children).filter(
+        (child: HTMLElement) => child.style.display !== 'none',
+      );
+
+      if (this.currentFocusedItemIndex >= filteredChildren.length - 1) return;
+
+      if (this.currentFocusedItemIndex < 0) {
+        this.titleNode.blur();
+      } else {
+        filteredChildren[this.currentFocusedItemIndex].classList.remove('is-selected');
+      }
+
+      this.currentFocusedItemIndex += 1;
+      filteredChildren[this.currentFocusedItemIndex].classList.add('is-selected');
+    } else if (e.key === 'ArrowUp') {
+      const filteredChildren = Array.from(this.contentEl.children).filter(
+        (child: HTMLElement) => child.style.display !== 'none',
+      );
+
+      if (this.currentFocusedItemIndex < 0) return;
+
+      filteredChildren[this.currentFocusedItemIndex].classList.remove('is-selected');
+      this.currentFocusedItemIndex -= 1;
+
+      if (this.currentFocusedItemIndex < 0) {
+        this.titleNode.focus();
+        return;
+      }
+
+      filteredChildren[this.currentFocusedItemIndex].classList.add('is-selected');
+    }
+  }
+
+  handleKeyboardInput(titleNode: HTMLElement): void {
     let timeout: NodeJS.Timeout = null;
     titleNode.addEventListener('keyup', (e) => {
       if (timeout) clearTimeout(timeout);
@@ -46,8 +94,6 @@ export default class CustomIconPickerModal extends Modal {
         }, 100);
       }
     });
-
-    this.modalEl.querySelector('.modal-close-button').remove();
   }
 
   getItems(): Icon[] {
@@ -67,6 +113,13 @@ export default class CustomIconPickerModal extends Modal {
   onOpen() {
     super.onOpen();
     this.renderItems(this.getItems());
+
+    document.addEventListener('keydown', (e) => this.handleUpAndDownNavigation(e));
+    document.addEventListener('keyup', () => this.handleKeyup());
+  }
+
+  handleKeyup(): void {
+    this.isKeyPressed = false;
   }
 
   renderItems(items: Icon[], chunk = 20): void {
@@ -112,5 +165,8 @@ export default class CustomIconPickerModal extends Modal {
   onClose() {
     const { contentEl } = this;
     contentEl.empty();
+
+    document.removeEventListener('keydown', this.handleUpAndDownNavigation);
+    document.removeEventListener('keyup', this.handleKeyup);
   }
 }
