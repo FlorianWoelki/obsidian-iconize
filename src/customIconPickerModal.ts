@@ -70,7 +70,7 @@ export default class CustomIconPickerModal extends Modal {
   }
 
   renderItems(items: Icon[], chunk = 20): void {
-    const loop = (i: number) => {
+    const renderChildElements = (i: number) => {
       if (i >= items.length) return;
       for (let j = i; j < i + chunk; j += 1) {
         if (!items[j]) continue;
@@ -98,9 +98,9 @@ export default class CustomIconPickerModal extends Modal {
         child.addEventListener('click', () => this.onItemClick(items[j]));
       }
 
-      setTimeout(loop.bind(null, i + chunk));
+      setTimeout(renderChildElements.bind(null, i + chunk));
     };
-    loop(0);
+    renderChildElements(0);
   }
 
   onItemClick(item: Icon): void {
