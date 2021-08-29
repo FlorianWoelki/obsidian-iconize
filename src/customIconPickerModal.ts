@@ -9,6 +9,8 @@ export default class CustomIconPickerModal extends Modal {
   private plugin: IconFolderPlugin;
   private path: string;
 
+  private items: Icon[] = [];
+
   private isKeyPressed = false;
   private currentFocusedItemIndex = -1;
   private inputValue = '';
@@ -36,6 +38,18 @@ export default class CustomIconPickerModal extends Modal {
     if (this.isKeyPressed) return;
 
     this.isKeyPressed = true;
+    if (e.key === 'Enter' && this.currentFocusedItemIndex >= 0) {
+      const filteredChildren = Array.from(this.contentEl.children).filter(
+        (child: HTMLElement) => child.style.display !== 'none',
+      );
+
+      const selectedNode = filteredChildren[this.currentFocusedItemIndex];
+      const selectedItem = this.items.filter((item) => item.name === selectedNode.textContent);
+      if (selectedItem.length === 1) {
+        this.onItemClick(selectedItem[0]);
+      }
+    }
+
     if (e.key === 'ArrowDown') {
       const filteredChildren = Array.from(this.contentEl.children).filter(
         (child: HTMLElement) => child.style.display !== 'none',
@@ -113,6 +127,7 @@ export default class CustomIconPickerModal extends Modal {
 
   onOpen() {
     super.onOpen();
+    this.items = this.getItems();
     this.renderItems(this.getItems());
 
     document.addEventListener('keydown', (e) => this.handleUpAndDownNavigation(e));
