@@ -11,6 +11,7 @@ export default class CustomIconPickerModal extends Modal {
 
   private isKeyPressed = false;
   private currentFocusedItemIndex = -1;
+  private inputValue = '';
 
   private titleNode!: HTMLInputElement;
 
@@ -74,15 +75,15 @@ export default class CustomIconPickerModal extends Modal {
     titleNode.addEventListener('keyup', (e) => {
       if (timeout) clearTimeout(timeout);
 
-      const inputValue = (e.target as HTMLInputElement).value.toLowerCase();
-      if (inputValue.trim().length === 0) {
+      this.inputValue = (e.target as HTMLInputElement).value.toLowerCase();
+      if (this.inputValue.trim().length === 0) {
         clearTimeout(timeout);
         for (let i = 0; i < this.contentEl.children.length; i += 1) {
           (this.contentEl.children[i] as HTMLElement).style.display = 'block';
         }
       } else {
         const filteredItems = Array.from(this.contentEl.children).filter((child) =>
-          child.textContent.toLowerCase().includes(inputValue),
+          child.textContent.toLowerCase().includes(this.inputValue),
         );
         timeout = setTimeout(() => {
           for (let i = 0; i < this.contentEl.children.length; i += 1) {
@@ -136,6 +137,11 @@ export default class CustomIconPickerModal extends Modal {
         node.classList.add('suggestion-item');
         node.innerHTML = `<div class="obsidian-icon-folder-icon-preview">${html}</div>${items[j].name}`;
         this.contentEl.appendChild(node);
+
+        // check for input value (issue if not there: will still append visible elements to the list while filtering)
+        if (this.inputValue.trim().length > 0 && !items[j].name.toLowerCase().includes(this.inputValue)) {
+          node.style.display = 'none';
+        }
       }
 
       // register events for added children
