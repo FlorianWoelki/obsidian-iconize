@@ -1,38 +1,12 @@
 import * as remixicons from 'react-icons/ri/index';
 import { App, Modal } from 'obsidian';
 import { renderToString } from 'react-dom/server';
-import { Icon } from './iconsPickerModal';
-import IconFolderPlugin from './main';
-import { addToDOM } from './util';
+import { Icon } from '../iconsPickerModal';
+import IconFolderPlugin from '../main';
+import { addToDOM } from '../util';
+import { createInstructions } from './instructions';
 
-interface Instruction {
-  key: string;
-  description: string;
-}
-
-const createInstructions = (container: HTMLElement, instructions: Instruction[]): HTMLElement => {
-  const footerNode = container.createDiv();
-  footerNode.classList.add('prompt-instructions');
-
-  instructions.forEach((instruction) => {
-    const instructionNode = footerNode.createDiv();
-    instructionNode.classList.add('prompt-instruction');
-    const instructionKeyNode = instructionNode.createSpan();
-    instructionKeyNode.classList.add('prompt-instruction-command');
-    instructionKeyNode.textContent = instruction.key;
-    const instructionDescriptionNode = instructionNode.createSpan();
-    instructionDescriptionNode.textContent = instruction.description;
-
-    instructionNode.appendChild(instructionKeyNode);
-    instructionNode.appendChild(instructionDescriptionNode);
-
-    footerNode.appendChild(instructionNode);
-  });
-
-  return footerNode;
-};
-
-export default class CustomIconPickerModal extends Modal {
+export default class IconPickerModal extends Modal {
   private plugin: IconFolderPlugin;
   private path: string;
 
@@ -50,12 +24,8 @@ export default class CustomIconPickerModal extends Modal {
     this.path = path;
 
     this.modalEl.classList.add('prompt');
+    this.addTitleNode();
 
-    this.titleNode = this.modalEl.createEl('input');
-    this.titleNode.classList.add('prompt-input');
-    this.titleNode.type = 'text';
-    this.titleNode.placeholder = 'Select an icon...';
-    this.modalEl.insertBefore(this.titleNode, this.modalEl.firstChild);
     this.handleKeyboardInput(this.titleNode);
 
     this.modalEl.querySelector('.modal-close-button').remove();
@@ -78,27 +48,35 @@ export default class CustomIconPickerModal extends Modal {
     );
   }
 
+  addTitleNode(): void {
+    this.titleNode = this.modalEl.createEl('input');
+    this.titleNode.classList.add('prompt-input');
+    this.titleNode.type = 'text';
+    this.titleNode.placeholder = 'Select an icon...';
+    this.modalEl.insertBefore(this.titleNode, this.modalEl.firstChild);
+  }
+
   handleUpAndDownNavigation(e: KeyboardEvent): void {
     if (this.isKeyPressed) return;
 
-    this.isKeyPressed = true;
-    if (e.key === 'Enter' && this.currentFocusedItemIndex >= 0) {
-      const filteredChildren = Array.from(this.contentEl.children).filter(
-        (child: HTMLElement) => child.style.display !== 'none',
-      );
+    if (e.key !== 'Enter' && e.key !== 'ArrowDown' && e.key !== 'ArrowUp') {
+      return;
+    }
 
+    this.isKeyPressed = true;
+
+    // filter children for all visible children
+    const filteredChildren = Array.from(this.contentEl.children).filter(
+      (child: HTMLElement) => child.style.display !== 'none',
+    );
+
+    if (e.key === 'Enter' && this.currentFocusedItemIndex >= 0) {
       const selectedNode = filteredChildren[this.currentFocusedItemIndex];
       const selectedItem = this.items.filter((item) => item.name === selectedNode.textContent);
       if (selectedItem.length === 1) {
         this.onItemClick(selectedItem[0]);
       }
-    }
-
-    if (e.key === 'ArrowDown') {
-      const filteredChildren = Array.from(this.contentEl.children).filter(
-        (child: HTMLElement) => child.style.display !== 'none',
-      );
-
+    } else if (e.key === 'ArrowDown') {
       if (this.currentFocusedItemIndex >= filteredChildren.length - 1) return;
 
       if (this.currentFocusedItemIndex < 0) {
@@ -110,10 +88,6 @@ export default class CustomIconPickerModal extends Modal {
       this.currentFocusedItemIndex += 1;
       filteredChildren[this.currentFocusedItemIndex].classList.add('is-selected');
     } else if (e.key === 'ArrowUp') {
-      const filteredChildren = Array.from(this.contentEl.children).filter(
-        (child: HTMLElement) => child.style.display !== 'none',
-      );
-
       if (this.currentFocusedItemIndex < 0) return;
 
       filteredChildren[this.currentFocusedItemIndex].classList.remove('is-selected');
@@ -172,7 +146,7 @@ export default class CustomIconPickerModal extends Modal {
   onOpen() {
     super.onOpen();
     this.items = this.getItems();
-    this.renderItems(this.getItems());
+    this.renderItems(this.items);
 
     document.addEventListener('keydown', (e) => this.handleUpAndDownNavigation(e));
     document.addEventListener('keyup', () => this.handleKeyup());
