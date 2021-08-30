@@ -5,6 +5,33 @@ import { Icon } from './iconsPickerModal';
 import IconFolderPlugin from './main';
 import { addToDOM } from './util';
 
+interface Instruction {
+  key: string;
+  description: string;
+}
+
+const createInstructions = (container: HTMLElement, instructions: Instruction[]): HTMLElement => {
+  const footerNode = container.createDiv();
+  footerNode.classList.add('prompt-instructions');
+
+  instructions.forEach((instruction) => {
+    const instructionNode = footerNode.createDiv();
+    instructionNode.classList.add('prompt-instruction');
+    const instructionKeyNode = instructionNode.createSpan();
+    instructionKeyNode.classList.add('prompt-instruction-command');
+    instructionKeyNode.textContent = instruction.key;
+    const instructionDescriptionNode = instructionNode.createSpan();
+    instructionDescriptionNode.textContent = instruction.description;
+
+    instructionNode.appendChild(instructionKeyNode);
+    instructionNode.appendChild(instructionDescriptionNode);
+
+    footerNode.appendChild(instructionNode);
+  });
+
+  return footerNode;
+};
+
 export default class CustomIconPickerModal extends Modal {
   private plugin: IconFolderPlugin;
   private path: string;
@@ -32,6 +59,23 @@ export default class CustomIconPickerModal extends Modal {
     this.handleKeyboardInput(this.titleNode);
 
     this.modalEl.querySelector('.modal-close-button').remove();
+
+    this.modalEl.appendChild(
+      createInstructions(this.modalEl, [
+        {
+          key: '↑↓',
+          description: 'to navigate',
+        },
+        {
+          key: '↵',
+          description: 'to use',
+        },
+        {
+          key: 'esc',
+          description: 'to dismiss',
+        },
+      ]),
+    );
   }
 
   handleUpAndDownNavigation(e: KeyboardEvent): void {
