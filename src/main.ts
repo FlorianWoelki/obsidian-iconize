@@ -45,15 +45,32 @@ export default class IconFolderPlugin extends Plugin {
 
     // deleting event
     this.registerEvent(
-      this.app.vault.on('delete', (e) => {
-        const path = e.path;
+      this.app.vault.on('delete', (file) => {
+        const path = file.path;
         this.removeFolderIcon(path);
+      }),
+    );
+
+    // renaming event
+    this.registerEvent(
+      this.app.vault.on('rename', (file, oldPath) => {
+        this.renameFolder(file.path, oldPath);
       }),
     );
   }
 
   onunload() {
     console.log('unloading plugin obsidian-icon-folder');
+  }
+
+  renameFolder(newPath: string, oldPath: string): void {
+    if (!this.folderIconData[oldPath] || newPath === oldPath) {
+      return;
+    }
+
+    Object.defineProperty(this.folderIconData, newPath, Object.getOwnPropertyDescriptor(this.folderIconData, oldPath));
+    delete this.folderIconData[oldPath];
+    this.saveIconFolderData();
   }
 
   removeFolderIcon(path: string): void {
