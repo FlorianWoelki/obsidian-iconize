@@ -42,13 +42,42 @@ export default class IconFolderPlugin extends Plugin {
         menu.addItem(removeIconMenuItem);
       }),
     );
+
+    // deleting event
+    this.registerEvent(
+      this.app.vault.on('delete', (file) => {
+        const path = file.path;
+        this.removeFolderIcon(path);
+      }),
+    );
+
+    // renaming event
+    this.registerEvent(
+      this.app.vault.on('rename', (file, oldPath) => {
+        this.renameFolder(file.path, oldPath);
+      }),
+    );
   }
 
   onunload() {
     console.log('unloading plugin obsidian-icon-folder');
   }
 
+  renameFolder(newPath: string, oldPath: string): void {
+    if (!this.folderIconData[oldPath] || newPath === oldPath) {
+      return;
+    }
+
+    Object.defineProperty(this.folderIconData, newPath, Object.getOwnPropertyDescriptor(this.folderIconData, oldPath));
+    delete this.folderIconData[oldPath];
+    this.saveIconFolderData();
+  }
+
   removeFolderIcon(path: string): void {
+    if (!this.folderIconData[path]) {
+      return;
+    }
+
     delete this.folderIconData[path];
     this.saveIconFolderData();
   }
