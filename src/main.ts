@@ -42,6 +42,14 @@ export default class IconFolderPlugin extends Plugin {
         menu.addItem(removeIconMenuItem);
       }),
     );
+
+    // deleting event
+    this.registerEvent(
+      this.app.vault.on('delete', (e) => {
+        const path = e.path;
+        this.removeFolderIcon(path);
+      }),
+    );
   }
 
   onunload() {
@@ -49,6 +57,10 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   removeFolderIcon(path: string): void {
+    if (!this.folderIconData[path]) {
+      return;
+    }
+
     delete this.folderIconData[path];
     this.saveIconFolderData();
   }
