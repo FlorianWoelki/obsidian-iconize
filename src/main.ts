@@ -22,7 +22,6 @@ export default class IconFolderPlugin extends Plugin {
           item.setTitle('Change icon');
           item.setIcon('hashtag');
           item.onClick(() => {
-            menu.hide();
             const modal = new IconsPickerModal(this.app, this, file.path);
             modal.open();
           });
@@ -32,7 +31,6 @@ export default class IconFolderPlugin extends Plugin {
           item.setTitle('Remove icon');
           item.setIcon('trash');
           item.onClick(() => {
-            menu.hide();
             this.removeFolderIcon(file.path);
             removeFromDOM(file.path);
           });
