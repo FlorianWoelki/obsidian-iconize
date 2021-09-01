@@ -1,6 +1,6 @@
 import { Plugin, MenuItem } from 'obsidian';
-import IconPickerModal from './iconPickerModal';
-import { addToDOMWithElement, removeFromDOM, waitForNode } from './util';
+import IconPickerModal from './iconsPickerModal';
+import { addToDOMWithElement, removeFromDOM, waitForDataNodes } from './util';
 
 export default class IconFolderPlugin extends Plugin {
   private folderIconData: Record<string, string>;
@@ -10,8 +10,9 @@ export default class IconFolderPlugin extends Plugin {
 
     await this.loadIconFolderData();
 
-    Object.entries(this.folderIconData).forEach(([key, value]) => {
-      waitForNode(`[data-path="${key}"]`).then((node) => {
+    const data = Object.entries(this.folderIconData) as [string, string];
+    waitForDataNodes(data).then((foundNodes) => {
+      foundNodes.forEach(({ node, value }) => {
         addToDOMWithElement(value, node);
       });
     });
@@ -22,7 +23,6 @@ export default class IconFolderPlugin extends Plugin {
           item.setTitle('Change icon');
           item.setIcon('hashtag');
           item.onClick(() => {
-            menu.hide();
             const modal = new IconPickerModal(this.app, this, file.path);
             modal.open();
           });
@@ -32,7 +32,6 @@ export default class IconFolderPlugin extends Plugin {
           item.setTitle('Remove icon');
           item.setIcon('trash');
           item.onClick(() => {
-            menu.hide();
             this.removeFolderIcon(file.path);
             removeFromDOM(file.path);
           });
