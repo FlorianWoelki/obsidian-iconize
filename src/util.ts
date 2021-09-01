@@ -2,15 +2,24 @@ import * as remixicons from 'react-icons/ri/index';
 import { renderToString } from 'react-dom/server';
 import IconFolderPlugin from './main';
 
-export const waitForNode = (selector: string): Promise<Element> => {
-  return new Promise((resolve) => {
-    if (document.querySelector(selector)) {
-      return resolve(document.querySelector(selector));
-    }
+interface FoundNode {
+  node: Element;
+  value: string;
+}
 
+export const waitForDataNodes = (data: [string, string]): Promise<FoundNode[]> => {
+  return new Promise((resolve) => {
+    const foundNodes: FoundNode[] = [];
     const observer = new MutationObserver(() => {
-      if (document.querySelector(selector)) {
-        resolve(document.querySelector(selector));
+      data.forEach(([key, value]) => {
+        const node = document.querySelector(`[data-path="${key}"]`);
+        if (node && foundNodes.filter(({ value: foundValue }) => value === foundValue).length === 0) {
+          foundNodes.push({ node, value });
+        }
+      });
+
+      if (foundNodes.length === data.length) {
+        resolve(foundNodes);
         observer.disconnect();
       }
     });

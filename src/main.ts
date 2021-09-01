@@ -1,6 +1,6 @@
 import { Plugin, MenuItem } from 'obsidian';
 import IconsPickerModal from './iconsPickerModal';
-import { addToDOMWithElement, removeFromDOM, waitForNode } from './util';
+import { addToDOMWithElement, removeFromDOM, waitForDataNodes } from './util';
 
 export default class IconFolderPlugin extends Plugin {
   private folderIconData: Record<string, string>;
@@ -10,8 +10,9 @@ export default class IconFolderPlugin extends Plugin {
 
     await this.loadIconFolderData();
 
-    Object.entries(this.folderIconData).forEach(([key, value]) => {
-      waitForNode(`[data-path="${key}"]`).then((node) => {
+    const data = Object.entries(this.folderIconData) as [string, string];
+    waitForDataNodes(data).then((foundNodes) => {
+      foundNodes.forEach(({ node, value }) => {
         addToDOMWithElement(value, node);
       });
     });
