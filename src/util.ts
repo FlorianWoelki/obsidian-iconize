@@ -1,11 +1,19 @@
-import * as remixicons from 'react-icons/ri/index';
-import { renderToString } from 'react-dom/server';
+// @ts-ignore
+import * as remixicons from '../remixicons-es2015';
 import IconFolderPlugin from './main';
 
 interface FoundNode {
   node: Element;
   value: string;
 }
+
+export const getAllIcons = () => {
+  return remixicons;
+};
+
+export const getIcon = (name: string) => {
+  return remixicons[name];
+};
 
 export const waitForDataNodes = (data: [string, string]): Promise<FoundNode[]> => {
   return new Promise((resolve) => {
@@ -56,13 +64,7 @@ export const addToDOMWithElement = (iconId: string, node: Element): void => {
 
   const iconNode = document.createElement('div');
   iconNode.classList.add('obsidian-icon-folder-icon');
-  iconNode.innerHTML = renderToString(
-    // eslint-disable-next-line
-    // @ts-ignore
-    remixicons[iconId]({
-      size: '16px',
-    }),
-  );
+  iconNode.innerHTML = getIcon(iconId);
 
   node.insertBefore(iconNode, titleNode);
 };

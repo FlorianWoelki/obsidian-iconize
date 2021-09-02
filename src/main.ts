@@ -13,7 +13,7 @@ export default class IconFolderPlugin extends Plugin {
     const data = Object.entries(this.folderIconData) as [string, string];
     waitForDataNodes(data).then((foundNodes) => {
       foundNodes.forEach(({ node, value }) => {
-        addToDOMWithElement(value, node);
+        addToDOMWithElement(value.substring(2), node);
       });
     });
 
@@ -41,6 +41,8 @@ export default class IconFolderPlugin extends Plugin {
         menu.addItem(removeIconMenuItem);
       }),
     );
+
+    console.log(this.app.workspace);
 
     // deleting event
     this.registerEvent(

@@ -12,5 +12,9 @@ main.js
 *.js.map
 dist
 
+# icons generation
+build
+remixicons-es2015
+
 # obsidian
 data.json
