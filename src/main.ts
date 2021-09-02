@@ -42,8 +42,6 @@ export default class IconFolderPlugin extends Plugin {
       }),
     );
 
-    console.log(this.app.workspace);
-
     // deleting event
     this.registerEvent(
       this.app.vault.on('delete', (file) => {
