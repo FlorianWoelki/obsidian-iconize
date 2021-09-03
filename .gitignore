@@ -14,7 +14,7 @@ dist
 
 # icons generation
 build
-remixicons-es2015
+remixicons
 
 # obsidian
 data.json

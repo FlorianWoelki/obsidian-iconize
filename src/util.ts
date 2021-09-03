@@ -1,5 +1,5 @@
 // @ts-ignore
-import * as remixicons from '../remixicons-es2015';
+import * as remixicons from '../remixicons';
 import IconFolderPlugin from './main';
 
 interface FoundNode {

@@ -2,24 +2,10 @@ const fs = require('fs');
 const rollup = require('rollup');
 const { sync: mkdirp } = require('mkdirp');
 const path = require('path');
-// @ts-ignore
-const babel = require('rollup-plugin-babel');
 
 const svgPathRegex = /<path\s([^>]*)>/g;
 const svgAttrRegex = /(?:\s*|^)([^= ]*)="([^"]*)"/g;
 const validIconName = /^[A-Z]/;
-
-function getRollupInputConfig() {
-  return {
-    external: ['es2015'],
-    plugins: [
-      babel({
-        presets: [['@babel/preset-env', { modules: false }]],
-        plugins: ['transform-object-rest-spread', '@babel/external-helpers'],
-      }),
-    ],
-  };
-}
 
 function normalizeName(name) {
   return name
@@ -131,7 +117,7 @@ async function generate() {
   const svgFilesPath = path.resolve(basePath, 'node_modules/remixicon/icons');
   const buildPath = path.resolve(basePath, 'build');
   mkdirp(buildPath);
-  const publishPath = path.resolve(basePath, 'remixicons-es2015');
+  const publishPath = path.resolve(basePath, 'remixicons');
   mkdirp(publishPath);
 
   console.log('collecting components...');
@@ -154,16 +140,14 @@ export { ${component.name} };`;
     const outputPath = path.resolve(publishPath, component.fileName.toLowerCase());
 
     fs.writeFileSync(inputPath, fileContent);
-    fs.appendFileSync(indexFilePath, `export * from './${component.fileName.toLowerCase()}';\n`);
+    fs.appendFileSync(indexFilePath, `export * from './${component.fileName.toLowerCase()}';`);
 
     const bundle = await rollup.rollup({
       input: inputPath,
-      ...getRollupInputConfig(),
     });
 
     await bundle.write({
       file: outputPath,
-      format: 'cjs',
     });
 
     // remember paths to unlink later
@@ -174,12 +158,10 @@ export { ${component.name} };`;
 
   const indexBundle = await rollup.rollup({
     input: indexFilePath,
-    ...getRollupInputConfig(),
   });
 
   await indexBundle.write({
     file: indexOutputPath,
-    format: 'cjs',
   });
 
   // clean up
