@@ -1,11 +1,7 @@
 // @ts-ignore
 import * as remixicons from '../remixicons';
 import IconFolderPlugin from './main';
-
-interface FoundNode {
-  node: Element;
-  value: string;
-}
+import { ExplorerLeaf } from './types/obsidian';
 
 export const getAllIcons = () => {
   return remixicons;
@@ -15,26 +11,30 @@ export const getIcon = (name: string) => {
   return remixicons[name];
 };
 
-export const waitForDataNodes = (data: [string, string]): Promise<FoundNode[]> => {
-  return new Promise((resolve) => {
-    const foundNodes: FoundNode[] = [];
-    const observer = new MutationObserver(() => {
-      data.forEach(([key, value]) => {
-        const node = document.querySelector(`[data-path="${key}"]`);
-        if (node && foundNodes.filter(({ value: foundValue }) => value === foundValue).length === 0) {
-          foundNodes.push({ node, value });
-        }
-      });
+export const addIconsToDOM = (
+  plugin: IconFolderPlugin,
+  data: [string, string],
+  registeredFileExplorers: WeakMap<ExplorerLeaf, boolean>,
+) => {
+  const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
+  fileExplorers.forEach((fileExplorer) => {
+    if (registeredFileExplorers.has(fileExplorer)) {
+      return;
+    }
 
-      if (foundNodes.length === data.length) {
-        resolve(foundNodes);
-        observer.disconnect();
+    registeredFileExplorers.set(fileExplorer, true);
+    data.forEach(([key, value]) => {
+      const fileItem = fileExplorer.view.fileItems[key];
+      if (fileItem) {
+        const titleEl = fileItem.titleEl;
+        const titleInnerEl = fileItem.titleInnerEl;
+
+        const iconNode = titleEl.createDiv();
+        iconNode.classList.add('obsidian-icon-folder-icon');
+        iconNode.innerHTML = getIcon(value.substring(2));
+
+        titleEl.insertBefore(iconNode, titleInnerEl);
       }
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
     });
   });
 };
@@ -55,7 +55,13 @@ export const removeFromDOM = (path: string) => {
   iconNode.remove();
 };
 
-export const addToDOMWithElement = (iconId: string, node: Element): void => {
+export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string): void => {
+  const node = document.querySelector(`[data-path="${path}"]`);
+  if (!node) {
+    console.error('element with data path not found', path);
+    return;
+  }
+
   const titleNode = node.querySelector('.nav-folder-title-content');
   if (!titleNode) {
     console.error('element with title not found');
@@ -67,14 +73,4 @@ export const addToDOMWithElement = (iconId: string, node: Element): void => {
   iconNode.innerHTML = getIcon(iconId);
 
   node.insertBefore(iconNode, titleNode);
-};
-
-export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string): void => {
-  const node = document.querySelector(`[data-path="${path}"]`);
-  if (!node) {
-    console.error('element with data path not found', path);
-    return;
-  }
-
-  addToDOMWithElement(iconId, node);
 };

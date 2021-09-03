@@ -1,9 +1,10 @@
 import { Plugin, MenuItem } from 'obsidian';
 import IconsPickerModal from './iconsPickerModal';
-import { addToDOMWithElement, removeFromDOM, waitForDataNodes } from './util';
+import { addIconsToDOM, removeFromDOM } from './util';
 
 export default class IconFolderPlugin extends Plugin {
   private folderIconData: Record<string, string>;
+  private registeredFileExplorers = new WeakMap();
 
   async onload() {
     console.log('loading plugin obsidian-icon-folder');
@@ -11,11 +12,15 @@ export default class IconFolderPlugin extends Plugin {
     await this.loadIconFolderData();
 
     const data = Object.entries(this.folderIconData) as [string, string];
-    waitForDataNodes(data).then((foundNodes) => {
-      foundNodes.forEach(({ node, value }) => {
-        addToDOMWithElement(value.substring(2), node);
-      });
+    this.app.workspace.onLayoutReady(() => {
+      addIconsToDOM(this, data, this.registeredFileExplorers);
     });
+
+    this.registerEvent(
+      this.app.workspace.on('layout-change', () => {
+        addIconsToDOM(this, data, this.registeredFileExplorers);
+      }),
+    );
 
     this.registerEvent(
       this.app.workspace.on('file-menu', (menu, file) => {
