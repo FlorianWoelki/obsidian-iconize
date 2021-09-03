@@ -3,8 +3,8 @@ import IconFolderPlugin from './main';
 import { addToDOM, getAllIcons, getIcon } from './util';
 
 export interface Icon {
-  id: string;
   name: string;
+  prefix: string;
 }
 
 export default class IconsPickerModal extends FuzzySuggestModal<any> {
@@ -34,8 +34,8 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     const iconKeys: Icon[] = [];
     for (const icon in getAllIcons()) {
       iconKeys.push({
-        id: icon,
         name: icon,
+        prefix: 'Ri',
       });
     }
 
@@ -43,15 +43,15 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   onChooseItem(item: Icon): void {
-    addToDOM(this.plugin, this.path, item.id);
-    this.plugin.addFolderIcon(this.path, item.id);
+    addToDOM(this.plugin, this.path, item.name);
+    this.plugin.addFolderIcon(this.path, item);
   }
 
   renderSuggestion(item: FuzzyMatch<Icon>, el: HTMLElement): void {
     super.renderSuggestion(item, el);
 
-    if (item.item.id !== 'default') {
-      el.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${getIcon(item.item.id)}</div>`;
+    if (item.item.name !== 'default') {
+      el.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${getIcon(item.item.name)}</div>`;
     }
   }
 }

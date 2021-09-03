@@ -1,5 +1,5 @@
 import { Plugin, MenuItem } from 'obsidian';
-import IconsPickerModal from './iconsPickerModal';
+import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { addIconsToDOM, removeFromDOM } from './util';
 
 export default class IconFolderPlugin extends Plugin {
@@ -7,7 +7,7 @@ export default class IconFolderPlugin extends Plugin {
   private registeredFileExplorers = new WeakMap();
 
   async onload() {
-    console.log('loading plugin obsidian-icon-folder');
+    console.log('loading obsidian-icon-folder');
 
     await this.loadIconFolderData();
 
@@ -64,7 +64,7 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   onunload() {
-    console.log('unloading plugin obsidian-icon-folder');
+    console.log('unloading obsidian-icon-folder');
   }
 
   renameFolder(newPath: string, oldPath: string): void {
@@ -86,12 +86,12 @@ export default class IconFolderPlugin extends Plugin {
     this.saveIconFolderData();
   }
 
-  addFolderIcon(path: string, iconId: string): void {
+  addFolderIcon(path: string, icon: Icon): void {
     if (this.folderIconData[path]) {
       removeFromDOM(path);
     }
 
-    this.folderIconData[path] = iconId;
+    this.folderIconData[path] = icon.prefix + icon.name;
     this.saveIconFolderData();
   }
 
