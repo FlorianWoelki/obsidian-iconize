@@ -1,9 +1,10 @@
 import { Plugin, MenuItem } from 'obsidian';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
+import { DEFAULT_SETTINGS, IconFolderPluginSettings } from './settings';
 import { addIconsToDOM, removeFromDOM } from './util';
 
 export default class IconFolderPlugin extends Plugin {
-  private folderIconData: Record<string, string>;
+  private data: Record<string, string>;
   private registeredFileExplorers = new WeakMap();
 
   async onload() {
@@ -11,7 +12,7 @@ export default class IconFolderPlugin extends Plugin {
 
     await this.loadIconFolderData();
 
-    const data = Object.entries(this.folderIconData) as [string, string];
+    const data = Object.entries(this.data) as [string, string];
     this.app.workspace.onLayoutReady(() => {
       addIconsToDOM(this, data, this.registeredFileExplorers);
     });
@@ -68,38 +69,41 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   renameFolder(newPath: string, oldPath: string): void {
-    if (!this.folderIconData[oldPath] || newPath === oldPath) {
+    if (!this.data[oldPath] || newPath === oldPath) {
       return;
     }
 
-    Object.defineProperty(this.folderIconData, newPath, Object.getOwnPropertyDescriptor(this.folderIconData, oldPath));
-    delete this.folderIconData[oldPath];
+    Object.defineProperty(this.data, newPath, Object.getOwnPropertyDescriptor(this.data, oldPath));
+    delete this.data[oldPath];
     this.saveIconFolderData();
   }
 
   removeFolderIcon(path: string): void {
-    if (!this.folderIconData[path]) {
+    if (!this.data[path]) {
       return;
     }
 
-    delete this.folderIconData[path];
+    delete this.data[path];
     this.saveIconFolderData();
   }
 
   addFolderIcon(path: string, icon: Icon): void {
-    if (this.folderIconData[path]) {
+    if (this.data[path]) {
       removeFromDOM(path);
     }
 
-    this.folderIconData[path] = icon.prefix + icon.name;
+    this.data[path] = icon.prefix + icon.name;
     this.saveIconFolderData();
   }
 
   async loadIconFolderData(): Promise<void> {
-    this.folderIconData = Object.assign({}, {}, await this.loadData());
+    const data = await this.loadData();
+    this.data = Object.assign({ settings: { ...DEFAULT_SETTINGS } }, {}, data);
+
+    console.log(this.data);
   }
 
   async saveIconFolderData(): Promise<void> {
-    await this.saveData(this.folderIconData);
+    await this.saveData(this.data);
   }
 }
