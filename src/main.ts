@@ -1,6 +1,6 @@
 import { Plugin, MenuItem } from 'obsidian';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
-import { DEFAULT_SETTINGS, IconFolderPluginSettings } from './settings';
+import { DEFAULT_SETTINGS } from './settings';
 import { addIconsToDOM, removeFromDOM } from './util';
 
 export default class IconFolderPlugin extends Plugin {

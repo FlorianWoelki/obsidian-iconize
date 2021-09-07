@@ -1,7 +1,6 @@
-// @ts-ignore
 import * as remixicons from '../remixicons';
 import IconFolderPlugin from './main';
-import { ExplorerLeaf } from './types/obsidian';
+import { ExplorerLeaf } from './@types/obsidian';
 
 export const getAllIcons = () => {
   return remixicons;
