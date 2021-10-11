@@ -12,16 +12,8 @@ export default class IconFolderPlugin extends Plugin {
 
     await this.loadIconFolderData();
 
-    const data = Object.entries(this.data) as [string, string];
-    this.app.workspace.onLayoutReady(() => {
-      addIconsToDOM(this, data, this.registeredFileExplorers);
-    });
-
-    this.registerEvent(
-      this.app.workspace.on('layout-change', () => {
-        addIconsToDOM(this, data, this.registeredFileExplorers);
-      }),
-    );
+    this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
+    this.registerEvent(this.app.workspace.on('layout-change', () => this.handleChangeLayout()));
 
     this.registerEvent(
       this.app.workspace.on('file-menu', (menu, file) => {
@@ -64,6 +56,11 @@ export default class IconFolderPlugin extends Plugin {
     );
   }
 
+  private handleChangeLayout(): void {
+    const data = Object.entries(this.data) as [string, string];
+    addIconsToDOM(this, data, this.registeredFileExplorers);
+  }
+
   onunload() {
     console.log('unloading obsidian-icon-folder');
   }
@@ -99,8 +96,6 @@ export default class IconFolderPlugin extends Plugin {
   async loadIconFolderData(): Promise<void> {
     const data = await this.loadData();
     this.data = Object.assign({ settings: { ...DEFAULT_SETTINGS } }, {}, data);
-
-    console.log(this.data);
   }
 
   async saveIconFolderData(): Promise<void> {
