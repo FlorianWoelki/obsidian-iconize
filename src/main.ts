@@ -1,10 +1,11 @@
 import { Plugin, MenuItem } from 'obsidian';
+import IconFolderSettingsTab from './iconFolderSettingsTab';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
-import { DEFAULT_SETTINGS } from './settings';
+import { DEFAULT_SETTINGS, IconFolderSettings } from './settings';
 import { addIconsToDOM, removeFromDOM } from './util';
 
 export default class IconFolderPlugin extends Plugin {
-  private data: Record<string, string>;
+  private data: Record<string, string | Object>;
   private registeredFileExplorers = new WeakMap();
 
   async onload() {
@@ -54,6 +55,8 @@ export default class IconFolderPlugin extends Plugin {
         this.renameFolder(file.path, oldPath);
       }),
     );
+
+    this.addSettingTab(new IconFolderSettingsTab(this.app, this));
   }
 
   private handleChangeLayout(): void {
@@ -91,6 +94,10 @@ export default class IconFolderPlugin extends Plugin {
 
     this.data[path] = icon.prefix + icon.name;
     this.saveIconFolderData();
+  }
+
+  public getSettings(): IconFolderSettings {
+    return this.data.settings as IconFolderSettings;
   }
 
   async loadIconFolderData(): Promise<void> {
