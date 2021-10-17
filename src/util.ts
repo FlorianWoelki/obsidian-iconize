@@ -54,7 +54,7 @@ export const removeFromDOM = (path: string) => {
   iconNode.remove();
 };
 
-export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string): void => {
+export const addToDOM = (path: string, iconId: string): void => {
   const node = document.querySelector(`[data-path="${path}"]`);
   if (!node) {
     console.error('element with data path not found', path);
