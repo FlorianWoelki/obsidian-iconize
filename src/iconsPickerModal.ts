@@ -1,6 +1,6 @@
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
-import { addToDOM, getAllIcons, getIcon } from './util';
+import { addToDOM, getEnabledIcons, getIcon } from './util';
 
 export interface Icon {
   name: string;
@@ -32,7 +32,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   getItems(): Icon[] {
     const iconKeys: Icon[] = [];
-    for (const icon in getAllIcons()) {
+    for (const icon of getEnabledIcons(this.plugin)) {
       iconKeys.push({
         name: icon,
         prefix: 'Ri',

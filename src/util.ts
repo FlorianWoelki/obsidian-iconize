@@ -1,9 +1,24 @@
 import * as remixicons from '../remixicons';
 import IconFolderPlugin from './main';
 import { ExplorerLeaf } from './@types/obsidian';
+import { IconFolderSettings } from './settings';
 
-export const getAllIcons = () => {
-  return remixicons;
+const mapIcon = (iconName: string, settings: IconFolderSettings): boolean => {
+  if (iconName.toLowerCase().includes('fill')) {
+    return settings.enableRemixiconsFill;
+  } else if (iconName.toLowerCase().includes('line')) {
+    return settings.enableRemixiconsLine;
+  }
+
+  return true;
+};
+
+export const getEnabledIcons = (plugin: IconFolderPlugin) => {
+  const icons = Object.keys(remixicons).filter((key) => {
+    return mapIcon(key, plugin.getSettings());
+  });
+
+  return icons;
 };
 
 export const getIcon = (name: string) => {
