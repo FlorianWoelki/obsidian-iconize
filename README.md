@@ -21,6 +21,8 @@ It is pretty simple to add a icon to your folder:
 
 To delete an icon, you just need to click on the `Delete Icon` (prefixed with a `trash` icon) menu item.
 
+To enable other icon sets, go to settings and enable or disable your wanted icons.
+
 ## Development
 
 To customize this project for your needs, you can clone it and then install all dependencies:
