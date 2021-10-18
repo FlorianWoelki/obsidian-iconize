@@ -5,6 +5,7 @@ const path = require('path');
 
 const svgPathRegex = /<path\s([^>]*)>/g;
 const svgAttrRegex = /(?:\s*|^)([^= ]*)="([^"]*)"/g;
+const svgViewboxRegex = /viewBox="([^"]*)"/g;
 const validIconName = /^[A-Z]/;
 
 function normalizeName(name) {
@@ -69,7 +70,7 @@ function extractPath(content, name) {
   return allPaths[0].d;
 }
 
-function collectComponents(svgFilesPath) {
+function collectComponents(svgFilesPath, extraPrefix) {
   const svgFiles = fs.readdirSync(svgFilesPath);
 
   const icons = [];
@@ -79,7 +80,7 @@ function collectComponents(svgFilesPath) {
     // handle subdirs
     const stats = fs.statSync(svgFilePath);
     if (stats.isDirectory()) {
-      icons.push(...collectComponents(svgFilePath));
+      icons.push(...collectComponents(svgFilePath, extraPrefix));
       continue;
     }
 
@@ -100,10 +101,13 @@ function collectComponents(svgFilesPath) {
       continue;
     }
 
+    let svgViewbox = content.toString().match(svgViewboxRegex)[0];
+
     const icon = {
-      name: name,
-      fileName: name + '.js',
+      name: name + extraPrefix,
+      fileName: name + extraPrefix + '.js',
       svgPath,
+      svgViewbox,
     };
 
     icons.push(icon);
@@ -112,20 +116,21 @@ function collectComponents(svgFilesPath) {
   return icons;
 }
 
-async function generate() {
+async function generate(iconpackPath, iconpackName, extraPrefix = '') {
   const basePath = path.resolve(__dirname, '..');
-  const svgFilesPath = path.resolve(basePath, 'node_modules/remixicon/icons');
+
+  const svgFilesPath = path.resolve(basePath, iconpackPath);
   const buildPath = path.resolve(basePath, 'build');
   mkdirp(buildPath);
-  const publishPath = path.resolve(basePath, 'remixicons');
+  const publishPath = path.resolve(basePath, iconpackName);
   mkdirp(publishPath);
 
   console.log('collecting components...');
-  const components = collectComponents(svgFilesPath);
+  const components = collectComponents(svgFilesPath, extraPrefix);
   console.log('generating components...');
   const pathsToUnlink = [];
   const indexFilePath = path.resolve(buildPath, 'index.js');
-  const indexOutputPath = path.resolve(publishPath, 'index.js');
+  const indexOutputPath = path.resolve(publishPath, `index-${extraPrefix}.js`);
   fs.writeFileSync(indexFilePath, '');
   for (const [index, component] of components.entries()) {
     if (!component.aliasFor) {
@@ -134,7 +139,7 @@ async function generate() {
       console.log(`generating alias ${component.name}... (${index + 1}/${components.length})`);
     }
 
-    const fileContent = `const ${component.name} = '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="${component.svgPath}" /></svg>';
+    const fileContent = `const ${component.name} = '<svg width="16" height="16" fill="currentColor" ${component.svgViewbox}><path d="${component.svgPath}" /></svg>';
 export { ${component.name} };`;
     const inputPath = path.resolve(buildPath, component.fileName.toLowerCase());
     const outputPath = path.resolve(publishPath, component.fileName.toLowerCase());
@@ -170,4 +175,7 @@ export { ${component.name} };`;
   }
 }
 
-generate();
+//generate('node_modules/remixicon/icons', 'remixicons');
+//generate('node_modules/@fortawesome/fontawesome-free/svgs/regular', 'fontawesome', 'line');
+//generate('node_modules/@fortawesome/fontawesome-free/svgs/solid', 'fontawesome', 'fill');
+//generate('node_modules/@fortawesome/fontawesome-free/svgs/brands', 'fontawesome', 'brands');

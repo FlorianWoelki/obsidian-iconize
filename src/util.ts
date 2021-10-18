@@ -1,4 +1,8 @@
 import * as remixicons from '../remixicons';
+import * as faLine from '../fontawesome/index-line';
+import * as faFill from '../fontawesome/index-fill';
+import * as faBrands from '../fontawesome/index-brands';
+
 import IconFolderPlugin from './main';
 import { ExplorerLeaf } from './@types/obsidian';
 import { IconFolderSettings } from './settings';

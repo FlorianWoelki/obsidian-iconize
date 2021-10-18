@@ -15,6 +15,7 @@ dist
 # icons generation
 build
 remixicons
+fontawesome
 
 # obsidian
 data.json
