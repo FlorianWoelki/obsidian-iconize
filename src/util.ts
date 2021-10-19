@@ -41,9 +41,9 @@ export const getEnabledIcons = (plugin: IconFolderPlugin) => {
 export const getIcon = (name: string) => {
   const prefix = name.substr(0, 2);
   if (prefix === 'Fa') {
-    if (name.substr(name.length - 4) === 'line') {
+    if (name.toLowerCase().substr(name.length - 4) === 'line') {
       return faLine[name.substr(2)];
-    } else if (name.substr(name.length - 4) === 'fill') {
+    } else if (name.toLowerCase().substr(name.length - 4) === 'fill') {
       return faFill[name.substr(2)];
     } else {
       return faBrands[name.substr(2)];

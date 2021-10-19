@@ -176,6 +176,6 @@ export { ${component.name} };`;
 }
 
 //generate('node_modules/remixicon/icons', 'remixicons');
-//generate('node_modules/@fortawesome/fontawesome-free/svgs/regular', 'fontawesome', 'line');
-//generate('node_modules/@fortawesome/fontawesome-free/svgs/solid', 'fontawesome', 'fill');
-//generate('node_modules/@fortawesome/fontawesome-free/svgs/brands', 'fontawesome', 'brands');
+//generate('node_modules/@fortawesome/fontawesome-free/svgs/regular', 'fontawesome', 'Line');
+//generate('node_modules/@fortawesome/fontawesome-free/svgs/solid', 'fontawesome', 'Fill');
+//generate('node_modules/@fortawesome/fontawesome-free/svgs/brands', 'fontawesome', 'Brands');
