@@ -17,7 +17,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
     containerEl.createEl('h2', { text: 'Icon Folder Settings' });
 
     new Setting(containerEl)
-      .setName('Enable Remix Icon (Line)')
+      .setName('Enable Remix Icons (Line)')
       .setDesc('Enables all line variants from the Remix Icon set')
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.getSettings().enableRemixiconsLine).onChange(async (val) => {
@@ -27,11 +27,41 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName('Enable Remix Icon (Fill)')
+      .setName('Enable Remix Icons (Fill)')
       .setDesc('Enables all fill variants from the Remix Icon set')
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.getSettings().enableRemixiconsFill).onChange(async (val) => {
           this.plugin.getSettings().enableRemixiconsFill = val;
+          await this.plugin.saveIconFolderData();
+        });
+      });
+
+    new Setting(containerEl)
+      .setName('Enable Fontawesome Icons (Fill/Solid)')
+      .setDesc('Enables all fill/solid variants from the Fontawesome Icon set')
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.getSettings().enableFontawesomeFill).onChange(async (val) => {
+          this.plugin.getSettings().enableFontawesomeFill = val;
+          await this.plugin.saveIconFolderData();
+        });
+      });
+
+    new Setting(containerEl)
+      .setName('Enable Fontawesome Icons (Line/Regular)')
+      .setDesc('Enables all line variants from the Fontawesome Icon set')
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.getSettings().enableFontawesomeLine).onChange(async (val) => {
+          this.plugin.getSettings().enableFontawesomeLine = val;
+          await this.plugin.saveIconFolderData();
+        });
+      });
+
+    new Setting(containerEl)
+      .setName('Enable Fontawesome Icons (Brands)')
+      .setDesc('Enables all brands variants from the Fontawesome Icon set')
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.getSettings().enableFontawesomeBrands).onChange(async (val) => {
+          this.plugin.getSettings().enableFontawesomeBrands = val;
           await this.plugin.saveIconFolderData();
         });
       });
