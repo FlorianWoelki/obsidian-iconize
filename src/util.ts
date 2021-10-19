@@ -7,7 +7,7 @@ import IconFolderPlugin from './main';
 import { ExplorerLeaf } from './@types/obsidian';
 import { IconFolderSettings } from './settings';
 
-const mapIcon = (iconName: string, settings: IconFolderSettings): boolean => {
+const mapRemixicons = (iconName: string, settings: IconFolderSettings): boolean => {
   if (iconName.toLowerCase().includes('fill')) {
     return settings.enableRemixiconsFill;
   } else if (iconName.toLowerCase().includes('line')) {
@@ -18,14 +18,42 @@ const mapIcon = (iconName: string, settings: IconFolderSettings): boolean => {
 };
 
 export const getEnabledIcons = (plugin: IconFolderPlugin) => {
-  const icons = Object.keys(remixicons).filter((key) => {
-    return mapIcon(key, plugin.getSettings());
-  });
+  const settings = plugin.getSettings();
+  const icons = Object.keys(remixicons)
+    .filter((key) => {
+      return mapRemixicons(key, settings);
+    })
+    .map((iconName) => 'Ri' + iconName);
+
+  if (settings.enableFontawesomeFill) {
+    icons.push(...Object.keys(faFill).map((iconName) => 'Fa' + iconName));
+  }
+  if (settings.enableFontawesomeLine) {
+    icons.push(...Object.keys(faLine).map((iconName) => 'Fa' + iconName));
+  }
+  if (settings.enableFontawesomeBrands) {
+    icons.push(...Object.keys(faBrands).map((iconName) => 'Fa' + iconName));
+  }
 
   return icons;
 };
 
 export const getIcon = (name: string) => {
+  const prefix = name.substr(0, 2);
+  if (prefix === 'Fa') {
+    if (name.substr(name.length - 4) === 'line') {
+      return faLine[name.substr(2)];
+    } else if (name.substr(name.length - 4) === 'fill') {
+      return faFill[name.substr(2)];
+    } else {
+      return faBrands[name.substr(2)];
+    }
+  }
+
+  if (prefix === 'Ri') {
+    return remixicons[name.substr(2)];
+  }
+
   return remixicons[name];
 };
 

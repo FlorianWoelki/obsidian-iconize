@@ -27,7 +27,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   getItemText(item: Icon): string {
-    return item.name;
+    return item.name.substr(2);
   }
 
   getItems(): Icon[] {
@@ -35,7 +35,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     for (const icon of getEnabledIcons(this.plugin)) {
       iconKeys.push({
         name: icon,
-        prefix: 'Ri',
+        prefix: icon.substr(0, 2),
       });
     }
 
