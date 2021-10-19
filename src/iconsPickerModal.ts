@@ -27,7 +27,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   getItemText(item: Icon): string {
-    return item.name.substr(2);
+    return `${item.name.substr(2)} (${item.prefix})`;
   }
 
   getItems(): Icon[] {
