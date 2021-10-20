@@ -7,6 +7,13 @@ import IconFolderPlugin from './main';
 import { ExplorerLeaf } from './@types/obsidian';
 import { IconFolderSettings } from './settings';
 
+const transformedIcons = {
+  faFill: Object.keys(faFill).map((iconName) => 'Fa' + iconName),
+  faLine: Object.keys(faLine).map((iconName) => 'Fa' + iconName),
+  faBrands: Object.keys(faBrands).map((iconName) => 'Fa' + iconName),
+  remixIcons: Object.keys(remixicons).map((iconName) => 'Ri' + iconName),
+};
+
 const mapRemixicons = (iconName: string, settings: IconFolderSettings): boolean => {
   if (iconName.toLowerCase().includes('fill')) {
     return settings.enableRemixiconsFill;
@@ -19,20 +26,18 @@ const mapRemixicons = (iconName: string, settings: IconFolderSettings): boolean 
 
 export const getEnabledIcons = (plugin: IconFolderPlugin) => {
   const settings = plugin.getSettings();
-  const icons = Object.keys(remixicons)
-    .filter((key) => {
-      return mapRemixicons(key, settings);
-    })
-    .map((iconName) => 'Ri' + iconName);
+  const icons = transformedIcons.remixIcons.filter((key) => {
+    return mapRemixicons(key, settings);
+  });
 
   if (settings.enableFontawesomeFill) {
-    icons.push(...Object.keys(faFill).map((iconName) => 'Fa' + iconName));
+    icons.push(...transformedIcons.faFill);
   }
   if (settings.enableFontawesomeLine) {
-    icons.push(...Object.keys(faLine).map((iconName) => 'Fa' + iconName));
+    icons.push(...transformedIcons.faLine);
   }
   if (settings.enableFontawesomeBrands) {
-    icons.push(...Object.keys(faBrands).map((iconName) => 'Fa' + iconName));
+    icons.push(...transformedIcons.faBrands);
   }
 
   return icons;
