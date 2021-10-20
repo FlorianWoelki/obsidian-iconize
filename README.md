@@ -4,6 +4,7 @@ This obsidian plugin allows you to add icons to your folder.
 
 Right now, the current iconsets are supported:
 * [Remixicon](https://remixicon.com/)
+* [Fontawesome](https://fontawesome.com/)
 
 ## How it will look like
 
