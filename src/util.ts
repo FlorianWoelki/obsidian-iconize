@@ -113,10 +113,14 @@ export const addToDOM = (path: string, iconId: string): void => {
     return;
   }
 
-  const titleNode = node.querySelector('.nav-folder-title-content');
+  let titleNode = node.querySelector('.nav-folder-title-content');
   if (!titleNode) {
-    console.error('element with title not found');
-    return;
+    titleNode = node.querySelector('.nav-file-title-content');
+
+    if (!titleNode) {
+      console.error('element with title not found');
+      return;
+    }
   }
 
   const iconNode = document.createElement('div');
