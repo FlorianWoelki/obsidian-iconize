@@ -1,6 +1,6 @@
 # Obsidian Icon Folder [![CodeQL](https://github.com/FlorianWoelki/obsidian-icon-folder/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/FlorianWoelki/obsidian-icon-folder/actions/workflows/codeql-analysis.yml)
 
-This obsidian plugin allows you to add icons to your folder.
+This obsidian plugin allows you to add icons to your folder or icon if you want.
 
 Right now, the current iconsets are supported:
 * [Remixicon](https://remixicon.com/)
