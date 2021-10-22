@@ -80,11 +80,14 @@ export const addIconsToDOM = (
         const titleEl = fileItem.titleEl;
         const titleInnerEl = fileItem.titleInnerEl;
 
-        const iconNode = titleEl.createDiv();
-        iconNode.classList.add('obsidian-icon-folder-icon');
-        iconNode.innerHTML = getIcon(value.substring(2));
+        // needs to check because of the refreshing the plugin will duplicate all the icons
+        if (titleEl.children.length === 2) {
+          const iconNode = titleEl.createDiv();
+          iconNode.classList.add('obsidian-icon-folder-icon');
+          iconNode.innerHTML = getIcon(value.substring(2));
 
-        titleEl.insertBefore(iconNode, titleInnerEl);
+          titleEl.insertBefore(iconNode, titleInnerEl);
+        }
       }
     });
   });
