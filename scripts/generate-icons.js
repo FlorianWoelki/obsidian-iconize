@@ -130,7 +130,7 @@ async function generate(iconpackPath, iconpackName, extraPrefix = '') {
   console.log('generating components...');
   const pathsToUnlink = [];
   const indexFilePath = path.resolve(buildPath, 'index.js');
-  const indexOutputPath = path.resolve(publishPath, extraPrefix ? `index-${extraPrefix}.js` : 'index.js');
+  const indexOutputPath = path.resolve(publishPath, extraPrefix ? `index-${extraPrefix.toLowerCase()}.js` : 'index.js');
   fs.writeFileSync(indexFilePath, '');
   for (const [index, component] of components.entries()) {
     if (!component.aliasFor) {
@@ -175,7 +175,9 @@ export { ${component.name} };`;
   }
 }
 
-//generate('node_modules/remixicon/icons', 'remixicons');
-//generate('node_modules/@fortawesome/fontawesome-free/svgs/regular', 'fontawesome', 'Line');
-//generate('node_modules/@fortawesome/fontawesome-free/svgs/solid', 'fontawesome', 'Fill');
-//generate('node_modules/@fortawesome/fontawesome-free/svgs/brands', 'fontawesome', 'Brands');
+(async () => {
+  await generate('node_modules/remixicon/icons', 'remixicons');
+  await generate('node_modules/@fortawesome/fontawesome-free/svgs/regular', 'fontawesome', 'Line');
+  await generate('node_modules/@fortawesome/fontawesome-free/svgs/solid', 'fontawesome', 'Fill');
+  await generate('node_modules/@fortawesome/fontawesome-free/svgs/brands', 'fontawesome', 'Brands');
+})();
