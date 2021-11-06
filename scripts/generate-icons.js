@@ -130,7 +130,7 @@ async function generate(iconpackPath, iconpackName, extraPrefix = '') {
   console.log('generating components...');
   const pathsToUnlink = [];
   const indexFilePath = path.resolve(buildPath, 'index.js');
-  const indexOutputPath = path.resolve(publishPath, `index-${extraPrefix}.js`);
+  const indexOutputPath = path.resolve(publishPath, extraPrefix ? `index-${extraPrefix}.js` : 'index.js');
   fs.writeFileSync(indexFilePath, '');
   for (const [index, component] of components.entries()) {
     if (!component.aliasFor) {
