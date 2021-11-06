@@ -37,7 +37,11 @@ export default class IconFolderPlugin extends Plugin {
         };
 
         menu.addItem(addIconMenuItem);
-        menu.addItem(removeIconMenuItem);
+          const node = document.querySelector(`[data-path="${file.path}"]`);
+          const iconNode = node.querySelector('.obsidian-icon-folder-icon');
+        if (iconNode) {
+          menu.addItem(removeIconMenuItem);
+        }
       }),
     );
 
