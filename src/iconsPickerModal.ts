@@ -43,7 +43,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   onChooseItem(item: Icon): void {
-    addToDOM(this.path, item.name);
+    addToDOM(this.plugin, this.path, item.name);
     this.plugin.addFolderIcon(this.path, item);
   }
 
@@ -51,7 +51,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     super.renderSuggestion(item, el);
 
     if (item.item.name !== 'default') {
-      el.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${getIcon(item.item.name)}</div>`;
+      el.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${getIcon(this.plugin, item.item.name)}</div>`;
     }
   }
 }

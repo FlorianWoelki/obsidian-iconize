@@ -43,23 +43,30 @@ export const getEnabledIcons = (plugin: IconFolderPlugin) => {
   return icons;
 };
 
-export const getIcon = (name: string) => {
+export const getIcon = (plugin: IconFolderPlugin, name: string): string => {
   const prefix = name.substr(0, 2);
+  let iconSvg: string = '';
   if (prefix === 'Fa') {
     if (name.toLowerCase().substr(name.length - 4) === 'line') {
-      return faLine[name.substr(2)];
+      iconSvg = faLine[name.substr(2)];
     } else if (name.toLowerCase().substr(name.length - 4) === 'fill') {
-      return faFill[name.substr(2)];
+      iconSvg = faFill[name.substr(2)];
     } else {
-      return faBrands[name.substr(2)];
+      iconSvg = faBrands[name.substr(2)];
     }
+  } else if (prefix === 'Ri') {
+    iconSvg = remixicons[name.substr(2)];
+  } else {
+    iconSvg = remixicons[name];
   }
 
-  if (prefix === 'Ri') {
-    return remixicons[name.substr(2)];
-  }
-
-  return remixicons[name];
+  // Allow custom font size
+  const sizeRe = new RegExp(/width="\d+" height="\d+"/g);
+  iconSvg = iconSvg.replace(
+    sizeRe,
+    `width="${plugin.getSettings().fontSize}" height="${plugin.getSettings().fontSize}"`,
+  );
+  return iconSvg;
 };
 
 export const addIconsToDOM = (
@@ -84,7 +91,7 @@ export const addIconsToDOM = (
         if (titleEl.children.length === 2) {
           const iconNode = titleEl.createDiv();
           iconNode.classList.add('obsidian-icon-folder-icon');
-          iconNode.innerHTML = getIcon(value.substring(2));
+          iconNode.innerHTML = getIcon(plugin, value.substring(2));
 
           titleEl.insertBefore(iconNode, titleInnerEl);
         }
@@ -109,7 +116,7 @@ export const removeFromDOM = (path: string) => {
   iconNode.remove();
 };
 
-export const addToDOM = (path: string, iconId: string): void => {
+export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string): void => {
   const node = document.querySelector(`[data-path="${path}"]`);
   if (!node) {
     console.error('element with data path not found', path);
@@ -128,7 +135,7 @@ export const addToDOM = (path: string, iconId: string): void => {
 
   const iconNode = document.createElement('div');
   iconNode.classList.add('obsidian-icon-folder-icon');
-  iconNode.innerHTML = getIcon(iconId);
+  iconNode.innerHTML = getIcon(plugin, iconId);
 
   node.insertBefore(iconNode, titleNode);
 };
