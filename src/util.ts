@@ -70,6 +70,12 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string): s
     sizeRe,
     `width="${plugin.getSettings().fontSize}" height="${plugin.getSettings().fontSize}"`,
   );
+
+  // Allow custom icon color
+  if (plugin.getSettings().iconColor) {
+    const colorRe = new RegExp(/fill="(\w|#)+"/g);
+    iconSvg = iconSvg.replace(colorRe, `fill="${plugin.getSettings().iconColor}"`);
+  }
   return iconSvg;
 };
 

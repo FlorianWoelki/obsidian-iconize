@@ -1,4 +1,5 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
+import { ColorPickerComponent } from './colorPickerComponent';
 import IconFolderPlugin from './main';
 import { refreshIconStyle } from './util';
 
@@ -86,5 +87,18 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
             refreshIconStyle(this.plugin);
           });
       });
+
+    const colorCustomization = new Setting(containerEl)
+      .setName('Icon color')
+      .setDesc('Change the color of the displayed icons.');
+    const colorPicker = new ColorPickerComponent(colorCustomization.controlEl)
+      .setValue(this.plugin.getSettings().iconColor ?? '#000000')
+      .onChange(async (value) => {
+        this.plugin.getSettings().iconColor = value;
+        await this.plugin.saveIconFolderData();
+
+        refreshIconStyle(this.plugin);
+      });
+    colorCustomization.components.push(colorPicker);
   }
 }
