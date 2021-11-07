@@ -108,4 +108,8 @@ export default class IconFolderPlugin extends Plugin {
   async saveIconFolderData(): Promise<void> {
     await this.saveData(this.data);
   }
+
+  getData(): Record<string, string | Object> {
+    return this.data;
+  }
 }

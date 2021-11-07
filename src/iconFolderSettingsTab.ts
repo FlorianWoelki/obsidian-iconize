@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import IconFolderPlugin from './main';
+import { refreshIconStyle } from './util';
 
 export default class IconFolderSettingsTab extends PluginSettingTab {
   plugin: IconFolderPlugin;
@@ -81,6 +82,8 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
             slider.showTooltip();
             this.plugin.getSettings().fontSize = val;
             await this.plugin.saveIconFolderData();
+
+            refreshIconStyle(this.plugin);
           });
         slider.showTooltip();
       });

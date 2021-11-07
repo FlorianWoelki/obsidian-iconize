@@ -24,7 +24,7 @@ const mapRemixicons = (iconName: string, settings: IconFolderSettings): boolean 
   return true;
 };
 
-export const getEnabledIcons = (plugin: IconFolderPlugin) => {
+export const getEnabledIcons = (plugin: IconFolderPlugin): string[] => {
   const settings = plugin.getSettings();
   const icons = transformedIcons.remixIcons.filter((key) => {
     return mapRemixicons(key, settings);
@@ -60,6 +60,10 @@ export const getIcon = (plugin: IconFolderPlugin, name: string): string => {
     iconSvg = remixicons[name];
   }
 
+  return customizeIconStyle(plugin, iconSvg);
+};
+
+export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string): string => {
   // Allow custom font size
   const sizeRe = new RegExp(/width="\d+" height="\d+"/g);
   iconSvg = iconSvg.replace(
@@ -73,7 +77,7 @@ export const addIconsToDOM = (
   plugin: IconFolderPlugin,
   data: [string, string],
   registeredFileExplorers: WeakMap<ExplorerLeaf, boolean>,
-) => {
+): void => {
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
   fileExplorers.forEach((fileExplorer) => {
     if (registeredFileExplorers.has(fileExplorer)) {
@@ -100,7 +104,22 @@ export const addIconsToDOM = (
   });
 };
 
-export const removeFromDOM = (path: string) => {
+export const refreshIconStyle = (plugin: IconFolderPlugin): void => {
+  const data = Object.entries(plugin.getData()) as [string, string];
+  const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
+  fileExplorers.forEach((fileExplorer) => {
+    data.forEach(([key]) => {
+      const fileItem = fileExplorer.view.fileItems[key];
+      if (fileItem) {
+        const titleEl = fileItem.titleEl;
+        const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon');
+        iconNode.innerHTML = customizeIconStyle(plugin, iconNode.innerHTML);
+      }
+    });
+  });
+};
+
+export const removeFromDOM = (path: string): void => {
   const node = document.querySelector(`[data-path="${path}"]`);
   if (!node) {
     console.error('element with data path not found', path);
