@@ -77,15 +77,14 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
       .addSlider((slider) => {
         slider
           .setLimits(10, 24, 1)
+          .setDynamicTooltip()
           .setValue(this.plugin.getSettings().fontSize)
           .onChange(async (val) => {
-            slider.showTooltip();
             this.plugin.getSettings().fontSize = val;
             await this.plugin.saveIconFolderData();
 
             refreshIconStyle(this.plugin);
           });
-        slider.showTooltip();
       });
   }
 }
