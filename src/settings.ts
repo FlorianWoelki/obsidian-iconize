@@ -5,7 +5,7 @@ export interface IconFolderSettings {
   enableFontawesomeLine: boolean;
   enableFontawesomeBrands: boolean;
   fontSize: number;
-  iconColor: string;
+  iconColor: string | null;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -15,5 +15,5 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   enableFontawesomeLine: false,
   enableFontawesomeBrands: false,
   fontSize: 16,
-  iconColor: '',
+  iconColor: null,
 };

@@ -72,10 +72,8 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string): s
   );
 
   // Allow custom icon color
-  if (plugin.getSettings().iconColor) {
-    const colorRe = new RegExp(/fill="(\w|#)+"/g);
-    iconSvg = iconSvg.replace(colorRe, `fill="${plugin.getSettings().iconColor}"`);
-  }
+  const colorRe = new RegExp(/fill="(\w|#)+"/g);
+  iconSvg = iconSvg.replace(colorRe, `fill="${plugin.getSettings().iconColor ?? 'currentColor'}"`);
   return iconSvg;
 };
 

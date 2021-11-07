@@ -99,6 +99,20 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
 
         refreshIconStyle(this.plugin);
       });
-    colorCustomization.components.push(colorPicker);
+
+    colorCustomization.addButton((button) => {
+      button
+        .setButtonText('Default')
+        .setTooltip('Set color to the default one')
+        .onClick(async () => {
+          colorPicker.setValue('#000000');
+          this.plugin.getSettings().iconColor = null;
+          await this.plugin.saveIconFolderData();
+
+          refreshIconStyle(this.plugin);
+        });
+    });
+
+    colorCustomization.components.push(colorPicker.build());
   }
 }
