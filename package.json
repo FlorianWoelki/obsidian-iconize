@@ -38,6 +38,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.1",
     "husky": "^7.0.2",
+    "lint-staged": "^11.2.6",
     "mkdirp": "^1.0.4",
     "obsidian": "^0.12.0",
     "prettier": "^2.3.2",
