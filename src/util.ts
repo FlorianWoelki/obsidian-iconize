@@ -96,7 +96,7 @@ export const addIconsToDOM = (
         const titleInnerEl = fileItem.titleInnerEl;
 
         // needs to check because of the refreshing the plugin will duplicate all the icons
-        if (titleEl.children.length === 2) {
+        if (titleEl.children.length === 2 || titleEl.children.length === 1) {
           const iconNode = titleEl.createDiv();
           iconNode.classList.add('obsidian-icon-folder-icon');
           iconNode.innerHTML = getIcon(plugin, value.substring(2));
@@ -132,7 +132,6 @@ export const removeFromDOM = (path: string): void => {
 
   const iconNode = node.querySelector('.obsidian-icon-folder-icon');
   if (!iconNode) {
-    console.error('icon element does not exist', path);
     return;
   }
 
@@ -140,6 +139,10 @@ export const removeFromDOM = (path: string): void => {
 };
 
 export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string): void => {
+  if (plugin.getData()[path]) {
+    removeFromDOM(path);
+  }
+
   const node = document.querySelector(`[data-path="${path}"]`);
   if (!node) {
     console.error('element with data path not found', path);

@@ -37,7 +37,7 @@ export default class IconFolderPlugin extends Plugin {
         };
 
         menu.addItem(addIconMenuItem);
-        
+
         const node = document.querySelector(`[data-path="${file.path}"]`);
         const iconNode = node.querySelector('.obsidian-icon-folder-icon');
         if (iconNode) {
@@ -93,11 +93,7 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   addFolderIcon(path: string, icon: Icon): void {
-    if (this.data[path]) {
-      removeFromDOM(path);
-    }
-
-    this.data[path] = icon.prefix + icon.name;
+    this.data[path] = icon.name;
     this.saveIconFolderData();
   }
 
