@@ -1,6 +1,6 @@
 {
   "name": "obsidian-icon-folder",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "This is an obsidian plugin that allows us to use an icon in the prefix of a folder name.",
   "main": "main.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "precommit": "lint-staged",
     "dev": "rollup --config rollup.config.js -w",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
-    "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
+    "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/ && standard-version",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "keywords": [],
@@ -41,6 +41,7 @@
     "remixicon": "^2.5.0",
     "rollup": "^2.32.1",
     "rollup-plugin-babel": "^4.4.0",
+    "standard-version": "^9.3.2",
     "tslib": "^2.2.0",
     "typescript": "^4.2.4"
   }
