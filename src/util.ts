@@ -57,7 +57,7 @@ export const getIcon = (name: string): string => {
   } else if (prefix === 'Ri') {
     iconSvg = remixicons[name.substr(2)];
   } else {
-    iconSvg = remixicons[name];
+    iconSvg = remixicons[name.substr(2)];
   }
 
   return iconSvg;
@@ -107,7 +107,7 @@ export const addIconsToDOM = (
         if (titleEl.children.length === 2 || titleEl.children.length === 1) {
           const iconNode = titleEl.createDiv();
           iconNode.classList.add('obsidian-icon-folder-icon');
-          iconNode.innerHTML = customizeIconStyle(plugin, getIcon(value.substring(2)), iconNode);
+          iconNode.innerHTML = customizeIconStyle(plugin, getIcon(value), iconNode);
 
           titleEl.insertBefore(iconNode, titleInnerEl);
         }
