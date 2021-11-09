@@ -8,7 +8,7 @@
     "precommit": "lint-staged",
     "dev": "rollup --config rollup.config.js -w",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
-    "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/ && standard-version --skip.bump --skip.tag --skip.commit",
+    "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/ && auto-changelog -p --commit-limit false",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "keywords": [],
@@ -34,6 +34,7 @@
     "@types/node": "^14.14.37",
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "@typescript-eslint/parser": "^5.3.0",
+    "auto-changelog": "^2.3.0",
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.1",
@@ -45,7 +46,6 @@
     "remixicon": "^2.5.0",
     "rollup": "^2.32.1",
     "rollup-plugin-babel": "^4.4.0",
-    "standard-version": "^9.3.2",
     "tslib": "^2.2.0",
     "typescript": "^4.2.4"
   }
