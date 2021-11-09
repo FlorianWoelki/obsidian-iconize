@@ -11,3 +11,7 @@
   left: 0;
   margin-top: 7px;
 }
+
+.obsidian-icon-folder-setting .setting-item-control .dropdown {
+  margin-right: 12px;
+}

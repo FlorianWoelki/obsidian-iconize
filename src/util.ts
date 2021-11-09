@@ -43,7 +43,7 @@ export const getEnabledIcons = (plugin: IconFolderPlugin): string[] => {
   return icons;
 };
 
-export const getIcon = (plugin: IconFolderPlugin, name: string): string => {
+export const getIcon = (name: string): string => {
   const prefix = name.substr(0, 2);
   let iconSvg: string = '';
   if (prefix === 'Fa') {
@@ -60,10 +60,10 @@ export const getIcon = (plugin: IconFolderPlugin, name: string): string => {
     iconSvg = remixicons[name];
   }
 
-  return customizeIconStyle(plugin, iconSvg);
+  return iconSvg;
 };
 
-export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string): string => {
+export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string, el: HTMLElement): string => {
   // Allow custom font size
   const sizeRe = new RegExp(/width="\d+" height="\d+"/g);
   iconSvg = iconSvg.replace(
@@ -74,6 +74,14 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string): s
   // Allow custom icon color
   const colorRe = new RegExp(/fill="(\w|#)+"/g);
   iconSvg = iconSvg.replace(colorRe, `fill="${plugin.getSettings().iconColor ?? 'currentColor'}"`);
+
+  // Change padding of icon
+  if (plugin.getSettings().extraPadding) {
+    el.style.padding = `${plugin.getSettings().extraPadding.top ?? 2}px ${
+      plugin.getSettings().extraPadding.right ?? 2
+    }px ${plugin.getSettings().extraPadding.bottom ?? 2}px ${plugin.getSettings().extraPadding.left ?? 2}px`;
+  }
+
   return iconSvg;
 };
 
@@ -99,7 +107,7 @@ export const addIconsToDOM = (
         if (titleEl.children.length === 2 || titleEl.children.length === 1) {
           const iconNode = titleEl.createDiv();
           iconNode.classList.add('obsidian-icon-folder-icon');
-          iconNode.innerHTML = getIcon(plugin, value.substring(2));
+          iconNode.innerHTML = customizeIconStyle(plugin, getIcon(value.substring(2)), iconNode);
 
           titleEl.insertBefore(iconNode, titleInnerEl);
         }
@@ -116,8 +124,8 @@ export const refreshIconStyle = (plugin: IconFolderPlugin): void => {
       const fileItem = fileExplorer.view.fileItems[key];
       if (fileItem) {
         const titleEl = fileItem.titleEl;
-        const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon');
-        iconNode.innerHTML = customizeIconStyle(plugin, iconNode.innerHTML);
+        const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
+        iconNode.innerHTML = customizeIconStyle(plugin, iconNode.innerHTML, iconNode);
       }
     });
   });
@@ -161,7 +169,7 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string)
 
   const iconNode = document.createElement('div');
   iconNode.classList.add('obsidian-icon-folder-icon');
-  iconNode.innerHTML = getIcon(plugin, iconId);
+  iconNode.innerHTML = customizeIconStyle(plugin, getIcon(iconId), iconNode);
 
   node.insertBefore(iconNode, titleNode);
 };
