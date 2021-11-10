@@ -24,6 +24,8 @@ To delete an icon, you just need to click on the `Delete Icon` (prefixed with a 
 
 To enable other icon sets, go to settings and enable or disable your wanted icons.
 
+In addition, you can adjust some styling settings for all the icons like padding, color, or even the font size.
+
 ## Development
 
 To customize this project for your needs, you can clone it and then install all dependencies:
