@@ -7,6 +7,9 @@ import IconFolderPlugin from './main';
 import { ExplorerLeaf } from './@types/obsidian';
 import { IconFolderSettings } from './settings';
 
+/**
+ * `transformedIcons` includes all the icon packs with their corresponding prefix.
+ */
 const transformedIcons = {
   faFill: Object.keys(faFill).map((iconName) => 'Fa' + iconName),
   faLine: Object.keys(faLine).map((iconName) => 'Fa' + iconName),
@@ -14,6 +17,15 @@ const transformedIcons = {
   remixIcons: Object.keys(remixicons).map((iconName) => 'Ri' + iconName),
 };
 
+/**
+ * This function checks whether the passed `iconName` is a `fill` or `line` icon.
+ * Based on this condition it will return `true` or `false` based on the enabled settings.
+ *
+ * @private
+ * @param {string} iconName - Represents the icon name like `RiAB`.
+ * @param {IconFolderSettings} settings - The saved settings of the plugin.
+ * @returns {boolean} If the icon should be included/enabled or not.
+ */
 const mapRemixicons = (iconName: string, settings: IconFolderSettings): boolean => {
   if (iconName.toLowerCase().includes('fill')) {
     return settings.enableRemixiconsFill;
@@ -24,6 +36,15 @@ const mapRemixicons = (iconName: string, settings: IconFolderSettings): boolean 
   return true;
 };
 
+/**
+ * This function returns all enabled icons.
+ *
+ * For example: if `Remixicons Fill` and `Fontawesome Fill` is activated, it will return all these icons.
+ *
+ * @public
+ * @param {IconFolderPlugin} plugin - The main plugin file.
+ * @returns {string[]} The enabled icons.
+ */
 export const getEnabledIcons = (plugin: IconFolderPlugin): string[] => {
   const settings = plugin.getSettings();
   const icons = transformedIcons.remixIcons.filter((key) => {
@@ -43,6 +64,15 @@ export const getEnabledIcons = (plugin: IconFolderPlugin): string[] => {
   return icons;
 };
 
+/**
+ * This function transforms an icon that includes a prefix and returns the correct svg string.
+ *
+ * For example: This input: `RiAB` will return only `AB` as a svg.
+ *
+ * @public
+ * @param {string} name - The icon name.
+ * @returns {string} The correct transformed svg.
+ */
 export const getIcon = (name: string): string => {
   const prefix = name.substr(0, 2);
   let iconSvg: string = '';
@@ -63,6 +93,18 @@ export const getIcon = (name: string): string => {
   return iconSvg;
 };
 
+/**
+ * This function returns the svg string with the user defined css settings.
+ * It handles from the settings the `padding`, `color`, and `size`.
+ *
+ * In addition, this function manipulates the passed element with the user defined setting `padding`.
+ *
+ * @public
+ * @param {IconFolderPlugin} plugin - The main plugin.
+ * @param {string} iconSvg - The to be styled icon svg.
+ * @param {HTMLElement} el - The element that will include the padding from the user settings.
+ * @returns {string} The svg with the customized css settings.
+ */
 export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string, el: HTMLElement): string => {
   // Allow custom font size
   const sizeRe = new RegExp(/width="\d+" height="\d+"/g);
@@ -85,6 +127,15 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string, el
   return iconSvg;
 };
 
+/**
+ * This function adds the icons to the DOM.
+ * For that, it will create a `div` element with the class `obsidian-icon-folder-icon` that will be customized based on the user settings.
+ *
+ * @public
+ * @param {IconFolderPlugin} plugin - The main plugin.
+ * @param {[string, string]} data - The data that includes the icons.
+ * @param {WeakMap<ExplorerLeaf, boolean>} registeredFileExplorers - The already registered file explorers.
+ */
 export const addIconsToDOM = (
   plugin: IconFolderPlugin,
   data: [string, string],
@@ -116,6 +167,13 @@ export const addIconsToDOM = (
   });
 };
 
+/**
+ * This function refreshes the icon style.
+ * For that, it will manipulate the `innerHTML` of the icon and will customize the style.
+ *
+ * @public
+ * @param {IconFolderPlugin} plugin - The main plugin.
+ */
 export const refreshIconStyle = (plugin: IconFolderPlugin): void => {
   const data = Object.entries(plugin.getData()) as [string, string];
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
@@ -131,6 +189,12 @@ export const refreshIconStyle = (plugin: IconFolderPlugin): void => {
   });
 };
 
+/**
+ * This function removes the icon node from the DOM based on the passed in path.
+ *
+ * @public
+ * @param {string} path - The path toe the to be removed DOM element.
+ */
 export const removeFromDOM = (path: string): void => {
   const node = document.querySelector(`[data-path="${path}"]`);
   if (!node) {
@@ -146,6 +210,15 @@ export const removeFromDOM = (path: string): void => {
   iconNode.remove();
 };
 
+/**
+ * This function adds an icon to the DOM based on a specific path.
+ * In addition, before added to the DOM, it will customize the icon style.
+ *
+ * @public
+ * @param {IconFolderPlugin} plugin - The main plugin.
+ * @param {string} path - The path in the DOM where the icon will be added.
+ * @param {string} iconId - The icon id that will be added to the DOM.
+ */
 export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string): void => {
   if (plugin.getData()[path]) {
     removeFromDOM(path);
