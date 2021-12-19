@@ -3,7 +3,7 @@ import * as faLine from '../fontawesome/index-line';
 import * as faFill from '../fontawesome/index-fill';
 import * as faBrands from '../fontawesome/index-brands';
 
-import IconFolderPlugin from './main';
+import IconFolderPlugin, { FolderIconObject } from './main';
 import { ExplorerLeaf } from './@types/obsidian';
 import { IconFolderSettings } from './settings';
 
@@ -133,12 +133,12 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string, el
  *
  * @public
  * @param {IconFolderPlugin} plugin - The main plugin.
- * @param {[string, string]} data - The data that includes the icons.
+ * @param {[string, string | FolderIconObject][]} data - The data that includes the icons.
  * @param {WeakMap<ExplorerLeaf, boolean>} registeredFileExplorers - The already registered file explorers.
  */
 export const addIconsToDOM = (
   plugin: IconFolderPlugin,
-  data: [string, string],
+  data: [string, string | FolderIconObject][],
   registeredFileExplorers: WeakMap<ExplorerLeaf, boolean>,
 ): void => {
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
@@ -156,11 +156,27 @@ export const addIconsToDOM = (
 
         // needs to check because of the refreshing the plugin will duplicate all the icons
         if (titleEl.children.length === 2 || titleEl.children.length === 1) {
-          const iconNode = titleEl.createDiv();
-          iconNode.classList.add('obsidian-icon-folder-icon');
-          iconNode.innerHTML = customizeIconStyle(plugin, getIcon(value), iconNode);
+          const iconName = typeof value === 'string' ? value : value.iconName;
+          if (iconName) {
+            const iconNode = titleEl.createDiv();
+            iconNode.classList.add('obsidian-icon-folder-icon');
+            iconNode.innerHTML = customizeIconStyle(plugin, getIcon(iconName), iconNode);
 
-          titleEl.insertBefore(iconNode, titleInnerEl);
+            titleEl.insertBefore(iconNode, titleInnerEl);
+          }
+
+          if (typeof value === 'object' && value.inheritanceIcon) {
+            const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(key));
+            const inheritanceIconName = value.inheritanceIcon;
+            files.forEach((f) => {
+              const inheritanceFileItem = fileExplorer.view.fileItems[f.path];
+              const iconNode = inheritanceFileItem.titleEl.createDiv();
+              iconNode.classList.add('obsidian-icon-folder-icon');
+              iconNode.innerHTML = customizeIconStyle(plugin, getIcon(inheritanceIconName), iconNode);
+
+              inheritanceFileItem.titleEl.insertBefore(iconNode, inheritanceFileItem.titleInnerEl);
+            });
+          }
         }
       }
     });
