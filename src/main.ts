@@ -40,8 +40,23 @@ export default class IconFolderPlugin extends Plugin {
 
         const node = document.querySelector(`[data-path="${file.path}"]`);
         const iconNode = node.querySelector('.obsidian-icon-folder-icon');
+
+        const inheritIcon = (item: MenuItem) => {
+          item.setTitle('Inherit icon');
+          item.setIcon('vertical-three-dots');
+          item.onClick(() => {
+            const modal = new IconsPickerModal(this.app, this, file.path);
+            modal.open();
+            // Manipulate `onChooseItem` method to get custom functioanlity for inheriting icons.
+            modal.onChooseItem = (icon: Icon) => {
+              this.addInheritanceForFolder(file.path, icon);
+            };
+          });
+        };
+
         if (iconNode) {
           menu.addItem(removeIconMenuItem);
+          menu.addItem(inheritIcon);
         }
       }),
     );
@@ -67,6 +82,10 @@ export default class IconFolderPlugin extends Plugin {
   private handleChangeLayout(): void {
     const data = Object.entries(this.data) as [string, string];
     addIconsToDOM(this, data, this.registeredFileExplorers);
+  }
+
+  private addInheritanceForFolder(folderPath: string, icon: Icon): void {
+    console.log('add inheritance for icon', icon, 'to folder', folderPath);
   }
 
   onunload() {
