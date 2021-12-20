@@ -2,7 +2,13 @@ import { Plugin, MenuItem } from 'obsidian';
 import IconFolderSettingsTab from './iconFolderSettingsTab';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, IconFolderSettings } from './settings';
-import { addIconsToDOM, addInheritanceForFolder, addToDOM, removeFromDOM, removeInheritanceForFolder } from './util';
+import {
+  addIconsToDOM,
+  addInheritanceForFolder,
+  addInheritanceIconToFile,
+  removeFromDOM,
+  removeInheritanceForFolder,
+} from './util';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -98,7 +104,23 @@ export default class IconFolderPlugin extends Plugin {
     // transform data that are objects to single strings
     const data = Object.entries(this.data) as [string, string | FolderIconObject][];
 
-    addIconsToDOM(this, data, this.registeredFileExplorers);
+    addIconsToDOM(this, data, this.registeredFileExplorers, () => {
+      this.registerEvent(
+        this.app.vault.on('create', (file) => {
+          const inheritanceFolders = Object.entries(this.data).filter(
+            ([k, v]) => k !== 'settings' && typeof v === 'object',
+          );
+
+          if (file.parent.path === '/') return;
+
+          inheritanceFolders.forEach(([path, obj]: [string, FolderIconObject]) => {
+            if (file.parent.path.includes(path)) {
+              addInheritanceIconToFile(this, this.registeredFileExplorers, file.path, obj.inheritanceIcon);
+            }
+          });
+        }),
+      );
+    });
   }
 
   private saveInheritanceData(folderPath: string, icon: Icon | null): void {

@@ -140,6 +140,7 @@ export const addIconsToDOM = (
   plugin: IconFolderPlugin,
   data: [string, string | FolderIconObject][],
   registeredFileExplorers: WeakMap<ExplorerLeaf, boolean>,
+  callback?: () => void,
 ): void => {
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
   fileExplorers.forEach((fileExplorer) => {
@@ -180,6 +181,32 @@ export const addIconsToDOM = (
         }
       }
     });
+
+    if (callback) {
+      callback();
+    }
+  });
+};
+
+export const addInheritanceIconToFile = (
+  plugin: IconFolderPlugin,
+  registeredFileExplorers: WeakMap<ExplorerLeaf, boolean>,
+  filePath: string,
+  iconName: string,
+): void => {
+  const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
+  fileExplorers.forEach((fileExplorer) => {
+    if (registeredFileExplorers.has(fileExplorer)) {
+      const fileItem = fileExplorer.view.fileItems[filePath];
+      console.log(fileItem);
+      if (fileItem) {
+        const iconNode = fileItem.titleEl.createDiv();
+        iconNode.classList.add('obsidian-icon-folder-icon');
+        iconNode.innerHTML = customizeIconStyle(plugin, getIcon(iconName), iconNode);
+
+        fileItem.titleEl.insertBefore(iconNode, fileItem.titleInnerEl);
+      }
+    }
   });
 };
 
