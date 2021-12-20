@@ -306,6 +306,11 @@ export const addInheritanceForFolder = (plugin: IconFolderPlugin, folderPath: st
   // add icons for all the child files
   const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
   files.forEach((f) => {
+    if (plugin.getData()[f.path]) {
+      removeFromDOM(f.path);
+      plugin.removeFolderIcon(f.path);
+    }
+
     addToDOM(plugin, f.path, (folder as any).inheritanceIcon);
   });
 };
