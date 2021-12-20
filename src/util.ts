@@ -263,24 +263,40 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string)
   node.insertBefore(iconNode, titleNode);
 };
 
+/**
+ * This function will add inheritance functionality to a specific folder.
+ * It will add the inheritance icon to all child files.
+ *
+ * @param {IconFolderPlugin} plugin - The main plugin.
+ * @param {string} folderPath - The path in the DOM where the icon will be added.
+ */
 export const addInheritanceForFolder = (plugin: IconFolderPlugin, folderPath: string): void => {
   const folder = plugin.getData()[folderPath];
   if (!folder || typeof folder !== 'object') {
     return;
   }
 
+  // add icons for all the child files
   const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
   files.forEach((f) => {
     addToDOM(this, f.path, (folder as any).inheritanceIcon);
   });
 };
 
+/**
+ * This function removes inheritance from a folder.
+ * It will delete all the icons in the sub files of this folder.
+ *
+ * @param {IconFolderPlugin} plugin - The main plugin.
+ * @param {string} folderPath - The path in the DOM where the icon will be added.
+ */
 export const removeInheritanceForFolder = (plugin: IconFolderPlugin, folderPath: string): void => {
   const folder = plugin.getData()[folderPath];
   if (!folder || typeof folder !== 'object') {
     return;
   }
 
+  // remove icons from all the child files
   const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
   files.forEach((f) => {
     removeFromDOM(f.path);
