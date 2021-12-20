@@ -262,3 +262,27 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string)
 
   node.insertBefore(iconNode, titleNode);
 };
+
+export const addInheritanceForFolder = (plugin: IconFolderPlugin, folderPath: string): void => {
+  const folder = plugin.getData()[folderPath];
+  if (!folder || typeof folder !== 'object') {
+    return;
+  }
+
+  const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
+  files.forEach((f) => {
+    addToDOM(this, f.path, (folder as any).inheritanceIcon);
+  });
+};
+
+export const removeInheritanceForFolder = (plugin: IconFolderPlugin, folderPath: string): void => {
+  const folder = plugin.getData()[folderPath];
+  if (!folder || typeof folder !== 'object') {
+    return;
+  }
+
+  const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
+  files.forEach((f) => {
+    removeFromDOM(f.path);
+  });
+};

@@ -2,7 +2,7 @@ import { Plugin, MenuItem } from 'obsidian';
 import IconFolderSettingsTab from './iconFolderSettingsTab';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, IconFolderSettings } from './settings';
-import { addIconsToDOM, addToDOM, removeFromDOM } from './util';
+import { addIconsToDOM, addInheritanceForFolder, addToDOM, removeFromDOM, removeInheritanceForFolder } from './util';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -54,8 +54,8 @@ export default class IconFolderPlugin extends Plugin {
           if (typeof this.data[file.path] === 'object') {
             item.setTitle('Remove inherit icon');
             item.onClick(() => {
-              this.removeInheritanceForFolder(file.path);
-              this.saveInheritanceForFolder(file.path, null);
+              removeInheritanceForFolder(this, file.path);
+              this.saveInheritanceData(file.path, null);
             });
           } else {
             item.setTitle('Inherit icon');
@@ -64,8 +64,8 @@ export default class IconFolderPlugin extends Plugin {
               modal.open();
               // manipulate `onChooseItem` method to get custom functioanlity for inheriting icons
               modal.onChooseItem = (icon: Icon) => {
-                this.saveInheritanceForFolder(file.path, icon);
-                this.addInheritanceForFolder(file.path);
+                this.saveInheritanceData(file.path, icon);
+                addInheritanceForFolder(this, file.path);
               };
             });
           }
@@ -101,19 +101,21 @@ export default class IconFolderPlugin extends Plugin {
     addIconsToDOM(this, data, this.registeredFileExplorers);
   }
 
-  private saveInheritanceForFolder(folderPath: string, icon: Icon | null): void {
+  private saveInheritanceData(folderPath: string, icon: Icon | null): void {
     const currentValue = this.data[folderPath];
-    if (icon === null) {
-      if (currentValue && typeof currentValue === 'object') {
-        const folderObject = currentValue as FolderIconObject;
+    // if icon is null, it will remove the inheritance icon from the data
+    if (icon === null && currentValue && typeof currentValue === 'object') {
+      const folderObject = currentValue as FolderIconObject;
 
-        if (folderObject.iconName) {
-          this.data[folderPath] = folderObject.iconName;
-        } else {
-          delete this.data[folderPath];
-        }
+      if (folderObject.iconName) {
+        this.data[folderPath] = folderObject.iconName;
+      } else {
+        delete this.data[folderPath];
       }
-    } else {
+    }
+    // icon is not null, so it will add inheritance data
+    else {
+      // check if data already exists
       if (currentValue) {
         // check if current value is already an icon name
         if (typeof currentValue === 'string') {
@@ -138,30 +140,6 @@ export default class IconFolderPlugin extends Plugin {
     }
 
     this.saveIconFolderData();
-  }
-
-  private removeInheritanceForFolder(folderPath: string): void {
-    const folder = this.data[folderPath];
-    if (!folder || typeof folder !== 'object') {
-      return;
-    }
-
-    const files = this.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
-    files.forEach((f) => {
-      removeFromDOM(f.path);
-    });
-  }
-
-  private addInheritanceForFolder(folderPath: string): void {
-    const folder = this.data[folderPath];
-    if (!folder || typeof folder !== 'object') {
-      return;
-    }
-
-    const files = this.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
-    files.forEach((f) => {
-      addToDOM(this, f.path, (folder as any).inheritanceIcon);
-    });
   }
 
   onunload() {
