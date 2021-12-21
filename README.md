@@ -26,6 +26,8 @@ To enable other icon sets, go to settings and enable or disable your wanted icon
 
 In addition, you can adjust some styling settings for all the icons like padding, color, or even the icon size.
 
+Furthermore, there is now an option to add a `inherit icon` functionality. Whenever you select this option for a specific folder, every single file will have this inherited icon.
+
 ## Development
 
 To customize this project for your needs, you can clone it and then install all dependencies:
