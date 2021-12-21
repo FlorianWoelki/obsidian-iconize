@@ -2,51 +2,66 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
-## [1.0.3](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.22...1.0.3)
+#### [1.0.4](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.22...1.0.4)
+
+- feat: add functionality for inheriting icons [`f726742`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/f72674214efac6e387681c2c112f421f623e5a50)
+- refactor: inheritance functionality to custom file [`c053b87`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/c053b871d00cca3f584341da4c4a258b54f49610)
+- feat: add inheritance functionality when adding files [`53411eb`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/53411ebe35c91e18da18b8a128cd7a84925732b4)
+- fix: issue with inheritance and normal icon [`e949389`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/e9493891ae6da2bdab8320d99dbaf60da658b75b)
+- feat: add menu entry for inheritance [`a67b068`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/a67b0680f94179ec1a54ee9ab8e8c2e798886df3)
+- docs: add function comments [`341f9b8`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/341f9b87a6499718aa4e7f82eac7333b57bcc5cf)
+- fix: issue with doubled icon when inherit and normal icon is active [`5e417cd`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/5e417cd6daa90d17065e2591dd944a0bd129e99d)
+- fix: issue with not adding inherit icon [`72ee590`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/72ee59053f6063f4cc0c842fff3bf5efd3d1489c)
+
+#### [1.0.3](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.2...1.0.3)
+
+> 11 November 2021
 
 - remove "remove icon" if no icon is set [`#13`](https://github.com/FlorianWoelki/obsidian-icon-folder/pull/13)
 - feat: add extra padding setting [`#3`](https://github.com/FlorianWoelki/obsidian-icon-folder/issues/3)
-- docs: add comments for util functions [`1ab8b0e`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/1ab8b0e1fe81a0a034daa475e5ba8f3eff0bb625)
-- docs: add description for style customization [`b51a792`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/b51a7921395d6c9b6bb35b8f716ee3075b5b847a)
-- build(deps): bump ansi-regex from 5.0.0 to 5.0.1 [`62fe0e4`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/62fe0e49d2cda1322f05ed98b07080a279b33293)
 - feat: add standard-version [`7a011ef`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/7a011ef7e06cb7b23613a9911fa2ce3f18c9434b)
-- feat: add auto-changelog and remove standard-version [`dd270d3`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/dd270d3a40557d7e1edf080aeed6f8a8c01f4bba)
 - feat: add eslint and prettier to husky [`761c008`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/761c00822ece29c40258bc9b7d652b58f51084cb)
 - feat: add lint-staged [`a8bbd1f`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/a8bbd1f1b31256c5210a19cd325d6dea6665f000)
+- build: bump to version 1.0.3 [`22d952b`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/22d952b711e6e7381798c2735b8a849035bac995)
+- docs: add comments for util functions [`1ab8b0e`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/1ab8b0e1fe81a0a034daa475e5ba8f3eff0bb625)
+- feat: add first custom font size implementation (#1 #3) [`47bc3d5`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/47bc3d5dbd5c07a0404d74711d5a79764e815155)
+- docs: add description for style customization [`b51a792`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/b51a7921395d6c9b6bb35b8f716ee3075b5b847a)
+- build(deps): bump ansi-regex from 5.0.0 to 5.0.1 [`62fe0e4`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/62fe0e49d2cda1322f05ed98b07080a279b33293)
+- feat: add auto-changelog and remove standard-version [`dd270d3`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/dd270d3a40557d7e1edf080aeed6f8a8c01f4bba)
 - feat: add icon color customization [`b07ea63`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/b07ea630e40fcc9e55c6e1587216a825229e9c94)
 - chore(release): 1.1.0 [`5cc8d3a`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/5cc8d3ada3c913f2a5180d6db5f710a63a41362f)
-- feat: add first custom font size implementation (#1 #3) [`47bc3d5`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/47bc3d5dbd5c07a0404d74711d5a79764e815155)
 - feat: add default button for color customization setting [`b72385e`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/b72385ed2105ee059f2006f2cfa4aeeb2652b9c3)
 - feat: add custom fontSize settings option [`254e774`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/254e7741fb638493429d1df238e34c032cf3a21b)
 - feat: add hot refresh of the icon style [`283646d`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/283646db4670dcf44e71f2aeb703ee934730a239)
 - fix: icons for files not working (#14) [`b550a9e`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/b550a9eebe4a35a1610d3a9692574b257e0977b1)
+- fix: issue with duplicated icons while updating [`c38844a`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/c38844a23a3a3e803387936356de5392fa718953)
 - fix: icon generation (#11) [`f02b010`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/f02b010ead8b00c08303e8496a45d97f30bb2f8e)
+- fix: issue with giving icon a file (#9) [`ea65e27`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/ea65e27732be73f0fb57d9410ae75b7f1d457cd1)
 - docs: update documentation for further help developing the plugin (#11) [`0124514`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/01245145b5f62d1460cb610a2fa267134eb77e3f)
 - chore(release): 1.2.0 [`63e962e`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/63e962e0b16bb07334ddc12919bd1ba7886f70d4)
 - build(deps): bump ansi-regex from 5.0.0 to 5.0.1 [`9909ba8`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/9909ba8c841e355b514082191bfb0e32a8307f0f)
 - build: add precommit script for lint-staged [`c5b9412`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/c5b941216620009c791d36db088a731a9c07d5df)
 - fix: remove "remove icon" if no icon is set [`0f139c1`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/0f139c16b6e0791e7df3af63d68e963c857549f8)
+- build: bump version to v1.0.21 [`bc46d7f`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/bc46d7fe2476435ebe244b886a5b5f38f2e2c5a1)
 - feat: format code [`65f671a`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/65f671acf4d52587ea71aca5e2dbf48bf30a35ff)
 - fix: issue that icon not found (#14) [`d834f52`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/d834f52e3dc067c91358630eb5ea243ffa2553a3)
 - refactor: use dynamic tooltip [`03c680e`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/03c680ee18b78a4a61fbeb47947952296c8a4680)
 - revert: bump to 1.0.22 [`2915a82`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/2915a8214d0c7ac28f2dc450925dfee3306cca2d)
 - fix: issue with generating remixicons pack [`5ff365d`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/5ff365d43149560ad07886f4adf626c795912cca)
+- build: bump to version v1.0.22 [`f6d9e07`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/f6d9e07b95256240aff7a95563d41f912e453760)
 
-## [1.0.22](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.21...1.0.22)
+#### [1.0.22](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.21...1.0.22)
 
 > 22 October 2021
 
 - fix: issue with duplicated icons while updating [`c38844a`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/c38844a23a3a3e803387936356de5392fa718953)
 - build: bump to version v1.0.22 [`f6d9e07`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/f6d9e07b95256240aff7a95563d41f912e453760)
 
-## [1.0.21](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.2...1.0.21)
+#### [1.0.21](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.3...1.0.21)
 
 > 21 October 2021
 
-- fix: issue with giving icon a file (#9) [`ea65e27`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/ea65e27732be73f0fb57d9410ae75b7f1d457cd1)
-- build: bump version to v1.0.21 [`bc46d7f`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/bc46d7fe2476435ebe244b886a5b5f38f2e2c5a1)
-
-## [1.0.2](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.1...1.0.2)
+#### [1.0.2](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.1...1.0.2)
 
 > 20 October 2021
 
@@ -59,7 +74,7 @@ All notable changes to this project will be documented in this file. Dates are d
 - feat: add prefix to item text in modal [`9d00d7f`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/9d00d7fc28fff872326c9b7e7d414b83456c85a9)
 - docs: add fontawesome icon pack [`74c0c96`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/74c0c96f0763379209b176f7254a1b31684f852c)
 
-## [1.0.1](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.0...1.0.1)
+#### [1.0.1](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.0...1.0.1)
 
 > 17 October 2021
 
@@ -96,7 +111,7 @@ All notable changes to this project will be documented in this file. Dates are d
 - refactor: remove DS_Store file [`d159f1d`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/d159f1ddbcf219e9296bffb7a35b214c9abb39af)
 - docs: add preview folder image [`6384a76`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/6384a76439bd4547e163843ac141c9bee135db17)
 
-## 1.0.0
+#### 1.0.0
 
 > 27 August 2021
 
