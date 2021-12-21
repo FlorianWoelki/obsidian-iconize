@@ -149,8 +149,15 @@ export const addIconsToDOM = (
     }
 
     registeredFileExplorers.set(fileExplorer, true);
-    data.forEach(([key, value]) => {
-      const fileItem = fileExplorer.view.fileItems[key];
+
+    // create a map with registered file paths to have constant look up time
+    const registeredFilePaths: Record<string, boolean> = {};
+    data.forEach(([path]) => {
+      registeredFilePaths[path] = true;
+    });
+
+    data.forEach(([dataPath, value]) => {
+      const fileItem = fileExplorer.view.fileItems[dataPath];
       if (fileItem) {
         const titleEl = fileItem.titleEl;
         const titleInnerEl = fileItem.titleInnerEl;
@@ -167,15 +174,17 @@ export const addIconsToDOM = (
           }
 
           if (typeof value === 'object' && value.inheritanceIcon) {
-            const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(key));
+            const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(dataPath));
             const inheritanceIconName = value.inheritanceIcon;
             files.forEach((f) => {
-              const inheritanceFileItem = fileExplorer.view.fileItems[f.path];
-              const iconNode = inheritanceFileItem.titleEl.createDiv();
-              iconNode.classList.add('obsidian-icon-folder-icon');
-              iconNode.innerHTML = customizeIconStyle(plugin, getIcon(inheritanceIconName), iconNode);
+              if (!registeredFilePaths[f.path]) {
+                const inheritanceFileItem = fileExplorer.view.fileItems[f.path];
+                const iconNode = inheritanceFileItem.titleEl.createDiv();
+                iconNode.classList.add('obsidian-icon-folder-icon');
+                iconNode.innerHTML = customizeIconStyle(plugin, getIcon(inheritanceIconName), iconNode);
 
-              inheritanceFileItem.titleEl.insertBefore(iconNode, inheritanceFileItem.titleInnerEl);
+                inheritanceFileItem.titleEl.insertBefore(iconNode, inheritanceFileItem.titleInnerEl);
+              }
             });
           }
         }
@@ -283,6 +292,12 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string)
     }
   }
 
+  // check if there is a possible inheritance icon in the DOM
+  const possibleInheritanceIcon = node.querySelector('.obsidian-icon-folder-icon');
+  if (possibleInheritanceIcon) {
+    possibleInheritanceIcon.remove();
+  }
+
   const iconNode = document.createElement('div');
   iconNode.classList.add('obsidian-icon-folder-icon');
   iconNode.innerHTML = customizeIconStyle(plugin, getIcon(iconId), iconNode);
@@ -331,6 +346,9 @@ export const removeInheritanceForFolder = (plugin: IconFolderPlugin, folderPath:
   // remove icons from all the child files
   const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
   files.forEach((f) => {
-    removeFromDOM(f.path);
+    // when the file path is not registered in the data it should remove the icon
+    if (!plugin.getData()[f.path]) {
+      removeFromDOM(f.path);
+    }
   });
 };

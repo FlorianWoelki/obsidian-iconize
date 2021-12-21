@@ -105,6 +105,7 @@ export default class IconFolderPlugin extends Plugin {
     const data = Object.entries(this.data) as [string, string | FolderIconObject][];
 
     addIconsToDOM(this, data, this.registeredFileExplorers, () => {
+      // register create event for checking inheritance functionality
       this.registerEvent(
         this.app.vault.on('create', (file) => {
           const inheritanceFolders = Object.entries(this.data).filter(
