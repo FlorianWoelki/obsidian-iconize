@@ -207,7 +207,6 @@ export const addInheritanceIconToFile = (
   fileExplorers.forEach((fileExplorer) => {
     if (registeredFileExplorers.has(fileExplorer)) {
       const fileItem = fileExplorer.view.fileItems[filePath];
-      console.log(fileItem);
       if (fileItem) {
         const iconNode = fileItem.titleEl.createDiv();
         iconNode.classList.add('obsidian-icon-folder-icon');
