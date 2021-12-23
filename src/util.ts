@@ -304,6 +304,13 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string): 
   node.insertBefore(iconNode, titleNode);
 };
 
+/**
+ * This function inserts a specific icon into the specified node.
+ *
+ * @param {IconFolderPlugin} plugin - The main plugin.
+ * @param {string} icon - The icon string (can be an icon id or a unicode for twemoji).
+ * @param {HTMLElement} node - The element where the icon will be inserted.
+ */
 const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement): void => {
   const possibleIcon = getIcon(icon);
   if (possibleIcon) {
