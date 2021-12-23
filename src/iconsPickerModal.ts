@@ -20,6 +20,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     super(app);
     this.plugin = plugin;
     this.path = path;
+    this.limit = 150;
 
     this.oldEnterFunc = (this.scope as any).keys.find((e: any) => e.key === 'Enter').func;
   }
