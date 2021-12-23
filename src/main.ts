@@ -69,7 +69,7 @@ export default class IconFolderPlugin extends Plugin {
               const modal = new IconsPickerModal(this.app, this, file.path);
               modal.open();
               // manipulate `onChooseItem` method to get custom functioanlity for inheriting icons
-              modal.onChooseItem = (icon: Icon) => {
+              modal.onChooseItem = (icon: Icon | string) => {
                 this.saveInheritanceData(file.path, icon);
                 addInheritanceForFolder(this, file.path);
               };
@@ -124,7 +124,7 @@ export default class IconFolderPlugin extends Plugin {
     });
   }
 
-  private saveInheritanceData(folderPath: string, icon: Icon | null): void {
+  private saveInheritanceData(folderPath: string, icon: Icon | string | null): void {
     const currentValue = this.data[folderPath];
     // if icon is null, it will remove the inheritance icon from the data
     if (icon === null && currentValue && typeof currentValue === 'object') {
@@ -144,20 +144,20 @@ export default class IconFolderPlugin extends Plugin {
         if (typeof currentValue === 'string') {
           this.data[folderPath] = {
             iconName: currentValue as string,
-            inheritanceIcon: icon.name,
+            inheritanceIcon: typeof icon === 'object' ? icon.name : icon,
           };
         }
         // check if it has already a inheritance icon
         else if (folderPath !== 'settings') {
           this.data[folderPath] = {
             ...(currentValue as FolderIconObject),
-            inheritanceIcon: icon.name,
+            inheritanceIcon: typeof icon === 'object' ? icon.name : icon,
           };
         }
       } else {
         this.data[folderPath] = {
           iconName: null,
-          inheritanceIcon: icon.name,
+          inheritanceIcon: typeof icon === 'object' ? icon.name : icon,
         };
       }
     }
@@ -197,8 +197,8 @@ export default class IconFolderPlugin extends Plugin {
     this.saveIconFolderData();
   }
 
-  addFolderIcon(path: string, icon: Icon): void {
-    this.data[path] = icon.name;
+  addFolderIcon(path: string, icon: Icon | string): void {
+    this.data[path] = typeof icon === 'object' ? icon.name : icon;
     this.saveIconFolderData();
   }
 

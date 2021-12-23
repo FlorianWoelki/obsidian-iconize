@@ -1,3 +1,4 @@
+import twemoji from 'twemoji';
 import * as remixicons from '../remixicons';
 import * as faLine from '../fontawesome/index-line';
 import * as faFill from '../fontawesome/index-fill';
@@ -71,11 +72,11 @@ export const getEnabledIcons = (plugin: IconFolderPlugin): string[] => {
  *
  * @public
  * @param {string} name - The icon name.
- * @returns {string} The correct transformed svg.
+ * @returns {string | null} The transformed svg or null if it cannot find any iconpack.
  */
-export const getIcon = (name: string): string => {
+export const getIcon = (name: string): string | null => {
   const prefix = name.substr(0, 2);
-  let iconSvg: string = '';
+  let iconSvg: string = null;
   if (prefix === 'Fa') {
     if (name.toLowerCase().substr(name.length - 4) === 'line') {
       iconSvg = faLine[name.substr(2)];
@@ -85,8 +86,6 @@ export const getIcon = (name: string): string => {
       iconSvg = faBrands[name.substr(2)];
     }
   } else if (prefix === 'Ri') {
-    iconSvg = remixicons[name.substr(2)];
-  } else {
     iconSvg = remixicons[name.substr(2)];
   }
 
@@ -101,21 +100,18 @@ export const getIcon = (name: string): string => {
  *
  * @public
  * @param {IconFolderPlugin} plugin - The main plugin.
- * @param {string} iconSvg - The to be styled icon svg.
+ * @param {string} icon - The to be styled icon.
  * @param {HTMLElement} el - The element that will include the padding from the user settings.
  * @returns {string} The svg with the customized css settings.
  */
-export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string, el: HTMLElement): string => {
+export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: HTMLElement): string => {
   // Allow custom font size
   const sizeRe = new RegExp(/width="\d+" height="\d+"/g);
-  iconSvg = iconSvg.replace(
-    sizeRe,
-    `width="${plugin.getSettings().fontSize}" height="${plugin.getSettings().fontSize}"`,
-  );
+  icon = icon.replace(sizeRe, `width="${plugin.getSettings().fontSize}" height="${plugin.getSettings().fontSize}"`);
 
   // Allow custom icon color
   const colorRe = new RegExp(/fill="(\w|#)+"/g);
-  iconSvg = iconSvg.replace(colorRe, `fill="${plugin.getSettings().iconColor ?? 'currentColor'}"`);
+  icon = icon.replace(colorRe, `fill="${plugin.getSettings().iconColor ?? 'currentColor'}"`);
 
   // Change padding of icon
   if (plugin.getSettings().extraPadding) {
@@ -124,7 +120,7 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, iconSvg: string, el
     }px ${plugin.getSettings().extraPadding.bottom ?? 2}px ${plugin.getSettings().extraPadding.left ?? 2}px`;
   }
 
-  return iconSvg;
+  return icon;
 };
 
 /**
@@ -168,7 +164,8 @@ export const addIconsToDOM = (
           if (iconName) {
             const iconNode = titleEl.createDiv();
             iconNode.classList.add('obsidian-icon-folder-icon');
-            iconNode.innerHTML = customizeIconStyle(plugin, getIcon(iconName), iconNode);
+
+            insertIconToNode(plugin, iconName, iconNode);
 
             titleEl.insertBefore(iconNode, titleInnerEl);
           }
@@ -181,7 +178,8 @@ export const addIconsToDOM = (
                 const inheritanceFileItem = fileExplorer.view.fileItems[f.path];
                 const iconNode = inheritanceFileItem.titleEl.createDiv();
                 iconNode.classList.add('obsidian-icon-folder-icon');
-                iconNode.innerHTML = customizeIconStyle(plugin, getIcon(inheritanceIconName), iconNode);
+
+                insertIconToNode(plugin, inheritanceIconName, iconNode);
 
                 inheritanceFileItem.titleEl.insertBefore(iconNode, inheritanceFileItem.titleInnerEl);
               }
@@ -210,7 +208,8 @@ export const addInheritanceIconToFile = (
       if (fileItem) {
         const iconNode = fileItem.titleEl.createDiv();
         iconNode.classList.add('obsidian-icon-folder-icon');
-        iconNode.innerHTML = customizeIconStyle(plugin, getIcon(iconName), iconNode);
+
+        insertIconToNode(plugin, iconName, iconNode);
 
         fileItem.titleEl.insertBefore(iconNode, fileItem.titleInnerEl);
       }
@@ -268,9 +267,9 @@ export const removeFromDOM = (path: string): void => {
  * @public
  * @param {IconFolderPlugin} plugin - The main plugin.
  * @param {string} path - The path in the DOM where the icon will be added.
- * @param {string} iconId - The icon id that will be added to the DOM.
+ * @param {string} icon - The icon that will be added to the DOM - can be an icon id or codepoint for twemoji.
  */
-export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string): void => {
+export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string): void => {
   if (plugin.getData()[path]) {
     removeFromDOM(path);
   }
@@ -299,9 +298,27 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, iconId: string)
 
   const iconNode = document.createElement('div');
   iconNode.classList.add('obsidian-icon-folder-icon');
-  iconNode.innerHTML = customizeIconStyle(plugin, getIcon(iconId), iconNode);
+
+  insertIconToNode(plugin, icon, iconNode);
 
   node.insertBefore(iconNode, titleNode);
+};
+
+const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement): void => {
+  const possibleIcon = getIcon(icon);
+  if (possibleIcon) {
+    node.innerHTML = customizeIconStyle(plugin, possibleIcon, node);
+  } else {
+    const emoji = twemoji.parse(twemoji.convert.fromCodePoint(icon), {
+      folder: 'svg',
+      ext: '.svg',
+      attributes: () => ({
+        width: '16px',
+        height: '16px',
+      }),
+    });
+    node.innerHTML = customizeIconStyle(plugin, emoji, node);
+  }
 };
 
 /**
@@ -350,4 +367,16 @@ export const removeInheritanceForFolder = (plugin: IconFolderPlugin, folderPath:
       removeFromDOM(f.path);
     }
   });
+};
+
+export const isEmoji = (str: string): boolean => {
+  const ranges = [
+    '(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])', // U+1F680 to U+1F6FF
+  ];
+
+  if (str.match(ranges.join('|'))) {
+    return true;
+  } else {
+    return false;
+  }
 };
