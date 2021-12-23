@@ -20,7 +20,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     this.inputEl.addEventListener('input', (e) => {
       const inputVal = (e.target as HTMLInputElement).value;
       if (isEmoji(inputVal)) {
-        this.resultContainerEl.querySelector('.suggestion-empty').remove();
+        this.resultContainerEl.empty();
 
         const suggestionItem = this.resultContainerEl.createDiv();
         suggestionItem.className = 'suggestion-item';
@@ -45,7 +45,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   getItemText(item: Icon): string {
-    return `${item.name.substr(2)} (${item.prefix})`;
+    return `${item.name.substring(2)} (${item.prefix})`;
   }
 
   getItems(): Icon[] {
@@ -53,7 +53,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     for (const icon of getEnabledIcons(this.plugin)) {
       iconKeys.push({
         name: icon,
-        prefix: icon.substr(0, 2),
+        prefix: icon.substring(0, 2),
       });
     }
 
