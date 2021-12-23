@@ -3,6 +3,8 @@ import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
 import { addToDOM, getEnabledIcons, getIcon, isEmoji } from './util';
 
+type EnterScope = (() => void) | ((e: KeyboardEvent) => void);
+
 export interface Icon {
   name: string;
   prefix: string;
@@ -12,10 +14,14 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   private plugin: IconFolderPlugin;
   private path: string;
 
+  private oldEnterFunc: (e: KeyboardEvent) => void;
+
   constructor(app: App, plugin: IconFolderPlugin, path: string) {
     super(app);
     this.plugin = plugin;
     this.path = path;
+
+    this.oldEnterFunc = (this.scope as any).keys.find((e: any) => e.key === 'Enter').func;
   }
 
   onNoSuggestion(): void {
@@ -25,16 +31,25 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       this.resultContainerEl.empty();
 
       const suggestionItem = this.resultContainerEl.createDiv();
-      suggestionItem.className = 'suggestion-item';
+      suggestionItem.className = 'suggestion-item is-selected';
       suggestionItem.textContent = 'Use twemoji Emoji';
       suggestionItem.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${twemoji.parse(inputVal)}</div>`;
+
+      this.setEnterScope(() => {
+        this.selectTwemoji(inputVal);
+      });
+
       suggestionItem.addEventListener('click', () => {
-        const codepoint = twemoji.convert.toCodePoint(inputVal);
-        this.onChooseItem(codepoint);
-        this.close();
+        this.selectTwemoji(inputVal);
       });
       this.resultContainerEl.appendChild(suggestionItem);
     }
+  }
+
+  private selectTwemoji(inputVal: string): void {
+    const codepoint = twemoji.convert.toCodePoint(inputVal);
+    this.onChooseItem(codepoint);
+    this.close();
   }
 
   onOpen() {
@@ -74,8 +89,20 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   renderSuggestion(item: FuzzyMatch<Icon>, el: HTMLElement): void {
     super.renderSuggestion(item, el);
 
+    if (this.getEnterScope() !== this.oldEnterFunc) {
+      this.setEnterScope(this.oldEnterFunc);
+    }
+
     if (item.item.name !== 'default') {
       el.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${getIcon(item.item.name)}</div>`;
     }
+  }
+
+  private setEnterScope(func: EnterScope): void {
+    (this.scope as any).keys.find((e: any) => e.key === 'Enter').func = func;
+  }
+
+  private getEnterScope(): EnterScope {
+    return (this.scope as any).keys.find((e: any) => e.key === 'Enter').func;
   }
 }
