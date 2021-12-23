@@ -12,6 +12,11 @@
   margin-top: 7px;
 }
 
+.obsidian-icon-folder-icon-preview img {
+  width: 16px;
+  height: 16px;
+}
+
 .obsidian-icon-folder-setting .setting-item-control .dropdown {
   margin-right: 12px;
 }

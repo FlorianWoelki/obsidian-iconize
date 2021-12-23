@@ -16,23 +16,25 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     super(app);
     this.plugin = plugin;
     this.path = path;
+  }
 
-    this.inputEl.addEventListener('input', (e) => {
-      const inputVal = (e.target as HTMLInputElement).value;
-      if (isEmoji(inputVal)) {
-        this.resultContainerEl.empty();
+  onNoSuggestion(): void {
+    super.onNoSuggestion();
+    const inputVal = this.inputEl.value;
+    if (isEmoji(inputVal)) {
+      this.resultContainerEl.empty();
 
-        const suggestionItem = this.resultContainerEl.createDiv();
-        suggestionItem.className = 'suggestion-item';
-        suggestionItem.textContent = 'Use twemoji Emoji';
-        suggestionItem.addEventListener('click', () => {
-          const codepoint = twemoji.convert.toCodePoint(inputVal);
-          this.onChooseItem(codepoint);
-          this.close();
-        });
-        this.resultContainerEl.appendChild(suggestionItem);
-      }
-    });
+      const suggestionItem = this.resultContainerEl.createDiv();
+      suggestionItem.className = 'suggestion-item';
+      suggestionItem.textContent = 'Use twemoji Emoji';
+      suggestionItem.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${twemoji.parse(inputVal)}</div>`;
+      suggestionItem.addEventListener('click', () => {
+        const codepoint = twemoji.convert.toCodePoint(inputVal);
+        this.onChooseItem(codepoint);
+        this.close();
+      });
+      this.resultContainerEl.appendChild(suggestionItem);
+    }
   }
 
   onOpen() {
