@@ -107,7 +107,16 @@ export const getIcon = (name: string): string | null => {
 export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: HTMLElement): string => {
   // Allow custom font size
   const sizeRe = new RegExp(/width="\d+" height="\d+"/g);
-  icon = icon.replace(sizeRe, `width="${plugin.getSettings().fontSize}" height="${plugin.getSettings().fontSize}"`);
+  if (icon.match(sizeRe)) {
+    icon = icon.replace(sizeRe, `width="${plugin.getSettings().fontSize}" height="${plugin.getSettings().fontSize}"`);
+  } else {
+    // If match is null, it should be an image.
+    const sizeRe = new RegExp(/width="\d+px" height="\d+px"/g);
+    icon = icon.replace(
+      sizeRe,
+      `width="${plugin.getSettings().fontSize}px" height="${plugin.getSettings().fontSize}px"`,
+    );
+  }
 
   // Allow custom icon color
   const colorRe = new RegExp(/fill="(\w|#)+"/g);
