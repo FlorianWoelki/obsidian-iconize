@@ -5,6 +5,7 @@ This obsidian plugin allows you to add icons to your folder or icon if you want.
 Right now, the current iconsets are supported:
 * [Remixicon](https://remixicon.com/)
 * [Fontawesome](https://fontawesome.com/)
+* [Twemoji](https://github.com/twitter/twemoji)
 
 ## How it will look like
 
@@ -14,7 +15,15 @@ This is how your folders can look like:
 
 ## How to use
 
-It is pretty simple to add a icon to your folder:
+There are different functionalities of displaying an icon for your folder.. We will go over them in this section.
+
+In general, there are different icon sets, you can enable or disable. You can find these options in the settings of the plugin.
+
+In addition, you can adjust some styling settings for all the icons like padding, color, or even the icon size.
+
+### Changing icon of the folder
+
+It is pretty simple to add an icon to your folder:
 
 1. Right click on the folder where you want to add an icon
 2. Select the `Change Icon` menu item (prefixed with a `#` icon)
@@ -22,11 +31,9 @@ It is pretty simple to add a icon to your folder:
 
 To delete an icon, you just need to click on the `Delete Icon` (prefixed with a `trash` icon) menu item.
 
-To enable other icon sets, go to settings and enable or disable your wanted icons.
+### Inherit Icon
 
-In addition, you can adjust some styling settings for all the icons like padding, color, or even the icon size.
-
-Furthermore, there is now an option to add a `inherit icon` functionality. Whenever you select this option for a specific folder, every single file will have this inherited icon.
+### Using Twemoji for Emojis as folders
 
 ## Development
 
