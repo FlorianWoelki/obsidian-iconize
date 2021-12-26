@@ -2,7 +2,21 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
-#### [1.0.4](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.22...1.0.4)
+#### [1.0.5](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.22...1.0.5)
+
+- Added Grid styles for search modal [`#20`](https://github.com/FlorianWoelki/obsidian-icon-folder/pull/20)
+- feat: add first functionality for twemoji (#17) [`90f9dbe`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/90f9dbe6064bced864dfb025e5c9bc6e72eee967)
+- feat: add functionality for inheriting icons [`f726742`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/f72674214efac6e387681c2c112f421f623e5a50)
+- fix: issue with styling new modal design [`230441a`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/230441a7bfd4247af47d1b622d703e14bf6a4649)
+- feat: add preview for twemoji [`e450cba`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/e450cbaca79ad945d5fda97ae41221ae4a616d75)
+- feat: add enter functionality for emojis [`7a5c1c9`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/7a5c1c964b2a12ccd7648c36c59e7ecbde6b0485)
+- docs: update readme for better future usage [`cbdab51`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/cbdab51df83dd5e5281b20eb5d86c5e5bf526d05)
+- fix: style issue with twemoji in modal [`1c6da2f`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/1c6da2f6e29052cbeb82c59fccca705b29553e92)
+- fix: set limit for performance of modal [`1b5ad32`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/1b5ad326c9231ce0e3bae26fcd84724b66c2d3c0)
+
+#### [1.0.4](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.3...1.0.4)
+
+> 21 December 2021
 
 - feat: add functionality for inheriting icons [`f726742`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/f72674214efac6e387681c2c112f421f623e5a50)
 - refactor: inheritance functionality to custom file [`c053b87`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/c053b871d00cca3f584341da4c4a258b54f49610)
@@ -49,17 +63,6 @@ All notable changes to this project will be documented in this file. Dates are d
 - revert: bump to 1.0.22 [`2915a82`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/2915a8214d0c7ac28f2dc450925dfee3306cca2d)
 - fix: issue with generating remixicons pack [`5ff365d`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/5ff365d43149560ad07886f4adf626c795912cca)
 - build: bump to version v1.0.22 [`f6d9e07`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/f6d9e07b95256240aff7a95563d41f912e453760)
-
-#### [1.0.22](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.21...1.0.22)
-
-> 22 October 2021
-
-- fix: issue with duplicated icons while updating [`c38844a`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/c38844a23a3a3e803387936356de5392fa718953)
-- build: bump to version v1.0.22 [`f6d9e07`](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/f6d9e07b95256240aff7a95563d41f912e453760)
-
-#### [1.0.21](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.3...1.0.21)
-
-> 21 October 2021
 
 #### [1.0.2](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.0.1...1.0.2)
 
