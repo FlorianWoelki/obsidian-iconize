@@ -32,7 +32,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       this.resultContainerEl.empty();
 
       const suggestionItem = this.resultContainerEl.createDiv();
-      suggestionItem.className = 'suggestion-item is-selected';
+      suggestionItem.className = 'suggestion-item suggestion-item__center is-selected';
       suggestionItem.textContent = 'Use twemoji Emoji';
       suggestionItem.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${twemoji.parse(inputVal)}</div>`;
 
