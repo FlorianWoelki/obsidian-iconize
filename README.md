@@ -33,7 +33,24 @@ To delete an icon, you just need to click on the `Delete Icon` (prefixed with a 
 
 ### Inherit Icon
 
+This functionality lets you define an `inherit icon` for a specific folder. When you add a file to this folder, the created file will inherit this icon. In addition, all files in the folder will have this specific inherited icon.
+
+To apply an inherited icon:
+
+1. Right-click the folder
+2. Use the `Inherit icon` menu entry
+3. For removing: just right-click again and click `Remove inherit icon`
+
 ### Using Twemoji for Emojis as folders
+
+[Twemoji](https://github.com/twitter/twemoji) is a popular library to add universal emojis to your application. With the help of this library, you can now set an emoji as your folder icon. Just follow these steps:
+
+1. Right-click the folder
+2. Click `Change icon`
+3. Open your OS-specific emoji dialog
+    1. Mac OSX: `Control + Command + Space`
+    2. Windows: `Windows + ;`
+4. Select the option `Use twemoji emoji`
 
 ## Development
 
