@@ -22,6 +22,8 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     this.path = path;
     this.limit = 150;
 
+    this.resultContainerEl.classList.add('obsidian-icon-folder-modal');
+
     this.oldEnterFunc = (this.scope as any).keys.find((e: any) => e.key === 'Enter').func;
   }
 
