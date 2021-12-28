@@ -325,7 +325,7 @@ const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElem
   if (possibleIcon) {
     node.innerHTML = customizeIconStyle(plugin, possibleIcon, node);
   } else {
-    const emoji = twemoji.parse(twemoji.convert.fromCodePoint(icon), {
+    const emoji = twemoji.parse(icon, {
       folder: 'svg',
       ext: '.svg',
       attributes: () => ({

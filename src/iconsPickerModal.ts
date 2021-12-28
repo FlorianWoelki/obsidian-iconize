@@ -50,8 +50,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   private selectTwemoji(inputVal: string): void {
-    const codepoint = twemoji.convert.toCodePoint(inputVal);
-    this.onChooseItem(codepoint);
+    this.onChooseItem(inputVal);
     this.close();
   }
 
