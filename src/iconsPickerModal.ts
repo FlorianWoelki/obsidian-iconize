@@ -96,7 +96,9 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     }
 
     if (item.item.name !== 'default') {
-      el.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${getIcon(item.item.name)}</div>`;
+      el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${getIcon(
+        item.item.name,
+      )}</div>`;
     }
   }
 
