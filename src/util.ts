@@ -321,7 +321,13 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string): 
  * @param {HTMLElement} node - The element where the icon will be inserted.
  */
 const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement): void => {
+  // Check for earlier versions (related to issue #30).
+  if (icon.substring(0, 4) === 'RiRi') {
+    icon = icon.substring(2);
+  }
+
   const possibleIcon = getIcon(icon);
+
   if (possibleIcon) {
     node.innerHTML = customizeIconStyle(plugin, possibleIcon, node);
   } else {
