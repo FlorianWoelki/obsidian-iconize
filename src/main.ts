@@ -208,6 +208,13 @@ export default class IconFolderPlugin extends Plugin {
 
   async loadIconFolderData(): Promise<void> {
     const data = await this.loadData();
+    if (data) {
+      Object.entries(DEFAULT_SETTINGS).forEach(([k, v]) => {
+        if (!data.settings[k]) {
+          data.settings[k] = v;
+        }
+      });
+    }
     this.data = Object.assign({ settings: { ...DEFAULT_SETTINGS } }, {}, data);
   }
 
