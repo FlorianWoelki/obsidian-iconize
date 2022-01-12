@@ -16,11 +16,17 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   private oldEnterFunc: (e: KeyboardEvent) => void;
 
+  private renderIndex: number = 0;
+  private lastRenderedRecentlyIcon: HTMLElement;
+
+  private recentlyUsedItems: string[];
+
   constructor(app: App, plugin: IconFolderPlugin, path: string) {
     super(app);
     this.plugin = plugin;
     this.path = path;
     this.limit = 150;
+    this.recentlyUsedItems = plugin.getSettings().recentlyUsedIcons;
 
     this.resultContainerEl.classList.add('obsidian-icon-folder-modal');
 
@@ -69,6 +75,17 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   getItems(): Icon[] {
     const iconKeys: Icon[] = [];
+
+    if (this.inputEl.value.length === 0) {
+      this.renderIndex = 0;
+      this.recentlyUsedItems.forEach((iconName) => {
+        iconKeys.push({
+          name: iconName,
+          prefix: iconName.substring(0, 2),
+        });
+      });
+    }
+
     for (const icon of getEnabledIcons(this.plugin)) {
       iconKeys.push({
         name: icon,
@@ -91,6 +108,21 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   renderSuggestion(item: FuzzyMatch<Icon>, el: HTMLElement): void {
     super.renderSuggestion(item, el);
 
+    // Render subheadlines for modal.
+    if (this.recentlyUsedItems.length !== 0 && this.inputEl.value.length === 0) {
+      if (this.renderIndex === 0) {
+        const subheadline = this.resultContainerEl.createDiv();
+        subheadline.classList.add('obsidian-icon-folder-subheadline');
+        subheadline.innerText = 'Recently used Icons:';
+        this.resultContainerEl.prepend(subheadline);
+      } else if (this.renderIndex === this.recentlyUsedItems.length) {
+        const subheadline = this.containerEl.createDiv();
+        subheadline.classList.add('obsidian-icon-folder-subheadline');
+        subheadline.innerText = 'All Icons:';
+        subheadline.insertAfter(this.lastRenderedRecentlyIcon);
+      }
+    }
+
     if (this.getEnterScope() !== this.oldEnterFunc) {
       this.setEnterScope(this.oldEnterFunc);
     }
@@ -100,6 +132,9 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
         item.item.name,
       )}</div>`;
     }
+
+    this.lastRenderedRecentlyIcon = el;
+    this.renderIndex++;
   }
 
   private setEnterScope(func: EnterScope): void {
