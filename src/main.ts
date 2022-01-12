@@ -19,10 +19,21 @@ export default class IconFolderPlugin extends Plugin {
   private data: Record<string, string | IconFolderSettings | FolderIconObject>;
   private registeredFileExplorers = new WeakMap();
 
+  private async checkRecentlyUsedIcons(): Promise<void> {
+    if (this.getSettings().recentlyUsedIcons.length > this.getSettings().recentlyUsedIconsSize) {
+      this.getSettings().recentlyUsedIcons = this.getSettings().recentlyUsedIcons.slice(
+        0,
+        this.getSettings().recentlyUsedIconsSize,
+      );
+      await this.saveIconFolderData();
+    }
+  }
+
   async onload() {
     console.log('loading obsidian-icon-folder');
 
     await this.loadIconFolderData();
+    await this.checkRecentlyUsedIcons();
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
     this.registerEvent(this.app.workspace.on('layout-change', () => this.handleChangeLayout()));
@@ -198,7 +209,17 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   addFolderIcon(path: string, icon: Icon | string): void {
-    this.data[path] = typeof icon === 'object' ? icon.name : icon;
+    const iconName = typeof icon === 'object' ? icon.name : icon;
+    this.data[path] = iconName;
+    if (!this.getSettings().recentlyUsedIcons.includes(iconName)) {
+      if (this.getSettings().recentlyUsedIcons.length >= this.getSettings().recentlyUsedIconsSize) {
+        this.getSettings().recentlyUsedIcons.pop();
+      }
+
+      this.getSettings().recentlyUsedIcons.unshift(iconName);
+      this.checkRecentlyUsedIcons();
+    }
+
     this.saveIconFolderData();
   }
 

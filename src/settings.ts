@@ -15,6 +15,7 @@ export interface IconFolderSettings {
   iconColor: string | null;
   extraPadding: ExtraPaddingSettings;
   recentlyUsedIcons: string[];
+  recentlyUsedIconsSize: number;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -26,6 +27,7 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   fontSize: 16,
   iconColor: null,
   recentlyUsedIcons: [],
+  recentlyUsedIconsSize: 5,
   extraPadding: {
     top: 2,
     right: 2,
