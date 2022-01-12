@@ -1,7 +1,7 @@
 import { addIcon, App, DropdownComponent, PluginSettingTab, Setting, SliderComponent } from 'obsidian';
 import { ColorPickerComponent } from './colorPickerComponent';
 import IconFolderPlugin from './main';
-import { ExtraPaddingSettings } from './settings';
+import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
 import { refreshIconStyle } from './util';
 
 export default class IconFolderSettingsTab extends PluginSettingTab {
@@ -18,6 +18,21 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
 
     containerEl.empty();
     containerEl.createEl('h2', { text: 'Icon Folder Settings' });
+
+    new Setting(containerEl)
+      .setName('Recently used Icons limit')
+      .setDesc('Change the limit for the recently used icons displayed in the icon modal.')
+      .addSlider((slider) => {
+        slider
+          .setLimits(1, 15, 1)
+          .setDynamicTooltip()
+          .setValue(this.plugin.getSettings().recentlyUsedIconsSize ?? DEFAULT_SETTINGS.recentlyUsedIconsSize)
+          .onChange(async (val) => {
+            this.plugin.getSettings().recentlyUsedIconsSize = val;
+            await this.plugin.checkRecentlyUsedIcons();
+            await this.plugin.saveIconFolderData();
+          });
+      });
 
     containerEl.createEl('h3', { text: 'Icon Packs' });
 
@@ -80,7 +95,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
         slider
           .setLimits(10, 24, 1)
           .setDynamicTooltip()
-          .setValue(this.plugin.getSettings().fontSize ?? 16)
+          .setValue(this.plugin.getSettings().fontSize ?? DEFAULT_SETTINGS.fontSize)
           .onChange(async (val) => {
             this.plugin.getSettings().fontSize = val;
             await this.plugin.saveIconFolderData();

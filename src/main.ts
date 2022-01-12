@@ -19,16 +19,6 @@ export default class IconFolderPlugin extends Plugin {
   private data: Record<string, string | IconFolderSettings | FolderIconObject>;
   private registeredFileExplorers = new WeakMap();
 
-  private async checkRecentlyUsedIcons(): Promise<void> {
-    if (this.getSettings().recentlyUsedIcons.length > this.getSettings().recentlyUsedIconsSize) {
-      this.getSettings().recentlyUsedIcons = this.getSettings().recentlyUsedIcons.slice(
-        0,
-        this.getSettings().recentlyUsedIconsSize,
-      );
-      await this.saveIconFolderData();
-    }
-  }
-
   async onload() {
     console.log('loading obsidian-icon-folder');
 
@@ -241,6 +231,16 @@ export default class IconFolderPlugin extends Plugin {
 
   async saveIconFolderData(): Promise<void> {
     await this.saveData(this.data);
+  }
+
+  async checkRecentlyUsedIcons(): Promise<void> {
+    if (this.getSettings().recentlyUsedIcons.length > this.getSettings().recentlyUsedIconsSize) {
+      this.getSettings().recentlyUsedIcons = this.getSettings().recentlyUsedIcons.slice(
+        0,
+        this.getSettings().recentlyUsedIconsSize,
+      );
+      await this.saveIconFolderData();
+    }
   }
 
   getData(): Record<string, string | IconFolderSettings | FolderIconObject> {
