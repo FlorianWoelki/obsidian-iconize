@@ -13,7 +13,7 @@
   margin: 0;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .prompt .obsidian-icon-folder-subheadline {
