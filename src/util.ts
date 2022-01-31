@@ -171,6 +171,11 @@ export const addIconsToDOM = (
         if (titleEl.children.length === 2 || titleEl.children.length === 1) {
           const iconName = typeof value === 'string' ? value : value.iconName;
           if (iconName) {
+            const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
+            if (existingIcon) {
+              existingIcon.remove();
+            }
+
             const iconNode = titleEl.createDiv();
             iconNode.classList.add('obsidian-icon-folder-icon');
 
