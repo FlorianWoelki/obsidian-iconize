@@ -77,9 +77,9 @@ This command will automatically build the neccesary files for testing and develo
 
 Also, make sure that you copy the built files into the the plugins directory.
 
-For example (command for OSX):
+For example:
 ```sh
-$ cp main.js manifest.json src/styles.css /Users/<user>/Library/Mobile\ Documents/iCloud\~md\~obsidian/Documents/Second\ Brain/.obsidian/plugins/obsidian-icon-folder
+$ cp main.js manifest.json src/styles.css /<path-to-obsidian-vault>/.obsidian/plugins/obsidian-icon-folder
 ```
 
 Finally, you can customize the plugin and add it to your plugins.
