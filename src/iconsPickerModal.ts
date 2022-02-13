@@ -128,9 +128,16 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     }
 
     if (item.item.name !== 'default') {
-      el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${getIcon(
-        item.item.name,
-      )}</div>`;
+      const possibleEmoji = el.innerHTML.trim().replace(/\(|\)/gi, '');
+      if (isEmoji(possibleEmoji)) {
+        el.innerHTML = `<div>Twemoji</div><div class="obsidian-icon-folder-icon-preview">${twemoji.parse(
+          possibleEmoji,
+        )}</div>`;
+      } else {
+        el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${getIcon(
+          item.item.name,
+        )}</div>`;
+      }
     }
 
     this.lastRenderedRecentlyIcon = el;
