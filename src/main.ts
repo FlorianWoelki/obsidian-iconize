@@ -113,13 +113,13 @@ export default class IconFolderPlugin extends Plugin {
       const file = child.file as TFile;
       const collapseEl = child.collapseEl as HTMLElement;
 
+      const existingIcon = child.containerEl.querySelector('.obsidian-icon-folder-icon');
+      if (existingIcon) {
+        existingIcon.remove();
+      }
+
       const iconName = this.data[file.path] as string | undefined;
       if (iconName) {
-        const existingIcon = child.containerEl.querySelector('.obsidian-icon-folder-icon');
-        if (existingIcon) {
-          existingIcon.remove();
-        }
-
         const iconNode = child.containerEl.createDiv();
         iconNode.classList.add('obsidian-icon-folder-icon');
 
@@ -227,6 +227,7 @@ export default class IconFolderPlugin extends Plugin {
       delete this.data[path];
     }
 
+    this.addIconsToSearch();
     this.saveIconFolderData();
   }
 
@@ -242,6 +243,7 @@ export default class IconFolderPlugin extends Plugin {
       this.checkRecentlyUsedIcons();
     }
 
+    this.addIconsToSearch();
     this.saveIconFolderData();
   }
 
