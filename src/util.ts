@@ -325,7 +325,7 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string): 
  * @param {string} icon - The icon string (can be an icon id or a unicode for twemoji).
  * @param {HTMLElement} node - The element where the icon will be inserted.
  */
-const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement): void => {
+export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement): void => {
   // Check for earlier versions (related to issue #30).
   if (icon.substring(0, 4) === 'RiRi') {
     icon = icon.substring(2);
