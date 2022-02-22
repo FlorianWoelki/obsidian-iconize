@@ -1,4 +1,5 @@
 import { Plugin, MenuItem, TFile } from 'obsidian';
+import { ExplorerView } from './@types/obsidian';
 import IconFolderSettingsTab from './iconFolderSettingsTab';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, IconFolderSettings } from './settings';
@@ -102,34 +103,40 @@ export default class IconFolderPlugin extends Plugin {
     this.addSettingTab(new IconFolderSettingsTab(this.app, this));
   }
 
+  private getSearchLeave(): ExplorerView {
+    return this.app.workspace.getLeavesOfType('search')[0].view;
+  }
+
+  private addIconsToSearch(): void {
+    const searchLeaveDom = this.getSearchLeave().dom;
+    searchLeaveDom.children.forEach((child) => {
+      const file = child.file as TFile;
+      const collapseEl = child.collapseEl as HTMLElement;
+
+      const iconName = this.data[file.path] as string | undefined;
+      if (iconName) {
+        const existingIcon = child.containerEl.querySelector('.obsidian-icon-folder-icon');
+        if (existingIcon) {
+          existingIcon.remove();
+        }
+
+        const iconNode = child.containerEl.createDiv();
+        iconNode.classList.add('obsidian-icon-folder-icon');
+
+        insertIconToNode(this, this.data[file.path] as string, iconNode);
+
+        iconNode.insertAfter(collapseEl);
+      }
+    });
+  }
+
   private handleChangeLayout(): void {
     // transform data that are objects to single strings
     const data = Object.entries(this.data) as [string, string | FolderIconObject][];
 
     addIconsToDOM(this, data, this.registeredFileExplorers, () => {
-      // @ts-ignore
-      const searchLeaveDom = this.app.workspace.getLeavesOfType('search')[0].view.dom;
-      searchLeaveDom.changed = () => {
-        searchLeaveDom.children.forEach((child: any) => {
-          const file = child.file as TFile;
-          const collapseEl = child.collapseEl as HTMLElement;
-
-          const iconName = this.data[file.path] as string | undefined;
-          if (iconName) {
-            const existingIcon = child.containerEl.querySelector('.obsidian-icon-folder-icon');
-            if (existingIcon) {
-              existingIcon.remove();
-            }
-
-            const iconNode = child.containerEl.createDiv();
-            iconNode.classList.add('obsidian-icon-folder-icon');
-
-            insertIconToNode(this, this.data[file.path] as string, iconNode);
-
-            iconNode.insertAfter(collapseEl);
-          }
-        });
-      };
+      const searchLeaveDom = this.getSearchLeave().dom;
+      searchLeaveDom.changed = () => this.addIconsToSearch();
 
       // register create event for checking inheritance functionality
       this.registerEvent(
