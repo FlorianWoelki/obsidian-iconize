@@ -7,6 +7,7 @@ const svgPathRegex = /<path\s([^>]*)>/g;
 const svgAttrRegex = /(?:\s*|^)([^= ]*)="([^"]*)"/g;
 const svgViewboxRegex = /viewBox="([^"]*)"/g;
 const validIconName = /^[A-Z]/;
+const svgContentRegex = /<svg.*>(.*?)<\/svg>/g;
 
 function normalizeName(name) {
   return name
@@ -18,27 +19,20 @@ function normalizeName(name) {
 }
 
 function checkAllowedAttr(attr, value) {
-  if (attr === 'd') {
+  /*if (attr === 'd') {
     return true;
   }
   if (attr === 'fill') {
-    if (value === 'none') {
-      // will be filtered out
-      return true;
-    }
-    if (value === '#000') {
-      // default value
-      return true;
-    }
-  }
-  if (attr === 'fill-rule' && value === 'nonzero') {
-    // default value
     return true;
   }
-  return false;
+  if (attr === 'fill-rule' && (value === 'nonzero' || value === 'evenodd')) {
+    // default value
+    return true;
+  }*/
+  return true;
 }
 
-function extractPath(content, name) {
+function extractPaths(content, name) {
   const allPaths = [];
   while (true) {
     const svgPathMatches = svgPathRegex.exec(content);
@@ -62,12 +56,12 @@ function extractPath(content, name) {
     }
     allPaths.push(attrs);
   }
-  if (allPaths.length !== 1 || !allPaths[0].d) {
+  /*if (allPaths.length !== 1 || !allPaths[0].d) {
     throw new Error(
       `Wrong number of path in ${name}: ${allPaths.length}\n` + `${JSON.stringify(allPaths, undefined, 2)}\n${content}`,
     );
-  }
-  return allPaths[0].d;
+  }*/
+  return allPaths;
 }
 
 function collectComponents(svgFilesPath, extraPrefix) {
@@ -84,6 +78,11 @@ function collectComponents(svgFilesPath, extraPrefix) {
       continue;
     }
 
+    if (!svgFile.endsWith('.svg')) {
+      console.log(`skipping icon with invalid file path: ${svgFilePath}`);
+      continue;
+    }
+
     const origName = svgFile.slice(0, -4);
     const name = normalizeName(origName);
 
@@ -93,20 +92,25 @@ function collectComponents(svgFilesPath, extraPrefix) {
     }
 
     const content = fs.readFileSync(svgFilePath);
-    let svgPath;
+    let svgPaths;
     try {
-      svgPath = extractPath(content, svgFilePath);
+      svgPaths = extractPaths(content, svgFilePath);
     } catch (err) {
       console.log(err);
-      continue;
+      return;
     }
 
-    let svgViewbox = content.toString().match(svgViewboxRegex)[0];
+    const svgViewbox = content.toString().match(svgViewboxRegex)[0];
+    const svgContent = content
+      .toString()
+      .match(svgContentRegex)
+      .map((val) => val.replace(/<\/?svg>/g, ''))[0];
 
     const icon = {
       name: name + extraPrefix,
       fileName: name + extraPrefix + '.js',
-      svgPath,
+      svgPath: svgPaths.length === 1 ? svgPaths[0].d : svgPaths,
+      svgContent,
       svgViewbox,
     };
 
@@ -139,8 +143,17 @@ async function generate(iconpackPath, iconpackName, extraPrefix = '') {
       console.log(`generating alias ${component.name}... (${index + 1}/${components.length})`);
     }
 
-    const fileContent = `const ${component.name} = '<svg width="16" height="16" fill="currentColor" ${component.svgViewbox}><path d="${component.svgPath}" /></svg>';
-export { ${component.name} };`;
+    let fileContent = '';
+    if (typeof component.svgPath === 'object') {
+      fileContent = `const ${component.name} = \`<svg width="16" height="16" ${component.svgViewbox}>${component.svgContent}</svg>\`;
+  export { ${component.name} };`;
+    } else {
+      fileContent = `const ${component.name} = '<svg width="16" height="16" ${
+        component.svgPath.includes('fill=') ? '' : 'fill="currentColor"'
+      } ${component.svgViewbox}><path d="${component.svgPath}" /></svg>';
+  export { ${component.name} };`;
+    }
+
     const inputPath = path.resolve(buildPath, component.fileName.toLowerCase());
     const outputPath = path.resolve(publishPath, component.fileName.toLowerCase());
 
@@ -176,8 +189,9 @@ export { ${component.name} };`;
 }
 
 (async () => {
-  await generate('node_modules/remixicon/icons', 'remixicons');
+  /*await generate('node_modules/remixicon/icons', 'remixicons');
   await generate('node_modules/@fortawesome/fontawesome-free/svgs/regular', 'fontawesome', 'Line');
   await generate('node_modules/@fortawesome/fontawesome-free/svgs/solid', 'fontawesome', 'Fill');
-  await generate('node_modules/@fortawesome/fontawesome-free/svgs/brands', 'fontawesome', 'Brands');
+  await generate('node_modules/@fortawesome/fontawesome-free/svgs/brands', 'fontawesome', 'Brands');*/
+  await generate('node_modules/devicon/icons', 'devicon');
 })();
