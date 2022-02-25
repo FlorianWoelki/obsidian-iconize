@@ -781,6 +781,11 @@ deepmerge@^4.2.2:
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.2.2.tgz#44d2ea3679b8f4d4ffba33f03d865fc1e7bf4955"
   integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
 
+devicon@^2.14.0:
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/devicon/-/devicon-2.14.0.tgz#d54d7baad383ecd569318893b9f24081cfab5964"
+  integrity sha512-kfQtBO8kuFInbdAm4tPjrS5Jr7W1fmE1G6sUaEoftucMJYt5M0qps/wZ85GEPhh4A+UKxDUSSNmPmqvYrG0oVA==
+
 diff@^4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"

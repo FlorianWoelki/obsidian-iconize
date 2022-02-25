@@ -108,6 +108,7 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   private addIconsToSearch(): void {
+    console.log(this.app.workspace.getLeavesOfType('backlink'));
     const searchLeaveDom = this.getSearchLeave().dom;
     searchLeaveDom.children.forEach((child) => {
       const file = child.file as TFile;

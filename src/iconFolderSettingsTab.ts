@@ -86,6 +86,16 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
         });
       });
 
+    new Setting(containerEl)
+      .setName('Enable Devicon Icons')
+      .setDesc('Enable all icons from the Devicon Icon set.')
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.getSettings().enableDevicons).onChange(async (val) => {
+          this.plugin.getSettings().enableDevicons = val;
+          await this.plugin.saveIconFolderData();
+        });
+      });
+
     containerEl.createEl('h3', { text: 'Icon Folder Customization' });
 
     new Setting(containerEl)

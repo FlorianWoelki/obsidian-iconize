@@ -1,5 +1,6 @@
 import twemoji from 'twemoji';
 import * as remixicons from '../remixicons';
+import * as devicon from '../devicon';
 import * as faLine from '../fontawesome/index-line';
 import * as faFill from '../fontawesome/index-fill';
 import * as faBrands from '../fontawesome/index-brands';
@@ -16,6 +17,7 @@ const transformedIcons = {
   faLine: Object.keys(faLine).map((iconName) => 'Fa' + iconName),
   faBrands: Object.keys(faBrands).map((iconName) => 'Fa' + iconName),
   remixIcons: Object.keys(remixicons).map((iconName) => 'Ri' + iconName),
+  deviconIcons: Object.keys(devicon).map((iconName) => 'Di' + iconName),
 };
 
 /**
@@ -62,6 +64,10 @@ export const getEnabledIcons = (plugin: IconFolderPlugin): string[] => {
     icons.push(...transformedIcons.faBrands);
   }
 
+  if (settings.enableDevicons) {
+    icons.push(...transformedIcons.deviconIcons);
+  }
+
   return icons;
 };
 
@@ -87,6 +93,8 @@ export const getIcon = (name: string): string | null => {
     }
   } else if (prefix === 'Ri') {
     iconSvg = remixicons[name.substr(2)];
+  } else if (prefix === 'Di') {
+    iconSvg = devicon[name.substr(2)];
   }
 
   return iconSvg;

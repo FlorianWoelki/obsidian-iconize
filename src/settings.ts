@@ -16,6 +16,7 @@ export interface IconFolderSettings {
   extraPadding: ExtraPaddingSettings;
   recentlyUsedIcons: string[];
   recentlyUsedIconsSize: number;
+  enableDevicons: boolean;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -24,6 +25,7 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   enableFontawesomeFill: false,
   enableFontawesomeLine: false,
   enableFontawesomeBrands: false,
+  enableDevicons: false,
   fontSize: 16,
   iconColor: null,
   recentlyUsedIcons: [],
