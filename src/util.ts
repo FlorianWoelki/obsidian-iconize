@@ -6,7 +6,7 @@ import * as faFill from '../fontawesome/index-fill';
 import * as faBrands from '../fontawesome/index-brands';
 
 import IconFolderPlugin, { FolderIconObject } from './main';
-import { ExplorerLeaf } from './@types/obsidian';
+import type { ExplorerView } from './@types/obsidian';
 import { IconFolderSettings } from './settings';
 
 /**
@@ -152,16 +152,16 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
 export const addIconsToDOM = (
   plugin: IconFolderPlugin,
   data: [string, string | FolderIconObject][],
-  registeredFileExplorers: WeakMap<ExplorerLeaf, boolean>,
+  registeredFileExplorers: WeakSet<ExplorerView>,
   callback?: () => void,
 ): void => {
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
   fileExplorers.forEach((fileExplorer) => {
-    if (registeredFileExplorers.has(fileExplorer)) {
+    if (registeredFileExplorers.has(fileExplorer.view)) {
       return;
     }
 
-    registeredFileExplorers.set(fileExplorer, true);
+    registeredFileExplorers.add(fileExplorer.view);
 
     // create a map with registered file paths to have constant look up time
     const registeredFilePaths: Record<string, boolean> = {};
@@ -219,13 +219,13 @@ export const addIconsToDOM = (
 
 export const addInheritanceIconToFile = (
   plugin: IconFolderPlugin,
-  registeredFileExplorers: WeakMap<ExplorerLeaf, boolean>,
+  registeredFileExplorers: WeakSet<ExplorerView>,
   filePath: string,
   iconName: string,
 ): void => {
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
   fileExplorers.forEach((fileExplorer) => {
-    if (registeredFileExplorers.has(fileExplorer)) {
+    if (registeredFileExplorers.has(fileExplorer.view)) {
       const fileItem = fileExplorer.view.fileItems[filePath];
       if (fileItem) {
         const iconNode = fileItem.titleEl.createDiv();
