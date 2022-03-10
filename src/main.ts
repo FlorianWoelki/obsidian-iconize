@@ -19,7 +19,7 @@ export interface FolderIconObject {
 
 export default class IconFolderPlugin extends Plugin {
   private data: Record<string, string | IconFolderSettings | FolderIconObject>;
-  private registeredFileExplorers = new WeakMap();
+  private registeredFileExplorers = new WeakSet<ExplorerView>();
 
   async onload() {
     console.log('loading obsidian-icon-folder');
