@@ -101,10 +101,10 @@ function collectComponents(svgFilesPath, extraPrefix) {
     }
 
     const svgViewbox = content.toString().match(svgViewboxRegex)[0];
-    const svgContent = content
-      .toString()
-      .match(svgContentRegex)
-      .map((val) => val.replace(/<\/?svg>/g, ''))[0];
+    let svgContent = content.toString().match(svgContentRegex);
+    if (svgContent) {
+      svgContent = svgContent.map((val) => val.replace(/<\/?svg>/g, ''))[0];
+    }
 
     const icon = {
       name: name + extraPrefix,
@@ -189,9 +189,9 @@ async function generate(iconpackPath, iconpackName, extraPrefix = '') {
 }
 
 (async () => {
-  /*await generate('node_modules/remixicon/icons', 'remixicons');
-  await generate('node_modules/@fortawesome/fontawesome-free/svgs/regular', 'fontawesome', 'Line');
+  await generate('node_modules/remixicon/icons', 'remixicons');
+  /*await generate('node_modules/@fortawesome/fontawesome-free/svgs/regular', 'fontawesome', 'Line');
   await generate('node_modules/@fortawesome/fontawesome-free/svgs/solid', 'fontawesome', 'Fill');
-  await generate('node_modules/@fortawesome/fontawesome-free/svgs/brands', 'fontawesome', 'Brands');*/
-  await generate('node_modules/devicon/icons', 'devicon');
+  await generate('node_modules/@fortawesome/fontawesome-free/svgs/brands', 'fontawesome', 'Brands');
+  await generate('node_modules/devicon/icons', 'devicon');*/
 })();
