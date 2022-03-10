@@ -2,6 +2,7 @@ import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
 import { addToDOM, getEnabledIcons, getIcon, isEmoji } from './util';
+import { getAllIconPacks } from './iconPackManager';
 
 type EnterScope = (() => void) | ((e: KeyboardEvent) => void);
 
@@ -107,6 +108,13 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   renderSuggestion(item: FuzzyMatch<Icon>, el: HTMLElement): void {
     super.renderSuggestion(item, el);
+
+    if (getAllIconPacks().length === 0) {
+      this.inputEl.disabled = true;
+      this.resultContainerEl.style.display = 'block';
+      this.resultContainerEl.innerHTML = '<div class="suggestion-empty">You need to create an icon pack.</div>';
+      return;
+    }
 
     // Render subheadlines for modal.
     if (this.recentlyUsedItems.length !== 0 && this.inputEl.value.length === 0) {
