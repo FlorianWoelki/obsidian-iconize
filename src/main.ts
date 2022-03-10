@@ -1,5 +1,6 @@
 import { Plugin, MenuItem, TFile } from 'obsidian';
 import { ExplorerView } from './@types/obsidian';
+import { initIconPacks } from './iconPackManager';
 import IconFolderSettingsTab from './iconFolderSettingsTab';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, IconFolderSettings } from './settings';
@@ -23,6 +24,8 @@ export default class IconFolderPlugin extends Plugin {
 
   async onload() {
     console.log('loading obsidian-icon-folder');
+
+    await initIconPacks(this);
 
     await this.loadIconFolderData();
     await this.checkRecentlyUsedIcons();

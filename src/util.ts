@@ -1,43 +1,7 @@
 import twemoji from 'twemoji';
-import * as remixicons from '../remixicons';
-import * as devicon from '../devicon';
-import * as faLine from '../fontawesome/index-line';
-import * as faFill from '../fontawesome/index-fill';
-import * as faBrands from '../fontawesome/index-brands';
-
 import IconFolderPlugin, { FolderIconObject } from './main';
 import type { ExplorerView } from './@types/obsidian';
-import { IconFolderSettings } from './settings';
-
-/**
- * `transformedIcons` includes all the icon packs with their corresponding prefix.
- */
-const transformedIcons = {
-  faFill: Object.keys(faFill).map((iconName) => 'Fa' + iconName),
-  faLine: Object.keys(faLine).map((iconName) => 'Fa' + iconName),
-  faBrands: Object.keys(faBrands).map((iconName) => 'Fa' + iconName),
-  remixIcons: Object.keys(remixicons).map((iconName) => 'Ri' + iconName),
-  deviconIcons: Object.keys(devicon).map((iconName) => 'Di' + iconName),
-};
-
-/**
- * This function checks whether the passed `iconName` is a `fill` or `line` icon.
- * Based on this condition it will return `true` or `false` based on the enabled settings.
- *
- * @private
- * @param {string} iconName - Represents the icon name like `RiAB`.
- * @param {IconFolderSettings} settings - The saved settings of the plugin.
- * @returns {boolean} If the icon should be included/enabled or not.
- */
-const mapRemixicons = (iconName: string, settings: IconFolderSettings): boolean => {
-  if (iconName.toLowerCase().includes('fill')) {
-    return settings.enableRemixiconsFill;
-  } else if (iconName.toLowerCase().includes('line')) {
-    return settings.enableRemixiconsLine;
-  }
-
-  return true;
-};
+import { getAllLoadedIconNames, getSvgFromLoadedIcon, Icon } from './iconPackManager';
 
 /**
  * This function returns all enabled icons.
@@ -48,9 +12,9 @@ const mapRemixicons = (iconName: string, settings: IconFolderSettings): boolean 
  * @param {IconFolderPlugin} plugin - The main plugin file.
  * @returns {string[]} The enabled icons.
  */
-export const getEnabledIcons = (plugin: IconFolderPlugin): string[] => {
+export const getEnabledIcons = (plugin: IconFolderPlugin): Icon[] => {
   const settings = plugin.getSettings();
-  const icons = transformedIcons.remixIcons.filter((key) => {
+  /*const icons = transformedIcons.remixIcons.filter((key) => {
     return mapRemixicons(key, settings);
   });
 
@@ -66,9 +30,9 @@ export const getEnabledIcons = (plugin: IconFolderPlugin): string[] => {
 
   if (settings.enableDevicons) {
     icons.push(...transformedIcons.deviconIcons);
-  }
+  }*/
 
-  return icons;
+  return getAllLoadedIconNames();
 };
 
 /**
@@ -81,23 +45,7 @@ export const getEnabledIcons = (plugin: IconFolderPlugin): string[] => {
  * @returns {string | null} The transformed svg or null if it cannot find any iconpack.
  */
 export const getIcon = (name: string): string | null => {
-  const prefix = name.substr(0, 2);
-  let iconSvg: string = null;
-  if (prefix === 'Fa') {
-    if (name.toLowerCase().substr(name.length - 4) === 'line') {
-      iconSvg = faLine[name.substr(2)];
-    } else if (name.toLowerCase().substr(name.length - 4) === 'fill') {
-      iconSvg = faFill[name.substr(2)];
-    } else {
-      iconSvg = faBrands[name.substr(2)];
-    }
-  } else if (prefix === 'Ri') {
-    iconSvg = remixicons[name.substr(2)];
-  } else if (prefix === 'Di') {
-    iconSvg = devicon[name.substr(2)];
-  }
-
-  return iconSvg;
+  return getSvgFromLoadedIcon(name);
 };
 
 /**
@@ -128,7 +76,14 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
 
   // Allow custom icon color
   const colorRe = new RegExp(/fill="(\w|#)+"/g);
-  icon = icon.replace(colorRe, `fill="${plugin.getSettings().iconColor ?? 'currentColor'}"`);
+  const colorMatch = icon.match(colorRe);
+  if (colorMatch) {
+    colorMatch.forEach((color) => {
+      if (color.contains('currentColor')) {
+        icon = icon.replace(color, `fill="${plugin.getSettings().iconColor ?? 'currentColor'}"`);
+      }
+    });
+  }
 
   // Change padding of icon
   if (plugin.getSettings().extraPadding) {
@@ -334,11 +289,6 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string): 
  * @param {HTMLElement} node - The element where the icon will be inserted.
  */
 export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement): void => {
-  // Check for earlier versions (related to issue #30).
-  if (icon.substring(0, 4) === 'RiRi') {
-    icon = icon.substring(2);
-  }
-
   const possibleIcon = getIcon(icon);
 
   if (possibleIcon) {

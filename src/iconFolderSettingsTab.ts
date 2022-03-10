@@ -1,16 +1,30 @@
-import { addIcon, App, DropdownComponent, PluginSettingTab, Setting, SliderComponent } from 'obsidian';
+import {
+  App,
+  BaseComponent,
+  DropdownComponent,
+  PluginSettingTab,
+  Setting,
+  SliderComponent,
+  TextComponent,
+} from 'obsidian';
 import { ColorPickerComponent } from './colorPickerComponent';
+import { addIconToIconPack, createFile, createIconPackDirectory, getAllIconPacks } from './iconPackManager';
 import IconFolderPlugin from './main';
 import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
 import { refreshIconStyle } from './util';
 
 export default class IconFolderSettingsTab extends PluginSettingTab {
   plugin: IconFolderPlugin;
+  textComponent: TextComponent;
 
   constructor(app: App, plugin: IconFolderPlugin) {
     super(app, plugin);
 
     this.plugin = plugin;
+  }
+
+  private normalizeIconPackName(value: string): string {
+    return value.toLowerCase().replace(/\s/g, '-');
   }
 
   display(): void {
@@ -37,64 +51,55 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
     containerEl.createEl('h3', { text: 'Icon Packs' });
 
     new Setting(containerEl)
-      .setName('Enable Remix Icons (Line)')
-      .setDesc('Enables all line variants from the Remix Icon set.')
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.getSettings().enableRemixiconsLine).onChange(async (val) => {
-          this.plugin.getSettings().enableRemixiconsLine = val;
-          await this.plugin.saveIconFolderData();
+      .setName('Add custom icon pack')
+      .setDesc('Add a custom icon pack')
+      .addText((text) => {
+        text.setPlaceholder('Your icon pack name');
+        this.textComponent = text;
+      })
+      .addButton((btn) => {
+        btn.setButtonText('Add icon pack');
+        btn.onClick(async () => {
+          const name = this.textComponent.getValue();
+          if (name.length === 0) {
+            return;
+          }
+
+          await createIconPackDirectory(this.plugin, this.normalizeIconPackName(this.textComponent.getValue()));
+          this.textComponent.setValue('');
+          this.display();
         });
       });
 
-    new Setting(containerEl)
-      .setName('Enable Remix Icons (Fill)')
-      .setDesc('Enables all fill variants from the Remix Icon set.')
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.getSettings().enableRemixiconsFill).onChange(async (val) => {
-          this.plugin.getSettings().enableRemixiconsFill = val;
-          await this.plugin.saveIconFolderData();
+    getAllIconPacks().forEach((iconPack) => {
+      const iconPackSetting = new Setting(containerEl)
+        .setName(iconPack.name)
+        .setDesc(`Total icons: ${iconPack.icons.length}`);
+      iconPackSetting.addButton((btn) => {
+        btn.setButtonText('Add icon');
+        btn.onClick(() => {
+          const fileSelector = document.createElement('input');
+          fileSelector.setAttribute('type', 'file');
+          fileSelector.setAttribute('multiple', 'multiple');
+          fileSelector.setAttribute('accept', '.svg');
+          fileSelector.click();
+          fileSelector.onchange = (e) => {
+            const target = e.target as HTMLInputElement;
+            for (let i = 0; i < target.files.length; i++) {
+              const file = target.files[i] as File;
+              const reader = new FileReader();
+              reader.readAsText(file, 'UTF-8');
+              reader.onload = async (readerEvent) => {
+                const content = readerEvent.target.result as string;
+                await createFile(this.plugin, iconPack.name, file.name, content);
+                addIconToIconPack(iconPack.name, file.name, content);
+                iconPackSetting.setDesc(`Total icons: ${iconPack.icons.length} (added: ${file.name})`);
+              };
+            }
+          };
         });
       });
-
-    new Setting(containerEl)
-      .setName('Enable Fontawesome Icons (Fill/Solid)')
-      .setDesc('Enables all fill/solid variants from the Fontawesome Icon set.')
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.getSettings().enableFontawesomeFill).onChange(async (val) => {
-          this.plugin.getSettings().enableFontawesomeFill = val;
-          await this.plugin.saveIconFolderData();
-        });
-      });
-
-    new Setting(containerEl)
-      .setName('Enable Fontawesome Icons (Line/Regular)')
-      .setDesc('Enables all line variants from the Fontawesome Icon set.')
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.getSettings().enableFontawesomeLine).onChange(async (val) => {
-          this.plugin.getSettings().enableFontawesomeLine = val;
-          await this.plugin.saveIconFolderData();
-        });
-      });
-
-    new Setting(containerEl)
-      .setName('Enable Fontawesome Icons (Brands)')
-      .setDesc('Enables all brands variants from the Fontawesome Icon set.')
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.getSettings().enableFontawesomeBrands).onChange(async (val) => {
-          this.plugin.getSettings().enableFontawesomeBrands = val;
-          await this.plugin.saveIconFolderData();
-        });
-      });
-
-    new Setting(containerEl)
-      .setName('Enable Devicon Icons')
-      .setDesc('Enable all icons from the Devicon Icon set.')
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.getSettings().enableDevicons).onChange(async (val) => {
-          this.plugin.getSettings().enableDevicons = val;
-          await this.plugin.saveIconFolderData();
-        });
-      });
+    });
 
     containerEl.createEl('h3', { text: 'Icon Folder Customization' });
 

@@ -70,7 +70,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   getItemText(item: Icon): string {
-    return `${item.name.substring(2)} (${item.prefix})`;
+    return `${item.name} (${item.prefix})`;
   }
 
   getItems(): Icon[] {
@@ -88,8 +88,8 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
     for (const icon of getEnabledIcons(this.plugin)) {
       iconKeys.push({
-        name: icon,
-        prefix: icon.substring(0, 2),
+        name: icon.name,
+        prefix: icon.prefix,
       });
     }
 

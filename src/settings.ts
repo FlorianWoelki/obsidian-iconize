@@ -6,26 +6,14 @@ export interface ExtraPaddingSettings {
 }
 
 export interface IconFolderSettings {
-  enableRemixiconsLine: boolean;
-  enableRemixiconsFill: boolean;
-  enableFontawesomeFill: boolean;
-  enableFontawesomeLine: boolean;
-  enableFontawesomeBrands: boolean;
   fontSize: number;
   iconColor: string | null;
   extraPadding: ExtraPaddingSettings;
   recentlyUsedIcons: string[];
   recentlyUsedIconsSize: number;
-  enableDevicons: boolean;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
-  enableRemixiconsLine: true,
-  enableRemixiconsFill: false,
-  enableFontawesomeFill: false,
-  enableFontawesomeLine: false,
-  enableFontawesomeBrands: false,
-  enableDevicons: false,
   fontSize: 16,
   iconColor: null,
   recentlyUsedIcons: [],
