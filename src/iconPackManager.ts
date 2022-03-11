@@ -10,7 +10,7 @@ export interface Icon {
 }
 
 const path = '.obsidian/plugins/obsidian-icon-folder/icons';
-const iconPacks: {
+let iconPacks: {
   name: string;
   icons: Icon[];
 }[] = [];
@@ -18,6 +18,12 @@ const iconPacks: {
 export const createIconPackDirectory = async (plugin: Plugin, dir: string): Promise<void> => {
   await createDirectory(plugin, dir);
   iconPacks.push({ name: dir, icons: [] });
+};
+
+export const deleteIconPack = async (plugin: Plugin, dir: string): Promise<void> => {
+  const newIconPacks = iconPacks.filter((iconPack) => iconPack.name !== dir);
+  iconPacks = newIconPacks;
+  await plugin.app.vault.adapter.rmdir(`${path}/${dir}`, true);
 };
 
 const createDirectory = async (plugin: Plugin, dir: string): Promise<void> => {

@@ -9,7 +9,13 @@ import {
   TextComponent,
 } from 'obsidian';
 import { ColorPickerComponent } from './colorPickerComponent';
-import { addIconToIconPack, createFile, createIconPackDirectory, getAllIconPacks } from './iconPackManager';
+import {
+  addIconToIconPack,
+  createFile,
+  createIconPackDirectory,
+  deleteIconPack,
+  getAllIconPacks,
+} from './iconPackManager';
 import IconFolderPlugin from './main';
 import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
 import { refreshIconStyle } from './util';
@@ -79,7 +85,8 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
         .setName(iconPack.name)
         .setDesc(`Total icons: ${iconPack.icons.length}`);
       iconPackSetting.addButton((btn) => {
-        btn.setButtonText('Add icon');
+        btn.setIcon('create-new');
+        btn.setTooltip('Add an icon');
         btn.onClick(() => {
           const fileSelector = document.createElement('input');
           fileSelector.setAttribute('type', 'file');
@@ -101,6 +108,15 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
               };
             }
           };
+        });
+      });
+      iconPackSetting.addButton((btn) => {
+        btn.setIcon('trash');
+        btn.setTooltip('Remove the icon pack');
+        btn.onClick(async () => {
+          await deleteIconPack(this.plugin, iconPack.name);
+          this.display();
+          new Notice('Icon pack successfully deleted.');
         });
       });
     });
