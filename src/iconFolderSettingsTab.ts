@@ -2,6 +2,7 @@ import {
   App,
   BaseComponent,
   DropdownComponent,
+  Notice,
   PluginSettingTab,
   Setting,
   SliderComponent,
@@ -69,6 +70,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
           await createIconPackDirectory(this.plugin, this.normalizeIconPackName(this.textComponent.getValue()));
           this.textComponent.setValue('');
           this.display();
+          new Notice('Icon pack successfully created.');
         });
       });
 
@@ -95,6 +97,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
                 await createFile(this.plugin, iconPack.name, file.name, content);
                 addIconToIconPack(iconPack.name, file.name, content);
                 iconPackSetting.setDesc(`Total icons: ${iconPack.icons.length} (added: ${file.name})`);
+                new Notice('Icons successfully added.');
               };
             }
           };
