@@ -17,7 +17,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
 
   private dragOverElement: HTMLElement;
   private closeTimer: any;
-  private dragOpen: boolean = false;
+  private dragTargetElement: HTMLElement;
 
   constructor(app: App, plugin: IconFolderPlugin) {
     super(app, plugin);
@@ -120,10 +120,18 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
         iconPackSetting.settingEl.addEventListener(event, this.preventDefaults, false);
       });
       ['dragenter', 'dragover'].forEach((event) => {
-        iconPackSetting.settingEl.addEventListener(event, () => this.highlight(iconPackSetting.settingEl), false);
+        iconPackSetting.settingEl.addEventListener(
+          event,
+          (event) => this.highlight(event.currentTarget as HTMLElement, iconPackSetting.settingEl),
+          false,
+        );
       });
       ['dragleave', 'drop'].forEach((event) => {
-        iconPackSetting.settingEl.addEventListener(event, () => this.unhighlight(iconPackSetting.settingEl), false);
+        iconPackSetting.settingEl.addEventListener(
+          event,
+          (event) => this.unhighlight(event.currentTarget as HTMLElement, iconPackSetting.settingEl),
+          false,
+        );
       });
       iconPackSetting.settingEl.addEventListener(
         'drop',
@@ -249,22 +257,29 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
     event.stopPropagation();
   }
 
-  private highlight(el: HTMLElement): void {
+  private highlight(target: HTMLElement, el: HTMLElement): void {
     clearTimeout(this.closeTimer);
-    if (!this.dragOpen) {
+
+    if (!this.dragTargetElement) {
       el.appendChild(this.dragOverElement);
       el.classList.add('obsidian-icon-folder-dragover');
-      this.dragOpen = true;
+      this.dragTargetElement = el;
     }
   }
 
-  private unhighlight(el: HTMLElement): void {
+  private unhighlight(target: HTMLElement, el: HTMLElement): void {
+    if (this.dragTargetElement && this.dragTargetElement !== target) {
+      this.dragTargetElement.removeChild(this.dragOverElement);
+      this.dragTargetElement.classList.remove('obsidian-icon-folder-dragover');
+      this.dragTargetElement = undefined;
+    }
+
     clearTimeout(this.closeTimer);
     this.closeTimer = setTimeout(() => {
-      if (this.dragOpen) {
+      if (this.dragTargetElement) {
         el.removeChild(this.dragOverElement);
         el.classList.remove('obsidian-icon-folder-dragover');
-        this.dragOpen = false;
+        this.dragTargetElement = undefined;
       }
     }, 100);
   }
