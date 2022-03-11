@@ -1,13 +1,4 @@
-import {
-  App,
-  BaseComponent,
-  DropdownComponent,
-  Notice,
-  PluginSettingTab,
-  Setting,
-  SliderComponent,
-  TextComponent,
-} from 'obsidian';
+import { App, DropdownComponent, Notice, PluginSettingTab, Setting, SliderComponent, TextComponent } from 'obsidian';
 import { ColorPickerComponent } from './colorPickerComponent';
 import {
   addIconToIconPack,
@@ -21,13 +12,21 @@ import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
 import { refreshIconStyle } from './util';
 
 export default class IconFolderSettingsTab extends PluginSettingTab {
-  plugin: IconFolderPlugin;
-  textComponent: TextComponent;
+  private plugin: IconFolderPlugin;
+  private textComponent: TextComponent;
+
+  private dragOverElement: HTMLElement;
+  private closeTimer: any;
+  private dragOpen: boolean = false;
 
   constructor(app: App, plugin: IconFolderPlugin) {
     super(app, plugin);
 
     this.plugin = plugin;
+    this.dragOverElement = document.createElement('div');
+    this.dragOverElement.addClass('obsidian-icon-folder-dragover-el');
+    this.dragOverElement.style.display = 'hidden';
+    this.dragOverElement.innerHTML = '<p>Drop to add icon.</p>';
   }
 
   private normalizeIconPackName(value: string): string {
@@ -97,16 +96,13 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
             const target = e.target as HTMLInputElement;
             for (let i = 0; i < target.files.length; i++) {
               const file = target.files[i] as File;
-              const reader = new FileReader();
-              reader.readAsText(file, 'UTF-8');
-              reader.onload = async (readerEvent) => {
-                const content = readerEvent.target.result as string;
+              this.readFile(file, async (content) => {
                 await createFile(this.plugin, iconPack.name, file.name, content);
                 addIconToIconPack(iconPack.name, file.name, content);
                 iconPackSetting.setDesc(`Total icons: ${iconPack.icons.length} (added: ${file.name})`);
-                new Notice('Icons successfully added.');
-              };
+              });
             }
+            new Notice('Icons successfully added.');
           };
         });
       });
@@ -119,6 +115,42 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
           new Notice('Icon pack successfully deleted.');
         });
       });
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((event) => {
+        iconPackSetting.settingEl.addEventListener(event, this.preventDefaults, false);
+      });
+      ['dragenter', 'dragover'].forEach((event) => {
+        iconPackSetting.settingEl.addEventListener(event, () => this.highlight(iconPackSetting.settingEl), false);
+      });
+      ['dragleave', 'drop'].forEach((event) => {
+        iconPackSetting.settingEl.addEventListener(event, () => this.unhighlight(iconPackSetting.settingEl), false);
+      });
+      iconPackSetting.settingEl.addEventListener(
+        'drop',
+        (event) => {
+          const files = event.dataTransfer.files;
+          let successful = false;
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.type !== 'image/svg+xml') {
+              new Notice(`File ${file.name} is not a XML file.`);
+              continue;
+            }
+
+            successful = true;
+            this.readFile(file, async (content) => {
+              await createFile(this.plugin, iconPack.name, file.name, content);
+              addIconToIconPack(iconPack.name, file.name, content);
+              iconPackSetting.setDesc(`Total icons: ${iconPack.icons.length} (added: ${file.name})`);
+            });
+          }
+
+          if (successful) {
+            new Notice('Icons successfully added.');
+          }
+        },
+        false,
+      );
     });
 
     containerEl.createEl('h3', { text: 'Icon Folder Customization' });
@@ -201,5 +233,39 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
       }
     });
     extraPaddingSetting.components.push(extraPaddingDropdown, extraPaddingSlider);
+  }
+
+  private readFile(file: File, callback: (content: string) => void): void {
+    const reader = new FileReader();
+    reader.readAsText(file, 'UTF-8');
+    reader.onload = async (readerEvent) => {
+      const content = readerEvent.target.result as string;
+      callback(content);
+    };
+  }
+
+  private preventDefaults(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  private highlight(el: HTMLElement): void {
+    clearTimeout(this.closeTimer);
+    if (!this.dragOpen) {
+      el.appendChild(this.dragOverElement);
+      el.classList.add('obsidian-icon-folder-dragover');
+      this.dragOpen = true;
+    }
+  }
+
+  private unhighlight(el: HTMLElement): void {
+    clearTimeout(this.closeTimer);
+    this.closeTimer = setTimeout(() => {
+      if (this.dragOpen) {
+        el.removeChild(this.dragOverElement);
+        el.classList.remove('obsidian-icon-folder-dragover');
+        this.dragOpen = false;
+      }
+    }, 100);
   }
 }
