@@ -59,6 +59,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
       })
       .addButton((btn) => {
         btn.setButtonText('Add icon pack');
+        btn.buttonEl.style.marginLeft = '12px';
         btn.onClick(async () => {
           const name = this.textComponent.getValue();
           if (name.length === 0) {
