@@ -120,11 +120,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
         iconPackSetting.settingEl.addEventListener(event, this.preventDefaults, false);
       });
       ['dragenter', 'dragover'].forEach((event) => {
-        iconPackSetting.settingEl.addEventListener(
-          event,
-          (event) => this.highlight(event.currentTarget as HTMLElement, iconPackSetting.settingEl),
-          false,
-        );
+        iconPackSetting.settingEl.addEventListener(event, () => this.highlight(iconPackSetting.settingEl), false);
       });
       ['dragleave', 'drop'].forEach((event) => {
         iconPackSetting.settingEl.addEventListener(
@@ -257,7 +253,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
     event.stopPropagation();
   }
 
-  private highlight(target: HTMLElement, el: HTMLElement): void {
+  private highlight(el: HTMLElement): void {
     clearTimeout(this.closeTimer);
 
     if (!this.dragTargetElement) {

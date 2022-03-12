@@ -108,7 +108,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
   const svgContentMatch = content.match(svgContentRegex);
   const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, ''))[0];
 
-  const iconPackPrefix = iconPackName.substring(0, 2);
+  const iconPackPrefix = createIconPackPrefix(iconPackName);
 
   const icon: Icon = {
     name: normalizedName.split('.svg')[0],
@@ -120,6 +120,15 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
   };
 
   return icon;
+};
+
+const createIconPackPrefix = (iconPackName: string): string => {
+  if (iconPackName.includes('-')) {
+    const splitted = iconPackName.split('-');
+    return splitted[0].charAt(0) + splitted[1].charAt(0);
+  }
+
+  return iconPackName.substring(0, 2);
 };
 
 export const initIconPacks = async (plugin: Plugin): Promise<void> => {
