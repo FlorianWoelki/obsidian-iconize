@@ -125,10 +125,10 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
 const createIconPackPrefix = (iconPackName: string): string => {
   if (iconPackName.includes('-')) {
     const splitted = iconPackName.split('-');
-    return splitted[0].charAt(0) + splitted[1].charAt(0);
+    return splitted[0].charAt(0).toUpperCase() + splitted[1].charAt(0);
   }
 
-  return iconPackName.substring(0, 2);
+  return iconPackName.charAt(0).toUpperCase() + iconPackName.charAt(1);
 };
 
 export const initIconPacks = async (plugin: Plugin): Promise<void> => {
