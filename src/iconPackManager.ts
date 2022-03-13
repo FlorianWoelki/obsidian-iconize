@@ -86,6 +86,7 @@ const validIconName = /^[A-Z]/;
 const svgViewboxRegex = /viewBox="([^"]*)"/g;
 const svgContentRegex = /<svg.*>(.*?)<\/svg>/g;
 const generateIcon = (iconPackName: string, iconName: string, content: string): Icon => {
+  content = content.replace(/(\r\n|\n|\r)/gm, '');
   const normalizedName = iconName
     .split(/[ -]/g)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
