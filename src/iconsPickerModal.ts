@@ -8,6 +8,7 @@ type EnterScope = (() => void) | ((e: KeyboardEvent) => void);
 
 export interface Icon {
   name: string;
+  displayName: string;
   prefix: string;
 }
 
@@ -81,8 +82,9 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       this.renderIndex = 0;
       this.recentlyUsedItems.forEach((iconName) => {
         iconKeys.push({
-          name: iconName,
+          name: iconName.substring(2),
           prefix: iconName.substring(0, 2),
+          displayName: iconName,
         });
       });
     }
@@ -91,6 +93,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       iconKeys.push({
         name: icon.name,
         prefix: icon.prefix,
+        displayName: icon.prefix + icon.name,
       });
     }
 
@@ -99,7 +102,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   onChooseItem(item: Icon | string): void {
     if (typeof item === 'object') {
-      addToDOM(this.plugin, this.path, item.name);
+      addToDOM(this.plugin, this.path, item.displayName);
     } else {
       addToDOM(this.plugin, this.path, item);
     }

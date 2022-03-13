@@ -236,7 +236,7 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   addFolderIcon(path: string, icon: Icon | string): void {
-    const iconName = typeof icon === 'object' ? icon.name : icon;
+    const iconName = typeof icon === 'object' ? icon.displayName : icon;
     this.data[path] = iconName;
     if (!this.getSettings().recentlyUsedIcons.includes(iconName)) {
       if (this.getSettings().recentlyUsedIcons.length >= this.getSettings().recentlyUsedIconsSize) {
