@@ -1,5 +1,6 @@
 import { App, DropdownComponent, Notice, PluginSettingTab, Setting, SliderComponent, TextComponent } from 'obsidian';
 import { ColorPickerComponent } from './colorPickerComponent';
+import IconPackBrowserModal from './iconPackBrowserModal';
 import {
   addIconToIconPack,
   createFile,
@@ -55,6 +56,17 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
       });
 
     containerEl.createEl('h3', { text: 'Icon Packs' });
+
+    new Setting(containerEl)
+      .setName('Add predefined icon pack')
+      .setDesc('Add an icon pack like FontAwesome or Remixicons')
+      .addButton((btn) => {
+        btn.setButtonText('Browse icon packs');
+        btn.onClick(() => {
+          const modal = new IconPackBrowserModal(this.app, this.plugin);
+          modal.open();
+        });
+      });
 
     new Setting(containerEl)
       .setName('Add custom icon pack')
