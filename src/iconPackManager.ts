@@ -85,7 +85,11 @@ const extractPaths = (content: string) => {
 const validIconName = /^[A-Z]/;
 const svgViewboxRegex = /viewBox="([^"]*)"/g;
 const svgContentRegex = /<svg.*>(.*?)<\/svg>/g;
-const generateIcon = (iconPackName: string, iconName: string, content: string): Icon => {
+const generateIcon = (iconPackName: string, iconName: string, content: string): Icon | null => {
+  if (content.length === 0) {
+    return;
+  }
+
   content = content.replace(/(\r\n|\n|\r)/gm, '');
   const normalizedName = iconName
     .split(/[ -]/g)
@@ -94,7 +98,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
 
   if (!validIconName.exec(normalizedName)) {
     console.log(`skipping icon with invalid name: ${iconName}`);
-    return;
+    return null;
   }
 
   let svgPaths;
@@ -102,7 +106,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
     svgPaths = extractPaths(content);
   } catch (err) {
     console.log(err);
-    return;
+    return null;
   }
 
   const svgViewbox = content.match(svgViewboxRegex)[0];
@@ -161,10 +165,20 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
   }
 };
 
-export const addIconToIconPack = (iconPackName: string, iconName: string, iconContent: string): void => {
+export const addIconToIconPack = (
+  iconPackName: string,
+  iconName: string,
+  iconContent: string,
+  callback?: () => void,
+): void => {
   const icon = generateIcon(iconPackName, iconName, iconContent);
+  if (!icon) {
+    return;
+  }
+
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   iconPack.icons.push(icon);
+  callback();
 };
 
 export const getAllLoadedIconNames = (): Icon[] => {

@@ -64,6 +64,9 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
         btn.setButtonText('Browse icon packs');
         btn.onClick(() => {
           const modal = new IconPackBrowserModal(this.app, this.plugin);
+          modal.onAddedIconPack = () => {
+            this.display();
+          };
           modal.open();
         });
       });
