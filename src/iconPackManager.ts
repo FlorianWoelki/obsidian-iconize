@@ -235,30 +235,32 @@ export const getAllLoadedIconNames = (): Icon[] => {
 
 export const getSvgFromLoadedIcon = (iconName: string): string => {
   let icon = '';
-  iconPacks.forEach((iconPack) => {
-    let foundIcon = preloadedIcons.find((icon) => icon.name.toLowerCase() === iconName.toLowerCase());
-    if (!foundIcon) {
-      foundIcon = iconPack.icons.find((icon) => icon.name.toLowerCase() === iconName.toLowerCase());
-    }
-
-    if (foundIcon) {
-      let fileContent = '';
-      if (typeof foundIcon.svgPath === 'object') {
-        const svgContent = foundIcon.svgPath.reduce((total, current) => {
-          total += `<path fill="${current.fill}" d="${current.d}" />`;
-          return total;
-        }, '');
-
-        fileContent = `<svg width="16" height="16" ${foundIcon.svgViewbox}>${svgContent}</svg>`;
-      } else {
-        fileContent = `<svg width="16" height="16" ${
-          foundIcon.svgPath.includes('fill=') ? '' : 'fill="currentColor"'
-        } ${foundIcon.svgViewbox}><path d="${foundIcon.svgPath}" /></svg>`;
+  let foundIcon = preloadedIcons.find((icon) => icon.name.toLowerCase() === iconName.toLowerCase());
+  if (!foundIcon) {
+    iconPacks.forEach((iconPack) => {
+      const icon = iconPack.icons.find((icon) => icon.name.toLowerCase() === iconName.toLowerCase());
+      if (icon) {
+        foundIcon = icon;
       }
-      icon = fileContent;
-      return;
+    });
+  }
+
+  if (foundIcon) {
+    let fileContent = '';
+    if (typeof foundIcon.svgPath === 'object') {
+      const svgContent = foundIcon.svgPath.reduce((total, current) => {
+        total += `<path fill="${current.fill}" d="${current.d}" />`;
+        return total;
+      }, '');
+
+      fileContent = `<svg width="16" height="16" ${foundIcon.svgViewbox}>${svgContent}</svg>`;
+    } else {
+      fileContent = `<svg width="16" height="16" ${foundIcon.svgPath.includes('fill=') ? '' : 'fill="currentColor"'} ${
+        foundIcon.svgViewbox
+      }><path d="${foundIcon.svgPath}" /></svg>`;
     }
-  });
+    icon = fileContent;
+  }
 
   return icon;
 };
