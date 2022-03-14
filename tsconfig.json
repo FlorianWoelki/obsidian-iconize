@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "inlineSourceMap": true,
     "inlineSources": true,
+    "allowSyntheticDefaultImports": true,
     "module": "ESNext",
     "target": "es6",
     "noImplicitAny": true,
