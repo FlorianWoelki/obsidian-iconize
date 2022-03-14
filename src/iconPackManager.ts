@@ -10,6 +10,8 @@ export interface Icon {
 }
 
 const path = '.obsidian/plugins/obsidian-icon-folder/icons';
+
+const preloadedIcons: Icon[] = [];
 let iconPacks: {
   name: string;
   icons: Icon[];
@@ -39,7 +41,12 @@ export const createFile = async (
   filename: string,
   content: string,
 ): Promise<void> => {
-  await plugin.app.vault.adapter.write(`${path}/${iconPackName}/${filename}`, content);
+  const normalizedName = filename
+    .split(/[ -]/g)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('');
+
+  await plugin.app.vault.adapter.write(`${path}/${iconPackName}/${normalizedName}`, content);
 };
 
 export const createDefaultDirectory = async (plugin: Plugin): Promise<void> => {
@@ -136,6 +143,28 @@ const createIconPackPrefix = (iconPackName: string): string => {
   return iconPackName.charAt(0).toUpperCase() + iconPackName.charAt(1);
 };
 
+export const loadIcon = async (plugin: Plugin, iconName: string): Promise<void> => {
+  await createDefaultDirectory(plugin);
+
+  const prefix = iconName.substring(0, 2);
+  const name = iconName.substring(2);
+
+  // Load all the custom generated icon packs.
+  const iconPacks = (await plugin.app.vault.adapter.list(path)).folders.map((iconPack) => iconPack.split('/').pop());
+  const iconPack = iconPacks.find((folder) => {
+    const folderPrefix = createIconPackPrefix(folder);
+    return prefix === folderPrefix;
+  });
+
+  if (!iconPack) {
+    return;
+  }
+
+  const content = await plugin.app.vault.adapter.read(path + '/' + iconPack + '/' + name + '.svg');
+  const icon = generateIcon(iconPack, name, content);
+  preloadedIcons.push(icon);
+};
+
 export const initIconPacks = async (plugin: Plugin): Promise<void> => {
   await createDefaultDirectory(plugin);
 
@@ -161,6 +190,7 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
       }
 
       iconPacks.push({ name: iconPackName, icons: loadedIcons });
+      console.log(`loaded icon pack ${iconPackName}`);
     }
   }
 };
@@ -191,7 +221,11 @@ export const getAllLoadedIconNames = (): Icon[] => {
 export const getSvgFromLoadedIcon = (iconName: string): string => {
   let icon = '';
   iconPacks.forEach((iconPack) => {
-    const foundIcon = iconPack.icons.find((icon) => icon.name.toLowerCase() === iconName.toLowerCase());
+    let foundIcon = preloadedIcons.find((icon) => icon.name.toLowerCase() === iconName.toLowerCase());
+    if (!foundIcon) {
+      foundIcon = iconPack.icons.find((icon) => icon.name.toLowerCase() === iconName.toLowerCase());
+    }
+
     if (foundIcon) {
       let fileContent = '';
       if (typeof foundIcon.svgPath === 'object') {

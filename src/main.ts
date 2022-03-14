@@ -1,6 +1,6 @@
 import { Plugin, MenuItem, TFile } from 'obsidian';
 import { ExplorerView } from './@types/obsidian';
-import { initIconPacks } from './iconPackManager';
+import { initIconPacks, loadIcon } from './iconPackManager';
 import IconFolderSettingsTab from './iconFolderSettingsTab';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, IconFolderSettings } from './settings';
@@ -11,6 +11,7 @@ import {
   addInheritanceIconToFile,
   removeFromDOM,
   removeInheritanceForFolder,
+  isEmoji,
 } from './util';
 
 export interface FolderIconObject {
@@ -22,13 +23,33 @@ export default class IconFolderPlugin extends Plugin {
   private data: Record<string, string | IconFolderSettings | FolderIconObject>;
   private registeredFileExplorers = new WeakSet<ExplorerView>();
 
+  async loadUsedIcons() {
+    const entries = Object.entries(this.data).map(([key, value]: [string, string]) => {
+      if (key !== 'settings') {
+        if (!isEmoji(value)) {
+          return value;
+        }
+      }
+    });
+
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
+      if (!entry) {
+        continue;
+      }
+
+      await loadIcon(this, entry);
+    }
+  }
+
   async onload() {
     console.log('loading obsidian-icon-folder');
 
-    await initIconPacks(this);
-
     await this.loadIconFolderData();
     await this.checkRecentlyUsedIcons();
+
+    await this.loadUsedIcons();
+    initIconPacks(this);
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
     this.registerEvent(this.app.workspace.on('layout-change', () => this.handleChangeLayout()));
