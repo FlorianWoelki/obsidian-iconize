@@ -24,4 +24,10 @@ export default {
     path: 'fontawesome-free-6.0.0-web/svgs/solid/',
     downloadLink: 'https://github.com/FortAwesome/Font-Awesome/releases/download/6.0.0/fontawesome-free-6.0.0-web.zip',
   },
+  remixIcons: {
+    name: 'remix-icons',
+    displayName: 'Remix Icons',
+    path: '',
+    downloadLink: 'https://github.com/Remix-Design/RemixIcon/releases/download/v2.5.0/RemixIcon_SVG_v2.5.0.zip',
+  },
 } as { [key: string]: IconPack };
