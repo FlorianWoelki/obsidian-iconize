@@ -137,7 +137,12 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
 const createIconPackPrefix = (iconPackName: string): string => {
   if (iconPackName.includes('-')) {
     const splitted = iconPackName.split('-');
-    return splitted[0].charAt(0).toUpperCase() + splitted[1].charAt(0);
+    let result = splitted[0].charAt(0).toUpperCase();
+    for (let i = 1; i < splitted.length; i++) {
+      result += splitted[i].charAt(0);
+    }
+
+    return result;
   }
 
   return iconPackName.charAt(0).toUpperCase() + iconPackName.charAt(1);
@@ -160,11 +165,16 @@ export const listPath = (plugin: Plugin) => {
   return plugin.app.vault.adapter.list(path);
 };
 
+export const nextUpperCaseLetter = (iconName: string) => {
+  return iconName.substring(1).search(/[A-Z]/) + 1;
+};
+
 export const loadIcon = async (plugin: Plugin, iconPacks: string[], iconName: string): Promise<void> => {
   await createDefaultDirectory(plugin);
 
-  const prefix = iconName.substring(0, 2);
-  const name = iconName.substring(2);
+  const nextLetter = nextUpperCaseLetter(iconName);
+  const prefix = iconName.substring(0, nextLetter);
+  const name = iconName.substring(nextLetter);
 
   const iconPack = iconPacks.find((folder) => {
     const folderPrefix = createIconPackPrefix(folder);

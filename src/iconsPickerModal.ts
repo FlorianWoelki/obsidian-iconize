@@ -2,7 +2,7 @@ import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
 import { addToDOM, getEnabledIcons, getIcon, isEmoji } from './util';
-import { getAllIconPacks } from './iconPackManager';
+import { getAllIconPacks, nextUpperCaseLetter } from './iconPackManager';
 
 type EnterScope = (() => void) | ((e: KeyboardEvent) => void);
 
@@ -81,9 +81,10 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     if (this.inputEl.value.length === 0) {
       this.renderIndex = 0;
       this.recentlyUsedItems.forEach((iconName) => {
+        const nextLetter = nextUpperCaseLetter(iconName);
         iconKeys.push({
-          name: iconName.substring(2),
-          prefix: iconName.substring(0, 2),
+          name: iconName.substring(nextLetter),
+          prefix: iconName.substring(0, nextLetter),
           displayName: iconName,
         });
       });

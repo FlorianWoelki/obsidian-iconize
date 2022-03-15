@@ -1,7 +1,7 @@
 import twemoji from 'twemoji';
 import IconFolderPlugin, { FolderIconObject } from './main';
 import type { ExplorerView } from './@types/obsidian';
-import { getAllLoadedIconNames, getSvgFromLoadedIcon, Icon } from './iconPackManager';
+import { getAllLoadedIconNames, getSvgFromLoadedIcon, Icon, nextUpperCaseLetter } from './iconPackManager';
 
 /**
  * This function returns all enabled icons.
@@ -289,7 +289,7 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string): 
  * @param {HTMLElement} node - The element where the icon will be inserted.
  */
 export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement): void => {
-  const possibleIcon = getIcon(icon.substring(2));
+  const possibleIcon = getIcon(icon.substring(nextUpperCaseLetter(icon)));
 
   if (possibleIcon) {
     node.innerHTML = customizeIconStyle(plugin, possibleIcon, node);

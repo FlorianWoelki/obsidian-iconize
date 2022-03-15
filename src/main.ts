@@ -13,6 +13,7 @@ import {
   removeInheritanceForFolder,
   isEmoji,
 } from './util';
+import { migrateIcons } from './migration';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -20,7 +21,7 @@ export interface FolderIconObject {
 }
 
 export default class IconFolderPlugin extends Plugin {
-  private data: Record<string, string | IconFolderSettings | FolderIconObject>;
+  private data: Record<string, boolean | string | IconFolderSettings | FolderIconObject>;
   private registeredFileExplorers = new WeakSet<ExplorerView>();
 
   async onload() {
@@ -29,8 +30,16 @@ export default class IconFolderPlugin extends Plugin {
     await this.loadIconFolderData();
     await this.checkRecentlyUsedIcons();
 
+    if (!this.data['migrated']) {
+      console.log('migrating icons...');
+      this.data = migrateIcons(this);
+      this.data['migrated'] = true;
+      await this.saveIconFolderData();
+      console.log('...icons migrated');
+    }
+
     const entries = Object.entries(this.data).map(([key, value]: [string, string]) => {
-      if (key !== 'settings') {
+      if (typeof value === 'string') {
         if (!isEmoji(value)) {
           return value;
         }
@@ -291,7 +300,7 @@ export default class IconFolderPlugin extends Plugin {
     }
   }
 
-  getData(): Record<string, string | IconFolderSettings | FolderIconObject> {
+  getData(): Record<string, boolean | string | IconFolderSettings | FolderIconObject> {
     return this.data;
   }
 }

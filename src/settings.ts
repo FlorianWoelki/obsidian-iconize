@@ -6,6 +6,7 @@ export interface ExtraPaddingSettings {
 }
 
 export interface IconFolderSettings {
+  migrated: boolean;
   fontSize: number;
   iconColor: string | null;
   extraPadding: ExtraPaddingSettings;
@@ -14,6 +15,7 @@ export interface IconFolderSettings {
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
+  migrated: false,
   fontSize: 16,
   iconColor: null,
   recentlyUsedIcons: [],
