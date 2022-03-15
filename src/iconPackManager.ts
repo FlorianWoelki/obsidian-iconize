@@ -89,7 +89,7 @@ const extractPaths = (content: string) => {
   return allPaths;
 };
 
-const validIconName = /^[A-Z]/;
+const validIconName = /^[(A-Z)|(0-9)]/;
 const svgViewboxRegex = /viewBox="([^"]*)"/g;
 const svgContentRegex = /<svg.*>(.*?)<\/svg>/g;
 const generateIcon = (iconPackName: string, iconName: string, content: string): Icon | null => {
