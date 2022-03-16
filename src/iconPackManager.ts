@@ -149,6 +149,7 @@ const createIconPackPrefix = (iconPackName: string): string => {
 };
 
 export const loadUsedIcons = async (plugin: Plugin, icons: string[]) => {
+  await createDefaultDirectory(plugin);
   const iconPacks = (await listPath(plugin)).folders.map((iconPack) => iconPack.split('/').pop());
 
   for (let i = 0; i < icons.length; i++) {
