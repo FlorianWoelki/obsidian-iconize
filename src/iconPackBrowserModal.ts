@@ -45,7 +45,7 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
 
   async onChooseItem(item: IconPack, _event: MouseEvent | KeyboardEvent): Promise<void> {
     new Notice(`Adding ${item.displayName}...`);
-    createIconPackDirectory(this.plugin, item.name);
+    await createIconPackDirectory(this.plugin, item.name);
     downloadZipFile(item.downloadLink).then((zipBlob) => {
       readZipFile(zipBlob, item.path).then(async (files) => {
         for (let i = 0; i < files.length; i++) {
