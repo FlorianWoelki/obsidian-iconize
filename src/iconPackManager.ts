@@ -149,7 +149,6 @@ const createIconPackPrefix = (iconPackName: string): string => {
 };
 
 export const loadUsedIcons = async (plugin: Plugin, icons: string[]) => {
-  await createDefaultDirectory(plugin);
   const iconPacks = (await listPath(plugin)).folders.map((iconPack) => iconPack.split('/').pop());
 
   for (let i = 0; i < icons.length; i++) {
@@ -171,8 +170,6 @@ export const nextUpperCaseLetter = (iconName: string) => {
 };
 
 export const loadIcon = async (plugin: Plugin, iconPacks: string[], iconName: string): Promise<void> => {
-  await createDefaultDirectory(plugin);
-
   const nextLetter = nextUpperCaseLetter(iconName);
   const prefix = iconName.substring(0, nextLetter);
   const name = iconName.substring(nextLetter);
@@ -186,14 +183,16 @@ export const loadIcon = async (plugin: Plugin, iconPacks: string[], iconName: st
     return;
   }
 
+  if (!(await plugin.app.vault.adapter.exists(path + '/' + iconPack + '/' + name + '.svg'))) {
+    return;
+  }
+
   const content = await plugin.app.vault.adapter.read(path + '/' + iconPack + '/' + name + '.svg');
   const icon = generateIcon(iconPack, name, content);
   preloadedIcons.push(icon);
 };
 
 export const initIconPacks = async (plugin: Plugin): Promise<void> => {
-  await createDefaultDirectory(plugin);
-
   // Load all the custom generated icon packs.
   const loadedIconPacks = await plugin.app.vault.adapter.list(path);
   for (let i = 0; i < loadedIconPacks.folders.length; i++) {
