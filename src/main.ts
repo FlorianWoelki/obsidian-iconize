@@ -38,10 +38,21 @@ export default class IconFolderPlugin extends Plugin {
       console.log('...icons migrated');
     }
 
-    const entries = Object.entries(this.data).map(([key, value]: [string, string]) => {
-      if (typeof value === 'string') {
-        if (!isEmoji(value)) {
-          return value;
+    const entries = Object.entries(this.data).map(([key, value]: [string, string | FolderIconObject]) => {
+      if (key !== 'settings' && key !== 'migrated') {
+        if (typeof value === 'string') {
+          if (!isEmoji(value)) {
+            return value;
+          }
+        }
+
+        if (typeof value === 'object') {
+          if (value.iconName !== null && !isEmoji(value.iconName)) {
+            return value.iconName;
+          }
+          if (value.inheritanceIcon !== null && !isEmoji(value.inheritanceIcon)) {
+            return value.inheritanceIcon;
+          }
         }
       }
     });
@@ -200,20 +211,20 @@ export default class IconFolderPlugin extends Plugin {
         if (typeof currentValue === 'string') {
           this.data[folderPath] = {
             iconName: currentValue as string,
-            inheritanceIcon: typeof icon === 'object' ? icon.name : icon,
+            inheritanceIcon: typeof icon === 'object' ? icon.displayName : icon,
           };
         }
         // check if it has already a inheritance icon
         else if (folderPath !== 'settings') {
           this.data[folderPath] = {
             ...(currentValue as FolderIconObject),
-            inheritanceIcon: typeof icon === 'object' ? icon.name : icon,
+            inheritanceIcon: typeof icon === 'object' ? icon.displayName : icon,
           };
         }
       } else {
         this.data[folderPath] = {
           iconName: null,
-          inheritanceIcon: typeof icon === 'object' ? icon.name : icon,
+          inheritanceIcon: typeof icon === 'object' ? icon.displayName : icon,
         };
       }
     }

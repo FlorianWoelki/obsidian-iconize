@@ -233,6 +233,10 @@ export const addIconToIconPack = (
   }
 
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
+  if (!iconPack) {
+    return;
+  }
+
   iconPack.icons.push(icon);
   callback();
 };
