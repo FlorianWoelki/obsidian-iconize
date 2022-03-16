@@ -1,4 +1,4 @@
-import { Plugin } from 'obsidian';
+import { Notice, Plugin } from 'obsidian';
 
 export interface Icon {
   name: string;
@@ -134,7 +134,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
   return icon;
 };
 
-const createIconPackPrefix = (iconPackName: string): string => {
+export const createIconPackPrefix = (iconPackName: string): string => {
   if (iconPackName.includes('-')) {
     const splitted = iconPackName.split('-');
     let result = splitted[0].charAt(0).toUpperCase();
@@ -180,6 +180,7 @@ export const loadIcon = async (plugin: Plugin, iconPacks: string[], iconName: st
   });
 
   if (!iconPack) {
+    new Notice(`Seems like you do not have an icon pack installed. (${iconName})`, 5000);
     return;
   }
 
