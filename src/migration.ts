@@ -22,7 +22,7 @@ const migrationMap = [
 export const migrateIcons = (plugin: IconFolderPlugin) => {
   const data = { ...plugin.getData() };
   const entries = Object.entries(data).map(([key, value]: [string, string | FolderIconObject]) => {
-    if (key !== 'settings' && key !== 'migrated') {
+    if (key !== 'settings' && key !== 'migrated' && key !== 'iconPacksPath') {
       if (typeof value === 'string') {
         if (!isEmoji(value)) {
           return [key, value];

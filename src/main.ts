@@ -1,6 +1,6 @@
 import { Plugin, MenuItem, TFile } from 'obsidian';
 import { ExplorerView } from './@types/obsidian';
-import { createDefaultDirectory, initIconPacks, listPath, loadIcon, loadUsedIcons } from './iconPackManager';
+import { createDefaultDirectory, initIconPacks, listPath, loadIcon, loadUsedIcons, setPath } from './iconPackManager';
 import IconFolderSettingsTab from './iconFolderSettingsTab';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, IconFolderSettings } from './settings';
@@ -31,16 +31,18 @@ export default class IconFolderPlugin extends Plugin {
     await this.loadIconFolderData();
     await this.checkRecentlyUsedIcons();
 
-    if (!this.data['migrated']) {
+    setPath(this.getSettings().iconPacksPath);
+
+    if (!this.getSettings().migrated) {
       console.log('migrating icons...');
       this.data = migrateIcons(this);
-      this.data['migrated'] = true;
+      this.getSettings().migrated = true;
       await this.saveIconFolderData();
       console.log('...icons migrated');
     }
 
     const entries = Object.entries(this.data).map(([key, value]: [string, string | FolderIconObject]) => {
-      if (key !== 'settings' && key !== 'migrated') {
+      if (key !== 'settings' && key !== 'migrated' && key !== 'iconPacksPath') {
         if (typeof value === 'string') {
           if (!isEmoji(value)) {
             return value;

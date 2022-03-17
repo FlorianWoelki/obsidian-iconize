@@ -9,7 +9,10 @@ export interface Icon {
   svgViewbox: string;
 }
 
-const path = '.obsidian/plugins/obsidian-icon-folder/icons';
+let path: string;
+export const setPath = (newPath: string): void => {
+  path = `.obsidian/${newPath}`;
+};
 
 const preloadedIcons: Icon[] = [];
 let iconPacks: {
