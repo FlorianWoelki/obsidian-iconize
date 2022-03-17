@@ -1,17 +1,15 @@
 # Obsidian Icon Folder [![CodeQL](https://github.com/FlorianWoelki/obsidian-icon-folder/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/FlorianWoelki/obsidian-icon-folder/actions/workflows/codeql-analysis.yml)
 
+![Preview Image](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/docs/preview-image.png)
+
+## Motivation
+
 This obsidian plugin allows you to add icons to your folder or icon if you want.
 
 Right now, the current iconsets are supported:
 * [Remixicon](https://remixicon.com/)
 * [Fontawesome](https://fontawesome.com/)
 * [Twemoji](https://github.com/twitter/twemoji)
-
-## How it will look like
-
-This is how your folders can look like:
-
-![Folder Preview](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/docs/folder-preview.png)
 
 ## How to use
 
