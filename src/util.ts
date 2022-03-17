@@ -365,3 +365,24 @@ export const isEmoji = (str: string): boolean => {
     return false;
   }
 };
+
+export const getIconsInData = (plugin: IconFolderPlugin): string[] => {
+  const result: string[] = [];
+
+  Object.entries(plugin.getData()).forEach(([key, value]) => {
+    if (key !== 'settings' && key !== 'migrated') {
+      if (typeof value === 'string' && !isEmoji(value)) {
+        result.push(value);
+      } else if (typeof value === 'object') {
+        if (value.iconName !== null && !isEmoji(value.iconName)) {
+          result.push(value.iconName);
+        }
+        if (value.inheritanceIcon !== null && !isEmoji(value.inheritanceIcon)) {
+          result.push(value.inheritanceIcon);
+        }
+      }
+    }
+  });
+
+  return result;
+};

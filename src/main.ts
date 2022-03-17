@@ -12,6 +12,7 @@ import {
   removeFromDOM,
   removeInheritanceForFolder,
   isEmoji,
+  getIconsInData,
 } from './util';
 import { migrateIcons } from './migration';
 
@@ -27,11 +28,11 @@ export default class IconFolderPlugin extends Plugin {
   async onload() {
     console.log('loading obsidian-icon-folder');
 
-    await createDefaultDirectory(this);
     await this.loadIconFolderData();
-    await this.checkRecentlyUsedIcons();
-
     setPath(this.getSettings().iconPacksPath);
+
+    await createDefaultDirectory(this);
+    await this.checkRecentlyUsedIcons();
 
     if (!this.getSettings().migrated) {
       console.log('migrating icons...');
@@ -41,25 +42,7 @@ export default class IconFolderPlugin extends Plugin {
       console.log('...icons migrated');
     }
 
-    const entries = Object.entries(this.data).map(([key, value]: [string, string | FolderIconObject]) => {
-      if (key !== 'settings' && key !== 'migrated' && key !== 'iconPacksPath') {
-        if (typeof value === 'string') {
-          if (!isEmoji(value)) {
-            return value;
-          }
-        }
-
-        if (typeof value === 'object') {
-          if (value.iconName !== null && !isEmoji(value.iconName)) {
-            return value.iconName;
-          }
-          if (value.inheritanceIcon !== null && !isEmoji(value.inheritanceIcon)) {
-            return value.inheritanceIcon;
-          }
-        }
-      }
-    });
-    await loadUsedIcons(this, entries);
+    await loadUsedIcons(this, getIconsInData(this));
 
     initIconPacks(this);
 
