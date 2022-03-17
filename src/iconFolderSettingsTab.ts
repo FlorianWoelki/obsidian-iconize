@@ -3,10 +3,14 @@ import { ColorPickerComponent } from './colorPickerComponent';
 import IconPackBrowserModal from './iconPackBrowserModal';
 import {
   addIconToIconPack,
+  createDefaultDirectory,
   createFile,
   createIconPackDirectory,
   deleteIconPack,
   getAllIconPacks,
+  getPath,
+  moveIconPackDirectories,
+  setPath,
 } from './iconPackManager';
 import IconFolderPlugin from './main';
 import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
@@ -19,6 +23,8 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
   private dragOverElement: HTMLElement;
   private closeTimer: any;
   private dragTargetElement: HTMLElement;
+
+  private iconPacksSettingText: TextComponent;
 
   constructor(app: App, plugin: IconFolderPlugin) {
     super(app, plugin);
@@ -54,6 +60,45 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
             await this.plugin.saveIconFolderData();
           });
       });
+
+    const iconPacksPathSetting = new Setting(containerEl)
+      .setName('Icon Packs folder path')
+      .setDesc('Change the default icon packs folder path');
+
+    iconPacksPathSetting.addText((text) => {
+      this.iconPacksSettingText = text;
+      text.setValue(`.obsidian/${this.plugin.getSettings().iconPacksPath}`);
+      text.onChange((value) => {
+        if (!value.startsWith('.obsidian/')) {
+          text.setValue(`.obsidian/`);
+        }
+      });
+    });
+
+    iconPacksPathSetting.addButton((btn) => {
+      btn.setButtonText('Save');
+      btn.buttonEl.style.marginLeft = '12px';
+      btn.onClick(async () => {
+        const splittedPath = this.iconPacksSettingText.getValue().split('.obsidian/');
+        if (splittedPath.length === 0) {
+          return;
+        }
+
+        const newPath = splittedPath[1];
+
+        if (getPath() === this.iconPacksSettingText.getValue()) {
+          return;
+        }
+
+        const oldPath = getPath();
+        setPath(newPath);
+        await createDefaultDirectory(this.plugin);
+        await moveIconPackDirectories(this.plugin, oldPath, getPath());
+
+        this.plugin.getSettings().iconPacksPath = newPath;
+        await this.plugin.saveIconFolderData();
+      });
+    });
 
     containerEl.createEl('h3', { text: 'Icon Packs' });
 

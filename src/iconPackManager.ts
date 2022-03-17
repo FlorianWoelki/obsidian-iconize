@@ -10,6 +10,11 @@ export interface Icon {
 }
 
 let path: string;
+
+export const getPath = (): string => {
+  return path;
+};
+
 export const setPath = (newPath: string): void => {
   path = `.obsidian/${newPath}`;
 };
@@ -19,6 +24,27 @@ let iconPacks: {
   name: string;
   icons: Icon[];
 }[] = [];
+
+export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: string): Promise<void> => {
+  for (let i = 0; i < iconPacks.length; i++) {
+    const iconPack = iconPacks[i];
+    await createDirectory(plugin, iconPack.name);
+
+    new Notice(`Moving ${iconPack.name}...`);
+
+    for (let j = 0; j < iconPack.icons.length; j++) {
+      const icon = iconPack.icons[j];
+      await plugin.app.vault.adapter.copy(
+        `${from}/${iconPack.name}/${icon.filename}`,
+        `${to}/${iconPack.name}/${icon.filename}`,
+      );
+    }
+
+    new Notice(`...moved ${iconPack.name}`);
+  }
+
+  await plugin.app.vault.adapter.rmdir(from, true);
+};
 
 export const createIconPackDirectory = async (plugin: Plugin, dir: string): Promise<void> => {
   await createDirectory(plugin, dir);
@@ -164,8 +190,8 @@ export const loadUsedIcons = async (plugin: Plugin, icons: string[]) => {
   }
 };
 
-export const listPath = (plugin: Plugin) => {
-  return plugin.app.vault.adapter.list(path);
+export const listPath = (plugin: Plugin, listPath?: string) => {
+  return plugin.app.vault.adapter.list(listPath ?? path);
 };
 
 export const nextUpperCaseLetter = (iconName: string) => {
