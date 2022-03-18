@@ -2,22 +2,26 @@
 
 ![Preview Image](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/docs/preview-image.png)
 
-## Motivation
+## What is it?
 
-This obsidian plugin allows you to add icons to your folder or icon if you want.
+This obsidian plugin allows you to add any custom icon (of type `.svg`) or from an icon pack to your folder or file.
 
-Right now, the current iconsets are supported:
+Right now, the current predefined icon packs are supported and can be downloaded:
 * [Remixicon](https://remixicon.com/)
 * [Fontawesome](https://fontawesome.com/)
 * [Twemoji](https://github.com/twitter/twemoji)
 
+However, feel free to add your own icon packs!
+
 ## How to use
 
-There are different functionalities of displaying an icon for your folder.. We will go over them in this section.
+There are different functionalities of displaying an icon for your folder or file.
 
-In general, there are different icon sets, you can enable or disable. You can find these options in the settings of the plugin.
+First of all, you need to go to the settings and download predefined icon packs or create your own.
 
-In addition, you can adjust some styling settings for all the icons like padding, color, or even the icon size.
+In addition, it is possible to drag and drop or select multiple files to your customized icon pack.
+
+Moreover, you can adjust some styling settings for all the icons like padding, color, or even the icon size.
 
 ### Changing icon of the folder
 
@@ -50,6 +54,13 @@ To apply an inherited icon:
     2. Windows: `Windows + ;`
 4. Select the option `Use twemoji emoji`
 
+### Migration
+
+If you used a previous version of this plugin. Please follow this guide to migrate to the newest version which allows customizable icon packs.
+
+A migration script will run, whenever you haven't migrated yet. Therefore, all icons should be gone for your vault.
+However, you can easily install or create icon packs you used. For example, when you used the `font-awesome-solid` pack, you can easily download it in the settings and restart your vault. Every icon of this pack should now be visible.
+
 ## Development
 
 To customize this project for your needs, you can clone it and then install all dependencies:
@@ -57,12 +68,6 @@ To customize this project for your needs, you can clone it and then install all 
 $ git clone https://github.com/FlorianWoelki/obsidian-icon-folder
 $ cd obsidian-icon-folder
 $ yarn
-```
-
-After installing all dependencies, you need to generate the icon folders so that they will be displayed and added to the output file:
-
-```sh
-$ node scripts/generate-icons.js
 ```
 
 After executing successfully, you can start the rollup dev server by using:
