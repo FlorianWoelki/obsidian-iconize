@@ -28,7 +28,11 @@ let iconPacks: {
 export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: string): Promise<void> => {
   for (let i = 0; i < iconPacks.length; i++) {
     const iconPack = iconPacks[i];
-    await createDirectory(plugin, iconPack.name);
+    const doesDirExist = await createDirectory(plugin, iconPack.name);
+    if (doesDirExist) {
+      new Notice(`Directory with name ${iconPack.name} already exists.`);
+      continue;
+    }
 
     new Notice(`Moving ${iconPack.name}...`);
 
@@ -61,11 +65,13 @@ export const doesIconPackExist = (plugin: Plugin, iconPackName: string): Promise
   return plugin.app.vault.adapter.exists(`${path}/${iconPackName}`);
 };
 
-const createDirectory = async (plugin: Plugin, dir: string): Promise<void> => {
+const createDirectory = async (plugin: Plugin, dir: string): Promise<boolean> => {
   const doesDirExist = await plugin.app.vault.adapter.exists(`${path}/${dir}`);
   if (!doesDirExist) {
     await plugin.app.vault.adapter.mkdir(`${path}/${dir}`);
   }
+
+  return doesDirExist;
 };
 
 export const createFile = async (
