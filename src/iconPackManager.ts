@@ -57,6 +57,10 @@ export const deleteIconPack = async (plugin: Plugin, dir: string): Promise<void>
   await plugin.app.vault.adapter.rmdir(`${path}/${dir}`, true);
 };
 
+export const doesIconPackExist = (plugin: Plugin, iconPackName: string): Promise<boolean> => {
+  return plugin.app.vault.adapter.exists(`${path}/${iconPackName}`);
+};
+
 const createDirectory = async (plugin: Plugin, dir: string): Promise<void> => {
   const doesDirExist = await plugin.app.vault.adapter.exists(`${path}/${dir}`);
   if (!doesDirExist) {

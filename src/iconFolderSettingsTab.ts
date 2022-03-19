@@ -7,6 +7,7 @@ import {
   createFile,
   createIconPackDirectory,
   deleteIconPack,
+  doesIconPackExist,
   getAllIconPacks,
   getPath,
   moveIconPackDirectories,
@@ -132,7 +133,14 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
             return;
           }
 
-          await createIconPackDirectory(this.plugin, this.normalizeIconPackName(this.textComponent.getValue()));
+          const normalizedName = this.normalizeIconPackName(this.textComponent.getValue());
+
+          if (await doesIconPackExist(this.plugin, normalizedName)) {
+            new Notice('Icon pack already exists.');
+            return;
+          }
+
+          await createIconPackDirectory(this.plugin, normalizedName);
           this.textComponent.setValue('');
           this.display();
           new Notice('Icon pack successfully created.');
