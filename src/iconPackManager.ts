@@ -282,7 +282,10 @@ export const addIconToIconPack = (
   }
 
   iconPack.icons.push(icon);
-  callback();
+
+  if (callback) {
+    callback();
+  }
 };
 
 export const getAllLoadedIconNames = (): Icon[] => {
