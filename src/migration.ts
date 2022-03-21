@@ -1,5 +1,5 @@
 import IconFolderPlugin, { FolderIconObject } from './main';
-import { isEmoji } from './util';
+import { getIconsWithPathInData, isEmoji } from './util';
 
 const migrationMap = [
   {
@@ -21,28 +21,11 @@ const migrationMap = [
 
 export const migrateIcons = (plugin: IconFolderPlugin) => {
   const data = { ...plugin.getData() };
-  const entries = Object.entries(data).map(([key, value]: [string, string | FolderIconObject]) => {
-    if (key !== 'settings' && key !== 'migrated') {
-      if (typeof value === 'string') {
-        if (!isEmoji(value)) {
-          return [key, value];
-        }
-      }
-
-      if (typeof value === 'object') {
-        if (value.iconName !== null && !isEmoji(value.iconName)) {
-          return [key, value.iconName];
-        }
-        if (value.inheritanceIcon !== null && !isEmoji(value.inheritanceIcon)) {
-          return [key, value.inheritanceIcon];
-        }
-      }
-    }
-  });
+  const entries = getIconsWithPathInData(plugin);
 
   entries.forEach((entry) => {
     if (entry) {
-      const [key, value] = entry;
+      const { key, value } = entry;
 
       const migration = migrationMap.find(
         (migration) => value.substring(0, 2) === migration.oldIconPackPrefix && value.includes(migration.identifier),

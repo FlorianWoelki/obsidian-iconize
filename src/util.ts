@@ -388,22 +388,28 @@ export const getIconsInData = (plugin: IconFolderPlugin): string[] => {
 };
 
 export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
-  return Object.entries(plugin.getData()).map(([key, value]: [string, string | FolderIconObject]) => {
+  const result: { key: string; value: string }[] = [];
+  Object.entries(plugin.getData()).forEach(([key, value]: [string, string | FolderIconObject]) => {
     if (key !== 'settings' && key !== 'migrated') {
       if (typeof value === 'string') {
         if (!isEmoji(value)) {
-          return [key, value];
+          result.push({ key, value });
+          return;
         }
       }
 
       if (typeof value === 'object') {
         if (value.iconName !== null && !isEmoji(value.iconName)) {
-          return [key, value.iconName];
+          result.push({ key, value: value.iconName });
+          return;
         }
         if (value.inheritanceIcon !== null && !isEmoji(value.inheritanceIcon)) {
-          return [key, value.inheritanceIcon];
+          result.push({ key, value: value.inheritanceIcon });
+          return;
         }
       }
     }
   });
+
+  return result;
 };
