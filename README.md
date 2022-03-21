@@ -11,15 +11,17 @@ Right now, the current predefined icon packs are supported and can be downloaded
 * [Fontawesome](https://fontawesome.com/)
 * [Twemoji](https://github.com/twitter/twemoji)
 
-However, feel free to add your own icon packs!
+However, feel free to add your custom icon packs!
 
 ## How to use
 
 There are different functionalities of displaying an icon for your folder or file.
 
-First of all, you need to go to the settings and download predefined icon packs or create your own.
+First, you need to go to the settings and download predefined icon packs or create your own.
 
-In addition, it is possible to drag and drop or select multiple files to your customized icon pack.
+![Icon Pack Preview](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/docs/icon-pack-preview.png)
+
+In addition to the custom icon pack, it is possible to drag and drop or select multiple files to your customized icon pack.
 
 Moreover, you can adjust some styling settings for all the icons like padding, color, or even the icon size.
 
@@ -56,10 +58,10 @@ To apply an inherited icon:
 
 ### Migration
 
-If you used a previous version of this plugin. Please follow this guide to migrate to the newest version which allows customizable icon packs.
+Suppose you used a previous version of this plugin. Please follow this guide to migrate to the newest version, which allows customizable icon packs.
 
-A migration script will run, whenever you haven't migrated yet. Therefore, all icons should be gone for your vault.
-However, you can easily install or create icon packs you used. For example, when you used the `font-awesome-solid` pack, you can easily download it in the settings and restart your vault. Every icon of this pack should now be visible.
+A migration script will run whenever you haven't migrated yet. Therefore, all icons should be gone from your vault.
+However, you can easily install or create icon packs you used. For example, when you use the `font-awesome-solid` pack, you can easily download it in the settings and restart your vault. Every icon of this pack should now be visible.
 
 ## Development
 
