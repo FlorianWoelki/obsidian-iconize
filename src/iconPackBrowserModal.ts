@@ -8,6 +8,7 @@ import {
 } from './iconPackManager';
 import iconPacks, { IconPack } from './iconPacks';
 import IconFolderPlugin from './main';
+import { getIconsInData, getIconsWithPathInData, insertIconToNode } from './util';
 import { downloadZipFile, getFileFromJSZipFile, readZipFile } from './zipUtil';
 
 export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
@@ -48,13 +49,24 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
     await createIconPackDirectory(this.plugin, item.name);
     downloadZipFile(item.downloadLink).then((zipBlob) => {
       readZipFile(zipBlob, item.path).then(async (files) => {
+        const existingIcons = getIconsWithPathInData(this.plugin);
         for (let i = 0; i < files.length; i++) {
           const file = await getFileFromJSZipFile(files[i]);
           const reader = new FileReader();
           reader.readAsText(file, 'UTF-8');
           reader.onload = async (readerEvent) => {
             const content = readerEvent.target.result as string;
-            addIconToIconPack(item.name, file.name, content, async () => {
+            addIconToIconPack(item.name, file.name, content, async (icon) => {
+              const iconName = icon.prefix + icon.name;
+              const existingIcon = existingIcons.find((el) => el && el[1] === iconName);
+              if (existingIcon) {
+                const path = existingIcon[0];
+                const container = this.plugin.app.workspace.containerEl.querySelector(`[data-path="${path}"]`);
+                const existingIconEl = container.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
+
+                insertIconToNode(this.plugin, iconName, existingIconEl);
+              }
+
               await createFile(this.plugin, item.name, file.name, content);
             });
           };

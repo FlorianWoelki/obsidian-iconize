@@ -269,7 +269,7 @@ export const addIconToIconPack = (
   iconPackName: string,
   iconName: string,
   iconContent: string,
-  callback?: () => void,
+  callback?: (icon: Icon) => void,
 ): void => {
   const icon = generateIcon(iconPackName, iconName, iconContent);
   if (!icon) {
@@ -284,7 +284,7 @@ export const addIconToIconPack = (
   iconPack.icons.push(icon);
 
   if (callback) {
-    callback();
+    callback(icon);
   }
 };
 

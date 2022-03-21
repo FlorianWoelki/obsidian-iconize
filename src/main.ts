@@ -1,5 +1,5 @@
 import { Plugin, MenuItem, TFile } from 'obsidian';
-import { ExplorerView } from './@types/obsidian';
+import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, listPath, loadIcon, loadUsedIcons, setPath } from './iconPackManager';
 import IconFolderSettingsTab from './iconFolderSettingsTab';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
@@ -11,7 +11,6 @@ import {
   addInheritanceIconToFile,
   removeFromDOM,
   removeInheritanceForFolder,
-  isEmoji,
   getIconsInData,
 } from './util';
 import { migrateIcons } from './migration';
@@ -299,5 +298,23 @@ export default class IconFolderPlugin extends Plugin {
 
   getData(): Record<string, boolean | string | IconFolderSettings | FolderIconObject> {
     return this.data;
+  }
+
+  getRegisteredFileExplorers(): WeakSet<ExplorerView> {
+    return this.registeredFileExplorers;
+  }
+
+  getDataPathByValue(value: string): string {
+    return Object.entries(this.data).find(([k, v]) => {
+      if (typeof v === 'string') {
+        if (value === v) {
+          return k;
+        }
+      } else if (typeof v === 'object') {
+        if (value === v.iconName || value === v.inheritanceIcon) {
+          return k;
+        }
+      }
+    });
   }
 }
