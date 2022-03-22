@@ -1,6 +1,6 @@
 # Obsidian Icon Folder [![CodeQL](https://github.com/FlorianWoelki/obsidian-icon-folder/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/FlorianWoelki/obsidian-icon-folder/actions/workflows/codeql-analysis.yml)
 
-![Preview Image](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/docs/preview-image.png)
+![Preview Image](https://raw.githubusercontent.com/FlorianWoelki/obsidian-icon-folder/main/docs/preview-image.png)
 
 ## What is it?
 
@@ -19,7 +19,7 @@ There are different functionalities of displaying an icon for your folder or fil
 
 First, you need to go to the settings and download predefined icon packs or create your own.
 
-![Icon Pack Preview](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/docs/icon-pack-preview.png)
+![Icon Pack Preview](https://raw.githubusercontent.com/FlorianWoelki/obsidian-icon-folder/main/docs/icon-pack-preview.png)
 
 In addition to the custom icon pack, it is possible to drag and drop or select multiple files to your customized icon pack.
 
