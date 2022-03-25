@@ -108,6 +108,9 @@ const extractPaths = (content: string) => {
     const svgPathMatches = svgPathRegex.exec(content);
     const svgPath = svgPathMatches && svgPathMatches[1];
     if (!svgPath) {
+      const svgContentMatch = content.match(svgContentRegex);
+      const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, '').replace(/<svg.+?>/g, ''))[0];
+      allPaths.push(svgContent);
       break;
     }
 
@@ -312,11 +315,11 @@ export const getSvgFromLoadedIcon = (iconName: string): string => {
     let fileContent = '';
     if (typeof foundIcon.svgPath === 'object') {
       const svgContent = foundIcon.svgPath.reduce((total, current) => {
-        total += `<path fill="${current.fill ?? 'currentColor'}" d="${current.d}" />`;
+        total += `<path fill="${current.fill ?? 'currentColor'}" d="${current}" />`;
         return total;
       }, '');
 
-      fileContent = `<svg width="16" height="16" ${
+      fileContent = `<svg width="16" fill="currentColor" height="16" ${
         foundIcon.svgViewbox.length !== 0 ? foundIcon.svgViewbox : 'viewbox="0 0 24 24"'
       }>${svgContent}</svg>`;
     } else {
