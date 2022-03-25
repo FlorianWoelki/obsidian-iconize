@@ -122,7 +122,7 @@ const extractPaths = (content: string) => {
     if (attrs.fill === 'none') {
       continue;
     }
-    allPaths.push(attrs);
+    allPaths.push(attrs.d ?? attrs);
   }
 
   return allPaths;
@@ -137,6 +137,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
   }
 
   content = content.replace(/(\r\n|\n|\r)/gm, '');
+  content = content.replace(/>\s+</gm, '><');
   const normalizedName = iconName
     .split(/[ -]/g)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
@@ -170,7 +171,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
     name: normalizedName.split('.svg')[0],
     prefix: iconPackPrefix,
     filename: iconName,
-    svgPath: svgPaths.length === 1 ? svgPaths[0].d : svgPaths,
+    svgPath: svgPaths.length === 1 ? svgPaths[0] : svgPaths,
     svgContent,
     svgViewbox,
   };
