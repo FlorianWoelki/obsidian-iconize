@@ -166,7 +166,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
   }
 
   const svgContentMatch = content.match(svgContentRegex);
-  const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, ''))[0];
+  const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, '').replace(/<svg.+?>/g, ''))[0];
 
   const iconPackPrefix = createIconPackPrefix(iconPackName);
 
@@ -314,18 +314,13 @@ export const getSvgFromLoadedIcon = (iconName: string): string => {
   if (foundIcon) {
     let fileContent = '';
     if (typeof foundIcon.svgPath === 'object') {
-      const svgContent = foundIcon.svgPath.reduce((total, current) => {
-        total += `<path fill="${current.fill ?? 'currentColor'}" d="${current}" />`;
-        return total;
-      }, '');
-
       fileContent = `<svg width="16" fill="currentColor" height="16" ${
         foundIcon.svgViewbox.length !== 0 ? foundIcon.svgViewbox : 'viewbox="0 0 24 24"'
-      }>${svgContent}</svg>`;
+      }>${foundIcon.svgContent}</svg>`;
     } else {
       fileContent = `<svg width="16" height="16" ${foundIcon.svgPath.includes('fill=') ? '' : 'fill="currentColor"'} ${
         foundIcon.svgViewbox.length !== 0 ? foundIcon.svgViewbox : 'viewbox="0 0 24 24"'
-      }><path d="${foundIcon.svgPath}" /></svg>`;
+      }>${foundIcon.svgContent}</svg>`;
     }
     icon = fileContent;
   }
