@@ -63,6 +63,12 @@ Suppose you used a previous version of this plugin. Please follow this guide to 
 A migration script will run whenever you haven't migrated yet. Therefore, all icons should be gone from your vault.
 However, you can easily install or create icon packs you used. For example, when you use the `font-awesome-solid` pack, you can easily download it in the settings and restart your vault. Every icon of this pack should now be visible.
 
+### Using other icon plugins with icon packs
+
+Suppose you are using other icon pack plugins with a download functionality. In that case, it is common to change the icon pack path to a more public folder so that you have no issue syncing the icons between different devices.
+
+Therefore, if you go to the plugin's settings, you can specify the public folder where every icon pack can be downloaded. It will automatically check if the icon pack already exists in this directory.
+
 ## Development
 
 To customize this project for your needs, you can clone it and then install all dependencies:
