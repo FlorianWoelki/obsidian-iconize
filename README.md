@@ -9,7 +9,6 @@ This obsidian plugin allows you to add any custom icon (of type `.svg`) or from 
 Right now, the current predefined icon packs are supported and can be downloaded:
 * [Remixicon](https://remixicon.com/)
 * [Fontawesome](https://fontawesome.com/)
-* [Twemoji](https://github.com/twitter/twemoji)
 
 However, feel free to add your custom icon packs!
 
