@@ -28,7 +28,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     this.plugin = plugin;
     this.path = path;
     this.limit = 150;
-    this.recentlyUsedItems = plugin.getSettings().recentlyUsedIcons;
+    this.recentlyUsedItems = plugin.getSettings().recentlyUsedIcons.reverse();
 
     this.resultContainerEl.classList.add('obsidian-icon-folder-modal');
 
