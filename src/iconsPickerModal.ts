@@ -114,7 +114,6 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     super.renderSuggestion(item, el);
 
     if (getAllIconPacks().length === 0) {
-      this.inputEl.disabled = true;
       this.resultContainerEl.style.display = 'block';
       this.resultContainerEl.innerHTML = '<div class="suggestion-empty">You need to create an icon pack.</div>';
       return;
