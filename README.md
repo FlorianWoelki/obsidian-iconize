@@ -81,19 +81,19 @@ $ cd obsidian-icon-folder
 $ yarn
 ```
 
-After executing successfully, you can start the rollup dev server by using:
+After the installation, you need to create a `env.js` file in the root directory. Fill the file with the following content:
+
+```js
+export const obsidianExportPath =
+  '<path-to-obsidian-vault>/.obsidian/plugins/obsidian-icon-folder/';
+```
+
+Afterwards, you can start the rollup dev server by using:
 
 ```sh
 $ yarn dev
 ```
 
-This command will automatically build the neccesary files for testing and developing on every change.
-
-Also, make sure that you copy the built files into the the plugins directory.
-
-For example:
-```sh
-$ cp main.js manifest.json src/styles.css /<path-to-obsidian-vault>/.obsidian/plugins/obsidian-icon-folder
-```
+This command will automatically build the neccesary files for testing and developing on every change. Furthermore, it does copy all the necessary files to the plugin directory you specified.
 
 Finally, you can customize the plugin and add it to your plugins.
