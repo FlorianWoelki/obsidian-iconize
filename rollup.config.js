@@ -1,6 +1,8 @@
 import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import copyFile from './copy-file';
+import { obsidianExportPath } from './env';
 
 const isProd = process.env.BUILD === 'production';
 
@@ -21,7 +23,18 @@ export default {
     banner,
   },
   external: ['obsidian'],
-  plugins: [typescript(), nodeResolve({ browser: true }), commonjs()],
+  plugins: [
+    typescript(),
+    nodeResolve({ browser: true }),
+    commonjs(),
+    copyFile({
+      targets: [
+        { src: './main.js', dest: obsidianExportPath },
+        { src: './manifest.json', dest: obsidianExportPath },
+        { src: './src/styles.css', dest: obsidianExportPath },
+      ],
+    }),
+  ],
   onwarn: (warning) => {
     if (warning.code === 'THIS_IS_UNDEFINED') return;
 
