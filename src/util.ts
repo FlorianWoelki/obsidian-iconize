@@ -62,16 +62,13 @@ export const getIcon = (name: string): string | null => {
  */
 export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: HTMLElement): string => {
   // Allow custom font size
-  const sizeRe = new RegExp(/width="\d+" height="\d+"/g);
-  if (icon.match(sizeRe)) {
-    icon = icon.replace(sizeRe, `width="${plugin.getSettings().fontSize}" height="${plugin.getSettings().fontSize}"`);
-  } else {
-    // If match is null, it should be an image.
-    const sizeRe = new RegExp(/width="\d+px" height="\d+px"/g);
-    icon = icon.replace(
-      sizeRe,
-      `width="${plugin.getSettings().fontSize}px" height="${plugin.getSettings().fontSize}px"`,
-    );
+  const widthRe = new RegExp(/width="\d+(px)?"/g);
+  const heightRe = new RegExp(/height="\d+(px)?"/g);
+  if (icon.match(widthRe)) {
+    icon = icon.replace(widthRe, `width="${plugin.getSettings().fontSize}px"`);
+  }
+  if (icon.match(heightRe)) {
+    icon = icon.replace(heightRe, `height="${plugin.getSettings().fontSize}px"`);
   }
 
   // Allow custom icon color
