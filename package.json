@@ -41,7 +41,7 @@
     "husky": "^7.0.2",
     "lint-staged": "^11.2.6",
     "mkdirp": "^1.0.4",
-    "obsidian": "^0.12.0",
+    "obsidian": "0.14.4",
     "prettier": "^2.3.2",
     "remixicon": "^2.5.0",
     "rollup": "^2.32.1",
