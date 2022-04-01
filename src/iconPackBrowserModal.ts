@@ -8,7 +8,7 @@ import {
 } from './iconPackManager';
 import iconPacks, { IconPack } from './iconPacks';
 import IconFolderPlugin from './main';
-import { getIconsInData, getIconsWithPathInData, insertIconToNode } from './util';
+import { getIconsWithPathInData, insertIconToNode } from './util';
 import { downloadZipFile, getFileFromJSZipFile, readZipFile } from './zipUtil';
 
 export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {

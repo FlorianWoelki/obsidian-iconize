@@ -1,8 +1,9 @@
 import JSZip from 'jszip';
+import { requestUrl } from 'obsidian';
 
 export const downloadZipFile = async (url: string) => {
-  const fetched = await fetch(url, { mode: 'cors' });
-  const bytes = await fetched.blob();
+  const fetched = await requestUrl({ url });
+  const bytes = fetched.arrayBuffer;
   return bytes;
 };
 
@@ -12,7 +13,7 @@ export const getFileFromJSZipFile = async (file: JSZip.JSZipObject) => {
   return new File([fileData], filename);
 };
 
-export const readZipFile = async (bytes: Blob | File, extraPath: string = '') => {
+export const readZipFile = async (bytes: ArrayBuffer, extraPath: string = '') => {
   const zipper = new JSZip();
   const unzippedFiles = await zipper.loadAsync(bytes);
   return Promise.resolve(unzippedFiles).then((unzipped) => {
