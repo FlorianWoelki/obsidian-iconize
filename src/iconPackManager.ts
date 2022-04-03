@@ -213,12 +213,12 @@ export const listPath = (plugin: Plugin, listPath?: string) => {
   return plugin.app.vault.adapter.list(listPath ?? path);
 };
 
-export const nextUpperCaseLetter = (iconName: string) => {
-  return iconName.substring(1).search(/[A-Z]/) + 1;
+export const nextIdentifier = (iconName: string) => {
+  return iconName.substring(1).search(/[(A-Z)|(0-9)]/) + 1;
 };
 
 export const loadIcon = async (plugin: Plugin, iconPacks: string[], iconName: string): Promise<void> => {
-  const nextLetter = nextUpperCaseLetter(iconName);
+  const nextLetter = nextIdentifier(iconName);
   const prefix = iconName.substring(0, nextLetter);
   const name = iconName.substring(nextLetter);
 
