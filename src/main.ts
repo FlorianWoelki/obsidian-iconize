@@ -89,7 +89,7 @@ export default class IconFolderPlugin extends Plugin {
             item.onClick(() => {
               const modal = new IconsPickerModal(this.app, this, file.path);
               modal.open();
-              // manipulate `onChooseItem` method to get custom functioanlity for inheriting icons
+              // manipulate `onChooseItem` method to get custom functionality for inheriting icons
               modal.onChooseItem = (icon: Icon | string) => {
                 this.saveInheritanceData(file.path, icon);
                 addInheritanceForFolder(this, file.path);
@@ -167,7 +167,7 @@ export default class IconFolderPlugin extends Plugin {
           if (file.parent.path === '/') return;
 
           inheritanceFolders.forEach(([path, obj]: [string, FolderIconObject]) => {
-            if (file.parent.path.includes(path)) {
+            if (file.parent.path.match(new RegExp(`${path}(?!\/.*)`, 'g'))) {
               addInheritanceIconToFile(this, this.registeredFileExplorers, file.path, obj.inheritanceIcon);
             }
           });
