@@ -233,6 +233,7 @@ export const loadIcon = async (plugin: Plugin, iconPacks: string[], iconName: st
   }
 
   if (!(await plugin.app.vault.adapter.exists(path + '/' + iconPack + '/' + name + '.svg'))) {
+    console.warn(`[obsidian-icon-folder] icon with name "${name}" was not found.`);
     return;
   }
 
