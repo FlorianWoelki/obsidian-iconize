@@ -1,6 +1,6 @@
 {
   "name": "obsidian-icon-folder",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "This is an obsidian plugin that allows us to use an icon in the prefix of a folder name.",
   "main": "main.js",
   "scripts": {
