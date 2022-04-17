@@ -145,9 +145,7 @@ export const addIconsToDOM = (
           }
 
           if (typeof value === 'object' && value.inheritanceIcon) {
-            const files = plugin.app.vault
-              .getAllLoadedFiles()
-              .filter((f) => f.path.match(new RegExp(`(${dataPath}\/\w*(.md)?)(?!.*\/)`, 'g')));
+            const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(dataPath));
             const inheritanceIconName = value.inheritanceIcon;
             files.forEach((f) => {
               if (!registeredFilePaths[f.path]) {
@@ -300,7 +298,7 @@ export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: H
         width: '16px',
         height: '16px',
       }),
-    });
+    }) as any;
     node.innerHTML = customizeIconStyle(plugin, emoji, node);
   }
 };
@@ -319,9 +317,7 @@ export const addInheritanceForFolder = (plugin: IconFolderPlugin, folderPath: st
   }
 
   // add icons for all the child files
-  const files = plugin.app.vault
-    .getAllLoadedFiles()
-    .filter((f) => f.path.match(new RegExp(`(${folderPath}\/\w*(.md)?)(?!.*\/)`, 'g')));
+  const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
   files.forEach((f) => {
     if (plugin.getData()[f.path]) {
       removeFromDOM(f.path);
@@ -346,9 +342,7 @@ export const removeInheritanceForFolder = (plugin: IconFolderPlugin, folderPath:
   }
 
   // remove icons from all the child files
-  const files = plugin.app.vault
-    .getAllLoadedFiles()
-    .filter((f) => f.path.match(new RegExp(`(${folderPath}\/\w*(.md)?)(?!.*\/)`, 'g')));
+  const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
   files.forEach((f) => {
     // when the file path is not registered in the data it should remove the icon
     if (!plugin.getData()[f.path]) {

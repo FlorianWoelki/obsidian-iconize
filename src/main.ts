@@ -167,7 +167,7 @@ export default class IconFolderPlugin extends Plugin {
           if (file.parent.path === '/') return;
 
           inheritanceFolders.forEach(([path, obj]: [string, FolderIconObject]) => {
-            if (file.parent.path.match(new RegExp(`${path}(?!\/.*)`, 'g'))) {
+            if (file.parent.path.includes(path)) {
               addInheritanceIconToFile(this, this.registeredFileExplorers, file.path, obj.inheritanceIcon);
             }
           });
