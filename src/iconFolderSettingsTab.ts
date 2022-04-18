@@ -13,6 +13,7 @@ import {
   moveIconPackDirectories,
   setPath,
 } from './iconPackManager';
+import IconsPickerModal from './iconsPickerModal';
 import IconFolderPlugin from './main';
 import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
 import { refreshIconStyle } from './util';
@@ -20,6 +21,7 @@ import { refreshIconStyle } from './util';
 export default class IconFolderSettingsTab extends PluginSettingTab {
   private plugin: IconFolderPlugin;
   private textComponent: TextComponent;
+  private customRegexTextComponent: TextComponent;
 
   private dragOverElement: HTMLElement;
   private closeTimer: any;
@@ -225,7 +227,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
       );
     });
 
-    containerEl.createEl('h3', { text: 'Icon Folder Customization' });
+    containerEl.createEl('h3', { text: 'Icon Customization' });
 
     new Setting(containerEl)
       .setName('Icon font size (in pixels)')
@@ -305,6 +307,64 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
       }
     });
     extraPaddingSetting.components.push(extraPaddingDropdown, extraPaddingSlider);
+
+    containerEl.createEl('h3', { text: 'Custom Icon Rules' });
+
+    new Setting(containerEl)
+      .setName('Add icon rule')
+      .setDesc('Will add the icon based on the specific string.')
+      .addText((text) => {
+        text.setPlaceholder('regex or simple string');
+        this.customRegexTextComponent = text;
+      })
+      .addButton((btn) => {
+        btn.setButtonText('Choose icon');
+        btn.buttonEl.style.marginLeft = '12px';
+        btn.onClick(async () => {
+          if (this.customRegexTextComponent.getValue().length === 0) {
+            return;
+          }
+
+          const modal = new IconsPickerModal(this.app, this.plugin, '');
+          modal.onChooseItem = async (item) => {
+            let icon = '';
+            if (typeof item === 'object') {
+              icon = item.displayName;
+            } else {
+              icon = item;
+            }
+
+            this.plugin.getSettings().rules = [
+              ...this.plugin.getSettings().rules,
+              { rule: this.customRegexTextComponent.getValue(), icon },
+            ];
+            await this.plugin.saveIconFolderData();
+
+            this.display();
+            new Notice('Icon rule added.');
+            this.customRegexTextComponent.setValue('');
+          };
+          modal.open();
+        });
+      });
+
+    this.plugin.getSettings().rules.forEach((rule) => {
+      new Setting(containerEl)
+        .setName(rule.rule)
+        .setDesc(`Icon: ${rule.icon}`)
+        .addButton((btn) => {
+          btn.setIcon('trash');
+          btn.setTooltip('Remove the custom rule');
+          btn.onClick(async () => {
+            const newRules = this.plugin.getSettings().rules.filter((r) => rule.rule !== r.rule);
+            this.plugin.getSettings().rules = newRules;
+            await this.plugin.saveIconFolderData();
+
+            this.display();
+            new Notice('Custom rule deleted.');
+          });
+        });
+    });
   }
 
   private readFile(file: File, callback: (content: string) => void): void {

@@ -5,6 +5,11 @@ export interface ExtraPaddingSettings {
   left?: number;
 }
 
+interface CustomRule {
+  rule: string;
+  icon: string;
+}
+
 export interface IconFolderSettings {
   migrated: boolean;
   iconPacksPath: string;
@@ -13,6 +18,7 @@ export interface IconFolderSettings {
   extraPadding: ExtraPaddingSettings;
   recentlyUsedIcons: string[];
   recentlyUsedIconsSize: number;
+  rules: CustomRule[];
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -22,6 +28,7 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   iconColor: null,
   recentlyUsedIcons: [],
   recentlyUsedIconsSize: 5,
+  rules: [],
   extraPadding: {
     top: 2,
     right: 2,
