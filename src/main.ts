@@ -152,13 +152,14 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   private handleChangeLayout(): void {
-    // transform data that are objects to single strings
+    // Transform data that are objects to single strings.
     const data = Object.entries(this.data) as [string, string | FolderIconObject][];
 
     addIconsToDOM(this, data, this.registeredFileExplorers, () => {
       const searchLeaveDom = this.getSearchLeave().dom;
       searchLeaveDom.changed = () => this.addIconsToSearch();
 
+      // Register rename event for adding icons with custom rules to the DOM.
       this.registerEvent(
         this.app.vault.on('rename', (file) => {
           this.getSettings().rules.forEach((rule) => {
@@ -167,7 +168,7 @@ export default class IconFolderPlugin extends Plugin {
         }),
       );
 
-      // register create event for checking inheritance functionality
+      // Register create event for checking inheritance functionality.
       this.registerEvent(
         this.app.vault.on('create', (file) => {
           const inheritanceFolders = Object.entries(this.data).filter(

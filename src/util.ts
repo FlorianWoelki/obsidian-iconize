@@ -276,6 +276,12 @@ export const removeFromDOM = (path: string): void => {
   iconNode.remove();
 };
 
+/**
+ * This function removes the specified rule from all the loaded files in the vault.
+ *
+ * @param {IconFolderPlugin} plugin - The main plugin.
+ * @param {CustomRule} rule - Specific rule that will match all loaded files.
+ */
 export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: CustomRule): void => {
   try {
     // Rule is in some sort of regex.
@@ -295,6 +301,13 @@ export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: Cus
   }
 };
 
+/**
+ * This function adds to all the loaded files the icon based on the specific rule.
+ *
+ * @param {IconFolderPlugin} plugin - The main plugin.
+ * @param {CustomRule} rule - The custom rule for adding the icon.
+ * @param {TAbstractFile} file - Optional parameter if the rule should only be applied to one specific file.
+ */
 export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRule, file?: TAbstractFile): void => {
   try {
     // Rule is in some sort of regex.
