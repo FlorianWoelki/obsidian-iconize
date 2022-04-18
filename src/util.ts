@@ -3,6 +3,7 @@ import IconFolderPlugin, { FolderIconObject } from './main';
 import type { ExplorerView } from './@types/obsidian';
 import { getAllLoadedIconNames, getSvgFromLoadedIcon, Icon, nextIdentifier } from './iconPackManager';
 import { CustomRule } from './settings';
+import { TAbstractFile } from 'obsidian';
 
 /**
  * This function returns all enabled icons.
@@ -275,22 +276,34 @@ export const removeFromDOM = (path: string): void => {
   iconNode.remove();
 };
 
-export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRule): void => {
+export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRule, file?: TAbstractFile): void => {
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
-    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+    if (file) {
       if (file.name.match(regex)) {
         addToDOM(plugin, file.path, rule.icon);
       }
-    });
+    } else {
+      plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+        if (file.name.match(regex)) {
+          addToDOM(plugin, file.path, rule.icon);
+        }
+      });
+    }
   } catch {
     // Rule is not applicable to a regex format.
-    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+    if (file) {
       if (file.name.includes(rule.rule)) {
         addToDOM(plugin, file.path, rule.icon);
       }
-    });
+    } else {
+      plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+        if (file.name.includes(rule.rule)) {
+          addToDOM(plugin, file.path, rule.icon);
+        }
+      });
+    }
   }
 };
 

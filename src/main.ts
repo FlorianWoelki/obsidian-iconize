@@ -13,6 +13,7 @@ import {
   removeInheritanceForFolder,
   getIconsInData,
   addCustomRuleIconsToDOM,
+  addToDOM,
 } from './util';
 import { migrateIcons } from './migration';
 
@@ -157,6 +158,14 @@ export default class IconFolderPlugin extends Plugin {
     addIconsToDOM(this, data, this.registeredFileExplorers, () => {
       const searchLeaveDom = this.getSearchLeave().dom;
       searchLeaveDom.changed = () => this.addIconsToSearch();
+
+      this.registerEvent(
+        this.app.vault.on('rename', (file) => {
+          this.getSettings().rules.forEach((rule) => {
+            addCustomRuleIconsToDOM(this, rule, file);
+          });
+        }),
+      );
 
       // register create event for checking inheritance functionality
       this.registerEvent(

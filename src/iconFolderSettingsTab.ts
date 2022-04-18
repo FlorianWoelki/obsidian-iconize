@@ -16,7 +16,7 @@ import {
 import IconsPickerModal from './iconsPickerModal';
 import IconFolderPlugin from './main';
 import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
-import { addCustomRuleIconsToDOM, addToDOM, refreshIconStyle } from './util';
+import { addCustomRuleIconsToDOM, refreshIconStyle } from './util';
 
 export default class IconFolderSettingsTab extends PluginSettingTab {
   private plugin: IconFolderPlugin;
