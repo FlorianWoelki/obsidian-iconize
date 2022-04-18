@@ -16,7 +16,7 @@ import {
 import IconsPickerModal from './iconsPickerModal';
 import IconFolderPlugin from './main';
 import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
-import { refreshIconStyle } from './util';
+import { addCustomRuleIconsToDOM, addToDOM, refreshIconStyle } from './util';
 
 export default class IconFolderSettingsTab extends PluginSettingTab {
   private plugin: IconFolderPlugin;
@@ -334,15 +334,15 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
               icon = item;
             }
 
-            this.plugin.getSettings().rules = [
-              ...this.plugin.getSettings().rules,
-              { rule: this.customRegexTextComponent.getValue(), icon },
-            ];
+            const rule = { rule: this.customRegexTextComponent.getValue(), icon };
+            this.plugin.getSettings().rules = [...this.plugin.getSettings().rules, rule];
             await this.plugin.saveIconFolderData();
 
             this.display();
             new Notice('Icon rule added.');
             this.customRegexTextComponent.setValue('');
+
+            addCustomRuleIconsToDOM(this.plugin, rule);
           };
           modal.open();
         });

@@ -12,6 +12,7 @@ import {
   removeFromDOM,
   removeInheritanceForFolder,
   getIconsInData,
+  addCustomRuleIconsToDOM,
 } from './util';
 import { migrateIcons } from './migration';
 

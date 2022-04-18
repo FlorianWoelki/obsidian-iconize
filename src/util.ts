@@ -2,6 +2,7 @@ import twemoji from 'twemoji';
 import IconFolderPlugin, { FolderIconObject } from './main';
 import type { ExplorerView } from './@types/obsidian';
 import { getAllLoadedIconNames, getSvgFromLoadedIcon, Icon, nextIdentifier } from './iconPackManager';
+import { CustomRule } from './settings';
 
 /**
  * This function returns all enabled icons.
@@ -163,6 +164,46 @@ export const addIconsToDOM = (
       }
     });
 
+    const addCustomRuleIcon = (icon: string, path: string) => {
+      const fileItem = fileExplorer.view.fileItems[path];
+      const titleEl = fileItem.titleEl;
+      const titleInnerEl = fileItem.titleInnerEl;
+
+      // needs to check because of the refreshing the plugin will duplicate all the icons
+      if (titleEl.children.length === 2 || titleEl.children.length === 1) {
+        const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
+        if (existingIcon) {
+          existingIcon.remove();
+        }
+
+        const iconNode = titleEl.createDiv();
+        iconNode.classList.add('obsidian-icon-folder-icon');
+
+        insertIconToNode(plugin, icon, iconNode);
+
+        titleEl.insertBefore(iconNode, titleInnerEl);
+      }
+    };
+
+    plugin.getSettings().rules.forEach((rule) => {
+      try {
+        // Rule is in some sort of regex.
+        const regex = new RegExp(rule.rule);
+        plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+          if (file.name.match(regex)) {
+            addCustomRuleIcon(rule.icon, file.path);
+          }
+        });
+      } catch {
+        // Rule is not applicable to a regex format.
+        plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+          if (file.name.includes(rule.rule)) {
+            addCustomRuleIcon(rule.icon, file.path);
+          }
+        });
+      }
+    });
+
     if (callback) {
       callback();
     }
@@ -232,6 +273,25 @@ export const removeFromDOM = (path: string): void => {
   }
 
   iconNode.remove();
+};
+
+export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRule): void => {
+  try {
+    // Rule is in some sort of regex.
+    const regex = new RegExp(rule.rule);
+    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+      if (file.name.match(regex)) {
+        addToDOM(plugin, file.path, rule.icon);
+      }
+    });
+  } catch {
+    // Rule is not applicable to a regex format.
+    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+      if (file.name.includes(rule.rule)) {
+        addToDOM(plugin, file.path, rule.icon);
+      }
+    });
+  }
 };
 
 /**
@@ -367,7 +427,14 @@ export const getIconsInData = (plugin: IconFolderPlugin): string[] => {
   const result: string[] = [];
 
   Object.entries(plugin.getData()).forEach(([key, value]) => {
-    if (key !== 'settings' && key !== 'migrated') {
+    if (key === 'settings') {
+      const rules = value.rules;
+      rules.forEach((rule: CustomRule) => {
+        if (!isEmoji(rule.icon)) {
+          result.push(rule.icon);
+        }
+      });
+    } else if (key !== 'settings' && key !== 'migrated') {
       if (typeof value === 'string' && !isEmoji(value)) {
         result.push(value);
       } else if (typeof value === 'object') {

@@ -5,7 +5,7 @@ export interface ExtraPaddingSettings {
   left?: number;
 }
 
-interface CustomRule {
+export interface CustomRule {
   rule: string;
   icon: string;
 }
