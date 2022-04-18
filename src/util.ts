@@ -276,6 +276,25 @@ export const removeFromDOM = (path: string): void => {
   iconNode.remove();
 };
 
+export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: CustomRule): void => {
+  try {
+    // Rule is in some sort of regex.
+    const regex = new RegExp(rule.rule);
+    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+      if (file.name.match(regex)) {
+        removeFromDOM(file.path);
+      }
+    });
+  } catch {
+    // Rule is not applicable to a regex format.
+    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+      if (file.name.includes(rule.rule)) {
+        removeFromDOM(file.path);
+      }
+    });
+  }
+};
+
 export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRule, file?: TAbstractFile): void => {
   try {
     // Rule is in some sort of regex.

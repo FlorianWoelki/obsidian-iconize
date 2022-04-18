@@ -16,7 +16,7 @@ import {
 import IconsPickerModal from './iconsPickerModal';
 import IconFolderPlugin from './main';
 import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
-import { addCustomRuleIconsToDOM, refreshIconStyle } from './util';
+import { addCustomRuleIconsToDOM, refreshIconStyle, removeCustomRuleIconsFromDOM } from './util';
 
 export default class IconFolderSettingsTab extends PluginSettingTab {
   private plugin: IconFolderPlugin;
@@ -362,6 +362,8 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
 
             this.display();
             new Notice('Custom rule deleted.');
+
+            removeCustomRuleIconsFromDOM(this.plugin, rule);
           });
         });
     });
