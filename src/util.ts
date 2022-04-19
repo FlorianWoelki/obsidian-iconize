@@ -276,6 +276,13 @@ export const removeFromDOM = (path: string): void => {
   iconNode.remove();
 };
 
+/**
+ * This function checks if a custom rule icon exists in the path.
+ *
+ * @param {CustomRule} rule - The custom rule that will be checked on.
+ * @param {string} path - The path that will be checked on.
+ * @returns {boolean} If the icon with the path and rule exists and should be removed.
+ */
 export const doesCustomRuleIconExists = (rule: CustomRule, path: string): boolean => {
   const name = path.split('/').pop();
   try {
