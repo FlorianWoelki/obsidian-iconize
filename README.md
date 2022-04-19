@@ -44,6 +44,12 @@ To apply an inherited icon:
 2. Use the `Inherit icon` menu entry
 3. For removing: just right-click again and click `Remove inherit icon`
 
+### Custom Rules for automatically adding icons
+
+This feature allows you to add custom rules (based on regex or a simple string comparison) to always add icons when they meet a specific condition.
+
+To use custom rules, go to the plugin's settings, add a simple rule and an icon. Every file or folder that meets this condition will now have the icon.
+
 ### Using Twemoji for Emojis as folders
 
 [Twemoji](https://github.com/twitter/twemoji) is a popular library to add universal emojis to your application. With the help of this library, you can now set an emoji as your folder icon. Just follow these steps:
