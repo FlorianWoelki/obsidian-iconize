@@ -276,6 +276,24 @@ export const removeFromDOM = (path: string): void => {
   iconNode.remove();
 };
 
+export const doesCustomRuleIconExists = (rule: CustomRule, path: string): boolean => {
+  const name = path.split('/').pop();
+  try {
+    // Rule is in some sort of regex.
+    const regex = new RegExp(rule.rule);
+    if (name.match(regex)) {
+      return true;
+    }
+  } catch {
+    // Rule is not applicable to a regex format.
+    if (name.includes(rule.rule)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 /**
  * This function removes the specified rule from all the loaded files in the vault.
  *
@@ -283,22 +301,11 @@ export const removeFromDOM = (path: string): void => {
  * @param {CustomRule} rule - Specific rule that will match all loaded files.
  */
 export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: CustomRule): void => {
-  try {
-    // Rule is in some sort of regex.
-    const regex = new RegExp(rule.rule);
-    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
-      if (file.name.match(regex)) {
-        removeFromDOM(file.path);
-      }
-    });
-  } catch {
-    // Rule is not applicable to a regex format.
-    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
-      if (file.name.includes(rule.rule)) {
-        removeFromDOM(file.path);
-      }
-    });
-  }
+  plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+    if (doesCustomRuleIconExists(rule, file.path)) {
+      removeFromDOM(file.path);
+    }
+  });
 };
 
 /**
