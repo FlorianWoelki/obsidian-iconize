@@ -1,7 +1,7 @@
 {
   "name": "obsidian-icon-folder",
   "version": "1.1.5",
-  "description": "This is an obsidian plugin that allows us to use an icon in the prefix of a folder name.",
+  "description": "This plugin allows to add an emoji or an icon to a folder or file.",
   "main": "main.js",
   "scripts": {
     "prepare": "husky install",

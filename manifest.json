@@ -3,7 +3,7 @@
   "name": "Icon Folder",
   "version": "1.1.5",
   "minAppVersion": "0.9.12",
-  "description": "This plugin allows to add an emoji in front of a folder or an icon.",
+  "description": "This plugin allows to add an emoji or an icon to a folder or file.",
   "author": "Florian Woelki",
   "authorUrl": "https://florianwoelki.com/",
   "isDesktopOnly": false
