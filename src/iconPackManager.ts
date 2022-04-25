@@ -232,12 +232,13 @@ export const loadIcon = async (plugin: Plugin, iconPacks: string[], iconName: st
     return;
   }
 
-  if (!(await plugin.app.vault.adapter.exists(path + '/' + iconPack + '/' + name + '.svg'))) {
-    console.warn(`[obsidian-icon-folder] icon with name "${name}" was not found.`);
+  const fullPath = path + '/' + iconPack + '/' + name + '.svg';
+  if (!(await plugin.app.vault.adapter.exists(fullPath))) {
+    console.warn(`[obsidian-icon-folder] icon with name "${name}" was not found (full path: ${fullPath}).`);
     return;
   }
 
-  const content = await plugin.app.vault.adapter.read(path + '/' + iconPack + '/' + name + '.svg');
+  const content = await plugin.app.vault.adapter.read(fullPath);
   const icon = generateIcon(iconPack, name, content);
   preloadedIcons.push(icon);
 };
