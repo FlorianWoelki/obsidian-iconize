@@ -6,9 +6,12 @@ import {
   createDefaultDirectory,
   createFile,
   createIconPackDirectory,
+  deleteFile,
   deleteIconPack,
   doesIconPackExist,
   getAllIconPacks,
+  getFilesInDirectory,
+  getIconPack,
   getPath,
   moveIconPackDirectories,
   setPath,
@@ -153,6 +156,26 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
       const iconPackSetting = new Setting(containerEl)
         .setName(iconPack.name)
         .setDesc(`Total icons: ${iconPack.icons.length}`);
+      iconPackSetting.addButton((btn) => {
+        btn.setIcon('broken-link');
+        btn.setTooltip('Try to fix icon pack');
+        btn.onClick(async () => {
+          new Notice('Try to fix icon pack...');
+          const icons = await getFilesInDirectory(this.plugin, `${getPath()}/${iconPack.name}`);
+          for (let i = 0; i < icons.length; i++) {
+            const filePath = icons[i];
+            const fileName = filePath.split('/').pop();
+            const iconContent = await this.plugin.app.vault.adapter.read(filePath);
+
+            await createFile(this.plugin, iconPack.name, fileName, iconContent);
+            await deleteFile(this.plugin, filePath);
+
+            getIconPack(iconPack.name).icons = [];
+            addIconToIconPack(iconPack.name, fileName, iconContent);
+          }
+          new Notice('...tried to fix icon pack');
+        });
+      });
       iconPackSetting.addButton((btn) => {
         btn.setIcon('create-new');
         btn.setTooltip('Add an icon');

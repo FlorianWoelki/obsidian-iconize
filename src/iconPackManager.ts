@@ -74,6 +74,10 @@ const createDirectory = async (plugin: Plugin, dir: string): Promise<boolean> =>
   return doesDirExist;
 };
 
+export const deleteFile = async (plugin: Plugin, filePath: string) => {
+  await plugin.app.vault.adapter.remove(filePath);
+};
+
 export const createFile = async (
   plugin: Plugin,
   iconPackName: string,
@@ -81,7 +85,7 @@ export const createFile = async (
   content: string,
 ): Promise<void> => {
   const normalizedName = filename
-    .split(/[ -]/g)
+    .split(/[ -_]/g)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join('');
 
@@ -96,7 +100,11 @@ export const getAllIconPacks = () => {
   return iconPacks;
 };
 
-const getFilesInDirectory = async (plugin: Plugin, dir: string): Promise<string[]> => {
+export const getIconPack = (name: string) => {
+  return iconPacks.find((ip) => ip.name === name);
+};
+
+export const getFilesInDirectory = async (plugin: Plugin, dir: string): Promise<string[]> => {
   return (await plugin.app.vault.adapter.list(dir)).files;
 };
 
