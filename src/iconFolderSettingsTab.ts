@@ -20,7 +20,13 @@ import {
 import IconsPickerModal from './iconsPickerModal';
 import IconFolderPlugin from './main';
 import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
-import { addCustomRuleIconsToDOM, refreshIconStyle, removeCustomRuleIconsFromDOM } from './util';
+import {
+  addCustomRuleIconsToDOM,
+  addToDOM,
+  refreshIconStyle,
+  removeCustomRuleIconsFromDOM,
+  removeFromDOM,
+} from './util';
 
 export default class IconFolderSettingsTab extends PluginSettingTab {
   private plugin: IconFolderPlugin;
@@ -174,6 +180,15 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
             addIconToIconPack(iconPack.name, fileName, iconContent);
           }
           new Notice('...tried to fix icon pack');
+
+          // Refreshes the DOM.
+          Object.entries(this.plugin.getData()).forEach(async ([k, v]) => {
+            const doesPathExist = await this.plugin.app.vault.adapter.exists(k, true);
+            if (doesPathExist) {
+              removeFromDOM(k);
+              addToDOM(this.plugin, k, v);
+            }
+          });
         });
       });
       iconPackSetting.addButton((btn) => {
