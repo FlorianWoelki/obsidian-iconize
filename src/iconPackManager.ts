@@ -78,18 +78,26 @@ export const deleteFile = async (plugin: Plugin, filePath: string) => {
   await plugin.app.vault.adapter.remove(filePath);
 };
 
+export const getNormalizedName = (s: string) => {
+  return s
+    .split(/[ -]|[ _]/g)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('');
+};
+
+export const normalizeFileName = async (plugin: Plugin, oldPath: string) => {
+  const fileName = oldPath.split('/').pop();
+  const newPath = oldPath.substring(0, oldPath.indexOf(fileName)) + getNormalizedName(fileName);
+  await plugin.app.vault.adapter.rename(oldPath, newPath);
+};
+
 export const createFile = async (
   plugin: Plugin,
   iconPackName: string,
   filename: string,
   content: string,
 ): Promise<void> => {
-  const normalizedName = filename
-    .split(/[ -_]/g)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('');
-
-  await plugin.app.vault.adapter.write(`${path}/${iconPackName}/${normalizedName}`, content);
+  await plugin.app.vault.adapter.write(`${path}/${iconPackName}/${getNormalizedName(filename)}`, content);
 };
 
 export const createDefaultDirectory = async (plugin: Plugin): Promise<void> => {

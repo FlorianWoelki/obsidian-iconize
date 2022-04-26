@@ -14,6 +14,7 @@ import {
   getIconPack,
   getPath,
   moveIconPackDirectories,
+  normalizeFileName,
   setPath,
 } from './iconPackManager';
 import IconsPickerModal from './iconsPickerModal';
@@ -161,16 +162,15 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
         btn.setTooltip('Try to fix icon pack');
         btn.onClick(async () => {
           new Notice('Try to fix icon pack...');
+          getIconPack(iconPack.name).icons = [];
           const icons = await getFilesInDirectory(this.plugin, `${getPath()}/${iconPack.name}`);
           for (let i = 0; i < icons.length; i++) {
             const filePath = icons[i];
             const fileName = filePath.split('/').pop();
             const iconContent = await this.plugin.app.vault.adapter.read(filePath);
 
-            await createFile(this.plugin, iconPack.name, fileName, iconContent);
-            await deleteFile(this.plugin, filePath);
+            await normalizeFileName(this.plugin, filePath);
 
-            getIconPack(iconPack.name).icons = [];
             addIconToIconPack(iconPack.name, fileName, iconContent);
           }
           new Notice('...tried to fix icon pack');
