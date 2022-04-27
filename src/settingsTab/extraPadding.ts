@@ -6,8 +6,8 @@ import { refreshIconStyle } from '../util';
 export default class ExtraPaddingSetting extends IconFolderSetting {
   public display(): void {
     const extraPaddingSetting = new Setting(this.containerEl)
-      .setName('Top Extrapadding (in pixels)')
-      .setDesc('Change the top padding of the icons.')
+      .setName('Extrapadding (in pixels)')
+      .setDesc('Change the padding of the icons.')
       .setClass('obsidian-icon-folder-setting');
     const extraPaddingDropdown = new DropdownComponent(extraPaddingSetting.controlEl).addOptions({
       top: 'Top',
