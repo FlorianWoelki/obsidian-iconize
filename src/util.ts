@@ -353,12 +353,12 @@ export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRu
     const regex = new RegExp(rule.rule);
     if (file) {
       if (file.name.match(regex)) {
-        addToDOM(plugin, file.path, rule.icon);
+        addToDOM(plugin, file.path, rule.icon, rule.color);
       }
     } else {
       plugin.app.vault.getAllLoadedFiles().forEach((file) => {
         if (file.name.match(regex)) {
-          addToDOM(plugin, file.path, rule.icon);
+          addToDOM(plugin, file.path, rule.icon, rule.color);
         }
       });
     }
@@ -366,12 +366,12 @@ export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRu
     // Rule is not applicable to a regex format.
     if (file) {
       if (file.name.includes(rule.rule)) {
-        addToDOM(plugin, file.path, rule.icon);
+        addToDOM(plugin, file.path, rule.icon, rule.color);
       }
     } else {
       plugin.app.vault.getAllLoadedFiles().forEach((file) => {
         if (file.name.includes(rule.rule)) {
-          addToDOM(plugin, file.path, rule.icon);
+          addToDOM(plugin, file.path, rule.icon, rule.color);
         }
       });
     }
