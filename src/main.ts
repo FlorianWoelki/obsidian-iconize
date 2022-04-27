@@ -1,7 +1,6 @@
 import { Plugin, MenuItem, TFile } from 'obsidian';
-import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
+import { ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, listPath, loadIcon, loadUsedIcons, setPath } from './iconPackManager';
-import IconFolderSettingsTab from './iconFolderSettingsTab';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, IconFolderSettings } from './settings';
 import {
@@ -16,6 +15,7 @@ import {
   doesCustomRuleIconExists,
 } from './util';
 import { migrateIcons } from './migration';
+import IconFolderSettingsTab from './settingsTab';
 
 export interface FolderIconObject {
   iconName: string | null;
