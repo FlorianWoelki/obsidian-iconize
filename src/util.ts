@@ -321,6 +321,25 @@ export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: Cus
   });
 };
 
+export const colorizeCustomRuleIcons = (plugin: IconFolderPlugin, rule: CustomRule): void => {
+  try {
+    // Rule is in some sort of regex.
+    const regex = new RegExp(rule.rule);
+    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+      if (file.name.match(regex)) {
+        addToDOM(plugin, file.path, rule.icon, rule.color);
+      }
+    });
+  } catch {
+    // Rule is not applicable to a regex format.
+    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
+      if (file.name.includes(rule.rule)) {
+        addToDOM(plugin, file.path, rule.icon, rule.color);
+      }
+    });
+  }
+};
+
 /**
  * This function adds to all the loaded files the icon based on the specific rule.
  *
@@ -334,14 +353,12 @@ export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRu
     const regex = new RegExp(rule.rule);
     if (file) {
       if (file.name.match(regex)) {
-        const icon = colorizeIcon(rule.icon, rule.color);
-        addToDOM(plugin, file.path, icon);
+        addToDOM(plugin, file.path, rule.icon);
       }
     } else {
       plugin.app.vault.getAllLoadedFiles().forEach((file) => {
         if (file.name.match(regex)) {
-          const icon = colorizeIcon(rule.icon, rule.color);
-          addToDOM(plugin, file.path, icon);
+          addToDOM(plugin, file.path, rule.icon);
         }
       });
     }
@@ -370,7 +387,7 @@ export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRu
  * @param {string} path - The path in the DOM where the icon will be added.
  * @param {string} icon - The icon that will be added to the DOM - can be an icon id or codepoint for twemoji.
  */
-export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string): void => {
+export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string, color?: string): void => {
   if (plugin.getData()[path]) {
     removeFromDOM(path);
   }
@@ -400,7 +417,7 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string): 
   const iconNode = document.createElement('div');
   iconNode.classList.add('obsidian-icon-folder-icon');
 
-  insertIconToNode(plugin, icon, iconNode);
+  insertIconToNode(plugin, icon, iconNode, color);
 
   node.insertBefore(iconNode, titleNode);
 };

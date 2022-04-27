@@ -23,6 +23,7 @@ import { DEFAULT_SETTINGS, ExtraPaddingSettings } from './settings';
 import {
   addCustomRuleIconsToDOM,
   addToDOM,
+  colorizeCustomRuleIcons,
   refreshIconStyle,
   removeCustomRuleIconsFromDOM,
   removeFromDOM,
@@ -395,8 +396,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
           rule.color = value;
           await this.plugin.saveIconFolderData();
 
-          removeCustomRuleIconsFromDOM(this.plugin, rule);
-          addCustomRuleIconsToDOM(this.plugin, rule);
+          colorizeCustomRuleIcons(this.plugin, rule);
         });
       settingRuleEl.components.push(colorPicker);
 
