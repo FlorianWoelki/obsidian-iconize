@@ -73,22 +73,28 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
     icon = icon.replace(heightRe, `height="${plugin.getSettings().fontSize}px"`);
   }
 
-  // Allow custom icon color
-  const colorRe = new RegExp(/fill="(\w|#)+"/g);
-  const colorMatch = icon.match(colorRe);
-  if (colorMatch) {
-    colorMatch.forEach((color) => {
-      if (color.contains('currentColor')) {
-        icon = icon.replace(color, `fill="${plugin.getSettings().iconColor ?? 'currentColor'}"`);
-      }
-    });
-  }
+  // Allow custom icon color.
+  icon = colorizeIcon(icon, plugin.getSettings().iconColor);
 
   // Change padding of icon
   if (plugin.getSettings().extraPadding) {
     el.style.padding = `${plugin.getSettings().extraPadding.top ?? 2}px ${
       plugin.getSettings().extraPadding.right ?? 2
     }px ${plugin.getSettings().extraPadding.bottom ?? 2}px ${plugin.getSettings().extraPadding.left ?? 2}px`;
+  }
+
+  return icon;
+};
+
+const colorizeIcon = (icon: string, c: string | undefined): string => {
+  const colorRe = new RegExp(/fill="(\w|#)+"/g);
+  const colorMatch = icon.match(colorRe);
+  if (colorMatch) {
+    colorMatch.forEach((color) => {
+      if (color.contains('currentColor')) {
+        icon = icon.replace(color, `fill="${c ?? 'currentColor'}"`);
+      }
+    });
   }
 
   return icon;
@@ -165,7 +171,7 @@ export const addIconsToDOM = (
       }
     });
 
-    const addCustomRuleIcon = (icon: string, path: string) => {
+    const addCustomRuleIcon = (rule: CustomRule, path: string) => {
       const fileItem = fileExplorer.view.fileItems[path];
       const titleEl = fileItem.titleEl;
       const titleInnerEl = fileItem.titleInnerEl;
@@ -180,7 +186,7 @@ export const addIconsToDOM = (
         const iconNode = titleEl.createDiv();
         iconNode.classList.add('obsidian-icon-folder-icon');
 
-        insertIconToNode(plugin, icon, iconNode);
+        insertIconToNode(plugin, rule.icon, iconNode, rule.color);
 
         titleEl.insertBefore(iconNode, titleInnerEl);
       }
@@ -192,14 +198,14 @@ export const addIconsToDOM = (
         const regex = new RegExp(rule.rule);
         plugin.app.vault.getAllLoadedFiles().forEach((file) => {
           if (file.name.match(regex)) {
-            addCustomRuleIcon(rule.icon, file.path);
+            addCustomRuleIcon(rule, file.path);
           }
         });
       } catch {
         // Rule is not applicable to a regex format.
         plugin.app.vault.getAllLoadedFiles().forEach((file) => {
           if (file.name.includes(rule.rule)) {
-            addCustomRuleIcon(rule.icon, file.path);
+            addCustomRuleIcon(rule, file.path);
           }
         });
       }
@@ -328,12 +334,14 @@ export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRu
     const regex = new RegExp(rule.rule);
     if (file) {
       if (file.name.match(regex)) {
-        addToDOM(plugin, file.path, rule.icon);
+        const icon = colorizeIcon(rule.icon, rule.color);
+        addToDOM(plugin, file.path, icon);
       }
     } else {
       plugin.app.vault.getAllLoadedFiles().forEach((file) => {
         if (file.name.match(regex)) {
-          addToDOM(plugin, file.path, rule.icon);
+          const icon = colorizeIcon(rule.icon, rule.color);
+          addToDOM(plugin, file.path, icon);
         }
       });
     }
@@ -404,11 +412,15 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string): 
  * @param {string} icon - The icon string (can be an icon id or a unicode for twemoji).
  * @param {HTMLElement} node - The element where the icon will be inserted.
  */
-export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement): void => {
+export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement, color?: string): void => {
   const possibleIcon = getIcon(icon.substring(nextIdentifier(icon)));
 
   if (possibleIcon) {
-    node.innerHTML = customizeIconStyle(plugin, possibleIcon, node);
+    let iconContent = customizeIconStyle(plugin, possibleIcon, node);
+    if (color) {
+      iconContent = colorizeIcon(possibleIcon, color);
+    }
+    node.innerHTML = iconContent;
   } else {
     const emoji = twemoji.parse(icon, {
       folder: 'svg',

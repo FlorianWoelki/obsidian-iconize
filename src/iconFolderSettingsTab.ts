@@ -395,8 +395,8 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
           rule.color = value;
           await this.plugin.saveIconFolderData();
 
-          new Notice('Changed color for icon with rule');
-          refreshIconStyle(this.plugin);
+          removeCustomRuleIconsFromDOM(this.plugin, rule);
+          addCustomRuleIconsToDOM(this.plugin, rule);
         });
       settingRuleEl.components.push(colorPicker);
 
