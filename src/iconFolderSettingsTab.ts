@@ -387,23 +387,33 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
       });
 
     this.plugin.getSettings().rules.forEach((rule) => {
-      new Setting(containerEl)
-        .setName(rule.rule)
-        .setDesc(`Icon: ${rule.icon}`)
-        .addButton((btn) => {
-          btn.setIcon('trash');
-          btn.setTooltip('Remove the custom rule');
-          btn.onClick(async () => {
-            const newRules = this.plugin.getSettings().rules.filter((r) => rule.rule !== r.rule);
-            this.plugin.getSettings().rules = newRules;
-            await this.plugin.saveIconFolderData();
+      const settingRuleEl = new Setting(containerEl).setName(rule.rule).setDesc(`Icon: ${rule.icon}`);
 
-            this.display();
-            new Notice('Custom rule deleted.');
+      const colorPicker = new ColorPickerComponent(settingRuleEl.controlEl)
+        .setValue(rule.color ?? '#000000')
+        .onChange(async (value) => {
+          rule.color = value;
+          await this.plugin.saveIconFolderData();
 
-            removeCustomRuleIconsFromDOM(this.plugin, rule);
-          });
+          new Notice('Changed color for icon with rule');
+          refreshIconStyle(this.plugin);
         });
+      settingRuleEl.components.push(colorPicker);
+
+      settingRuleEl.addButton((btn) => {
+        btn.setIcon('trash');
+        btn.setTooltip('Remove the custom rule');
+        btn.onClick(async () => {
+          const newRules = this.plugin.getSettings().rules.filter((r) => rule.rule !== r.rule);
+          this.plugin.getSettings().rules = newRules;
+          await this.plugin.saveIconFolderData();
+
+          this.display();
+          new Notice('Custom rule deleted.');
+
+          removeCustomRuleIconsFromDOM(this.plugin, rule);
+        });
+      });
     });
   }
 

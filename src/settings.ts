@@ -8,6 +8,7 @@ export interface ExtraPaddingSettings {
 export interface CustomRule {
   rule: string;
   icon: string;
+  color?: string;
 }
 
 export interface IconFolderSettings {
