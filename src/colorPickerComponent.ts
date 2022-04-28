@@ -12,6 +12,7 @@ export class ColorPickerComponent extends ValueComponent<string> {
     this.inputEl = containerEl.createEl('input');
     this.inputEl.type = 'color';
     this.inputEl.ariaLabel = 'Click to change the color';
+    this.containerEl.classList.add('obsidian-icon-folder-setting');
   }
 
   onChange(callback: (value: string) => void): this {

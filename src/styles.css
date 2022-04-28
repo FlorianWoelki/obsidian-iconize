@@ -9,6 +9,10 @@
   margin-right: 12px;
 }
 
+.obsidian-icon-folder-setting input[type='color'] {
+  margin: 0 6px;
+}
+
 .obsidian-icon-folder-modal.prompt-results {
   margin: 0;
   overflow-y: auto;
