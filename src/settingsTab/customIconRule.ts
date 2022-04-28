@@ -49,7 +49,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             new Notice('Icon rule added.');
             this.textComponent.setValue('');
 
-            addCustomRuleIconsToDOM(this.plugin, rule);
+            await addCustomRuleIconsToDOM(this.plugin, rule);
           };
           modal.open();
         });
@@ -88,6 +88,9 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           } else {
             rule.for = 'files';
           }
+
+          removeCustomRuleIconsFromDOM(this.plugin, rule);
+          await addCustomRuleIconsToDOM(this.plugin, rule);
 
           await this.plugin.saveIconFolderData();
           this.refreshDisplay();

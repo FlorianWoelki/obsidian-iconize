@@ -381,7 +381,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
             new Notice('Icon rule added.');
             this.customRegexTextComponent.setValue('');
 
-            addCustomRuleIconsToDOM(this.plugin, rule);
+            await addCustomRuleIconsToDOM(this.plugin, rule);
           };
           modal.open();
         });

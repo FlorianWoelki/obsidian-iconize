@@ -171,7 +171,7 @@ export const addIconsToDOM = (
       }
     });
 
-    const addCustomRuleIcon = (rule: CustomRule, path: string) => {
+    const addCustomRuleIcon = async (rule: CustomRule, path: string) => {
       const fileItem = fileExplorer.view.fileItems[path];
       const titleEl = fileItem.titleEl;
       const titleInnerEl = fileItem.titleInnerEl;
@@ -196,15 +196,17 @@ export const addIconsToDOM = (
       try {
         // Rule is in some sort of regex.
         const regex = new RegExp(rule.rule);
-        plugin.app.vault.getAllLoadedFiles().forEach((file) => {
-          if (file.name.match(regex)) {
+        plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+          const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+          if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
             addCustomRuleIcon(rule, file.path);
           }
         });
       } catch {
         // Rule is not applicable to a regex format.
-        plugin.app.vault.getAllLoadedFiles().forEach((file) => {
-          if (file.name.includes(rule.rule)) {
+        plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+          const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
             addCustomRuleIcon(rule, file.path);
           }
         });
@@ -340,6 +342,14 @@ export const colorizeCustomRuleIcons = (plugin: IconFolderPlugin, rule: CustomRu
   }
 };
 
+const isToRuleApplicable = (rule: CustomRule, fileType: 'file' | 'folder'): boolean => {
+  return (
+    rule.for === 'everything' ||
+    (rule.for === 'files' && fileType === 'file') ||
+    (rule.for === 'folders' && fileType === 'folder')
+  );
+};
+
 /**
  * This function adds to all the loaded files the icon based on the specific rule.
  *
@@ -347,17 +357,23 @@ export const colorizeCustomRuleIcons = (plugin: IconFolderPlugin, rule: CustomRu
  * @param {CustomRule} rule - The custom rule for adding the icon.
  * @param {TAbstractFile} file - Optional parameter if the rule should only be applied to one specific file.
  */
-export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRule, file?: TAbstractFile): void => {
+export const addCustomRuleIconsToDOM = async (
+  plugin: IconFolderPlugin,
+  rule: CustomRule,
+  file?: TAbstractFile,
+): Promise<void> => {
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
     if (file) {
-      if (file.name.match(regex)) {
+      const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+      if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
         addToDOM(plugin, file.path, rule.icon, rule.color);
       }
     } else {
-      plugin.app.vault.getAllLoadedFiles().forEach((file) => {
-        if (file.name.match(regex)) {
+      plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+        const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+        if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
           addToDOM(plugin, file.path, rule.icon, rule.color);
         }
       });
@@ -365,12 +381,14 @@ export const addCustomRuleIconsToDOM = (plugin: IconFolderPlugin, rule: CustomRu
   } catch {
     // Rule is not applicable to a regex format.
     if (file) {
-      if (file.name.includes(rule.rule)) {
+      const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+      if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
         addToDOM(plugin, file.path, rule.icon, rule.color);
       }
     } else {
-      plugin.app.vault.getAllLoadedFiles().forEach((file) => {
-        if (file.name.includes(rule.rule)) {
+      plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+        const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+        if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
           addToDOM(plugin, file.path, rule.icon, rule.color);
         }
       });
