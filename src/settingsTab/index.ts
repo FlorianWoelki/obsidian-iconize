@@ -36,6 +36,6 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
     new ExtraPaddingSetting(plugin, containerEl).display();
 
     containerEl.createEl('h3', { text: 'Custom Icon Rules' });
-    new CustomIconRuleSetting(plugin, containerEl, app).display();
+    new CustomIconRuleSetting(plugin, containerEl, app, () => this.display()).display();
   }
 }

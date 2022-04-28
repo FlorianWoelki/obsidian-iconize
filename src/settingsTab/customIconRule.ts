@@ -8,10 +8,12 @@ import { addCustomRuleIconsToDOM, colorizeCustomRuleIcons, removeCustomRuleIcons
 export default class CustomIconRuleSetting extends IconFolderSetting {
   private app: App;
   private textComponent: TextComponent;
+  private refreshDisplay: () => void;
 
-  constructor(plugin: IconFolderPlugin, containerEl: HTMLElement, app: App) {
+  constructor(plugin: IconFolderPlugin, containerEl: HTMLElement, app: App, refreshDisplay: () => void) {
     super(plugin, containerEl);
     this.app = app;
+    this.refreshDisplay = refreshDisplay;
   }
 
   public display(): void {
@@ -43,7 +45,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             this.plugin.getSettings().rules = [...this.plugin.getSettings().rules, rule];
             await this.plugin.saveIconFolderData();
 
-            this.display();
+            this.refreshDisplay();
             new Notice('Icon rule added.');
             this.textComponent.setValue('');
 
@@ -67,6 +69,32 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
       settingRuleEl.components.push(colorPicker);
 
       settingRuleEl.addButton((btn) => {
+        const isFor = rule.for ?? 'everything';
+        if (isFor === 'folders') {
+          btn.setIcon('folder');
+        } else if (isFor === 'files') {
+          btn.setIcon('document');
+        } else {
+          btn.setIcon('documents');
+        }
+
+        btn.setTooltip(`Icon applicable to: ${isFor}`);
+
+        btn.onClick(async () => {
+          if (isFor === 'folders') {
+            rule.for = 'everything';
+          } else if (isFor === 'files') {
+            rule.for = 'folders';
+          } else {
+            rule.for = 'files';
+          }
+
+          await this.plugin.saveIconFolderData();
+          this.refreshDisplay();
+        });
+      });
+
+      settingRuleEl.addButton((btn) => {
         btn.setIcon('trash');
         btn.setTooltip('Remove the custom rule');
         btn.onClick(async () => {
@@ -74,7 +102,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           this.plugin.getSettings().rules = newRules;
           await this.plugin.saveIconFolderData();
 
-          this.display();
+          this.refreshDisplay();
           new Notice('Custom rule deleted.');
 
           removeCustomRuleIconsFromDOM(this.plugin, rule);

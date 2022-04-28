@@ -9,6 +9,7 @@ export interface CustomRule {
   rule: string;
   icon: string;
   color?: string;
+  for?: 'everything' | 'files' | 'folders';
 }
 
 export interface IconFolderSettings {
