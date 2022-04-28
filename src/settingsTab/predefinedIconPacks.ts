@@ -5,10 +5,12 @@ import IconFolderPlugin from '../main';
 
 export default class PredefinedIconPacksSetting extends IconFolderSetting {
   private app: App;
+  private refreshDisplay: () => void;
 
-  constructor(plugin: IconFolderPlugin, containerEl: HTMLElement, app: App) {
+  constructor(plugin: IconFolderPlugin, containerEl: HTMLElement, app: App, refreshDisplay: () => void) {
     super(plugin, containerEl);
     this.app = app;
+    this.refreshDisplay = refreshDisplay;
   }
 
   public display(): void {
@@ -20,7 +22,7 @@ export default class PredefinedIconPacksSetting extends IconFolderSetting {
         btn.onClick(() => {
           const modal = new IconPackBrowserModal(this.app, this.plugin);
           modal.onAddedIconPack = () => {
-            this.display();
+            this.refreshDisplay();
           };
           modal.open();
         });

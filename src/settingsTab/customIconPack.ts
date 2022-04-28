@@ -20,9 +20,11 @@ export default class CustomIconPackSetting extends IconFolderSetting {
   private dragOverElement: HTMLElement;
   private closeTimer: any;
   private dragTargetElement: HTMLElement;
+  private refreshDisplay: () => void;
 
-  constructor(plugin: IconFolderPlugin, containerEl: HTMLElement) {
+  constructor(plugin: IconFolderPlugin, containerEl: HTMLElement, refreshDisplay: () => void) {
     super(plugin, containerEl);
+    this.refreshDisplay = refreshDisplay;
     this.dragOverElement = document.createElement('div');
     this.dragOverElement.addClass('obsidian-icon-folder-dragover-el');
     this.dragOverElement.style.display = 'hidden';
@@ -100,7 +102,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
 
           await createIconPackDirectory(this.plugin, normalizedName);
           this.textComponent.setValue('');
-          this.display();
+          this.refreshDisplay();
           new Notice('Icon pack successfully created.');
         });
       });
@@ -165,7 +167,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
         btn.setTooltip('Remove the icon pack');
         btn.onClick(async () => {
           await deleteIconPack(this.plugin, iconPack.name);
-          this.display();
+          this.refreshDisplay();
           new Notice('Icon pack successfully deleted.');
         });
       });

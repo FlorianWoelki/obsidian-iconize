@@ -27,8 +27,8 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
     new IconPacksPathSetting(plugin, containerEl).display();
 
     containerEl.createEl('h3', { text: 'Icon Packs' });
-    new PredefinedIconPacksSetting(plugin, containerEl, app).display();
-    new CustomIconPackSetting(plugin, containerEl).display();
+    new PredefinedIconPacksSetting(plugin, containerEl, app, () => this.display()).display();
+    new CustomIconPackSetting(plugin, containerEl, () => this.display()).display();
 
     containerEl.createEl('h3', { text: 'Icon Customization' });
     new IconFontSizeSetting(plugin, containerEl).display();
