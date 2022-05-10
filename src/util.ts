@@ -204,9 +204,11 @@ export const addIconsToDOM = (
         });
       } catch {
         // Rule is not applicable to a regex format.
+
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+          const settings_folder = checkIfFolderHasIconsSettings(plugin, file.path);
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
+          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType) && !settings_folder) {
             addCustomRuleIcon(rule, file.path);
           }
         });
