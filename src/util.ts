@@ -175,7 +175,6 @@ export const addIconsToDOM = (
       const fileItem = fileExplorer.view.fileItems[path];
       const titleEl = fileItem.titleEl;
       const titleInnerEl = fileItem.titleInnerEl;
-
       // needs to check because of the refreshing the plugin will duplicate all the icons
       if (titleEl.children.length === 2 || titleEl.children.length === 1) {
         const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
@@ -198,7 +197,8 @@ export const addIconsToDOM = (
         const regex = new RegExp(rule.rule);
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
+          const settings_folder = checkIfFolderHasIconsSettings(plugin, file.path);
+          if (file.name.match(regex) && isToRuleApplicable(rule, fileType) && !settings_folder) {
             addCustomRuleIcon(rule, file.path);
           }
         });
@@ -446,6 +446,7 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string, c
  * @param {IconFolderPlugin} plugin - The main plugin.
  * @param {string} icon - The icon string (can be an icon id or a unicode for twemoji).
  * @param {HTMLElement} node - The element where the icon will be inserted.
+ * @param color
  */
 export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement, color?: string): void => {
   const possibleIcon = getIcon(icon.substring(nextIdentifier(icon)));
@@ -556,6 +557,16 @@ export const getIconsInData = (plugin: IconFolderPlugin): string[] => {
 
   return result;
 };
+
+export const checkIfFolderHasIconsSettings = (plugin: IconFolderPlugin, folderPath: string): boolean => {
+  const allIcons = getIconsWithPathInData(plugin);
+  const folder: string[] = []
+  allIcons.forEach((icon) => {
+    folder.push(icon.key);
+  });
+  return !!folder.includes(folderPath);
+  
+}
 
 export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
   const result: { key: string; value: string }[] = [];
