@@ -197,8 +197,8 @@ export const addIconsToDOM = (
         const regex = new RegExp(rule.rule);
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          const settings_folder = checkIfFolderHasIconsSettings(plugin, file.path);
-          if (file.name.match(regex) && isToRuleApplicable(rule, fileType) && !settings_folder) {
+          const settingsFolder = checkIfFolderHasIconsSettings(plugin, file.path);
+          if (file.name.match(regex) && isToRuleApplicable(rule, fileType) && !settingsFolder) {
             addCustomRuleIcon(rule, file.path);
           }
         });
@@ -206,9 +206,9 @@ export const addIconsToDOM = (
         // Rule is not applicable to a regex format.
 
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
-          const settings_folder = checkIfFolderHasIconsSettings(plugin, file.path);
+          const settingsFolder = checkIfFolderHasIconsSettings(plugin, file.path);
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType) && !settings_folder) {
+          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType) && !settingsFolder) {
             addCustomRuleIcon(rule, file.path);
           }
         });
@@ -572,7 +572,6 @@ export const checkIfFolderHasIconsSettings = (plugin: IconFolderPlugin, folderPa
   if (inheritanceChecker.length > 0) {
     inheritance = true;
   }
-  console.log(folderPath, folder, inheritance);
   return !!folder.includes(folderPath) || inheritance;
 }
 
