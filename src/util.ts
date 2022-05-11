@@ -567,12 +567,8 @@ export const checkIfFolderHasIconsSettings = (plugin: IconFolderPlugin, folderPa
     folder.push(icon.key);
   });
   // inheritance folder
-  const inheritanceChecker = folder.filter((f) => folderPath.includes(f));
-  let inheritance = false;
-  if (inheritanceChecker.length > 0) {
-    inheritance = true;
-  }
-  return !!folder.includes(folderPath) || inheritance;
+  const inheritanceChecker = folder.filter((f) => folderPath.includes(f)).length > 0;
+  return !!folder.includes(folderPath) || inheritanceChecker;
 }
 
 export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
