@@ -1,4 +1,4 @@
-import { Notice, Plugin } from 'obsidian';
+import {Notice, Plugin} from 'obsidian';
 
 export interface Icon {
   name: string;
@@ -56,8 +56,7 @@ export const createIconPackDirectory = async (plugin: Plugin, dir: string): Prom
 };
 
 export const deleteIconPack = async (plugin: Plugin, dir: string): Promise<void> => {
-  const newIconPacks = iconPacks.filter((iconPack) => iconPack.name !== dir);
-  iconPacks = newIconPacks;
+  iconPacks = iconPacks.filter((iconPack) => iconPack.name !== dir);
   await plugin.app.vault.adapter.rmdir(`${path}/${dir}`, true);
 };
 
@@ -330,7 +329,7 @@ export const getSvgFromLoadedIcon = (iconName: string): string => {
   }
 
   if (foundIcon) {
-    let fileContent = '';
+    let fileContent: string;
     if (typeof foundIcon.svgPath === 'object') {
       fileContent = `<svg width="16" fill="currentColor" height="16" ${
         foundIcon.svgViewbox.length !== 0 ? foundIcon.svgViewbox : 'viewbox="0 0 24 24"'
