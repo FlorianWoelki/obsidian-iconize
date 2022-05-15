@@ -1,6 +1,6 @@
 {
   "name": "obsidian-icon-folder",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "This plugin allows to add an emoji or an icon to a folder or file.",
   "main": "main.js",
   "scripts": {
@@ -9,7 +9,11 @@
     "dev": "rollup --config rollup.config.js -w",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
-    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
+    "semantic": "standard-version"
+  },
+  "standard-version": {
+    "t": ""
   },
   "keywords": [],
   "repository": {
@@ -48,6 +52,8 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
-    "jszip": "^3.7.1"
+    "jszip": "^3.7.1",
+    "semantic-release": "^19.0.2",
+    "standard-version": "^9.5.0"
   }
 }
