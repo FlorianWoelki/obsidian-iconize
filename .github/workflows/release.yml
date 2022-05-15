@@ -6,7 +6,7 @@ on:
         tags:
             - "*"
 env:
-    PLUGIN_NAME: obsidian-metacopy # Change this to match the id of your plugin.
+    PLUGIN_NAME: obsidian-icon-folder # Change this to match the id of your plugin.
 
 jobs:
     build:
@@ -24,9 +24,7 @@ jobs:
               run: |
                   yarn install
                   yarn run build
-                  mkdir ${{ env.PLUGIN_NAME }}
-                  cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
-                  zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
+                  zip -r dist.zip ${{ env.PLUGIN_NAME }}
                   ls
                   echo "::set-output name=tag_name::$(git tag --sort version:refname | tail -n 1)"
                   npx rexreplace "^.*?#+\s\[.*?\n.*?(?=\s*#+\s\[)" "_" -s -M -G -m -o "CHANGELOG.md" > CHANGELOG-LATEST.md
