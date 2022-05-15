@@ -204,7 +204,6 @@ export const addIconsToDOM = (
         });
       } catch {
         // Rule is not applicable to a regex format.
-
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
           const settingsFolder = checkIfFolderHasIconsSettings(plugin, file.path);
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
@@ -562,14 +561,14 @@ export const getIconsInData = (plugin: IconFolderPlugin): string[] => {
 
 export const checkIfFolderHasIconsSettings = (plugin: IconFolderPlugin, folderPath: string): boolean => {
   const allIcons = getIconsWithPathInData(plugin);
-  const folder: string[] = []
+  const folder: string[] = [];
   allIcons.forEach((icon) => {
     folder.push(icon.key);
   });
   // inheritance folder
   const inheritanceChecker = folder.filter((f) => folderPath.includes(f)).length > 0;
   return !!folder.includes(folderPath) || inheritanceChecker;
-}
+};
 
 export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
   const result: { key: string; value: string }[] = [];

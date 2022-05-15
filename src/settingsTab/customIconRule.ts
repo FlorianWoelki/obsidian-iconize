@@ -4,6 +4,7 @@ import { ColorPickerComponent } from '../colorPickerComponent';
 import IconsPickerModal from '../iconsPickerModal';
 import IconFolderPlugin from '../main';
 import { addCustomRuleIconsToDOM, colorizeCustomRuleIcons, removeCustomRuleIconsFromDOM } from '../util';
+import { CustomRule } from '../settings';
 
 export default class CustomIconRuleSetting extends IconFolderSetting {
   private app: App;
@@ -41,7 +42,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
               icon = item;
             }
 
-            const rule = { rule: this.textComponent.getValue(), icon };
+            const rule: CustomRule = { rule: this.textComponent.getValue(), icon, for: 'everything' };
             this.plugin.getSettings().rules = [...this.plugin.getSettings().rules, rule];
             await this.plugin.saveIconFolderData();
 
