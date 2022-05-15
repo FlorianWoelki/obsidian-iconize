@@ -198,7 +198,7 @@ export const addIconsToDOM = (
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
           const settingsFolder = checkIfFolderHasIconsSettings(plugin, file.path);
-          if (file.name.match(regex) && isToRuleApplicable(rule, fileType) && !settingsFolder) {
+          if (file.name.match(regex) && isToRuleApplicable(rule, fileType) && settingsFolder) {
             addCustomRuleIcon(rule, file.path);
           }
         });
@@ -207,7 +207,7 @@ export const addIconsToDOM = (
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
           const settingsFolder = checkIfFolderHasIconsSettings(plugin, file.path);
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType) && !settingsFolder) {
+          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType) && settingsFolder) {
             addCustomRuleIcon(rule, file.path);
           }
         });
@@ -567,7 +567,7 @@ export const checkIfFolderHasIconsSettings = (plugin: IconFolderPlugin, folderPa
   });
   // inheritance folder
   const inheritanceChecker = folder.filter((f) => folderPath.includes(f)).length > 0;
-  return !!folder.includes(folderPath) || inheritanceChecker;
+  return !folder.includes(folderPath) || inheritanceChecker;
 };
 
 export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
