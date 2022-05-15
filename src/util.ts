@@ -577,15 +577,18 @@ export const checkIfFolderHasIconsSettings = (plugin: IconFolderPlugin, folderPa
   allIcons.forEach((icon) => {
     folder.push(icon.key);
   });
-  const iconFolder = plugin.getData()[folderPath];
-  let inheritanceChecker = false;
-  if (typeof iconFolder === 'object') {
-    if (iconFolder.hasOwnProperty('inheritanceIcon')) {
-      inheritanceChecker = true;
+  const iconFolder = plugin.getData();
+  const inheritanceFolder = []
+  for (const i in iconFolder) {
+    if (typeof iconFolder[i] == 'object') {
+      if (iconFolder[i].hasOwnProperty('inheritanceIcon')) {
+        inheritanceFolder.push(i);
+      }
     }
   }
+  const inheritanceChecker = inheritanceFolder.filter(f => (folderPath.includes(f))).length>0
   // inheritance folder
-  return folder.includes(folderPath) || inheritanceChecker; //return true if the folder has icons
+  return folder.includes(folderPath) || inheritanceChecker ; //return true if the folder has icons
 };
 
 export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
