@@ -1,4 +1,4 @@
-import {Notice, Plugin} from 'obsidian';
+import { Notice, Plugin } from 'obsidian';
 
 export interface Icon {
   name: string;
@@ -16,7 +16,7 @@ export const getPath = (): string => {
 };
 
 export const setPath = (newPath: string): void => {
-  path = `.obsidian/${newPath}`;
+  path = newPath;
 };
 
 const preloadedIcons: Icon[] = [];
