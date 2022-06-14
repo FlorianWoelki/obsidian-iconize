@@ -158,6 +158,11 @@ export const addIconsToDOM = (
             files.forEach((f) => {
               if (!registeredFilePaths[f.path]) {
                 const inheritanceFileItem = fileExplorer.view.fileItems[f.path];
+                const existingIcon = inheritanceFileItem.titleEl.querySelector('.obsidian-icon-folder-icon');
+                if (existingIcon) {
+                  existingIcon.remove();
+                }
+
                 const iconNode = inheritanceFileItem.titleEl.createDiv();
                 iconNode.classList.add('obsidian-icon-folder-icon');
 

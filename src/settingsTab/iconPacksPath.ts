@@ -12,24 +12,14 @@ export default class IconPacksPathSetting extends IconFolderSetting {
 
     iconPacksPathSetting.addText((text) => {
       this.iconPacksSettingTextComp = text;
-      text.setValue(`.obsidian/${this.plugin.getSettings().iconPacksPath}`);
-      text.onChange((value) => {
-        if (!value.startsWith('.obsidian/')) {
-          text.setValue(`.obsidian/`);
-        }
-      });
+      text.setValue(this.plugin.getSettings().iconPacksPath);
     });
 
     iconPacksPathSetting.addButton((btn) => {
       btn.setButtonText('Save');
       btn.buttonEl.style.marginLeft = '12px';
       btn.onClick(async () => {
-        const splittedPath = this.iconPacksSettingTextComp.getValue().split('.obsidian/');
-        if (splittedPath.length === 0) {
-          return;
-        }
-
-        const newPath = splittedPath[1];
+        const newPath = this.iconPacksSettingTextComp.getValue();
 
         if (getPath() === this.iconPacksSettingTextComp.getValue()) {
           return;
