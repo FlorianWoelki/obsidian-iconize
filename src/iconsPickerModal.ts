@@ -13,12 +13,12 @@ export interface Icon {
 }
 
 export default class IconsPickerModal extends FuzzySuggestModal<any> {
-  private plugin: IconFolderPlugin;
-  private path: string;
+  private readonly plugin: IconFolderPlugin;
+  private readonly path: string;
 
-  private oldEnterFunc: (e: KeyboardEvent) => void;
+  private readonly oldEnterFunc: (e: KeyboardEvent) => void;
 
-  private renderIndex: number = 0;
+  private renderIndex = 0;
   private lastRenderedRecentlyIcon: HTMLElement;
 
   private recentlyUsedItems: string[];
