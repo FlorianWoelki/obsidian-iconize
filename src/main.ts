@@ -1,6 +1,6 @@
 import { Plugin, MenuItem, TFile } from 'obsidian';
 import { ExplorerView } from './@types/obsidian';
-import { createDefaultDirectory, initIconPacks, listPath, loadIcon, loadUsedIcons, setPath } from './iconPackManager';
+import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, IconFolderSettings } from './settings';
 import {
@@ -128,27 +128,31 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   private addIconsToSearch(): void {
-    console.log(this.app.workspace.getLeavesOfType('backlink'));
     const searchLeaveDom = this.getSearchLeave().dom;
-    searchLeaveDom.children.forEach((child) => {
-      const file = child.file as TFile;
-      const collapseEl = child.collapseEl as HTMLElement;
-
-      const existingIcon = child.containerEl.querySelector('.obsidian-icon-folder-icon');
-      if (existingIcon) {
-        existingIcon.remove();
-      }
-
-      const iconName = this.data[file.path] as string | undefined;
-      if (iconName) {
-        const iconNode = child.containerEl.createDiv();
-        iconNode.classList.add('obsidian-icon-folder-icon');
-
-        insertIconToNode(this, this.data[file.path] as string, iconNode);
-
-        iconNode.insertAfter(collapseEl);
-      }
-    });
+    try {
+      searchLeaveDom.children.forEach((child) => {
+        const file = child.file as TFile;
+        const collapseEl = child.collapseEl as HTMLElement;
+    
+        const existingIcon = child.containerEl.querySelector('.obsidian-icon-folder-icon');
+        if (existingIcon) {
+          existingIcon.remove();
+        }
+    
+        const iconName = this.data[file.path] as string | undefined;
+        if (iconName) {
+          const iconNode = child.containerEl.createDiv();
+          iconNode.classList.add('obsidian-icon-folder-icon');
+      
+          insertIconToNode(this, this.data[file.path] as string, iconNode);
+      
+          iconNode.insertAfter(collapseEl);
+        }
+      });
+    } catch (e) {
+      console.error(e);
+      //pass
+    }
   }
 
   private handleChangeLayout(): void {
@@ -274,11 +278,10 @@ export default class IconFolderPlugin extends Plugin {
       }
 
       this.getSettings().recentlyUsedIcons.unshift(iconName);
-      this.checkRecentlyUsedIcons();
+      this.checkRecentlyUsedIcons().then();
     }
-
     this.addIconsToSearch();
-    this.saveIconFolderData();
+    this.saveIconFolderData().then();
   }
 
   public getSettings(): IconFolderSettings {
@@ -298,6 +301,7 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   async saveIconFolderData(): Promise<void> {
+    console.log('saving obsidian-icon-folder');
     await this.saveData(this.data);
   }
 
