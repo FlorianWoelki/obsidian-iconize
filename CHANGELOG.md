@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.3](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.2.2...1.2.3) (2022-06-17)
+
+
+### Bug Fixes
+
+* issue with double inheritance ([#70](https://github.com/FlorianWoelki/obsidian-icon-folder/issues/70)) ([bff5b27](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/bff5b27f0b2e43405ac468d3232df1bd1d1104f2))
+* issue with outside of obsidian path ([#73](https://github.com/FlorianWoelki/obsidian-icon-folder/issues/73)) ([697b6c1](https://github.com/FlorianWoelki/obsidian-icon-folder/commit/697b6c1417b523c1cd36aafc21d9265fc392ebf9))
+
 ### [1.2.2](https://github.com/FlorianWoelki/obsidian-icon-folder/compare/1.2.0...1.2.2) (2022-05-15)
 
 
