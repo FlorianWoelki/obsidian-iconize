@@ -25,7 +25,7 @@ export interface IconFolderSettings {
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
   migrated: false,
-  iconPacksPath: 'plugins/obsidian-icon-folder/icons',
+  iconPacksPath: '.obsidian/plugins/obsidian-icon-folder/icons',
   fontSize: 16,
   iconColor: null,
   recentlyUsedIcons: [],
