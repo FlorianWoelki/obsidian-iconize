@@ -16,6 +16,13 @@ export const getPath = (): string => {
 };
 
 export const setPath = (newPath: string): void => {
+  if (newPath === 'plugins/obsidian-icon-folder/icons') {
+    newPath = '.obsidian/plugins/obsidian-icon-folder/icons';
+    new Notice(
+      'Due to a change in version v1.2.2, the obsidian folder changed. Please change it to not be directly in /plugins.',
+    );
+  }
+
   path = newPath;
 };
 
