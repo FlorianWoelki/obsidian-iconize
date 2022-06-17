@@ -1,4 +1,4 @@
-import { Setting, TextComponent } from 'obsidian';
+import { Notice, Setting, TextComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import { createDefaultDirectory, getPath, moveIconPackDirectories, setPath } from '../iconPackManager';
 
@@ -26,12 +26,14 @@ export default class IconPacksPathSetting extends IconFolderSetting {
           return;
         }
 
+        new Notice('Saving in progress...');
         setPath(newPath);
         await createDefaultDirectory(this.plugin);
         await moveIconPackDirectories(this.plugin, oldPath, newPath);
 
         this.plugin.getSettings().iconPacksPath = newPath;
         await this.plugin.saveIconFolderData();
+        new Notice('...saved successfully');
       });
     });
   }
