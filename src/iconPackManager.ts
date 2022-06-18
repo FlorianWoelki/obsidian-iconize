@@ -1,4 +1,5 @@
 import { Notice, Plugin } from 'obsidian';
+import MetaData from './MetaData';
 
 export interface Icon {
   name: string;
@@ -19,7 +20,7 @@ export const setPath = (newPath: string): void => {
   if (newPath === 'plugins/obsidian-icon-folder/icons') {
     newPath = '.obsidian/plugins/obsidian-icon-folder/icons';
     new Notice(
-      'Due to a change in version v1.2.2, the obsidian folder changed. Please change it to not be directly in /plugins.',
+      `[${MetaData.pluginName}] Due to a change in version v1.2.2, the obsidian folder changed. Please change it to not be directly in /plugins.`, 8000
     );
   }
 
