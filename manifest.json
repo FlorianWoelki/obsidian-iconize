@@ -1,6 +1,4 @@
 {
-  "id": "obsidian-icon-folder-beta",
-  "name": "Icon Folder (Beta)",
   "version": "1.2.3",
   "minAppVersion": "0.9.12",
   "description": "This plugin allows to add an emoji or an icon to a folder or file.",

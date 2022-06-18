@@ -160,8 +160,8 @@ export default class IconFolderPlugin extends Plugin {
     const data = Object.entries(this.data) as [string, string | FolderIconObject][];
 
     addIconsToDOM(this, data, this.registeredFileExplorers, () => {
-      const searchLeaveDom = this.getSearchLeave().dom;
-      searchLeaveDom.changed = () => this.addIconsToSearch();
+      //const searchLeaveDom = this.getSearchLeave().dom;
+      //searchLeaveDom.changed = () => this.addIconsToSearch();
 
       // Register rename event for adding icons with custom rules to the DOM.
       this.registerEvent(
@@ -265,7 +265,7 @@ export default class IconFolderPlugin extends Plugin {
       delete this.data[path];
     }
 
-    this.addIconsToSearch();
+    //this.addIconsToSearch();
     this.saveIconFolderData();
   }
 
@@ -282,6 +282,10 @@ export default class IconFolderPlugin extends Plugin {
     }
     this.addIconsToSearch();
     this.saveIconFolderData().then();
+
+
+    //this.addIconsToSearch();
+    this.saveIconFolderData();
   }
 
   public getSettings(): IconFolderSettings {
