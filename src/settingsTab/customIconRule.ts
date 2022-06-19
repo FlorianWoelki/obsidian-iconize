@@ -120,6 +120,10 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           new Notice('Custom rule deleted.');
 
           removeCustomRuleIconsFromDOM(this.plugin, rule);
+          const previousRules = this.plugin.getSettings().rules.filter((r) => rule.for === r.for);
+          previousRules.forEach(async (previousRule) => {
+            await addCustomRuleIconsToDOM(this.plugin, previousRule);
+          });
         });
       });
     });
