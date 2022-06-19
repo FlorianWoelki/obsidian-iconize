@@ -108,7 +108,11 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         btn.setIcon('trash');
         btn.setTooltip('Remove the custom rule');
         btn.onClick(async () => {
-          const newRules = this.plugin.getSettings().rules.filter((r) => rule.rule !== r.rule);
+          const newRules = this.plugin
+            .getSettings()
+            .rules.filter(
+              (r) => rule.rule !== r.rule || rule.color !== r.color || rule.icon !== r.icon || r.for !== r.for,
+            );
           this.plugin.getSettings().rules = newRules;
           await this.plugin.saveIconFolderData();
 
