@@ -70,7 +70,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
       settingRuleEl.components.push(colorPicker);
 
       settingRuleEl.addButton((btn) => {
-        const isFor = rule.for ?? 'everything';
+        const isFor: typeof rule.for = rule.for ?? 'everything';
         if (isFor === 'folders') {
           btn.setIcon('folder');
         } else if (isFor === 'files') {
@@ -82,6 +82,8 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         btn.setTooltip(`Icon applicable to: ${isFor}`);
 
         btn.onClick(async () => {
+          removeCustomRuleIconsFromDOM(this.plugin, { ...rule, for: isFor });
+
           if (isFor === 'folders') {
             rule.for = 'everything';
           } else if (isFor === 'files') {
@@ -90,11 +92,15 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             rule.for = 'files';
           }
 
-          removeCustomRuleIconsFromDOM(this.plugin, rule);
           await addCustomRuleIconsToDOM(this.plugin, rule);
 
           await this.plugin.saveIconFolderData();
           this.refreshDisplay();
+
+          const previousRules = this.plugin.getSettings().rules.filter((rule) => rule.for === isFor);
+          previousRules.forEach(async (previousRule) => {
+            await addCustomRuleIconsToDOM(this.plugin, previousRule);
+          });
         });
       });
 
