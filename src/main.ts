@@ -16,6 +16,7 @@ import {
 } from './util';
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
+import MetaData from './MetaData';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -27,7 +28,8 @@ export default class IconFolderPlugin extends Plugin {
   private registeredFileExplorers = new WeakSet<ExplorerView>();
 
   async onload() {
-    console.log('loading obsidian-icon-folder');
+    MetaData.pluginName = this.manifest.id;
+    console.log(`loading ${MetaData.pluginName}`);
 
     await this.loadIconFolderData();
     setPath(this.getSettings().iconPacksPath);

@@ -334,8 +334,9 @@ export const doesCustomRuleIconExists = (rule: CustomRule, path: string): boolea
  * @param {CustomRule} rule - Specific rule that will match all loaded files.
  */
 export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: CustomRule): void => {
-  plugin.app.vault.getAllLoadedFiles().forEach((file) => {
-    if (doesCustomRuleIconExists(rule, file.path)) {
+  plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+    const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+    if (doesCustomRuleIconExists(rule, file.path) && isToRuleApplicable(rule, fileType)) {
       removeFromDOM(file.path);
     }
   });
