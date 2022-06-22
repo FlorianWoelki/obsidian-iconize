@@ -203,7 +203,13 @@ export const addIconsToDOM = (
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
           const settingsFolder = checkIfFolderHasIconsSettings(plugin, file.path);
-          if (file.name.match(regex) && isToRuleApplicable(rule, fileType) && !settingsFolder) {
+          let checkingFolder = false; //can be changed by rule
+          // if setting folder is true => DON'T ADD ICON.
+          // if setting folder is false => ADD ICON.
+          if (settingsFolder == false) {
+            checkingFolder = true;
+          }
+          if (file.name.match(regex) && isToRuleApplicable(rule, fileType) && checkingFolder) {
             addCustomRuleIcon(rule, file.path);
           }
         });
@@ -211,8 +217,14 @@ export const addIconsToDOM = (
         // Rule is not applicable to a regex format.
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
           const settingsFolder = checkIfFolderHasIconsSettings(plugin, file.path);
+          let checkingFolder = false; //can be changed by rule
+          // if setting folder is true => DON'T ADD ICON.
+          // if setting folder is false => ADD ICON.
+          if (settingsFolder == false) {
+            checkingFolder = true;
+          }
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType) && !settingsFolder) {
+          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType) && checkingFolder) {
             addCustomRuleIcon(rule, file.path);
           }
         });
@@ -571,9 +583,18 @@ export const checkIfFolderHasIconsSettings = (plugin: IconFolderPlugin, folderPa
   allIcons.forEach((icon) => {
     folder.push(icon.key);
   });
+  const iconFolder = plugin.getData();
+  const inheritanceFolder = []
+  for (const i in iconFolder) {
+    if (typeof iconFolder[i] == 'object') {
+      if (iconFolder[i].hasOwnProperty('inheritanceIcon')) {
+        inheritanceFolder.push(i);
+      }
+    }
+  }
+  const inheritanceChecker = inheritanceFolder.filter(f => (folderPath.includes(f))).length>0
   // inheritance folder
-  const inheritanceChecker = folder.filter((f) => folderPath.includes(f)).length > 0;
-  return !!folder.includes(folderPath) || inheritanceChecker;
+  return folder.includes(folderPath) || inheritanceChecker ; //return true if the folder has icons
 };
 
 export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
