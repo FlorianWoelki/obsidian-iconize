@@ -205,7 +205,9 @@ export const addIconsToDOM = (
         const regex = new RegExp(rule.rule);
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          const isInfluencedByInheritance = inheritanceFolders.find(([key]) => file.path.includes(key));
+          const isInfluencedByInheritance = inheritanceFolders.find(
+            ([key]) => file.path.includes(key) && fileType === 'file',
+          );
           if (file.name.match(regex) && isToRuleApplicable(rule, fileType) && !isInfluencedByInheritance) {
             addCustomRuleIcon(rule, file.path);
           }
@@ -214,7 +216,9 @@ export const addIconsToDOM = (
         // Rule is not applicable to a regex format.
         plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
           const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          const isInfluencedByInheritance = inheritanceFolders.find(([key]) => file.path.includes(key));
+          const isInfluencedByInheritance = inheritanceFolders.find(
+            ([key]) => file.path.includes(key) && fileType === 'file',
+          );
           if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType) && !isInfluencedByInheritance) {
             addCustomRuleIcon(rule, file.path);
           }
