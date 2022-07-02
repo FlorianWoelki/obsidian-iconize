@@ -176,48 +176,52 @@ export const addIconsToDOM = (
       }
     });
 
-    plugin.getSettings().rules.forEach((rule) => {
-      const inheritanceFolders = Object.entries(plugin.getData()).filter(
-        ([k, v]) => k !== 'settings' && typeof v === 'object',
-      );
-      try {
-        // Rule is in some sort of regex.
-        const regex = new RegExp(rule.rule);
-        plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
-          const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          const isInfluencedByInheritance = inheritanceFolders.find(
-            ([key]) => file.path.includes(key) && fileType === 'file',
-          );
-          if (
-            !plugin.getData()[file.path] &&
-            file.name.match(regex) &&
-            isToRuleApplicable(rule, fileType) &&
-            !isInfluencedByInheritance
-          ) {
-            addCustomRuleIconsToDOM(plugin, rule, file);
-          }
-        });
-      } catch {
-        // Rule is not applicable to a regex format.
-        plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
-          const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          const isInfluencedByInheritance = inheritanceFolders.find(
-            ([key]) => file.path.includes(key) && fileType === 'file',
-          );
-          if (
-            !plugin.getData()[file.path] &&
-            file.name.includes(rule.rule) &&
-            isToRuleApplicable(rule, fileType) &&
-            !isInfluencedByInheritance
-          ) {
-            addCustomRuleIconsToDOM(plugin, rule, file);
-          }
-        });
-      }
-    });
+    addCustomRuleIcons(plugin);
 
     if (callback) {
       callback();
+    }
+  });
+};
+
+const addCustomRuleIcons = (plugin: IconFolderPlugin) => {
+  plugin.getSettings().rules.forEach((rule) => {
+    const inheritanceFolders = Object.entries(plugin.getData()).filter(
+      ([k, v]) => k !== 'settings' && typeof v === 'object',
+    );
+    try {
+      // Rule is in some sort of regex.
+      const regex = new RegExp(rule.rule);
+      plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+        const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+        const isInfluencedByInheritance = inheritanceFolders.find(
+          ([key]) => file.path.includes(key) && fileType === 'file',
+        );
+        if (
+          !plugin.getData()[file.path] &&
+          file.name.match(regex) &&
+          isToRuleApplicable(rule, fileType) &&
+          !isInfluencedByInheritance
+        ) {
+          addCustomRuleIconsToDOM(plugin, rule, file);
+        }
+      });
+    } catch {
+      // Rule is not applicable to a regex format.
+      plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+        const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+        const isInfluencedByInheritance = inheritanceFolders.find(
+          ([key]) => file.path.includes(key) && fileType === 'file',
+        );
+        if (
+          !plugin.getData()[file.path] &&
+          file.name.includes(rule.rule) &&
+          isToRuleApplicable(rule, fileType) &&
+          !isInfluencedByInheritance
+        ) {
+          addCustomRuleIconsToDOM(plugin, rule, file);
+        }
+      });
     }
   });
 };
@@ -285,6 +289,13 @@ export const removeFromDOM = (path: string): void => {
   }
 
   iconNode.remove();
+};
+
+export const updateIcon = (plugin: IconFolderPlugin, file: TAbstractFile) => {
+  // Try to add custom rule icons back.
+  plugin.getSettings().rules.forEach(async (rule) => {
+    addCustomRuleIconsToDOM(plugin, rule, file);
+  });
 };
 
 /**
@@ -518,6 +529,7 @@ export const removeInheritanceForFolder = (plugin: IconFolderPlugin, folderPath:
     // when the file path is not registered in the data it should remove the icon
     if (!plugin.getData()[f.path]) {
       removeFromDOM(f.path);
+      updateIcon(plugin, f);
     }
   });
 };

@@ -13,6 +13,7 @@ import {
   getIconsInData,
   addCustomRuleIconsToDOM,
   doesCustomRuleIconExists,
+  updateIcon,
 } from './util';
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
@@ -69,6 +70,7 @@ export default class IconFolderPlugin extends Plugin {
           item.onClick(() => {
             this.removeFolderIcon(file.path);
             removeFromDOM(file.path);
+            updateIcon(this, file);
           });
         };
 
