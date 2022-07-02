@@ -176,26 +176,6 @@ export const addIconsToDOM = (
       }
     });
 
-    const addCustomRuleIcon = async (rule: CustomRule, path: string) => {
-      const fileItem = fileExplorer.view.fileItems[path];
-      const titleEl = fileItem.titleEl;
-      const titleInnerEl = fileItem.titleInnerEl;
-      // needs to check because of the refreshing the plugin will duplicate all the icons
-      if (titleEl.children.length === 2 || titleEl.children.length === 1) {
-        const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
-        if (existingIcon) {
-          existingIcon.remove();
-        }
-
-        const iconNode = titleEl.createDiv();
-        iconNode.classList.add('obsidian-icon-folder-icon');
-
-        insertIconToNode(plugin, rule.icon, iconNode, rule.color);
-
-        titleEl.insertBefore(iconNode, titleInnerEl);
-      }
-    };
-
     plugin.getSettings().rules.forEach((rule) => {
       const inheritanceFolders = Object.entries(plugin.getData()).filter(
         ([k, v]) => k !== 'settings' && typeof v === 'object',
@@ -208,8 +188,13 @@ export const addIconsToDOM = (
           const isInfluencedByInheritance = inheritanceFolders.find(
             ([key]) => file.path.includes(key) && fileType === 'file',
           );
-          if (file.name.match(regex) && isToRuleApplicable(rule, fileType) && !isInfluencedByInheritance) {
-            addCustomRuleIcon(rule, file.path);
+          if (
+            !plugin.getData()[file.path] &&
+            file.name.match(regex) &&
+            isToRuleApplicable(rule, fileType) &&
+            !isInfluencedByInheritance
+          ) {
+            addCustomRuleIconsToDOM(plugin, rule, file);
           }
         });
       } catch {
@@ -219,8 +204,13 @@ export const addIconsToDOM = (
           const isInfluencedByInheritance = inheritanceFolders.find(
             ([key]) => file.path.includes(key) && fileType === 'file',
           );
-          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType) && !isInfluencedByInheritance) {
-            addCustomRuleIcon(rule, file.path);
+          if (
+            !plugin.getData()[file.path] &&
+            file.name.includes(rule.rule) &&
+            isToRuleApplicable(rule, fileType) &&
+            !isInfluencedByInheritance
+          ) {
+            addCustomRuleIconsToDOM(plugin, rule, file);
           }
         });
       }
