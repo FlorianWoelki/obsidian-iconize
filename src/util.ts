@@ -176,52 +176,47 @@ export const addIconsToDOM = (
       }
     });
 
-    addCustomRuleIcons(plugin);
+    const addCustomIconRule = (rule: CustomRule, file: TAbstractFile) => {
+      const fileItem = fileExplorer.view.fileItems[file.path];
+      if (fileItem) {
+        const titleEl = fileItem.titleEl;
+        const titleInnerEl = fileItem.titleInnerEl;
+        const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
+        if (!existingIcon) {
+          const iconNode = titleEl.createDiv();
+          iconNode.classList.add('obsidian-icon-folder-icon');
+
+          insertIconToNode(plugin, rule.icon, iconNode);
+
+          titleEl.insertBefore(iconNode, titleInnerEl);
+        }
+      }
+    };
+
+    // Add custom rule icons.
+    plugin.getSettings().rules.forEach((rule) => {
+      try {
+        // Rule is in some sort of regex.
+        const regex = new RegExp(rule.rule);
+        plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+          const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+          if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
+            addCustomIconRule(rule, file);
+          }
+        });
+      } catch {
+        // Rule is not applicable to a regex format.
+        plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+          const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
+            addCustomIconRule(rule, file);
+          }
+        });
+      }
+    });
 
     if (callback) {
       callback();
-    }
-  });
-};
-
-const addCustomRuleIcons = (plugin: IconFolderPlugin) => {
-  plugin.getSettings().rules.forEach((rule) => {
-    const inheritanceFolders = Object.entries(plugin.getData()).filter(
-      ([k, v]) => k !== 'settings' && typeof v === 'object',
-    );
-    try {
-      // Rule is in some sort of regex.
-      const regex = new RegExp(rule.rule);
-      plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
-        const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-        const isInfluencedByInheritance = inheritanceFolders.find(
-          ([key]) => file.path.includes(key) && fileType === 'file',
-        );
-        if (
-          !plugin.getData()[file.path] &&
-          file.name.match(regex) &&
-          isToRuleApplicable(rule, fileType) &&
-          !isInfluencedByInheritance
-        ) {
-          addCustomRuleIconsToDOM(plugin, rule, file);
-        }
-      });
-    } catch {
-      // Rule is not applicable to a regex format.
-      plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
-        const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-        const isInfluencedByInheritance = inheritanceFolders.find(
-          ([key]) => file.path.includes(key) && fileType === 'file',
-        );
-        if (
-          !plugin.getData()[file.path] &&
-          file.name.includes(rule.rule) &&
-          isToRuleApplicable(rule, fileType) &&
-          !isInfluencedByInheritance
-        ) {
-          addCustomRuleIconsToDOM(plugin, rule, file);
-        }
-      });
     }
   });
 };
