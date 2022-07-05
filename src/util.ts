@@ -271,8 +271,8 @@ export const refreshIconStyle = (plugin: IconFolderPlugin): void => {
  * @public
  * @param {string} path - The path toe the to be removed DOM element.
  */
-export const removeFromDOM = (path: string): void => {
-  const node = document.querySelector(`[data-path="${path}"]`);
+export const removeFromDOM = (path: string, el?: HTMLElement): void => {
+  const node = el ?? document.querySelector(`[data-path="${path}"]`);
   if (!node) {
     console.error('element with data path not found', path);
     return;
@@ -325,11 +325,25 @@ export const doesCustomRuleIconExists = (rule: CustomRule, path: string): boolea
  * @param {CustomRule} rule - Specific rule that will match all loaded files.
  */
 export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: CustomRule): void => {
-  plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
-    const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-    if (doesCustomRuleIconExists(rule, file.path) && isToRuleApplicable(rule, fileType)) {
-      removeFromDOM(file.path);
-    }
+  const inheritanceFolders = Object.entries(plugin.getData()).filter(
+    ([k, v]) => k !== 'settings' && typeof v === 'object',
+  );
+
+  plugin.getRegisteredFileExplorers().forEach(async (explorerView) => {
+    const files = Object.entries(explorerView.fileItems);
+    files.forEach(async ([path, fileItem]) => {
+      const fileType = (await plugin.app.vault.adapter.stat(path)).type;
+      const dataFile =
+        typeof plugin.getData()[path] === 'object'
+          ? (plugin.getData()[path] as FolderIconObject).iconName
+          : plugin.getData()[path];
+      const isInfluencedByInheritance = inheritanceFolders.find(([key]) => path.includes(key) && fileType === 'file');
+
+      const existingIcon = dataFile || isInfluencedByInheritance;
+      if (!existingIcon && doesCustomRuleIconExists(rule, path) && isToRuleApplicable(rule, fileType)) {
+        removeFromDOM(path, fileItem.titleEl);
+      }
+    });
   });
 };
 
@@ -381,11 +395,26 @@ export const addCustomRuleIconsToDOM = async (
         addToDOM(plugin, file.path, rule.icon, rule.color);
       }
     } else {
-      plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
-        const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-        if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
-          addToDOM(plugin, file.path, rule.icon, rule.color);
-        }
+      plugin.getRegisteredFileExplorers().forEach(async (explorerView) => {
+        const files = Object.entries(explorerView.fileItems);
+        files.forEach(async ([path, fileItem]) => {
+          const fileType = (await plugin.app.vault.adapter.stat(path)).type;
+          if (fileItem) {
+            if (path.match(regex) && isToRuleApplicable(rule, fileType)) {
+              const titleEl = fileItem.titleEl;
+              const titleInnerEl = fileItem.titleInnerEl;
+              const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
+              if (!existingIcon) {
+                const iconNode = titleEl.createDiv();
+                iconNode.classList.add('obsidian-icon-folder-icon');
+
+                insertIconToNode(plugin, rule.icon, iconNode);
+
+                titleEl.insertBefore(iconNode, titleInnerEl);
+              }
+            }
+          }
+        });
       });
     }
   } catch {

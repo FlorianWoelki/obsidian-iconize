@@ -26,7 +26,7 @@ export interface FolderIconObject {
 
 export default class IconFolderPlugin extends Plugin {
   private data: Record<string, boolean | string | IconFolderSettings | FolderIconObject>;
-  private registeredFileExplorers = new WeakSet<ExplorerView>();
+  private registeredFileExplorers = new Set<ExplorerView>();
 
   async onload() {
     MetaData.pluginName = this.manifest.id;
@@ -319,7 +319,7 @@ export default class IconFolderPlugin extends Plugin {
     return this.data;
   }
 
-  getRegisteredFileExplorers(): WeakSet<ExplorerView> {
+  getRegisteredFileExplorers(): Set<ExplorerView> {
     return this.registeredFileExplorers;
   }
 
