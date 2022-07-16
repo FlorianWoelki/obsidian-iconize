@@ -290,32 +290,27 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
       }
 
       iconPacks.push({ name: iconPackName, icons: loadedIcons });
-      console.log(`loaded icon pack ${iconPackName}`);
+      console.log(`loaded icon pack ${iconPackName} (${loadedIcons.length})`);
     }
   }
 };
 
-export const addIconToIconPack = (
-  iconPackName: string,
-  iconName: string,
-  iconContent: string,
-  callback?: (icon: Icon) => void,
-): void => {
+export const addIconToIconPack = (iconPackName: string, iconName: string, iconContent: string): Icon => {
   const icon = generateIcon(iconPackName, iconName, iconContent);
   if (!icon) {
+    console.warn(`[obsidian-icon-folder] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`);
     return;
   }
 
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   if (!iconPack) {
+    console.warn(`[obsidian-icon-folder] iconpack with name "${iconPackName}" was not found.`);
     return;
   }
 
   iconPack.icons.push(icon);
 
-  if (callback) {
-    callback(icon);
-  }
+  return icon;
 };
 
 export const getAllLoadedIconNames = (): Icon[] => {
