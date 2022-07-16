@@ -598,6 +598,16 @@ export const getIconsInData = (plugin: IconFolderPlugin): string[] => {
   return result;
 };
 
+export const readFileSync = async (file: File): Promise<string> => {
+  const content = await new Promise<string>((resolve) => {
+    const reader = new FileReader();
+    reader.readAsText(file, 'UTF-8');
+    reader.onload = (readerEvent) => resolve(readerEvent.target.result as string);
+  });
+
+  return content;
+};
+
 export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
   const result: { key: string; value: string }[] = [];
   Object.entries(plugin.getData()).forEach(([key, value]: [string, string | FolderIconObject]) => {

@@ -8,7 +8,7 @@ import {
 } from './iconPackManager';
 import iconPacks, { IconPack } from './iconPacks';
 import IconFolderPlugin from './main';
-import { getIconsWithPathInData, insertIconToNode } from './util';
+import { getIconsWithPathInData, insertIconToNode, readFileSync } from './util';
 import { downloadZipFile, getFileFromJSZipFile, readZipFile } from './zipUtil';
 
 export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
@@ -52,24 +52,19 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
         const existingIcons = getIconsWithPathInData(this.plugin);
         for (let i = 0; i < files.length; i++) {
           const file = await getFileFromJSZipFile(files[i]);
-          const reader = new FileReader();
-          reader.readAsText(file, 'UTF-8');
-          reader.onload = async (readerEvent) => {
-            const content = readerEvent.target.result as string;
-            addIconToIconPack(item.name, file.name, content, async (icon) => {
-              const iconName = icon.prefix + icon.name;
-              const existingIcon = existingIcons.find((el) => el.value === iconName);
-              if (existingIcon) {
-                const path = existingIcon.key;
-                const container = this.plugin.app.workspace.containerEl.querySelector(`[data-path="${path}"]`);
-                const existingIconEl = container.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
+          const content = await readFileSync(file);
+          const icon = addIconToIconPack(item.name, file.name, content);
+          const iconName = icon.prefix + icon.name;
+          const existingIcon = existingIcons.find((el) => el.value === iconName);
+          if (existingIcon) {
+            const path = existingIcon.key;
+            const container = this.plugin.app.workspace.containerEl.querySelector(`[data-path="${path}"]`);
+            const existingIconEl = container.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
 
-                insertIconToNode(this.plugin, iconName, existingIconEl);
-              }
+            insertIconToNode(this.plugin, iconName, existingIconEl);
+          }
 
-              await createFile(this.plugin, item.name, file.name, content);
-            });
-          };
+          await createFile(this.plugin, item.name, file.name, content);
         }
 
         new Notice(`...${item.displayName} added`);

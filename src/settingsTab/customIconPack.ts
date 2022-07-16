@@ -13,7 +13,7 @@ import {
   normalizeFileName,
 } from '../iconPackManager';
 import IconFolderPlugin from '../main';
-import { addToDOM, removeFromDOM } from '../util';
+import { addToDOM, readFileSync, removeFromDOM } from '../util';
 
 export default class CustomIconPackSetting extends IconFolderSetting {
   private textComponent: TextComponent;
@@ -33,15 +33,6 @@ export default class CustomIconPackSetting extends IconFolderSetting {
 
   private normalizeIconPackName(value: string): string {
     return value.toLowerCase().replace(/\s/g, '-');
-  }
-
-  private readFile(file: File, callback: (content: string) => void): void {
-    const reader = new FileReader();
-    reader.readAsText(file, 'UTF-8');
-    reader.onload = async (readerEvent) => {
-      const content = readerEvent.target.result as string;
-      callback(content);
-    };
   }
 
   private preventDefaults(event: Event): void {
@@ -142,21 +133,20 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       iconPackSetting.addButton((btn) => {
         btn.setIcon('create-new');
         btn.setTooltip('Add an icon');
-        btn.onClick(() => {
+        btn.onClick(async () => {
           const fileSelector = document.createElement('input');
           fileSelector.setAttribute('type', 'file');
           fileSelector.setAttribute('multiple', 'multiple');
           fileSelector.setAttribute('accept', '.svg');
           fileSelector.click();
-          fileSelector.onchange = (e) => {
+          fileSelector.onchange = async (e) => {
             const target = e.target as HTMLInputElement;
             for (let i = 0; i < target.files.length; i++) {
               const file = target.files[i] as File;
-              this.readFile(file, async (content) => {
-                await createFile(this.plugin, iconPack.name, file.name, content);
-                addIconToIconPack(iconPack.name, file.name, content);
-                iconPackSetting.setDesc(`Total icons: ${iconPack.icons.length} (added: ${file.name})`);
-              });
+              const content = await readFileSync(file);
+              await createFile(this.plugin, iconPack.name, file.name, content);
+              addIconToIconPack(iconPack.name, file.name, content);
+              iconPackSetting.setDesc(`Total icons: ${iconPack.icons.length} (added: ${file.name})`);
             }
             new Notice('Icons successfully added.');
           };
@@ -187,7 +177,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       });
       iconPackSetting.settingEl.addEventListener(
         'drop',
-        (event) => {
+        async (event) => {
           const files = event.dataTransfer.files;
           let successful = false;
           for (let i = 0; i < files.length; i++) {
@@ -198,11 +188,10 @@ export default class CustomIconPackSetting extends IconFolderSetting {
             }
 
             successful = true;
-            this.readFile(file, async (content) => {
-              await createFile(this.plugin, iconPack.name, file.name, content);
-              addIconToIconPack(iconPack.name, file.name, content);
-              iconPackSetting.setDesc(`Total icons: ${iconPack.icons.length} (added: ${file.name})`);
-            });
+            const content = await readFileSync(file);
+            await createFile(this.plugin, iconPack.name, file.name, content);
+            addIconToIconPack(iconPack.name, file.name, content);
+            iconPackSetting.setDesc(`Total icons: ${iconPack.icons.length} (added: ${file.name})`);
           }
 
           if (successful) {
