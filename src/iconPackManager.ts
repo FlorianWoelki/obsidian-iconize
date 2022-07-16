@@ -104,8 +104,32 @@ export const createFile = async (
   iconPackName: string,
   filename: string,
   content: string,
+  absoluteFilename?: string,
 ): Promise<void> => {
-  await plugin.app.vault.adapter.write(`${path}/${iconPackName}/${getNormalizedName(filename)}`, content);
+  const normalizedFilename = getNormalizedName(filename);
+  const exists = await plugin.app.vault.adapter.exists(`${path}/${iconPackName}/${normalizedFilename}`);
+  if (exists) {
+    const folderSplit = absoluteFilename.split('/');
+    if (folderSplit.length >= 2) {
+      const folderName = folderSplit[folderSplit.length - 2];
+      const newFilename = folderName + normalizedFilename;
+      await plugin.app.vault.adapter.write(`${path}/${iconPackName}/${newFilename}`, content);
+      console.info(
+        `[${MetaData.pluginName}] Renamed old file ${normalizedFilename} to ${newFilename} because of duplication.`,
+      );
+      new Notice(
+        `[${MetaData.pluginName}] Renamed ${normalizedFilename} to ${newFilename} to avoid duplication.`,
+        8000,
+      );
+    } else {
+      console.warn(
+        `[${MetaData.pluginName}] Could not create icons with duplicated file names (${normalizedFilename}).`,
+      );
+      new Notice(`[${MetaData.pluginName}] Could not create duplicated icon name (${normalizedFilename})`, 8000);
+    }
+  } else {
+    await plugin.app.vault.adapter.write(`${path}/${iconPackName}/${normalizedFilename}`, content);
+  }
 };
 
 export const createDefaultDirectory = async (plugin: Plugin): Promise<void> => {

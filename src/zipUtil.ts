@@ -23,9 +23,9 @@ export const readZipFile = async (bytes: ArrayBuffer, extraPath: string = '') =>
 
     const files: JSZip.JSZipObject[] = [];
     const regex = new RegExp(extraPath + '(.+)\\.svg', 'g');
-    Object.entries(unzippedFiles.files).forEach(([k, v]: [string, JSZip.JSZipObject]) => {
-      const matched = k.match(regex);
-      if (matched && matched.length > 0) {
+    Object.entries(unzippedFiles.files).forEach(([_, v]: [string, JSZip.JSZipObject]) => {
+      const matched = v.name.match(regex);
+      if (!v.dir && matched && matched.length > 0) {
         files.push(v);
       }
     });
