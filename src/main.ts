@@ -274,7 +274,10 @@ export default class IconFolderPlugin extends Plugin {
     this.data[path] = iconName;
     if (!this.getSettings().recentlyUsedIcons.includes(iconName)) {
       if (this.getSettings().recentlyUsedIcons.length >= this.getSettings().recentlyUsedIconsSize) {
-        this.getSettings().recentlyUsedIcons.pop();
+        this.getSettings().recentlyUsedIcons = this.getSettings().recentlyUsedIcons.slice(
+          0,
+          this.getSettings().recentlyUsedIconsSize - 1,
+        );
       }
 
       this.getSettings().recentlyUsedIcons.unshift(iconName);
