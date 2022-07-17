@@ -28,6 +28,15 @@
   grid-column-end: 6;
 }
 
+@media (max-width: 640px) {
+  .obsidian-icon-folder-modal.prompt-results {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .prompt .obsidian-icon-folder-subheadline {
+    grid-column-end: 4;
+  }
+}
+
 .obsidian-icon-folder-modal.prompt-results .suggestion-item {
   cursor: pointer;
   white-space: pre-wrap;
