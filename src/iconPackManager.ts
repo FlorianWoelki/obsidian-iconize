@@ -344,6 +344,11 @@ export const getAllLoadedIconNames = (): Icon[] => {
   }, []);
 };
 
+export const doesIconExists = (iconName: string): boolean => {
+  const icons = getAllLoadedIconNames();
+  return icons.find((icon) => icon.name === iconName) !== undefined;
+};
+
 export const getSvgFromLoadedIcon = (iconName: string): string => {
   let icon = '';
   let foundIcon = preloadedIcons.find((icon) => icon.name.toLowerCase() === iconName.toLowerCase());
