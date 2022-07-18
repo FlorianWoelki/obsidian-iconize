@@ -112,8 +112,12 @@ export default class CustomIconPackSetting extends IconFolderSetting {
           for (let i = 0; i < icons.length; i++) {
             const filePath = icons[i];
             const fileName = filePath.split('/').pop();
-            const iconContent = await this.plugin.app.vault.adapter.read(filePath);
+            const file = await this.plugin.app.vault.adapter.read(filePath);
+            const iconContent = file
+              .replace(/stroke="#fff"/g, 'stroke="currentColor"')
+              .replace(/fill="#fff"/g, 'fill="currentColor"');
 
+            await this.plugin.app.vault.adapter.write(filePath, iconContent);
             await normalizeFileName(this.plugin, filePath);
 
             addIconToIconPack(iconPack.name, fileName, iconContent);

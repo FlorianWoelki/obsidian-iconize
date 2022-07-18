@@ -319,17 +319,17 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
   }
 };
 
-export const addIconToIconPack = (iconPackName: string, iconName: string, iconContent: string): Icon => {
+export const addIconToIconPack = (iconPackName: string, iconName: string, iconContent: string): Icon | undefined => {
   const icon = generateIcon(iconPackName, iconName, iconContent);
   if (!icon) {
     console.warn(`[obsidian-icon-folder] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`);
-    return;
+    return undefined;
   }
 
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   if (!iconPack) {
     console.warn(`[obsidian-icon-folder] iconpack with name "${iconPackName}" was not found.`);
-    return;
+    return undefined;
   }
 
   iconPack.icons.push(icon);

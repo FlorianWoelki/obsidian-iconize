@@ -54,6 +54,10 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
           const file = await getFileFromJSZipFile(files[i]);
           const content = await readFileSync(file);
           const icon = addIconToIconPack(item.name, file.name, content);
+          if (!icon) {
+            continue;
+          }
+
           const iconName = icon.prefix + icon.name;
           const existingIcon = existingIcons.find((el) => el.value === iconName);
           if (existingIcon) {

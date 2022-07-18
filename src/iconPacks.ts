@@ -30,4 +30,10 @@ export default {
     path: '',
     downloadLink: 'https://github.com/Remix-Design/RemixIcon/releases/download/v2.5.0/RemixIcon_SVG_v2.5.0.zip',
   },
+  iconBrew: {
+    name: 'icon-brew',
+    displayName: 'Icon Brew',
+    path: '',
+    downloadLink: 'https://github.com/FlorianWoelki/obsidian-icon-folder/raw/main/iconPacks/icon-brew.zip',
+  },
 } as { [key: string]: IconPack };
