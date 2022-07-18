@@ -364,7 +364,8 @@ export const getSvgFromLoadedIcon = (iconName: string): string => {
   if (foundIcon) {
     let fileContent: string;
     if (typeof foundIcon.svgPath === 'object') {
-      fileContent = `<svg width="16" fill="currentColor" height="16" ${
+      const doesStrokeExists = foundIcon.svgPath.filter((path: any) => path.match(/stroke=".*"/g)).length !== 0;
+      fileContent = `<svg width="16" ${doesStrokeExists ? 'fill="none"' : 'fill="currentColor"'} height="16" ${
         foundIcon.svgViewbox.length !== 0 ? foundIcon.svgViewbox : 'viewbox="0 0 24 24"'
       }>${foundIcon.svgContent}</svg>`;
     } else {
