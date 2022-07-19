@@ -86,13 +86,15 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
   return icon;
 };
 
-const colorizeIcon = (icon: string, c: string | undefined): string => {
-  const colorRe = new RegExp(/fill="(\w|#)+"/g);
-  const colorMatch = icon.match(colorRe);
+const colorizeIcon = (icon: string, c: string | undefined, type: 'stroke' | 'fill' = 'fill'): string => {
+  const regex = type === 'fill' ? new RegExp(/fill="(\w|#)+"/g) : new RegExp(/stroke="(\w|#)+"/g);
+  const colorMatch = icon.match(regex);
   if (colorMatch) {
     colorMatch.forEach((color) => {
-      if (color.contains('currentColor')) {
-        icon = icon.replace(color, `fill="${c ?? 'currentColor'}"`);
+      if (color.contains('currentColor') || !color.contains('none')) {
+        icon = icon.replace(color, `${type}="${c ?? 'currentColor'}"`);
+      } else if (color.contains('none') && type !== 'stroke') {
+        icon = colorizeIcon(icon, c, 'stroke');
       }
     });
   }
