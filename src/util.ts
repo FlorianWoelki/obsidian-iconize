@@ -64,8 +64,8 @@ export const getIcon = (name: string): string | null => {
  */
 export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: HTMLElement): string => {
   // Allow custom font size
-  const widthRe = new RegExp(/^width="\d+(px)?"/g);
-  const heightRe = new RegExp(/^height="\d+(px)?"/g);
+  const widthRe = new RegExp(/width="\d+(px)?"/);
+  const heightRe = new RegExp(/height="\d+(px)?"/);
   if (icon.match(widthRe)) {
     icon = icon.replace(widthRe, `width="${plugin.getSettings().fontSize}px"`);
   }
