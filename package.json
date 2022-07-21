@@ -1,6 +1,6 @@
 {
   "name": "obsidian-icon-folder",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "This plugin allows to add an emoji or an icon to a folder or file.",
   "main": "main.js",
   "scripts": {
