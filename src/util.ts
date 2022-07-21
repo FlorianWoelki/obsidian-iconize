@@ -2,7 +2,7 @@ import twemoji from 'twemoji';
 import IconFolderPlugin, { FolderIconObject } from './main';
 import type { ExplorerView } from './@types/obsidian';
 import { getAllLoadedIconNames, getSvgFromLoadedIcon, Icon, nextIdentifier } from './iconPackManager';
-import { CustomRule } from './settings';
+import { CustomRule, IconFolderSettings } from './settings';
 import { TAbstractFile } from 'obsidian';
 
 /**
@@ -253,7 +253,7 @@ export const addInheritanceIconToFile = (
  * @param {IconFolderPlugin} plugin - The main plugin.
  */
 export const refreshIconStyle = (plugin: IconFolderPlugin): void => {
-  const data = Object.entries(plugin.getData()) as [string, string];
+  const data = Object.entries(plugin.getData());
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
   fileExplorers.forEach((fileExplorer) => {
     data.forEach(([key]) => {
@@ -577,7 +577,7 @@ export const getIconsInData = (plugin: IconFolderPlugin): string[] => {
 
   Object.entries(plugin.getData()).forEach(([key, value]) => {
     if (key === 'settings') {
-      const rules = value.rules;
+      const rules = (value as IconFolderSettings).rules;
       rules.forEach((rule: CustomRule) => {
         if (!isEmoji(rule.icon)) {
           result.push(rule.icon);
@@ -587,11 +587,12 @@ export const getIconsInData = (plugin: IconFolderPlugin): string[] => {
       if (typeof value === 'string' && !isEmoji(value)) {
         result.push(value);
       } else if (typeof value === 'object') {
-        if (value.iconName !== null && !isEmoji(value.iconName)) {
-          result.push(value.iconName);
+        const v = value as FolderIconObject;
+        if (v.iconName !== null && !isEmoji(v.iconName)) {
+          result.push(v.iconName);
         }
-        if (value.inheritanceIcon !== null && !isEmoji(value.inheritanceIcon)) {
-          result.push(value.inheritanceIcon);
+        if (v.inheritanceIcon !== null && !isEmoji(v.inheritanceIcon)) {
+          result.push(v.inheritanceIcon);
         }
       }
     }

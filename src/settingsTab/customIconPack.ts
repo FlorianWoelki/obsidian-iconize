@@ -127,7 +127,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
           // Refreshes the DOM.
           Object.entries(this.plugin.getData()).forEach(async ([k, v]) => {
             const doesPathExist = await this.plugin.app.vault.adapter.exists(k, true);
-            if (doesPathExist) {
+            if (doesPathExist && typeof v === 'string') {
               removeFromDOM(k);
               addToDOM(this.plugin, k, v);
             }

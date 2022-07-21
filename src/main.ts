@@ -333,10 +333,11 @@ export default class IconFolderPlugin extends Plugin {
           return k;
         }
       } else if (typeof v === 'object') {
+        v = v as FolderIconObject;
         if (value === v.iconName || value === v.inheritanceIcon) {
           return k;
         }
       }
-    });
+    }) as unknown as string;
   }
 }
