@@ -14,6 +14,7 @@ import {
   addCustomRuleIconsToDOM,
   doesCustomRuleIconExists,
   updateIcon,
+  getIcon,
 } from './util';
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
@@ -162,6 +163,35 @@ export default class IconFolderPlugin extends Plugin {
     addIconsToDOM(this, data, this.registeredFileExplorers, () => {
       //const searchLeaveDom = this.getSearchLeave().dom;
       //searchLeaveDom.changed = () => this.addIconsToSearch();
+
+      // Add icon to active file
+
+      // Register event for manipulating view-header of drag to rearange icon.
+      this.registerEvent(
+        this.app.workspace.on('file-open', (file) => {
+          const data = Object.entries(this.data) as [string, string | FolderIconObject][];
+          const node = document.querySelector('.view-header-icon');
+          if (!node || !node.hasAttribute('draggable')) {
+            return;
+          }
+
+          const foundData = data.find(([dataPath]) => dataPath === file.path);
+          if (!foundData) {
+            const defaultElement =
+              '<svg viewBox="0 0 100 100" class="document" width="18" height="18"><path fill="currentColor" stroke="currentColor" d="M14,4v92h72V29.2l-0.6-0.6l-24-24L60.8,4L14,4z M18,8h40v24h24v60H18L18,8z M62,10.9L79.1,28H62V10.9z"></path></svg>';
+            node.innerHTML = defaultElement;
+            return;
+          }
+
+          const [_, iconName] = foundData;
+          if (typeof iconName !== 'string') {
+            return;
+          }
+
+          const iconNameWithoutPrefix = iconName.substring(2);
+          node.innerHTML = getIcon(iconNameWithoutPrefix);
+        }),
+      );
 
       // Register rename event for adding icons with custom rules to the DOM.
       this.registerEvent(
