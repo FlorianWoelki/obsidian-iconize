@@ -275,8 +275,7 @@ export const addIconToDragToRearrange = (plugin: IconFolderPlugin, file: TFile):
     return;
   }
 
-  const iconNameWithoutPrefix = iconName.substring(2);
-  node.innerHTML = getIcon(iconNameWithoutPrefix);
+  node.innerHTML = getIcon(iconName.substring(nextIdentifier(iconName)));
 };
 
 /**
