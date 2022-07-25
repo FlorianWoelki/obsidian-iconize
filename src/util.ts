@@ -253,6 +253,10 @@ export const addIconToDragToRearrange = (plugin: IconFolderPlugin, file: TFile):
   }
 
   const titleContainer = node.nextSibling as HTMLDivElement;
+  if (!titleContainer) {
+    return;
+  }
+
   const title = titleContainer.querySelector('.view-header-title');
   if (!title) {
     return;
