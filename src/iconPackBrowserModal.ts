@@ -63,7 +63,15 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
           if (existingIcon) {
             const path = existingIcon.key;
             const container = this.plugin.app.workspace.containerEl.querySelector(`[data-path="${path}"]`);
+            if (!container) {
+              continue;
+            }
+
             const existingIconEl = container.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
+
+            if (!existingIconEl) {
+              continue;
+            }
 
             insertIconToNode(this.plugin, iconName, existingIconEl);
           }
