@@ -258,7 +258,7 @@ export const addIconToDragToRearrange = (plugin: IconFolderPlugin, file: TFile):
   }
 
   const title = titleContainer.querySelector('.view-header-title');
-  if (!title) {
+  if (!title || title.innerHTML.length === 0) {
     return;
   }
 
