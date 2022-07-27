@@ -386,15 +386,17 @@ export const colorizeCustomRuleIcons = (plugin: IconFolderPlugin, rule: CustomRu
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
-    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
-      if (file.name.match(regex)) {
+    plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+      const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+      if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
         addToDOM(plugin, file.path, rule.icon, rule.color);
       }
     });
   } catch {
     // Rule is not applicable to a regex format.
-    plugin.app.vault.getAllLoadedFiles().forEach((file) => {
-      if (file.name.includes(rule.rule)) {
+    plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+      const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+      if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
         addToDOM(plugin, file.path, rule.icon, rule.color);
       }
     });
