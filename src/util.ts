@@ -188,7 +188,7 @@ export const addIconsToDOM = (
           const iconNode = titleEl.createDiv();
           iconNode.classList.add('obsidian-icon-folder-icon');
 
-          insertIconToNode(plugin, rule.icon, iconNode);
+          insertIconToNode(plugin, rule.icon, iconNode, rule.color);
 
           titleEl.insertBefore(iconNode, titleInnerEl);
         }
