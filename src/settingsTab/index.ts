@@ -2,7 +2,7 @@ import { App, PluginSettingTab } from 'obsidian';
 import IconFolderPlugin from '../main';
 import CustomIconPackSetting from './customIconPack';
 import CustomIconRuleSetting from './customIconRule';
-import ExtraPaddingSetting from './extraPadding';
+import ExtraMarginSetting from './extraMargin';
 import IconColorSetting from './iconColor';
 import IconFontSizeSetting from './iconFontSize';
 import IconPacksPathSetting from './iconPacksPath';
@@ -33,7 +33,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
     containerEl.createEl('h3', { text: 'Icon Customization' });
     new IconFontSizeSetting(plugin, containerEl).display();
     new IconColorSetting(plugin, containerEl).display();
-    new ExtraPaddingSetting(plugin, containerEl).display();
+    new ExtraMarginSetting(plugin, containerEl).display();
 
     containerEl.createEl('h3', { text: 'Custom Icon Rules' });
     new CustomIconRuleSetting(plugin, containerEl, app, () => this.display()).display();

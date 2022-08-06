@@ -23,7 +23,7 @@ First, you need to go to the settings and download predefined icon packs or crea
 
 In addition to the custom icon pack, it is possible to drag and drop or select multiple files to your customized icon pack.
 
-Moreover, you can adjust some styling settings for all the icons like padding, color, or even the icon size.
+Moreover, you can adjust some styling settings for all the icons like margin, color, or even the icon size.
 
 ### Changing icon of the folder
 

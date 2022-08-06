@@ -52,14 +52,14 @@ export const getIcon = (name: string): string | null => {
 
 /**
  * This function returns the svg string with the user defined css settings.
- * It handles from the settings the `padding`, `color`, and `size`.
+ * It handles from the settings the `margin`, `color`, and `size`.
  *
- * In addition, this function manipulates the passed element with the user defined setting `padding`.
+ * In addition, this function manipulates the passed element with the user defined setting `margin`.
  *
  * @public
  * @param {IconFolderPlugin} plugin - The main plugin.
  * @param {string} icon - The to be styled icon.
- * @param {HTMLElement} el - The element that will include the padding from the user settings.
+ * @param {HTMLElement} el - The element that will include the margin from the user settings.
  * @returns {string} The svg with the customized css settings.
  */
 export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: HTMLElement): string => {
@@ -76,11 +76,11 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
   // Allow custom icon color.
   icon = colorizeIcon(icon, plugin.getSettings().iconColor);
 
-  // Change padding of icon
-  if (plugin.getSettings().extraPadding) {
-    el.style.padding = `${plugin.getSettings().extraPadding.top ?? 2}px ${
-      plugin.getSettings().extraPadding.right ?? 2
-    }px ${plugin.getSettings().extraPadding.bottom ?? 2}px ${plugin.getSettings().extraPadding.left ?? 2}px`;
+  // Change margin of icon
+  if (plugin.getSettings().extraMargin) {
+    el.style.margin = `${plugin.getSettings().extraMargin.top ?? 2}px ${
+      plugin.getSettings().extraMargin.right ?? 2
+    }px ${plugin.getSettings().extraMargin.bottom ?? 2}px ${plugin.getSettings().extraMargin.left ?? 2}px`;
   }
 
   return icon;

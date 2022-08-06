@@ -1,4 +1,4 @@
-export interface ExtraPaddingSettings {
+export interface ExtraMarginSettings {
   top?: number;
   right?: number;
   bottom?: number;
@@ -17,7 +17,7 @@ export interface IconFolderSettings {
   iconPacksPath: string;
   fontSize: number;
   iconColor: string | null;
-  extraPadding: ExtraPaddingSettings;
+  extraMargin: ExtraMarginSettings;
   recentlyUsedIcons: string[];
   recentlyUsedIconsSize: number;
   rules: CustomRule[];
@@ -31,7 +31,7 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   recentlyUsedIcons: [],
   recentlyUsedIconsSize: 5,
   rules: [],
-  extraPadding: {
+  extraMargin: {
     top: 2,
     right: 2,
     bottom: 2,
