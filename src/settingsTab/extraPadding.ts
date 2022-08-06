@@ -6,7 +6,7 @@ import { refreshIconStyle } from '../util';
 export default class ExtraMarginSetting extends IconFolderSetting {
   public display(): void {
     const extraMarginSetting = new Setting(this.containerEl)
-      .setName('ExtraMargin (in pixels)')
+      .setName('Extra margin (in pixels)')
       .setDesc('Change the margin of the icons.')
       .setClass('obsidian-icon-folder-setting');
     const extraMarginDropdown = new DropdownComponent(extraMarginSetting.controlEl).addOptions({
