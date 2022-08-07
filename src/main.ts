@@ -1,8 +1,8 @@
-import { Plugin, MenuItem, TFile } from 'obsidian';
+import { Plugin, MenuItem, TFile, Notice } from 'obsidian';
 import { ExplorerView } from './@types/obsidian';
-import { createDefaultDirectory, initIconPacks, listPath, loadIcon, loadUsedIcons, setPath } from './iconPackManager';
+import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
-import { DEFAULT_SETTINGS, IconFolderSettings } from './settings';
+import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings';
 import {
   insertIconToNode,
   addIconsToDOM,
@@ -38,7 +38,12 @@ export default class IconFolderPlugin extends Plugin {
       console.log('...icons migrated');
     }
 
-    console.log((this.getSettings() as any).padding);
+    const extraPadding = (this.getSettings() as any).extraPadding as ExtraMarginSettings;
+    if (extraPadding.top !== 2 || extraPadding.bottom !== 2 || extraPadding.left !== 2 || extraPadding.right !== 2) {
+      this.getSettings().extraMargin = extraPadding;
+      delete (this.getSettings() as any)['extraPadding'];
+    }
+
     await this.saveIconFolderData();
   }
 
