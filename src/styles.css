@@ -2,6 +2,7 @@
   border: 1px solid transparent;
   margin: 2px 2px 2px 2px;
   display: flex;
+  align-self: center;
   margin: auto 0;
 }
 

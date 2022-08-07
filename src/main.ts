@@ -30,6 +30,18 @@ export default class IconFolderPlugin extends Plugin {
   private data: Record<string, boolean | string | IconFolderSettings | FolderIconObject>;
   private registeredFileExplorers = new Set<ExplorerView>();
 
+  private async migrate(): Promise<void> {
+    if (!this.getSettings().migrated) {
+      console.log('migrating icons...');
+      this.data = migrateIcons(this);
+      this.getSettings().migrated = true;
+      console.log('...icons migrated');
+    }
+
+    console.log((this.getSettings() as any).padding);
+    await this.saveIconFolderData();
+  }
+
   async onload() {
     MetaData.pluginName = this.manifest.id;
     console.log(`loading ${MetaData.pluginName}`);
@@ -40,13 +52,7 @@ export default class IconFolderPlugin extends Plugin {
     await createDefaultDirectory(this);
     await this.checkRecentlyUsedIcons();
 
-    if (!this.getSettings().migrated) {
-      console.log('migrating icons...');
-      this.data = migrateIcons(this);
-      this.getSettings().migrated = true;
-      await this.saveIconFolderData();
-      console.log('...icons migrated');
-    }
+    await this.migrate();
 
     await loadUsedIcons(this, getIconsInData(this));
 
