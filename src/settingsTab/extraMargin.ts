@@ -9,13 +9,15 @@ export default class ExtraMarginSetting extends IconFolderSetting {
       .setName('Extra margin (in pixels)')
       .setDesc('Change the margin of the icons.')
       .setClass('obsidian-icon-folder-setting');
+
     const extraMarginDropdown = new DropdownComponent(extraMarginSetting.controlEl).addOptions({
       top: 'Top',
       right: 'Right',
       bottom: 'Bottom',
       left: 'Left',
     } as Record<keyof ExtraMarginSettings, string>);
-    const extraMarginSlider = new SliderComponent(ExtraMarginSetting.controlEl)
+
+    const extraMarginSlider = new SliderComponent(extraMarginSetting.controlEl)
       .setLimits(0, 24, 1)
       .setDynamicTooltip()
       .setValue(this.plugin.getSettings().extraMargin?.top ?? 2)
@@ -32,6 +34,7 @@ export default class ExtraMarginSetting extends IconFolderSetting {
 
         refreshIconStyle(this.plugin);
       });
+
     extraMarginDropdown.onChange((val: keyof ExtraMarginSettings) => {
       if (this.plugin.getSettings().extraMargin) {
         extraMarginSlider.setValue(this.plugin.getSettings().extraMargin[val] ?? 2);
@@ -39,6 +42,7 @@ export default class ExtraMarginSetting extends IconFolderSetting {
         extraMarginSlider.setValue(2);
       }
     });
+
     extraMarginSetting.components.push(extraMarginDropdown, extraMarginSlider);
   }
 }
