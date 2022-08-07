@@ -1,30 +1,30 @@
 import { DropdownComponent, Setting, SliderComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import { ExtraPaddingSettings } from '../settings';
+import { ExtraMarginSettings } from '../settings';
 import { refreshIconStyle } from '../util';
 
-export default class ExtraPaddingSetting extends IconFolderSetting {
+export default class ExtraMarginSetting extends IconFolderSetting {
   public display(): void {
-    const extraPaddingSetting = new Setting(this.containerEl)
-      .setName('Extrapadding (in pixels)')
-      .setDesc('Change the padding of the icons.')
+    const extraMarginSetting = new Setting(this.containerEl)
+      .setName('Extra margin (in pixels)')
+      .setDesc('Change the margin of the icons.')
       .setClass('obsidian-icon-folder-setting');
-    const extraPaddingDropdown = new DropdownComponent(extraPaddingSetting.controlEl).addOptions({
+    const extraMarginDropdown = new DropdownComponent(extraMarginSetting.controlEl).addOptions({
       top: 'Top',
       right: 'Right',
       bottom: 'Bottom',
       left: 'Left',
-    } as Record<keyof ExtraPaddingSettings, string>);
-    const extraPaddingSlider = new SliderComponent(extraPaddingSetting.controlEl)
+    } as Record<keyof ExtraMarginSettings, string>);
+    const extraMarginSlider = new SliderComponent(ExtraMarginSetting.controlEl)
       .setLimits(0, 24, 1)
       .setDynamicTooltip()
-      .setValue(this.plugin.getSettings().extraPadding?.top ?? 2)
+      .setValue(this.plugin.getSettings().extraMargin?.top ?? 2)
       .onChange(async (val) => {
-        const dropdownValue = extraPaddingDropdown.getValue() as keyof ExtraPaddingSettings;
-        if (this.plugin.getSettings().extraPadding) {
-          this.plugin.getSettings().extraPadding[dropdownValue] = val;
+        const dropdownValue = extraMarginDropdown.getValue() as keyof ExtraMarginSettings;
+        if (this.plugin.getSettings().extraMargin) {
+          this.plugin.getSettings().extraMargin[dropdownValue] = val;
         } else {
-          this.plugin.getSettings().extraPadding = {
+          this.plugin.getSettings().extraMargin = {
             [dropdownValue]: val,
           };
         }
@@ -32,13 +32,13 @@ export default class ExtraPaddingSetting extends IconFolderSetting {
 
         refreshIconStyle(this.plugin);
       });
-    extraPaddingDropdown.onChange((val: keyof ExtraPaddingSettings) => {
-      if (this.plugin.getSettings().extraPadding) {
-        extraPaddingSlider.setValue(this.plugin.getSettings().extraPadding[val] ?? 2);
+    extraMarginDropdown.onChange((val: keyof ExtraMarginSettings) => {
+      if (this.plugin.getSettings().extraMargin) {
+        extraMarginSlider.setValue(this.plugin.getSettings().extraMargin[val] ?? 2);
       } else {
-        extraPaddingSlider.setValue(2);
+        extraMarginSlider.setValue(2);
       }
     });
-    extraPaddingSetting.components.push(extraPaddingDropdown, extraPaddingSlider);
+    extraMarginSetting.components.push(extraMarginDropdown, extraMarginSlider);
   }
 }
