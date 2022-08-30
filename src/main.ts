@@ -39,9 +39,11 @@ export default class IconFolderPlugin extends Plugin {
     }
 
     const extraPadding = (this.getSettings() as any).extraPadding as ExtraMarginSettings;
-    if (extraPadding.top !== 2 || extraPadding.bottom !== 2 || extraPadding.left !== 2 || extraPadding.right !== 2) {
-      this.getSettings().extraMargin = extraPadding;
-      delete (this.getSettings() as any)['extraPadding'];
+    if (extraPadding) {
+      if (extraPadding.top !== 2 || extraPadding.bottom !== 2 || extraPadding.left !== 2 || extraPadding.right !== 2) {
+        this.getSettings().extraMargin = extraPadding;
+        delete (this.getSettings() as any)['extraPadding'];
+      }
     }
 
     await this.saveIconFolderData();
