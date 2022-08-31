@@ -1,4 +1,4 @@
-import { Plugin, MenuItem, TFile, Notice } from 'obsidian';
+import { Plugin, MenuItem, TFile, Notice, View } from 'obsidian';
 import { ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
@@ -20,6 +20,7 @@ import {
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
 import MetaData from './MetaData';
+import StarredInternalPlugin from './internalPlugins/starred';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -173,6 +174,8 @@ export default class IconFolderPlugin extends Plugin {
   private handleChangeLayout(): void {
     // Transform data that are objects to single strings.
     const data = Object.entries(this.data) as [string, string | FolderIconObject][];
+
+    new StarredInternalPlugin(this).register();
 
     addIconsToDOM(this, data, this.registeredFileExplorers, () => {
       //const searchLeaveDom = this.getSearchLeave().dom;

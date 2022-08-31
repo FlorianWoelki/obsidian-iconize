@@ -1,8 +1,44 @@
 import { TFile, View, WorkspaceLeaf } from 'obsidian';
+import IconFolderPlugin from '../main';
+
+interface InternalPlugin {
+  enabled: boolean;
+  enable: (b: boolean) => void;
+  disable: (b: boolean) => void;
+}
+
+interface StarredFile {
+  type: 'file';
+  title: string;
+  path: string;
+}
+
+interface StarredInternalPlugin extends InternalPlugin {
+  instance: {
+    addItem: (file: StarredFile) => void;
+    removeItem: (file: StarredFile) => void;
+    items: StarredFile[];
+  };
+}
+
+interface FileExplorerInternalPlugin extends InternalPlugin {}
+
+interface InternalPlugins {
+  starred: StarredInternalPlugin;
+  'file-explorer': FileExplorerInternalPlugin;
+}
 
 declare module 'obsidian' {
   interface Workspace {
     getLeavesOfType(viewType: 'search' | 'file-explorer'): ExplorerLeaf[];
+  }
+
+  interface App {
+    internalPlugins: {
+      plugins: InternalPlugins;
+      getPluginById<T extends keyof InternalPlugins>(id: T): InternalPlugins[T];
+      loadPlugin(...args: any[]): any;
+    };
   }
 }
 

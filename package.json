@@ -39,6 +39,7 @@
     "husky": "^7.0.2",
     "lint-staged": "^11.2.6",
     "mkdirp": "^1.0.4",
+    "monkey-around": "^2.3.0",
     "obsidian": "^0.15.4",
     "prettier": "^2.3.2",
     "rollup": "^2.32.1",

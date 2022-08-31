@@ -1666,6 +1666,11 @@ moment@2.29.3:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.3.tgz#edd47411c322413999f7a5940d526de183c031f3"
   integrity sha512-c6YRvhEo//6T2Jz/vVtYzqBzwvPT95JBQ+smCytzf7c50oMZRsR/a4w88aD34I+/QVSfnoAnSBFPJHItlOMJVw==
 
+monkey-around@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/monkey-around/-/monkey-around-2.3.0.tgz#6a2320132496646ed38eaef7ddf9bfef98fd34c6"
+  integrity sha512-QWcCUWjqE/MCk9cXlSKZ1Qc486LD439xw/Ak8Nt6l2PuL9+yrc9TJakt7OHDuOqPRYY4nTWBAEFKn32PE/SfXA==
+
 ms@2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
