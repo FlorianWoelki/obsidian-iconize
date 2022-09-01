@@ -56,6 +56,8 @@ export default class IconFolderPlugin extends Plugin {
     MetaData.pluginName = this.manifest.id;
     console.log(`loading ${MetaData.pluginName}`);
 
+    this.modifiedInternalPlugins.push(new StarredInternalPlugin(this));
+
     await this.loadIconFolderData();
     setPath(this.getSettings().iconPacksPath);
 
@@ -143,15 +145,6 @@ export default class IconFolderPlugin extends Plugin {
     );
 
     this.addSettingTab(new IconFolderSettingsTab(this.app, this));
-
-    this.modifiedInternalPlugins.push(new StarredInternalPlugin(this));
-
-    this.modifiedInternalPlugins.forEach((internalPlugin) => {
-      if (internalPlugin.enabled) {
-        internalPlugin.onMount();
-        internalPlugin.register();
-      }
-    });
   }
 
   private getSearchLeave(): ExplorerView {
@@ -185,6 +178,13 @@ export default class IconFolderPlugin extends Plugin {
   private handleChangeLayout(): void {
     // Transform data that are objects to single strings.
     const data = Object.entries(this.data) as [string, string | FolderIconObject][];
+
+    this.modifiedInternalPlugins.forEach((internalPlugin) => {
+      if (internalPlugin.enabled) {
+        internalPlugin.onMount();
+        internalPlugin.register();
+      }
+    });
 
     addIconsToDOM(this, data, this.registeredFileExplorers, () => {
       //const searchLeaveDom = this.getSearchLeave().dom;
