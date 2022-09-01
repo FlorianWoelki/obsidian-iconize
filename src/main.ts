@@ -1,4 +1,4 @@
-import { Plugin, MenuItem, TFile, Notice, View } from 'obsidian';
+import { Plugin, MenuItem, TFile } from 'obsidian';
 import { ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
@@ -14,13 +14,13 @@ import {
   addCustomRuleIconsToDOM,
   doesCustomRuleIconExists,
   updateIcon,
-  getIcon,
   addIconToDragToRearrange,
 } from './util';
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
 import MetaData from './MetaData';
 import StarredInternalPlugin from './internalPlugins/starred';
+import InternalPluginInjector from './@types/internalPluginInjector';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -30,6 +30,8 @@ export interface FolderIconObject {
 export default class IconFolderPlugin extends Plugin {
   private data: Record<string, boolean | string | IconFolderSettings | FolderIconObject>;
   private registeredFileExplorers = new Set<ExplorerView>();
+
+  private modifiedInternalPlugins: InternalPluginInjector[] = [];
 
   private async migrate(): Promise<void> {
     if (!this.getSettings().migrated) {
@@ -141,6 +143,15 @@ export default class IconFolderPlugin extends Plugin {
     );
 
     this.addSettingTab(new IconFolderSettingsTab(this.app, this));
+
+    this.modifiedInternalPlugins.push(new StarredInternalPlugin(this));
+
+    this.modifiedInternalPlugins.forEach((internalPlugin) => {
+      if (internalPlugin.enabled) {
+        internalPlugin.onMount();
+        internalPlugin.register();
+      }
+    });
   }
 
   private getSearchLeave(): ExplorerView {
@@ -174,8 +185,6 @@ export default class IconFolderPlugin extends Plugin {
   private handleChangeLayout(): void {
     // Transform data that are objects to single strings.
     const data = Object.entries(this.data) as [string, string | FolderIconObject][];
-
-    new StarredInternalPlugin(this).register();
 
     addIconsToDOM(this, data, this.registeredFileExplorers, () => {
       //const searchLeaveDom = this.getSearchLeave().dom;

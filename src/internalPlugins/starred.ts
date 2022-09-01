@@ -36,7 +36,39 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
     return undefined;
   }
 
-  register() {
+  private setIcon(filePath: string, node: Element | undefined): void {
+    const icon = getIconByPath(this.plugin, filePath);
+    const iconNode = node.querySelector('.nav-file-icon');
+    if (!iconNode || !icon) {
+      return;
+    }
+
+    insertIconToNode(this.plugin, icon, iconNode as HTMLElement);
+  }
+
+  private computeNodesWithPath(callback: (node: Element, filePath: string) => void): void {
+    const { itemLookup, containerEl } = this.leaf;
+    const navFileEls = containerEl.querySelectorAll('.nav-file');
+    navFileEls.forEach((navFileEl) => {
+      const lookupFile = itemLookup.get(navFileEl);
+      if (!lookupFile) {
+        return;
+      }
+
+      callback(navFileEl, lookupFile.path);
+    });
+  }
+
+  onMount(): void {
+    const nodesWithPath: { [key: string]: Element } = {};
+    this.computeNodesWithPath((node, filePath) => {
+      nodesWithPath[filePath] = node;
+    });
+
+    Object.entries(nodesWithPath).forEach(([filePath, node]) => this.setIcon(filePath, node as HTMLElement));
+  }
+
+  register(): void {
     if (!this.plugin.app.internalPlugins.getPluginById('file-explorer').enabled) {
       console.info(
         `[${MetaData.pluginName}/Starred] Skipping starred internal plugin registration because file-explorer is not enabled.`,
@@ -57,28 +89,13 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
         addItem: function (next) {
           return function (file) {
             next.call(this, file);
-
-            const { itemLookup, containerEl } = self.leaf;
-            const navFileEls = containerEl.querySelectorAll('.nav-file');
-            let el: Element | undefined;
-            navFileEls.forEach((navFileEl) => {
-              const lookupFile = itemLookup.get(navFileEl);
-              if (!lookupFile) {
-                return;
-              }
-
-              if (lookupFile.path === file.path) {
-                el = navFileEl;
-              }
-            });
-
-            const icon = getIconByPath(self.plugin, file.path);
-            const iconNode = el?.querySelector('.nav-file-icon');
-            if (!iconNode || !icon) {
-              return;
-            }
-
-            insertIconToNode(self.plugin, icon, iconNode as HTMLElement);
+            self.onMount();
+          };
+        },
+        removeItem: function (next) {
+          return function (file) {
+            next.call(this, file);
+            self.onMount();
           };
         },
       }),

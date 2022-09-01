@@ -647,21 +647,8 @@ export const readFileSync = async (file: File): Promise<string> => {
 };
 
 export const getIconByPath = (plugin: IconFolderPlugin, filePath: string): string | undefined => {
-  const value = plugin.getData()[filePath];
-  if (!value) {
-    return undefined;
-  }
-
-  if (filePath === 'settings') {
-    const rules = (value as IconFolderSettings).rules;
-    rules.forEach((rule: CustomRule) => {
-      if (!isEmoji(rule.icon)) {
-        if (doesCustomRuleIconExists(rule, filePath)) {
-          return rule.icon;
-        }
-      }
-    });
-  } else if (filePath !== 'settings' && filePath !== 'migrated') {
+  if (filePath !== 'settings' && filePath !== 'migrated') {
+    const value = plugin.getData()[filePath];
     if (typeof value === 'string' && !isEmoji(value)) {
       return value;
     } else if (typeof value === 'object') {
@@ -673,6 +660,12 @@ export const getIconByPath = (plugin: IconFolderPlugin, filePath: string): strin
         return v.inheritanceIcon;
       }
     }
+  }
+
+  const rules = (plugin.getData()['settings'] as IconFolderSettings)?.rules;
+  const rule = rules.find((rule: CustomRule) => !isEmoji(rule.icon) && doesCustomRuleIconExists(rule, filePath));
+  if (rule) {
+    return rule.icon;
   }
 
   return undefined;

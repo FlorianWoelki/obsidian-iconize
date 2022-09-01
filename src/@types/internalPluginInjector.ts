@@ -21,5 +21,9 @@ export default abstract class InternalPluginInjector {
     return this.plugin.app.workspace.getLeavesOfType('file-explorer') as unknown as FileExplorerWorkspaceLeaf[];
   }
 
+  onMount(): void {}
+
+  abstract get enabled(): boolean;
+
   abstract register(): void;
 }
