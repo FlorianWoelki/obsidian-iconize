@@ -646,6 +646,38 @@ export const readFileSync = async (file: File): Promise<string> => {
   return content;
 };
 
+export const getIconByPath = (plugin: IconFolderPlugin, filePath: string): string | undefined => {
+  const value = plugin.getData()[filePath];
+  if (!value) {
+    return undefined;
+  }
+
+  if (filePath === 'settings') {
+    const rules = (value as IconFolderSettings).rules;
+    rules.forEach((rule: CustomRule) => {
+      if (!isEmoji(rule.icon)) {
+        if (doesCustomRuleIconExists(rule, filePath)) {
+          return rule.icon;
+        }
+      }
+    });
+  } else if (filePath !== 'settings' && filePath !== 'migrated') {
+    if (typeof value === 'string' && !isEmoji(value)) {
+      return value;
+    } else if (typeof value === 'object') {
+      const v = value as FolderIconObject;
+      if (v.iconName !== null && !isEmoji(v.iconName)) {
+        return v.iconName;
+      }
+      if (v.inheritanceIcon !== null && !isEmoji(v.inheritanceIcon)) {
+        return v.inheritanceIcon;
+      }
+    }
+  }
+
+  return undefined;
+};
+
 export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
   const result: { key: string; value: string }[] = [];
   Object.entries(plugin.getData()).forEach(([key, value]: [string, string | FolderIconObject]) => {

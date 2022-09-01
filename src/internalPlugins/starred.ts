@@ -4,6 +4,7 @@ import InternalPluginInjector from '../@types/internalPluginInjector';
 import { StarredFile } from '../@types/obsidian';
 import IconFolderPlugin from '../main';
 import MetaData from '../MetaData';
+import { getIconByPath, insertIconToNode } from '../util';
 
 interface StarredView extends View {
   itemLookup: WeakMap<Element, StarredFile>;
@@ -35,8 +36,6 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
     return undefined;
   }
 
-  private setIcon(el: HTMLElement): void {}
-
   register() {
     if (!this.plugin.app.internalPlugins.getPluginById('file-explorer').enabled) {
       console.info(
@@ -61,17 +60,25 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
 
             const { itemLookup, containerEl } = self.leaf;
             const navFileEls = containerEl.querySelectorAll('.nav-file');
-            const elementFilePathMap: { [key: string]: Element } = {};
+            let el: Element | undefined;
             navFileEls.forEach((navFileEl) => {
-              const filePath = itemLookup.get(navFileEl);
-              if (!filePath) {
+              const lookupFile = itemLookup.get(navFileEl);
+              if (!lookupFile) {
                 return;
               }
 
-              elementFilePathMap[filePath.path] = navFileEl;
+              if (lookupFile.path === file.path) {
+                el = navFileEl;
+              }
             });
 
-            //self.setIcon(fileEl as HTMLElement);
+            const icon = getIconByPath(self.plugin, file.path);
+            const iconNode = el?.querySelector('.nav-file-icon');
+            if (!iconNode || !icon) {
+              return;
+            }
+
+            insertIconToNode(self.plugin, icon, iconNode as HTMLElement);
           };
         },
       }),
