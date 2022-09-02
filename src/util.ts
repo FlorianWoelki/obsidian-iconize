@@ -437,7 +437,8 @@ export const addCustomRuleIconsToDOM = async (
         files.forEach(async ([path, fileItem]) => {
           const fileType = (await plugin.app.vault.adapter.stat(path)).type;
           if (fileItem) {
-            if (path.match(regex) && isToRuleApplicable(rule, fileType)) {
+            const fileName = path.split('/').pop();
+            if (fileName.match(regex) && isToRuleApplicable(rule, fileType)) {
               const titleEl = fileItem.titleEl;
               const titleInnerEl = fileItem.titleInnerEl;
               const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
