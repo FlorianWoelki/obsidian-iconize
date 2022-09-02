@@ -353,12 +353,18 @@ export const doesIconExists = (iconName: string): boolean => {
   return icons.find((icon) => icon.name === iconName || icon.prefix + icon.name === iconName) !== undefined;
 };
 
-export const getSvgFromLoadedIcon = (iconName: string): string => {
+export const getSvgFromLoadedIcon = (iconPrefix: string, iconName: string): string => {
   let icon = '';
-  let foundIcon = preloadedIcons.find((icon) => icon.name.toLowerCase() === iconName.toLowerCase());
+  let foundIcon = preloadedIcons.find(
+    (icon) =>
+      icon.prefix.toLowerCase() === iconPrefix.toLowerCase() && icon.name.toLowerCase() === iconName.toLowerCase(),
+  );
   if (!foundIcon) {
     iconPacks.forEach((iconPack) => {
-      const icon = iconPack.icons.find((icon) => icon.name.toLowerCase() === iconName.toLowerCase());
+      const icon = iconPack.icons.find(
+        (icon) =>
+          icon.prefix.toLowerCase() === iconPrefix.toLowerCase() && icon.name.toLowerCase() === iconName.toLowerCase(),
+      );
       if (icon) {
         foundIcon = icon;
       }

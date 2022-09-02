@@ -38,19 +38,6 @@ export const getEnabledIcons = (plugin: IconFolderPlugin): Icon[] => {
 };
 
 /**
- * This function transforms an icon that includes a prefix and returns the correct svg string.
- *
- * For example: This input: `RiAB` will return only `AB` as a svg.
- *
- * @public
- * @param {string} name - The icon name.
- * @returns {string | null} The transformed svg or null if it cannot find any iconpack.
- */
-export const getIcon = (name: string): string | null => {
-  return getSvgFromLoadedIcon(name);
-};
-
-/**
  * This function returns the svg string with the user defined css settings.
  * It handles from the settings the `margin`, `color`, and `size`.
  *
@@ -275,7 +262,11 @@ export const addIconToDragToRearrange = (plugin: IconFolderPlugin, file: TFile):
     return;
   }
 
-  node.innerHTML = getIcon(iconName.substring(nextIdentifier(iconName)));
+  const iconNextIdentifier = nextIdentifier(iconName);
+  node.innerHTML = getSvgFromLoadedIcon(
+    iconName.substring(0, iconNextIdentifier),
+    iconName.substring(iconNextIdentifier),
+  );
 };
 
 /**
@@ -526,7 +517,8 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string, c
  * @param color
  */
 export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement, color?: string): void => {
-  const possibleIcon = getIcon(icon.substring(nextIdentifier(icon)));
+  const iconNextIdentifier = nextIdentifier(icon);
+  const possibleIcon = getSvgFromLoadedIcon(icon.substring(0, iconNextIdentifier), icon.substring(iconNextIdentifier));
 
   if (possibleIcon) {
     let iconContent = customizeIconStyle(plugin, possibleIcon, node);
