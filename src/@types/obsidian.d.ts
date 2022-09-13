@@ -1,4 +1,4 @@
-import { TFile, View, WorkspaceLeaf } from 'obsidian';
+import { MarkdownView, TFile, View, WorkspaceLeaf } from 'obsidian';
 import IconFolderPlugin from '../main';
 
 interface InternalPlugin {
@@ -61,4 +61,9 @@ interface ExplorerView extends View {
 interface FileItem {
   titleEl: HTMLDivElement;
   titleInnerEl: HTMLDivElement;
+}
+
+interface MarkdownLeaf extends WorkspaceLeaf {
+  view: MarkdownView;
+  containerEl: HTMLElement;
 }

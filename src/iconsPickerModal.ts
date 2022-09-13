@@ -1,7 +1,7 @@
 import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
-import { addToDOM, getEnabledIcons, isEmoji } from './util';
+import { addIconsToDragToRearrange, addToDOM, getEnabledIcons, isEmoji } from './util';
 import { doesIconExists, getAllIconPacks, getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
 
 type EnterScope = (() => void) | ((e: KeyboardEvent) => void);
@@ -112,6 +112,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       addToDOM(this.plugin, this.path, item);
     }
     this.plugin.addFolderIcon(this.path, item);
+    addIconsToDragToRearrange(this.plugin);
   }
 
   renderSuggestion(item: FuzzyMatch<Icon>, el: HTMLElement): void {

@@ -1,9 +1,9 @@
 import twemoji from 'twemoji';
 import IconFolderPlugin, { FolderIconObject } from './main';
-import type { ExplorerView } from './@types/obsidian';
+import type { ExplorerView, MarkdownLeaf } from './@types/obsidian';
 import { getAllLoadedIconNames, getSvgFromLoadedIcon, Icon, nextIdentifier } from './iconPackManager';
 import { CustomRule, IconFolderSettings } from './settings';
-import { TAbstractFile, TFile } from 'obsidian';
+import { setIcon, TAbstractFile } from 'obsidian';
 
 /**
  * This function returns all enabled icons.
@@ -232,41 +232,24 @@ export const addInheritanceIconToFile = (
   });
 };
 
-export const addIconToDragToRearrange = (plugin: IconFolderPlugin, file: TFile): void => {
-  const data = Object.entries(plugin.getData());
-  const node = document.querySelector('.view-header-icon');
-  if (!node || !node.hasAttribute('draggable')) {
-    return;
-  }
+export const addIconsToDragToRearrange = (plugin: IconFolderPlugin): void => {
+  const data = plugin.getData();
 
-  const titleContainer = node.nextSibling as HTMLDivElement;
-  if (!titleContainer) {
-    return;
-  }
+  const markdownLeaves = plugin.app.workspace.getLeavesOfType("markdown") as MarkdownLeaf[];
+  if (markdownLeaves.length === 0) return;
 
-  const title = titleContainer.querySelector('.view-header-title');
-  if (!title || title.innerHTML.length === 0) {
-    return;
-  }
+  const leavesWithIcons = markdownLeaves.map((leaf) => ({ leaf, icon: data[leaf.view.file.path] }));
 
-  const foundData = data.find(([dataPath]) => dataPath === file.path);
-  if (!foundData) {
-    const defaultElement =
-      '<svg viewBox="0 0 100 100" class="document" width="18" height="18"><path fill="currentColor" stroke="currentColor" d="M14,4v92h72V29.2l-0.6-0.6l-24-24L60.8,4L14,4z M18,8h40v24h24v60H18L18,8z M62,10.9L79.1,28H62V10.9z"></path></svg>';
-    node.innerHTML = defaultElement;
-    return;
-  }
+  for (const { leaf, icon } of leavesWithIcons) {
+    const node = leaf.containerEl.querySelector('.view-header-icon') as HTMLElement;
+    if (!node || !node.hasAttribute('draggable')) return;
 
-  const [_, iconName] = foundData;
-  if (typeof iconName !== 'string') {
-    return;
+    if (icon && typeof icon === "string") {
+      insertIconToNode(plugin, icon, node);
+    } else {
+      setIcon(node, "document");
+    }
   }
-
-  const iconNextIdentifier = nextIdentifier(iconName);
-  node.innerHTML = getSvgFromLoadedIcon(
-    iconName.substring(0, iconNextIdentifier),
-    iconName.substring(iconNextIdentifier),
-  );
 };
 
 /**

@@ -14,7 +14,7 @@ import {
   addCustomRuleIconsToDOM,
   doesCustomRuleIconExists,
   updateIcon,
-  addIconToDragToRearrange,
+  addIconsToDragToRearrange,
 } from './util';
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
@@ -91,6 +91,7 @@ export default class IconFolderPlugin extends Plugin {
             this.removeFolderIcon(file.path);
             removeFromDOM(file.path);
             updateIcon(this, file);
+            addIconsToDragToRearrange(this);
           });
         };
 
@@ -186,19 +187,12 @@ export default class IconFolderPlugin extends Plugin {
       }
     });
 
+    // Add icon to active file every layout change, so also works when splitting the workspace
+    addIconsToDragToRearrange(this);
+
     addIconsToDOM(this, data, this.registeredFileExplorers, () => {
       //const searchLeaveDom = this.getSearchLeave().dom;
       //searchLeaveDom.changed = () => this.addIconsToSearch();
-
-      // Add icon to active file
-      addIconToDragToRearrange(this, this.app.workspace.getActiveFile());
-
-      // Register event for manipulating view-header of drag to rearange icon.
-      this.registerEvent(
-        this.app.workspace.on('file-open', (file) => {
-          addIconToDragToRearrange(this, file);
-        }),
-      );
 
       // Register rename event for adding icons with custom rules to the DOM.
       this.registerEvent(
