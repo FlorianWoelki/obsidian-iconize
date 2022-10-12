@@ -10,6 +10,7 @@ Right now, the current predefined icon packs are supported and can be downloaded
 * [Remixicon](https://remixicon.com/)
 * [Fontawesome](https://fontawesome.com/)
 * [IconBrew](https://iconbrew.com/)
+* [SimpleIcons](https://simpleicons.org/)
 
 However, feel free to add your custom icon packs or submit a new one by creating a Pull Request where you update the [iconPacks.ts](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/src/iconPacks.ts) file and upload a zip file with the icons to [this directory](https://github.com/FlorianWoelki/obsidian-icon-folder/tree/main/iconPacks).
 

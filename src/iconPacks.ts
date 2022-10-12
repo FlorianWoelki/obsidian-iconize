@@ -39,8 +39,8 @@ export default {
   /* https://simpleicons.org/ */
   simpleIcons: {
     name: 'simple-icons',
-    displayName: 'Simple Icons'
+    displayName: 'Simple Icons',
     path: 'icons',
     downloadLink: 'https://github.com/simple-icons/simple-icons/archive/refs/tags/7.15.0.zip',
-  }
+  },
 } as { [key: string]: IconPack };
