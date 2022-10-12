@@ -36,4 +36,11 @@ export default {
     path: '',
     downloadLink: 'https://github.com/FlorianWoelki/obsidian-icon-folder/raw/main/iconPacks/icon-brew.zip',
   },
+  /* https://simpleicons.org/ */
+  simpleIcons: {
+    name: 'simple-icons',
+    displayName: 'Simple Icons'
+    path: 'icons',
+    downloadLink: 'https://github.com/simple-icons/simple-icons/archive/refs/tags/7.15.0.zip',
+  }
 } as { [key: string]: IconPack };
