@@ -66,10 +66,10 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
   // Change margin of icon
   const margin = plugin.getSettings().extraMargin;
   const normalizedMargin = {
-    top: margin.top !== undefined ? margin.top : 2,
-    right: margin.right !== undefined ? margin.right : 2,
-    left: margin.left !== undefined ? margin.left : 2,
-    bottom: margin.bottom !== undefined ? margin.bottom : 2,
+    top: margin.top !== undefined ? margin.top : 4,
+    right: margin.right !== undefined ? margin.right : 4,
+    left: margin.left !== undefined ? margin.left : 4,
+    bottom: margin.bottom !== undefined ? margin.bottom : 4,
   };
   if (plugin.getSettings().extraMargin) {
     el.style.margin = `${normalizedMargin.top}px ${normalizedMargin.right}px ${normalizedMargin.bottom}px ${normalizedMargin.left}px`;

@@ -33,7 +33,7 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   rules: [],
   extraMargin: {
     top: 0,
-    right: 2,
+    right: 4,
     bottom: 0,
     left: 0,
   },
