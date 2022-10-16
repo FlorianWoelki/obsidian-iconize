@@ -32,9 +32,9 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   recentlyUsedIconsSize: 5,
   rules: [],
   extraMargin: {
-    top: 2,
+    top: 0,
     right: 2,
-    bottom: 2,
-    left: 2,
+    bottom: 0,
+    left: 0,
   },
 };

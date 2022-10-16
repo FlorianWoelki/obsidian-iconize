@@ -1,9 +1,14 @@
 .obsidian-icon-folder-icon {
   border: 1px solid transparent;
-  margin: 2px 2px 2px 2px;
+  margin: 0px 2px 0px 0px;
   display: flex;
   align-self: center;
   margin: auto 0;
+}
+
+.nav-folder-title,
+.nav-file-title {
+  align-items: center;
 }
 
 .obsidian-icon-folder-setting .setting-item-control .dropdown {

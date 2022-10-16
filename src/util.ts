@@ -64,10 +64,15 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
   icon = colorizeIcon(icon, plugin.getSettings().iconColor);
 
   // Change margin of icon
+  const margin = plugin.getSettings().extraMargin;
+  const normalizedMargin = {
+    top: margin.top !== undefined ? margin.top : 2,
+    right: margin.right !== undefined ? margin.right : 2,
+    left: margin.left !== undefined ? margin.left : 2,
+    bottom: margin.bottom !== undefined ? margin.bottom : 2,
+  };
   if (plugin.getSettings().extraMargin) {
-    el.style.margin = `${plugin.getSettings().extraMargin.top ?? 2}px ${
-      plugin.getSettings().extraMargin.right ?? 2
-    }px ${plugin.getSettings().extraMargin.bottom ?? 2}px ${plugin.getSettings().extraMargin.left ?? 2}px`;
+    el.style.margin = `${normalizedMargin.top}px ${normalizedMargin.right}px ${normalizedMargin.bottom}px ${normalizedMargin.left}px`;
   }
 
   return icon;
