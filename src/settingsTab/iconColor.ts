@@ -1,6 +1,5 @@
-import { Setting } from 'obsidian';
+import { Setting, ColorComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import { ColorPickerComponent } from '../colorPickerComponent';
 import { refreshIconStyle } from '../util';
 
 export default class IconColorSetting extends IconFolderSetting {
@@ -8,7 +7,7 @@ export default class IconColorSetting extends IconFolderSetting {
     const colorCustomization = new Setting(this.containerEl)
       .setName('Icon color')
       .setDesc('Change the color of the displayed icons.');
-    const colorPicker = new ColorPickerComponent(colorCustomization.controlEl)
+    const colorPicker = new ColorComponent(colorCustomization.controlEl)
       .setValue(this.plugin.getSettings().iconColor ?? '#000000')
       .onChange(async (value) => {
         this.plugin.getSettings().iconColor = value;
@@ -30,6 +29,6 @@ export default class IconColorSetting extends IconFolderSetting {
         });
     });
 
-    colorCustomization.components.push(colorPicker.build());
+    colorCustomization.components.push(colorPicker);
   }
 }

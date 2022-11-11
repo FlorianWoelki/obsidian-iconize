@@ -1,6 +1,5 @@
-import { App, Notice, Setting, TextComponent } from 'obsidian';
+import { App, Notice, Setting, TextComponent, ColorComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import { ColorPickerComponent } from '../colorPickerComponent';
 import IconsPickerModal from '../iconsPickerModal';
 import IconFolderPlugin from '../main';
 import { addCustomRuleIconsToDOM, colorizeCustomRuleIcons, removeCustomRuleIconsFromDOM } from '../util';
@@ -59,7 +58,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
     this.plugin.getSettings().rules.forEach((rule) => {
       const settingRuleEl = new Setting(this.containerEl).setName(rule.rule).setDesc(`Icon: ${rule.icon}`);
 
-      const colorPicker = new ColorPickerComponent(settingRuleEl.controlEl)
+      const colorPicker = new ColorComponent(settingRuleEl.controlEl)
         .setValue(rule.color ?? '#000000')
         .onChange(async (value) => {
           rule.color = value;
