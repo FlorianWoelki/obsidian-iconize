@@ -1,4 +1,4 @@
-import { App, Notice, Setting, TextComponent, ColorComponent } from 'obsidian';
+import { App, Notice, Setting, TextComponent, ColorComponent, ButtonComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import IconsPickerModal from '../iconsPickerModal';
 import IconFolderPlugin from '../main';
@@ -8,6 +8,7 @@ import { CustomRule } from '../settings';
 export default class CustomIconRuleSetting extends IconFolderSetting {
   private app: App;
   private textComponent: TextComponent;
+  private chooseIconBtn: ButtonComponent;
   private refreshDisplay: () => void;
 
   constructor(plugin: IconFolderPlugin, containerEl: HTMLElement, app: App, refreshDisplay: () => void) {
@@ -21,12 +22,20 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
       .setName('Add icon rule')
       .setDesc('Will add the icon based on the specific string.')
       .addText((text) => {
+        text.onChange((value) => {
+          this.chooseIconBtn.setDisabled(value.length === 0);
+          this.chooseIconBtn.buttonEl.style.cursor = value.length === 0 ? 'not-allowed' : 'default';
+          this.chooseIconBtn.buttonEl.style.opacity = value.length === 0 ? '50%' : '100%';
+        });
         text.setPlaceholder('regex or simple string');
         this.textComponent = text;
       })
       .addButton((btn) => {
+        btn.setDisabled(true);
         btn.setButtonText('Choose icon');
         btn.buttonEl.style.marginLeft = '12px';
+        btn.buttonEl.style.cursor = 'not-allowed';
+        btn.buttonEl.style.opacity = '50%';
         btn.onClick(async () => {
           if (this.textComponent.getValue().length === 0) {
             return;
@@ -53,6 +62,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           };
           modal.open();
         });
+        this.chooseIconBtn = btn;
       });
 
     this.plugin.getSettings().rules.forEach((rule) => {
