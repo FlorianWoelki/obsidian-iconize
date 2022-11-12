@@ -1,6 +1,7 @@
 import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
+import emoji from './emoji';
 import { addToDOM, getEnabledIcons, isEmoji } from './util';
 import { doesIconExists, getAllIconPacks, getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
 
@@ -15,8 +16,6 @@ export interface Icon {
 export default class IconsPickerModal extends FuzzySuggestModal<any> {
   private plugin: IconFolderPlugin;
   private path: string;
-
-  private oldEnterFunc: (e: KeyboardEvent) => void;
 
   private renderIndex: number = 0;
   private lastRenderedRecentlyIcon: HTMLElement;
@@ -35,35 +34,6 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     });
 
     this.resultContainerEl.classList.add('obsidian-icon-folder-modal');
-
-    this.oldEnterFunc = (this.scope as any).keys.find((e: any) => e.key === 'Enter').func;
-  }
-
-  onNoSuggestion(): void {
-    super.onNoSuggestion();
-    const inputVal = this.inputEl.value;
-    if (isEmoji(inputVal)) {
-      this.resultContainerEl.empty();
-
-      const suggestionItem = this.resultContainerEl.createDiv();
-      suggestionItem.className = 'suggestion-item suggestion-item__center is-selected';
-      suggestionItem.textContent = 'Use twemoji Emoji';
-      suggestionItem.innerHTML += `<div class="obsidian-icon-folder-icon-preview">${twemoji.parse(inputVal)}</div>`;
-
-      this.setEnterScope(() => {
-        this.selectTwemoji(inputVal);
-      });
-
-      suggestionItem.addEventListener('click', () => {
-        this.selectTwemoji(inputVal);
-      });
-      this.resultContainerEl.appendChild(suggestionItem);
-    }
-  }
-
-  private selectTwemoji(inputVal: string): void {
-    this.onChooseItem(inputVal);
-    this.close();
   }
 
   onOpen() {
@@ -102,6 +72,19 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       });
     }
 
+    Object.entries(emoji).forEach(([unicode, shortName]) => {
+      iconKeys.push({
+        name: shortName,
+        prefix: 'Twemoji',
+        displayName: unicode,
+      });
+      iconKeys.push({
+        name: unicode,
+        prefix: 'Twemoji',
+        displayName: unicode,
+      });
+    });
+
     return iconKeys;
   }
 
@@ -138,15 +121,10 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       }
     }
 
-    if (this.getEnterScope() !== this.oldEnterFunc) {
-      this.setEnterScope(this.oldEnterFunc);
-    }
-
     if (item.item.name !== 'default') {
-      const possibleEmoji = el.innerHTML.trim().replace(/\(|\)/gi, '');
-      if (isEmoji(possibleEmoji)) {
-        el.innerHTML = `<div>Twemoji</div><div class="obsidian-icon-folder-icon-preview">${twemoji.parse(
-          possibleEmoji,
+      if (item.item.prefix === 'Twemoji') {
+        el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${twemoji.parse(
+          item.item.displayName,
         )}</div>`;
       } else {
         el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${getSvgFromLoadedIcon(
@@ -158,13 +136,5 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
     this.lastRenderedRecentlyIcon = el;
     this.renderIndex++;
-  }
-
-  private setEnterScope(func: EnterScope): void {
-    (this.scope as any).keys.find((e: any) => e.key === 'Enter').func = func;
-  }
-
-  private getEnterScope(): EnterScope {
-    return (this.scope as any).keys.find((e: any) => e.key === 'Enter').func;
   }
 }
