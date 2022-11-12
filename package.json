@@ -45,7 +45,7 @@
     "rollup": "^2.32.1",
     "rollup-plugin-babel": "^4.4.0",
     "tslib": "^2.2.0",
-    "twemoji": "^13.1.0",
+    "twemoji": "^14.0.2",
     "typescript": "^4.2.4"
   },
   "dependencies": {
