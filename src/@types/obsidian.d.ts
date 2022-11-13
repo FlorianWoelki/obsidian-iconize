@@ -1,5 +1,4 @@
 import { TFile, View, WorkspaceLeaf } from 'obsidian';
-import IconFolderPlugin from '../main';
 
 interface InternalPlugin {
   enabled: boolean;
