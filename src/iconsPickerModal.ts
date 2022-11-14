@@ -2,10 +2,8 @@ import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
 import emoji from './emoji';
-import { addToDOM, getEnabledIcons, isEmoji } from './util';
-import { doesIconExists, getAllIconPacks, getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
-
-type EnterScope = (() => void) | ((e: KeyboardEvent) => void);
+import { addToDOM, getEnabledIcons } from './util';
+import { doesIconExists, getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
 
 export interface Icon {
   name: string;
@@ -100,13 +98,14 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   renderSuggestion(item: FuzzyMatch<Icon>, el: HTMLElement): void {
     super.renderSuggestion(item, el);
 
-    if (getAllIconPacks().length === 0) {
-      this.resultContainerEl.style.display = 'block';
-      this.resultContainerEl.innerHTML = '<div class="suggestion-empty">You need to create an icon pack.</div>';
-      return;
-    }
+    // if (getAllIconPacks().length === 0) {
+    //   this.resultContainerEl.style.display = 'block';
+    //   this.resultContainerEl.innerHTML = '<div class="suggestion-empty">You need to create an icon pack.</div>';
+    //   return;
+    // }
 
     // Render subheadlines for modal.
+    console.log(this.recentlyUsedItems, this.inputEl.value);
     if (this.recentlyUsedItems.length !== 0 && this.inputEl.value.length === 0) {
       if (this.renderIndex === 0) {
         const subheadline = this.resultContainerEl.createDiv();
