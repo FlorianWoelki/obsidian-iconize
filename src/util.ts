@@ -61,7 +61,7 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
   }
 
   // Allow custom icon color.
-  icon = colorizeIcon(icon, plugin.getSettings().iconColor ?? '#000000');
+  icon = colorizeIcon(icon, plugin.getSettings().iconColor);
 
   // Change margin of icon
   const margin = plugin.getSettings().extraMargin;
