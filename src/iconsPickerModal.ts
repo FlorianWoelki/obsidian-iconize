@@ -2,7 +2,7 @@ import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
 import emoji from './emoji';
-import { addToDOM, getEnabledIcons } from './util';
+import { addToDOM, getEnabledIcons, isEmoji } from './util';
 import { doesIconExists, getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
 
 export interface Icon {
@@ -16,7 +16,6 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   private path: string;
 
   private renderIndex: number = 0;
-  private lastRenderedRecentlyIcon: HTMLElement;
 
   private recentlyUsedItems: string[];
 
@@ -28,7 +27,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
     const pluginRecentltyUsedItems = [...plugin.getSettings().recentlyUsedIcons];
     this.recentlyUsedItems = pluginRecentltyUsedItems.reverse().filter((iconName) => {
-      return doesIconExists(iconName);
+      return doesIconExists(iconName) || isEmoji(iconName);
     });
 
     this.resultContainerEl.classList.add('obsidian-icon-folder-modal');
@@ -53,6 +52,16 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     if (this.inputEl.value.length === 0) {
       this.renderIndex = 0;
       this.recentlyUsedItems.forEach((iconName) => {
+        // Transform unicodes to twemojis.
+        if (isEmoji(iconName)) {
+          iconKeys.push({
+            name: emoji[iconName],
+            prefix: 'Twemoji',
+            displayName: iconName,
+          });
+          return;
+        }
+
         const nextLetter = nextIdentifier(iconName);
         iconKeys.push({
           name: iconName.substring(nextLetter),
@@ -111,11 +120,11 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
         subheadline.classList.add('obsidian-icon-folder-subheadline');
         subheadline.innerText = 'Recently used Icons:';
         this.resultContainerEl.prepend(subheadline);
-      } else if (this.renderIndex === this.recentlyUsedItems.length) {
-        const subheadline = this.containerEl.createDiv();
+      } else if (this.renderIndex === this.recentlyUsedItems.length - 1) {
+        const subheadline = this.resultContainerEl.createDiv();
         subheadline.classList.add('obsidian-icon-folder-subheadline');
         subheadline.innerText = 'All Icons:';
-        subheadline.insertAfter(this.lastRenderedRecentlyIcon);
+        this.resultContainerEl.append(subheadline);
       }
     }
 
@@ -132,7 +141,6 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       }
     }
 
-    this.lastRenderedRecentlyIcon = el;
     this.renderIndex++;
   }
 }
