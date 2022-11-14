@@ -105,7 +105,6 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     // }
 
     // Render subheadlines for modal.
-    console.log(this.recentlyUsedItems, this.inputEl.value);
     if (this.recentlyUsedItems.length !== 0 && this.inputEl.value.length === 0) {
       if (this.renderIndex === 0) {
         const subheadline = this.resultContainerEl.createDiv();
