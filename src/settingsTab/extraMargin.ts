@@ -18,7 +18,7 @@ export default class ExtraMarginSetting extends IconFolderSetting {
     } as Record<keyof ExtraMarginSettings, string>);
 
     const extraMarginSlider = new SliderComponent(extraMarginSetting.controlEl)
-      .setLimits(0, 24, 1)
+      .setLimits(-24, 24, 1)
       .setDynamicTooltip()
       .setValue(this.plugin.getSettings().extraMargin?.top ?? 2)
       .onChange(async (val) => {
