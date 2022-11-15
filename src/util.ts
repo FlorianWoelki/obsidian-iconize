@@ -81,7 +81,7 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
 const colorizeIcon = (icon: string, c: string | undefined, type: 'stroke' | 'fill' = 'fill'): string => {
   const regex = type === 'fill' ? new RegExp(/fill="(\w|#)+"/g) : new RegExp(/stroke="(\w|#)+"/g);
   const colorMatch = icon.match(regex);
-  if (colorMatch && c) {
+  if (colorMatch) {
     colorMatch.forEach((color) => {
       if (color.contains('currentColor') || !color.contains('none')) {
         icon = icon.replace(color, `${type}="${c ?? 'currentColor'}"`);
