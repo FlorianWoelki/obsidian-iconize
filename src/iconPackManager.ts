@@ -6,7 +6,6 @@ export interface Icon {
   name: string;
   prefix: string;
   filename: string;
-  svgPath: string | { fill: string; d: string }[];
   svgContent: string;
   svgViewbox: string;
   svgElement: string;
@@ -157,37 +156,6 @@ export const getFilesInDirectory = async (plugin: Plugin, dir: string): Promise<
   return (await plugin.app.vault.adapter.list(dir)).files;
 };
 
-const svgPathRegex = /<path\s([^>]*)>/g;
-const svgAttrRegex = /(?:\s*|^)([^= ]*)="([^"]*)"/g;
-const extractPaths = (content: string) => {
-  const allPaths = [];
-  while (true) {
-    const svgPathMatches = svgPathRegex.exec(content);
-    const svgPath = svgPathMatches && svgPathMatches[1];
-    if (!svgPath) {
-      const svgContentMatch = content.match(svgContentRegex);
-      const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, '').replace(/<svg.+?>/g, ''))[0];
-      allPaths.push(svgContent);
-      break;
-    }
-
-    const attrs: any = {};
-    while (true) {
-      const svgAttrMatches = svgAttrRegex.exec(svgPath);
-      if (!svgAttrMatches) {
-        break;
-      }
-      attrs[svgAttrMatches[1]] = svgAttrMatches[2];
-    }
-    if (attrs.fill === 'none') {
-      continue;
-    }
-    allPaths.push(attrs.d ?? attrs);
-  }
-
-  return allPaths;
-};
-
 const validIconName = /^[(A-Z)|(0-9)]/;
 const svgViewboxRegex = /viewBox="([^"]*)"/g;
 const svgContentRegex = /<svg.*>(.*?)<\/svg>/g;
@@ -208,14 +176,6 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
     return null;
   }
 
-  let svgPaths;
-  try {
-    svgPaths = extractPaths(content);
-  } catch (err) {
-    console.log(err);
-    return null;
-  }
-
   const svgViewboxMatch = content.match(svgViewboxRegex);
   let svgViewbox: string = '';
   if (svgViewboxMatch && svgViewboxMatch.length !== 0) {
@@ -231,7 +191,6 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
     name: normalizedName.split('.svg')[0],
     prefix: iconPackPrefix,
     filename: iconName,
-    svgPath: svgPaths.length === 1 ? svgPaths[0] : svgPaths,
     svgContent,
     svgViewbox,
     svgElement: extract(content),
