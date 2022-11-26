@@ -58,8 +58,11 @@ export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: 
     new Notice(`...moved ${iconPack.name}`);
   }
 
-  if (await plugin.app.vault.adapter.exists(from)) {
-    await plugin.app.vault.adapter.rmdir(from, true);
+  for (let i = 0; i < iconPacks.length; i++) {
+    const iconPack = iconPacks[i];
+    if (await plugin.app.vault.adapter.exists(`${from}/${iconPack.name}`)) {
+      await plugin.app.vault.adapter.rmdir(`${from}/${iconPack.name}`, true);
+    }
   }
 };
 
