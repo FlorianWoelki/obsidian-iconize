@@ -5,6 +5,7 @@ export interface Icon {
   name: string;
   prefix: string;
   filename: string;
+  svgElement: string;
   svgPath: string | { fill: string; d: string }[];
   svgContent: string;
   svgViewbox: string;
@@ -189,6 +190,8 @@ const extractPaths = (content: string) => {
 const validIconName = /^[(A-Z)|(0-9)]/;
 const svgViewboxRegex = /viewBox="([^"]*)"/g;
 const svgContentRegex = /<svg.*>(.*?)<\/svg>/g;
+const svgElementRegex = /<svg [^>]+[\w]="(.*?)"+>/g;
+const strokeWidthRegex = /stroke-width="\d+"/g;
 const generateIcon = (iconPackName: string, iconName: string, content: string): Icon | null => {
   if (content.length === 0) {
     return;
@@ -222,6 +225,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
 
   const svgContentMatch = content.match(svgContentRegex);
   const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, '').replace(/<svg.+?>/g, ''))[0];
+  const svgElement = content.match(svgElementRegex);
 
   const iconPackPrefix = createIconPackPrefix(iconPackName);
 
@@ -229,6 +233,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
     name: normalizedName.split('.svg')[0],
     prefix: iconPackPrefix,
     filename: iconName,
+    svgElement: svgElement.length === 1 ? svgElement[0] : '',
     svgPath: svgPaths.length === 1 ? svgPaths[0] : svgPaths,
     svgContent,
     svgViewbox,
@@ -376,15 +381,27 @@ export const getSvgFromLoadedIcon = (iconPrefix: string, iconName: string): stri
 
   if (foundIcon) {
     let fileContent: string;
+    const strokeWidthMatch = foundIcon.svgElement.match(strokeWidthRegex);
+    const strokeWidth = strokeWidthMatch?.length > 0 ? strokeWidthMatch[0] : '';
+
     if (typeof foundIcon.svgPath === 'object') {
-      const doesStrokeExists = foundIcon.svgPath.filter((path: any) => path.match(/stroke=".*"/g)).length !== 0;
-      fileContent = `<svg width="16" ${doesStrokeExists ? 'fill="none"' : 'fill="currentColor"'} height="16" ${
-        foundIcon.svgViewbox.length !== 0 ? foundIcon.svgViewbox : 'viewbox="0 0 24 24"'
-      }>${foundIcon.svgContent}</svg>`;
+      const doesStrokeExists =
+        foundIcon.svgPath.filter((path: any) => path.match(/stroke=".*"/g)).length !== 0 ||
+        foundIcon.svgElement.includes('stroke="currentColor"');
+
+      fileContent = `<svg width="16" ${
+        doesStrokeExists ? `fill="none" stroke="currentColor" ${strokeWidth}` : 'fill="currentColor"'
+      } height="16" ${foundIcon.svgViewbox.length !== 0 ? foundIcon.svgViewbox : 'viewbox="0 0 24 24"'}>${
+        foundIcon.svgContent
+      }</svg>`;
     } else {
-      fileContent = `<svg width="16" height="16" ${foundIcon.svgPath.includes('fill=') ? '' : 'fill="currentColor"'} ${
-        foundIcon.svgViewbox.length !== 0 ? foundIcon.svgViewbox : 'viewbox="0 0 24 24"'
-      }>${foundIcon.svgContent}</svg>`;
+      const doesStrokeExists =
+        foundIcon.svgPath.includes('stroke="currentColor"') || foundIcon.svgElement.includes('stroke="currentColor"');
+      fileContent = `<svg width="16" height="16" ${
+        doesStrokeExists ? `fill="none" stroke="currentColor" ${strokeWidth}` : 'fill="currentColor"'
+      } ${foundIcon.svgViewbox.length !== 0 ? foundIcon.svgViewbox : 'viewbox="0 0 24 24"'}>${
+        foundIcon.svgContent
+      }</svg>`;
     }
     icon = fileContent;
   }
