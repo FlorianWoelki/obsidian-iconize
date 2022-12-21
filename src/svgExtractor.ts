@@ -1,103 +1,32 @@
-const viewboxRegex = /viewBox="([^"]*)"/g;
-const contentRegex = /<svg.*>(.*?)<\/svg>/g;
-const pathRegex = /<path\s([^>]*)>/g;
-const attrRegex = /(?:\s*|^)([^= ]*)="([^"]*)"/g;
-const rootElementRegex = /<svg [^>]+[\w]="(.*?)"+>/g;
-const fillAttrRegex = /fill="([^"]*)"/g;
-const widthRegex = /width="(([^"]*))"/g;
-const heightRegex = /height="([^"]*)"/g;
-
 export const extract = (svgString: string): string => {
+  // Removes unnecessary spaces and newlines.
   svgString = svgString.replace(/(\r\n|\n|\r)/gm, '');
   svgString = svgString.replace(/>\s+</gm, '><');
 
-  let svgPaths;
-  try {
-    svgPaths = extractPaths(svgString);
-  } catch (error) {
-    console.log(error);
-    return '';
+  // Create a parser for better parsing of HTML.
+  const parser = new DOMParser();
+  const svg = parser.parseFromString(svgString, 'text/html').querySelector('svg');
+
+  // Removes `width` and `height` from the `style` attribute.
+  if (svg.hasAttribute('style')) {
+    svg.style.width = '';
+    svg.style.height = '';
   }
 
-  const svgViewboxMatch = svgString.match(viewboxRegex);
-  let svgViewbox: string = '';
-  if (svgViewboxMatch && svgViewboxMatch.length !== 0) {
-    svgViewbox = svgViewboxMatch[0];
+  // Add `viewbox`, if it is not already a attribute.
+  if (svg.viewBox.baseVal.width === 0 && svg.viewBox.baseVal.height === 0) {
+    const width = svg.width.baseVal.value ?? 16;
+    const height = svg.height.baseVal.value ?? 16;
+    svg.viewBox.baseVal.width = width;
+    svg.viewBox.baseVal.height = height;
   }
 
-  const svgContentMatch = svgString.match(contentRegex);
-  const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, '').replace(/<svg.+?>/g, ''))[0];
-
-  const widthMatches = widthRegex.exec(svgString);
-  const heightMatches = heightRegex.exec(svgString);
-  let width = '16';
-  if (widthMatches?.length >= 1) {
-    width = widthMatches[1];
-  }
-  let height = '16';
-  if (heightMatches?.length >= 1) {
-    height = heightMatches[1];
-  }
-  const viewbox = svgViewbox.length === 0 ? `viewbox="0 0 ${width} ${height}"` : svgViewbox;
-
-  let fill = 'fill="currentColor"';
-  let otherAttrs = '';
-
-  const rootElement = svgString.match(rootElementRegex);
-  if (rootElement?.length > 0) {
-    const fillMatch = rootElement[0].match(fillAttrRegex);
-    if (fillMatch?.length > 0) {
-      fill = fillMatch[0];
-    }
-
-    const svgContent = rootElement[0]
-      .replace(/<\/?svg>/g, '')
-      .replace(/<svg/g, '')
-      .replace(/>/g, '');
-    otherAttrs += svgContent
-      .replace(fill, '')
-      .replace(viewbox, '')
-      .replace(/\s(width|height)="\d+"/g, '');
+  if (!svg.hasAttribute('fill')) {
+    svg.setAttribute('fill', 'currentColor');
   }
 
-  const svgElement = `<svg
-  width="16"
-  height="16"
-  ${viewbox}
-  ${fill}
-  ${otherAttrs}
->
-  ${svgContent}
-</svg>`;
+  svg.setAttribute('width', '16px');
+  svg.setAttribute('height', '16px');
 
-  return svgElement;
-};
-
-const extractPaths = (content: string) => {
-  const allPaths = [];
-  while (true) {
-    const svgPathMatches = pathRegex.exec(content);
-    const svgPath = svgPathMatches && svgPathMatches[1];
-    if (!svgPath) {
-      const svgContentMatch = content.match(contentRegex);
-      const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, '').replace(/<svg.+?>/g, ''))[0];
-      allPaths.push(svgContent);
-      break;
-    }
-
-    const attrs: any = {};
-    while (true) {
-      const svgAttrMatches = attrRegex.exec(svgPath);
-      if (!svgAttrMatches) {
-        break;
-      }
-      attrs[svgAttrMatches[1]] = svgAttrMatches[2];
-    }
-    if (attrs.fill === 'none') {
-      continue;
-    }
-    allPaths.push(attrs.d ?? attrs);
-  }
-
-  return allPaths;
+  return svg.outerHTML;
 };
