@@ -3,7 +3,9 @@ const contentRegex = /<svg.*>(.*?)<\/svg>/g;
 const pathRegex = /<path\s([^>]*)>/g;
 const attrRegex = /(?:\s*|^)([^= ]*)="([^"]*)"/g;
 const rootElementRegex = /<svg [^>]+[\w]="(.*?)"+>/g;
-const fillAttrRegx = /fill="([^"]*)"/g;
+const fillAttrRegex = /fill="([^"]*)"/g;
+const widthRegex = /width="(([^"]*))"/g;
+const heightRegex = /height="([^"]*)"/g;
 
 export const extract = (svgString: string): string => {
   svgString = svgString.replace(/(\r\n|\n|\r)/gm, '');
@@ -26,14 +28,24 @@ export const extract = (svgString: string): string => {
   const svgContentMatch = svgString.match(contentRegex);
   const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, '').replace(/<svg.+?>/g, ''))[0];
 
-  const viewbox = svgViewbox.length === 0 ? 'viewbox="0 0 24 24"' : svgViewbox;
+  const widthMatches = widthRegex.exec(svgString);
+  const heightMatches = heightRegex.exec(svgString);
+  let width = '16';
+  if (widthMatches?.length >= 1) {
+    width = widthMatches[1];
+  }
+  let height = '16';
+  if (heightMatches?.length >= 1) {
+    height = heightMatches[1];
+  }
+  const viewbox = svgViewbox.length === 0 ? `viewbox="0 0 ${width} ${height}"` : svgViewbox;
 
   let fill = 'fill="currentColor"';
   let otherAttrs = '';
 
   const rootElement = svgString.match(rootElementRegex);
   if (rootElement?.length > 0) {
-    const fillMatch = rootElement[0].match(fillAttrRegx);
+    const fillMatch = rootElement[0].match(fillAttrRegex);
     if (fillMatch?.length > 0) {
       fill = fillMatch[0];
     }
