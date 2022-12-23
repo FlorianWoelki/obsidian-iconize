@@ -80,14 +80,20 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
 
 const colorizeIcon = (icon: string, c: string | undefined): string => {
   const parser = new DOMParser();
-  const iconElement = parser.parseFromString(icon, 'text/html').querySelector('svg');
-  if (iconElement.hasAttribute('fill') && iconElement.getAttribute('fill') !== 'none') {
-    iconElement.setAttribute('fill', c ?? 'currentColor');
-  } else if (iconElement.hasAttribute('stroke') && iconElement.getAttribute('stroke') !== 'none') {
-    iconElement.setAttribute('stroke', c ?? 'currentColor');
+  const parsedString = parser.parseFromString(icon, 'text/html');
+  const iconElement = parsedString.querySelector('svg');
+
+  if (iconElement) {
+    if (iconElement.hasAttribute('fill') && iconElement.getAttribute('fill') !== 'none') {
+      iconElement.setAttribute('fill', c ?? 'currentColor');
+    } else if (iconElement.hasAttribute('stroke') && iconElement.getAttribute('stroke') !== 'none') {
+      iconElement.setAttribute('stroke', c ?? 'currentColor');
+    }
+
+    return iconElement.outerHTML;
   }
 
-  return iconElement.outerHTML;
+  return icon;
 };
 
 /**
