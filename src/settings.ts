@@ -16,6 +16,7 @@ export interface IconFolderSettings {
   migrated: boolean;
   iconPacksPath: string;
   fontSize: number;
+  emojiStyle: 'none' | 'native' | 'twemoji';
   iconColor: string | null;
   extraMargin: ExtraMarginSettings;
   recentlyUsedIcons: string[];
@@ -27,6 +28,7 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   migrated: false,
   iconPacksPath: '.obsidian/plugins/obsidian-icon-folder/icons',
   fontSize: 16,
+  emojiStyle: 'none',
   iconColor: null,
   recentlyUsedIcons: [],
   recentlyUsedIconsSize: 5,

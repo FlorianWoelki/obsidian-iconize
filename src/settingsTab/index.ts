@@ -2,6 +2,7 @@ import { App, PluginSettingTab } from 'obsidian';
 import IconFolderPlugin from '../main';
 import CustomIconPackSetting from './customIconPack';
 import CustomIconRuleSetting from './customIconRule';
+import EmojiStyleSetting from './emojiStyle';
 import ExtraMarginSetting from './extraMargin';
 import IconColorSetting from './iconColor';
 import IconFontSizeSetting from './iconFontSize';
@@ -25,6 +26,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
     containerEl.createEl('h2', { text: 'Icon Folder Settings' });
     new RecentlyUsedIconsSetting(plugin, containerEl).display();
     new IconPacksPathSetting(plugin, containerEl).display();
+    new EmojiStyleSetting(plugin, containerEl).display();
 
     containerEl.createEl('h3', { text: 'Icon Packs' });
     new PredefinedIconPacksSetting(plugin, containerEl, app, () => this.display()).display();
