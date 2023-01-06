@@ -77,6 +77,7 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
 
   if (isEmoji(icon)) {
     el.style.fontSize = `${plugin.getSettings().fontSize}px`;
+    el.style.lineHeight = `${plugin.getSettings().fontSize}px`;
   }
 
   return icon;
