@@ -1,4 +1,5 @@
 import { Setting } from 'obsidian';
+import { updateEmojiIconsInDOM } from '../util';
 import IconFolderSetting from './iconFolderSetting';
 
 export default class EmojiStyleSetting extends IconFolderSetting {
@@ -11,6 +12,7 @@ export default class EmojiStyleSetting extends IconFolderSetting {
       dropdown.setValue(this.plugin.getSettings().emojiStyle);
       dropdown.onChange(async (value: 'none' | 'native' | 'twemoji') => {
         this.plugin.getSettings().emojiStyle = value;
+        updateEmojiIconsInDOM(this.plugin);
         await this.plugin.saveIconFolderData();
       });
     });

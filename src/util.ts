@@ -318,6 +318,22 @@ export const doesCustomRuleIconExists = (rule: CustomRule, path: string): boolea
   return false;
 };
 
+export const updateEmojiIconsInDOM = (plugin: IconFolderPlugin): void => {
+  plugin.getRegisteredFileExplorers().forEach(async (explorerView) => {
+    const files = Object.entries(explorerView.fileItems);
+    files.forEach(async ([path, fileItem]) => {
+      const iconName =
+        typeof plugin.getData()[path] === 'object'
+          ? (plugin.getData()[path] as FolderIconObject).iconName
+          : (plugin.getData()[path] as string);
+
+      if (isEmoji(iconName)) {
+        addToDOM(plugin, path, iconName);
+      }
+    });
+  });
+};
+
 /**
  * This function removes the specified rule from all the loaded files in the vault.
  *
