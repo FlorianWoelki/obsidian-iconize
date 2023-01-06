@@ -176,47 +176,53 @@ export const addIconsToDOM = (
       }
     });
 
-    const addCustomIconRule = (rule: CustomRule, file: TAbstractFile) => {
-      const fileItem = fileExplorer.view.fileItems[file.path];
-      if (fileItem) {
-        const titleEl = fileItem.titleEl;
-        const titleInnerEl = fileItem.titleInnerEl;
-        const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
-        if (!existingIcon) {
-          const iconNode = titleEl.createDiv();
-          iconNode.classList.add('obsidian-icon-folder-icon');
-
-          insertIconToNode(plugin, rule.icon, iconNode, rule.color);
-
-          titleEl.insertBefore(iconNode, titleInnerEl);
-        }
-      }
-    };
-
-    // Add custom rule icons.
-    plugin.getSettings().rules.forEach((rule) => {
-      try {
-        // Rule is in some sort of regex.
-        const regex = new RegExp(rule.rule);
-        plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
-          const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
-            addCustomIconRule(rule, file);
-          }
-        });
-      } catch {
-        // Rule is not applicable to a regex format.
-        plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
-          const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-          if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
-            addCustomIconRule(rule, file);
-          }
-        });
-      }
-    });
+    updateCustomIconRules(plugin, fileExplorer.view);
 
     if (callback) {
       callback();
+    }
+  });
+};
+
+const updateCustomIconRules = (plugin: IconFolderPlugin, view: ExplorerView) => {
+  const addCustomIconRule = (rule: CustomRule, file: TAbstractFile) => {
+    const fileItem = view.fileItems[file.path];
+    if (fileItem) {
+      const titleEl = fileItem.titleEl;
+      const titleInnerEl = fileItem.titleInnerEl;
+      const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
+      if (existingIcon) {
+        existingIcon.remove();
+      }
+
+      const iconNode = titleEl.createDiv();
+      iconNode.classList.add('obsidian-icon-folder-icon');
+
+      insertIconToNode(plugin, rule.icon, iconNode, rule.color);
+
+      titleEl.insertBefore(iconNode, titleInnerEl);
+    }
+  };
+
+  // Add custom rule icons.
+  plugin.getSettings().rules.forEach((rule) => {
+    try {
+      // Rule is in some sort of regex.
+      const regex = new RegExp(rule.rule);
+      plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+        const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+        if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
+          addCustomIconRule(rule, file);
+        }
+      });
+    } catch {
+      // Rule is not applicable to a regex format.
+      plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
+        const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+        if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
+          addCustomIconRule(rule, file);
+        }
+      });
     }
   });
 };
@@ -321,7 +327,7 @@ export const doesCustomRuleIconExists = (rule: CustomRule, path: string): boolea
 export const updateEmojiIconsInDOM = (plugin: IconFolderPlugin): void => {
   plugin.getRegisteredFileExplorers().forEach(async (explorerView) => {
     const files = Object.entries(explorerView.fileItems);
-    files.forEach(async ([path, fileItem]) => {
+    files.forEach(async ([path]) => {
       const iconName =
         typeof plugin.getData()[path] === 'object'
           ? (plugin.getData()[path] as FolderIconObject).iconName
@@ -331,6 +337,8 @@ export const updateEmojiIconsInDOM = (plugin: IconFolderPlugin): void => {
         addToDOM(plugin, path, iconName);
       }
     });
+
+    updateCustomIconRules(plugin, explorerView);
   });
 };
 
