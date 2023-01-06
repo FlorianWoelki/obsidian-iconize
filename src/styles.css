@@ -63,6 +63,10 @@
   justify-content: center;
 }
 
+.obsidian-icon-folder-icon-preview {
+  font-size: 22px;
+}
+
 .obsidian-icon-folder-icon-preview img {
   width: 16px;
   height: 16px;

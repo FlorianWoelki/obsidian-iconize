@@ -146,6 +146,10 @@ export default class IconFolderPlugin extends Plugin {
     this.addSettingTab(new IconFolderSettingsTab(this.app, this));
   }
 
+  public isSomeEmojiStyleActive(): boolean {
+    return this.getSettings().emojiStyle !== 'none';
+  }
+
   private getSearchLeave(): ExplorerView {
     return this.app.workspace.getLeavesOfType('search')[0].view;
   }

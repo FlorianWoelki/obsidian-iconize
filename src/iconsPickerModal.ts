@@ -52,11 +52,10 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     if (this.inputEl.value.length === 0) {
       this.renderIndex = 0;
       this.recentlyUsedItems.forEach((iconName) => {
-        // Transform unicodes to twemojis.
-        if (isEmoji(iconName)) {
+        if (this.plugin.isSomeEmojiStyleActive() && isEmoji(iconName)) {
           iconKeys.push({
             name: emoji[iconName],
-            prefix: 'Twemoji',
+            prefix: 'Emoji',
             displayName: iconName,
           });
           return;
@@ -79,18 +78,20 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       });
     }
 
-    Object.entries(emoji).forEach(([unicode, shortName]) => {
-      iconKeys.push({
-        name: shortName,
-        prefix: 'Twemoji',
-        displayName: unicode,
+    if (this.plugin.isSomeEmojiStyleActive()) {
+      Object.entries(emoji).forEach(([unicode, shortName]) => {
+        iconKeys.push({
+          name: shortName,
+          prefix: 'Emoji',
+          displayName: unicode,
+        });
+        iconKeys.push({
+          name: unicode,
+          prefix: 'Emoji',
+          displayName: unicode,
+        });
       });
-      iconKeys.push({
-        name: unicode,
-        prefix: 'Twemoji',
-        displayName: unicode,
-      });
-    });
+    }
 
     return iconKeys;
   }
@@ -129,10 +130,19 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     }
 
     if (item.item.name !== 'default') {
-      if (item.item.prefix === 'Twemoji') {
-        el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${twemoji.parse(
-          item.item.displayName,
-        )}</div>`;
+      if (item.item.prefix === 'Emoji') {
+        let displayName = '';
+        switch (this.plugin.getSettings().emojiStyle) {
+          case 'twemoji':
+            displayName = twemoji.parse(item.item.displayName);
+            break;
+          case 'native':
+            displayName = item.item.displayName;
+            break;
+          default:
+            break;
+        }
+        el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${displayName}</div>`;
       } else {
         el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${getSvgFromLoadedIcon(
           item.item.prefix,
