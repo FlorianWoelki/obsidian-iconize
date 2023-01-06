@@ -75,6 +75,10 @@ export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: H
     el.style.margin = `${normalizedMargin.top}px ${normalizedMargin.right}px ${normalizedMargin.bottom}px ${normalizedMargin.left}px`;
   }
 
+  if (isEmoji(icon)) {
+    el.style.fontSize = `${plugin.getSettings().fontSize}px`;
+  }
+
   return icon;
 };
 
@@ -441,7 +445,7 @@ export const addCustomRuleIconsToDOM = async (
  * @public
  * @param {IconFolderPlugin} plugin - The main plugin.
  * @param {string} path - The path in the DOM where the icon will be added.
- * @param {string} icon - The icon that will be added to the DOM - can be an icon id or codepoint for twemoji.
+ * @param {string} icon - The icon that will be added to the DOM - can be an icon id or codepoint for emoji.
  */
 export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string, color?: string): void => {
   if (plugin.getData()[path]) {
@@ -482,7 +486,7 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string, c
  * This function inserts a specific icon into the specified node.
  *
  * @param {IconFolderPlugin} plugin - The main plugin.
- * @param {string} icon - The icon string (can be an icon id or a unicode for twemoji).
+ * @param {string} icon - The icon string (can be an icon id or a unicode for emoji).
  * @param {HTMLElement} node - The element where the icon will be inserted.
  * @param color
  */
@@ -497,14 +501,23 @@ export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: H
     }
     node.innerHTML = iconContent;
   } else {
-    const emoji = twemoji.parse(icon, {
-      folder: 'svg',
-      ext: '.svg',
-      attributes: () => ({
-        width: '16px',
-        height: '16px',
-      }),
-    }) as any;
+    let emoji = '';
+    switch (plugin.getSettings().emojiStyle) {
+      case 'twemoji':
+        emoji = twemoji.parse(icon, {
+          folder: 'svg',
+          ext: '.svg',
+          attributes: () => ({
+            width: '16px',
+            height: '16px',
+          }),
+        }) as any;
+        break;
+      case 'native':
+        emoji = icon;
+      default:
+        break;
+    }
     node.innerHTML = customizeIconStyle(plugin, emoji, node);
   }
 };
