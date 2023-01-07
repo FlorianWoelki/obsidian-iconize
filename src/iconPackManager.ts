@@ -166,10 +166,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
 
   content = content.replace(/(\r\n|\n|\r)/gm, '');
   content = content.replace(/>\s+</gm, '><');
-  const normalizedName = iconName
-    .split(/[ -]/g)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('');
+  const normalizedName = iconName.charAt(0).toUpperCase() + iconName.substring(1);
 
   if (!validIconName.exec(normalizedName)) {
     console.log(`skipping icon with invalid name: ${iconName}`);
