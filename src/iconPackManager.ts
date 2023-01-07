@@ -204,13 +204,13 @@ export const createIconPackPrefix = (iconPackName: string): string => {
     const splitted = iconPackName.split('-');
     let result = splitted[0].charAt(0).toUpperCase();
     for (let i = 1; i < splitted.length; i++) {
-      result += splitted[i].charAt(0);
+      result += splitted[i].charAt(0).toLowerCase();
     }
 
     return result;
   }
 
-  return iconPackName.charAt(0).toUpperCase() + iconPackName.charAt(1);
+  return iconPackName.charAt(0).toUpperCase() + iconPackName.charAt(1).toLowerCase();
 };
 
 export const loadUsedIcons = async (plugin: Plugin, icons: string[]) => {
