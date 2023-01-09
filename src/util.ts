@@ -530,6 +530,7 @@ export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: H
     switch (plugin.getSettings().emojiStyle) {
       case 'twemoji':
         emoji = twemoji.parse(icon, {
+          base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
           folder: 'svg',
           ext: '.svg',
           attributes: () => ({

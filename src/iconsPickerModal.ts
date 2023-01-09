@@ -134,7 +134,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
         let displayName = '';
         switch (this.plugin.getSettings().emojiStyle) {
           case 'twemoji':
-            displayName = twemoji.parse(item.item.displayName);
+            displayName = twemoji.parse(item.item.displayName, {base: "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/"});
             break;
           case 'native':
             displayName = item.item.displayName;
