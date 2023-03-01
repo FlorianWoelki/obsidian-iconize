@@ -192,16 +192,14 @@ const updateCustomIconRules = (plugin: IconFolderPlugin, view: ExplorerView) => 
       const titleEl = fileItem.titleEl;
       const titleInnerEl = fileItem.titleInnerEl;
       const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
-      if (existingIcon) {
-        existingIcon.remove();
+      if (!existingIcon) {
+        const iconNode = titleEl.createDiv();
+        iconNode.classList.add('obsidian-icon-folder-icon');
+
+        insertIconToNode(plugin, rule.icon, iconNode, rule.color);
+
+        titleEl.insertBefore(iconNode, titleInnerEl);
       }
-
-      const iconNode = titleEl.createDiv();
-      iconNode.classList.add('obsidian-icon-folder-icon');
-
-      insertIconToNode(plugin, rule.icon, iconNode, rule.color);
-
-      titleEl.insertBefore(iconNode, titleInnerEl);
     }
   };
 
