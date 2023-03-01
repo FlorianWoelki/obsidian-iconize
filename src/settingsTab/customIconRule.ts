@@ -1,4 +1,4 @@
-import { App, Notice, Setting, TextComponent, ColorComponent, ButtonComponent } from 'obsidian';
+import { App, Notice, Setting, TextComponent, ColorComponent, ButtonComponent, Modal } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import IconsPickerModal from '../iconsPickerModal';
 import IconFolderPlugin from '../main';
@@ -78,6 +78,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         });
       settingRuleEl.components.push(colorPicker);
 
+      // Add the configuration button for configuring where the custom rule gets applied to.
       settingRuleEl.addButton((btn) => {
         const isFor: typeof rule.for = rule.for ?? 'everything';
         if (isFor === 'folders') {
@@ -112,6 +113,47 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         });
       });
 
+      // Add the edit custom rule button.
+      settingRuleEl.addButton((btn) => {
+        btn.setIcon('pencil');
+        btn.setTooltip('Edit the custom rule');
+        btn.onClick(() => {
+          // Create modal and its children elements.
+          const modal = new Modal(this.plugin.app);
+          modal.modalEl.classList.add('obsidian-icon-folder-custom-rule-modal');
+          modal.titleEl.createEl('h3', { text: 'Edit custom rule' });
+          const input = modal.contentEl.createEl('input', { type: 'text', value: rule.rule });
+          const button = modal.contentEl.createEl('button', { type: 'button', text: 'Save' });
+
+          // Handle the on click event for the save button.
+          button.onclick = async () => {
+            // Update the rules with new edited rule.
+            const newRules = this.plugin.getSettings().rules.map((r) => {
+              if (rule.rule === r.rule && rule.color === r.color && rule.icon === r.icon && rule.for === r.for) {
+                return { ...r, rule: input.value };
+              }
+              return r;
+            });
+            this.plugin.getSettings().rules = newRules;
+
+            await this.plugin.saveIconFolderData();
+            this.refreshDisplay();
+            new Notice('Custom rule updated.');
+
+            // Refresh the DOM.
+            removeCustomRuleIconsFromDOM(this.plugin, rule);
+            newRules.forEach(async (rule) => {
+              await addCustomRuleIconsToDOM(this.plugin, rule);
+            });
+
+            modal.close();
+          };
+
+          modal.open();
+        });
+      });
+
+      // Add the delete custom rule button.
       settingRuleEl.addButton((btn) => {
         btn.setIcon('trash');
         btn.setTooltip('Remove the custom rule');
@@ -119,7 +161,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           const newRules = this.plugin
             .getSettings()
             .rules.filter(
-              (r) => rule.rule !== r.rule || rule.color !== r.color || rule.icon !== r.icon || r.for !== r.for,
+              (r) => rule.rule !== r.rule || rule.color !== r.color || rule.icon !== r.icon || rule.for !== r.for,
             );
           this.plugin.getSettings().rules = newRules;
           await this.plugin.saveIconFolderData();
