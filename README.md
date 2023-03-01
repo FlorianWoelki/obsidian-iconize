@@ -86,7 +86,7 @@ To customize this project for your needs, you can clone it and then install all 
 ```sh
 $ git clone https://github.com/FlorianWoelki/obsidian-icon-folder
 $ cd obsidian-icon-folder
-$ yarn
+$ pnpm i
 ```
 
 After the installation, you need to create a `env.js` file in the root directory. Fill the file with the following content:
@@ -99,7 +99,7 @@ export const obsidianExportPath =
 Afterwards, you can start the rollup dev server by using:
 
 ```sh
-$ yarn dev
+$ pnpm dev
 ```
 
 This command will automatically build the neccesary files for testing and developing on every change. Furthermore, it does copy all the necessary files to the plugin directory you specified.
