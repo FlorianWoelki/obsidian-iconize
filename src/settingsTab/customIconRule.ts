@@ -122,15 +122,15 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           const modal = new Modal(this.plugin.app);
           modal.modalEl.classList.add('obsidian-icon-folder-custom-rule-modal');
           modal.titleEl.createEl('h3', { text: 'Edit custom rule' });
-          const input = modal.contentEl.createEl('input', { type: 'text', value: rule.rule });
-          const button = modal.contentEl.createEl('button', { type: 'button', text: 'Save' });
-
-          // Handle the on click event for the save button.
-          button.onclick = async () => {
+          const input = new TextComponent(modal.contentEl);
+          input.setValue(rule.rule);
+          const button = new ButtonComponent(modal.contentEl);
+          button.setButtonText('Save');
+          button.onClick(async () => {
             // Update the rules with new edited rule.
             const newRules = this.plugin.getSettings().rules.map((r) => {
               if (rule.rule === r.rule && rule.color === r.color && rule.icon === r.icon && rule.for === r.for) {
-                return { ...r, rule: input.value };
+                return { ...r, rule: input.getValue() };
               }
               return r;
             });
@@ -147,7 +147,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             });
 
             modal.close();
-          };
+          });
 
           modal.open();
         });
