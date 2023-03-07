@@ -43,11 +43,10 @@ export default {
     path: 'icons',
     downloadLink: 'https://github.com/simple-icons/simple-icons/archive/refs/tags/7.15.0.zip',
   },
-  Lucide: {
-    name: 'lucide-icons-0.122.0',
+  lucide: {
+    name: 'lucide-icons',
     displayName: 'Lucide',
     path: '',
     downloadLink: 'https://github.com/lucide-icons/lucide/releases/download/v0.122.0/lucide-icons-0.122.0.zip',
   },
-
 } as { [key: string]: IconPack };
