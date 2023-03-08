@@ -29,7 +29,7 @@ interface InternalPlugins {
 
 declare module 'obsidian' {
   interface Workspace {
-    getLeavesOfType(viewType: 'search' | 'file-explorer'): ExplorerLeaf[];
+    getLeavesOfType(viewType: 'markdown' | 'search' | 'file-explorer'): ExplorerLeaf[];
   }
 
   interface App {
@@ -54,6 +54,7 @@ interface DomChild {
 interface ExplorerView extends View {
   fileItems: Record<string, FileItem>; // keyed by path
   ready: boolean; // true if fileItems is populated
+  file?: TFile;
   dom: { children: DomChild[]; changed: () => void };
 }
 
