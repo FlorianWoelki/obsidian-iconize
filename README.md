@@ -4,16 +4,7 @@
 
 ## What is it?
 
-This obsidian plugin allows you to add any custom icon (of type `.svg`) or from an icon pack to your folder or file.
-
-Right now, the current predefined icon packs are supported and can be downloaded:
-* [Remixicon](https://remixicon.com/)
-* [Fontawesome](https://fontawesome.com/)
-* [IconBrew](https://iconbrew.com/)
-* [SimpleIcons](https://simpleicons.org/)
-* [LucideIcons](https://lucide.dev/)
-
-However, feel free to add your custom icon packs or submit a new one by creating a Pull Request where you update the [iconPacks.ts](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/src/iconPacks.ts) file and upload a zip file with the icons to [this directory](https://github.com/FlorianWoelki/obsidian-icon-folder/tree/main/iconPacks).
+This obsidian plugin allows you to add **any** custom icon (of type `.svg`) or from an icon pack to your folder or file.
 
 ## How to use
 
@@ -22,6 +13,15 @@ There are different functionalities of displaying an icon for your folder or fil
 First, you need to go to the settings and download predefined icon packs or create your own.
 
 ![Icon Pack Preview](https://raw.githubusercontent.com/FlorianWoelki/obsidian-icon-folder/main/docs/icon-pack-preview.png)
+
+Right now, the following icon packs are supported by default and can be downloaded instantly:
+* [Remixicon](https://remixicon.com/)
+* [Fontawesome](https://fontawesome.com/)
+* [IconBrew](https://iconbrew.com/)
+* [SimpleIcons](https://simpleicons.org/)
+* [LucideIcons](https://lucide.dev/)
+
+However, feel free to add your custom icon packs or submit a new one by creating a Pull Request where you update the [iconPacks.ts](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/src/iconPacks.ts) file and upload a zip file with the icons to [this directory](https://github.com/FlorianWoelki/obsidian-icon-folder/tree/main/iconPacks).
 
 In addition to the custom icon pack, it is possible to drag and drop or select multiple files to your customized icon pack.
 
