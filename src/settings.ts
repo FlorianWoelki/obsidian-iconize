@@ -22,6 +22,7 @@ export interface IconFolderSettings {
   recentlyUsedIcons: string[];
   recentlyUsedIconsSize: number;
   rules: CustomRule[];
+  iconInTabsEnabled: boolean;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -39,4 +40,5 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
     bottom: 0,
     left: 0,
   },
+  iconInTabsEnabled: false,
 };

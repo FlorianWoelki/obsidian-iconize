@@ -9,6 +9,7 @@ import IconFontSizeSetting from './iconFontSize';
 import IconPacksPathSetting from './iconPacksPath';
 import PredefinedIconPacksSetting from './predefinedIconPacks';
 import RecentlyUsedIconsSetting from './recentlyUsedIcons';
+import ToggleIconInTabs from './toggleIconInTabs';
 
 export default class IconFolderSettingsTab extends PluginSettingTab {
   private plugin: IconFolderPlugin;
@@ -27,6 +28,7 @@ export default class IconFolderSettingsTab extends PluginSettingTab {
     new RecentlyUsedIconsSetting(plugin, containerEl).display();
     new IconPacksPathSetting(plugin, containerEl).display();
     new EmojiStyleSetting(plugin, containerEl).display();
+    new ToggleIconInTabs(plugin, containerEl).display();
 
     containerEl.createEl('h3', { text: 'Icon Packs' });
     new PredefinedIconPacksSetting(plugin, containerEl, app, () => this.display()).display();
