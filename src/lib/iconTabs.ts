@@ -1,6 +1,6 @@
 import { TFile } from 'obsidian';
 import { getSvgFromLoadedIcon, nextIdentifier } from '../iconPackManager';
-import IconFolderPlugin from '../main';
+import IconFolderPlugin, { FolderIconObject } from '../main';
 import customRule from './customRule';
 
 /**
@@ -31,30 +31,53 @@ const getIconContainer = (filename: string): HTMLElement | undefined => {
   return iconContainer;
 };
 
+const addIconToNode = (node: HTMLElement, iconName: string): void => {
+  const iconNextIdentifier = nextIdentifier(iconName);
+  node.innerHTML = getSvgFromLoadedIcon(
+    iconName.substring(0, iconNextIdentifier),
+    iconName.substring(iconNextIdentifier),
+  );
+};
+
 const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
   const iconContainer = getIconContainer(file.basename);
   if (!iconContainer) {
     return;
   }
 
+  const data = Object.entries(plugin.getData());
+
   // Removes the `display: none` from the obsidian styling.
   iconContainer.style.display = 'flex';
+
+  // Add icons to tabs if there is some sort of inheritance going on.
+  const inheritanceData = data.filter(([key, value]) => typeof value === 'object' && key !== 'settings') as [
+    string,
+    FolderIconObject,
+  ][];
+  for (const [inheritancePath, inheritance] of inheritanceData) {
+    if (!inheritance.inheritanceIcon) {
+      continue;
+    }
+
+    if (!file.path.includes(inheritancePath)) {
+      continue;
+    }
+
+    addIconToNode(iconContainer, inheritance.inheritanceIcon);
+    break;
+  }
 
   // Add icons to tabs if a custom rule is applicable.
   for (const rule of plugin.getSettings().rules) {
     const isApplicable = await customRule.isApplicable(plugin, rule, file);
     if (isApplicable) {
-      const iconName = rule.icon;
-      const iconNextIdentifier = nextIdentifier(iconName);
-      iconContainer.innerHTML = getSvgFromLoadedIcon(
-        iconName.substring(0, iconNextIdentifier),
-        iconName.substring(iconNextIdentifier),
-      );
+      addIconToNode(iconContainer, rule.icon);
+      break;
     }
   }
 
   // Add icons to tabs if there is an icon set.
-  const data = Object.entries(plugin.getData());
   const iconData = data.find(([dataPath]) => dataPath === file.path);
   // Check if data was not found or name of icon is not a string.
   if (!iconData || typeof iconData[1] !== 'string') {
@@ -64,13 +87,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
     return;
   }
 
-  // Adds the icon to the open tab.
-  const [_, iconName] = iconData;
-  const iconNextIdentifier = nextIdentifier(iconName);
-  iconContainer.innerHTML = getSvgFromLoadedIcon(
-    iconName.substring(0, iconNextIdentifier),
-    iconName.substring(iconNextIdentifier),
-  );
+  addIconToNode(iconContainer, iconData[1]);
 };
 
 const update = (file: TFile) => {};
