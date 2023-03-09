@@ -1,5 +1,5 @@
 import { Setting } from 'obsidian';
-import { addIconToTab, removeIconFromTab } from '../util';
+import iconTabs from '../lib/iconTabs';
 import IconFolderSetting from './iconFolderSetting';
 
 export default class ToggleIconInTabs extends IconFolderSetting {
@@ -18,10 +18,10 @@ export default class ToggleIconInTabs extends IconFolderSetting {
             if (file) {
               if (enabled) {
                 // Adds the icons to already opened files.
-                addIconToTab(this.plugin, file);
+                iconTabs.add(this.plugin, file);
               } else {
                 // Removes the icons from already opened files.
-                removeIconFromTab(this.plugin, file);
+                iconTabs.remove(file);
               }
             }
           });

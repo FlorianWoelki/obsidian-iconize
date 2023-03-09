@@ -21,13 +21,13 @@ import {
   addCustomRuleIconsToDOM,
   doesCustomRuleIconExists,
   updateIcon,
-  addIconToTab,
 } from './util';
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
 import MetaData from './MetaData';
 import StarredInternalPlugin from './internalPlugins/starred';
 import InternalPluginInjector from './@types/internalPluginInjector';
+import iconTabs from './lib/iconTabs';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -236,14 +236,14 @@ export default class IconFolderPlugin extends Plugin {
         this.app.workspace.getLeavesOfType('markdown').forEach((leaf) => {
           const file = leaf.view.file;
           if (file) {
-            addIconToTab(this, file);
+            iconTabs.add(this, file);
           }
         });
 
         // Register file open event for adding icon of file to tab.
         this.registerEvent(
           this.app.workspace.on('file-open', (file) => {
-            addIconToTab(this, file);
+            iconTabs.add(this, file);
           }),
         );
       }
