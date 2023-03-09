@@ -1,6 +1,7 @@
 import { TFile } from 'obsidian';
 import { getSvgFromLoadedIcon, nextIdentifier } from '../iconPackManager';
 import IconFolderPlugin from '../main';
+import customRule from './customRule';
 
 /**
  * Gets the icon container inside of a tab. The icon container mostly relies next to the
@@ -30,7 +31,7 @@ const getIconContainer = (filename: string): HTMLElement | undefined => {
   return iconContainer;
 };
 
-const add = (plugin: IconFolderPlugin, file: TFile) => {
+const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
   const iconContainer = getIconContainer(file.basename);
   if (!iconContainer) {
     return;
@@ -39,13 +40,27 @@ const add = (plugin: IconFolderPlugin, file: TFile) => {
   // Removes the `display: none` from the obsidian styling.
   iconContainer.style.display = 'flex';
 
+  // Add icons to tabs if a custom rule is applicable.
+  for (const rule of plugin.getSettings().rules) {
+    const isApplicable = await customRule.isApplicable(plugin, rule, file);
+    if (isApplicable) {
+      const iconName = rule.icon;
+      const iconNextIdentifier = nextIdentifier(iconName);
+      iconContainer.innerHTML = getSvgFromLoadedIcon(
+        iconName.substring(0, iconNextIdentifier),
+        iconName.substring(iconNextIdentifier),
+      );
+    }
+  }
+
+  // Add icons to tabs if there is an icon set.
   const data = Object.entries(plugin.getData());
   const iconData = data.find(([dataPath]) => dataPath === file.path);
   // Check if data was not found or name of icon is not a string.
   if (!iconData || typeof iconData[1] !== 'string') {
-    const defaultIcon =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-file"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
-    iconContainer.innerHTML = defaultIcon;
+    // const defaultIcon =
+    //   '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-file"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
+    // iconContainer.innerHTML = defaultIcon;
     return;
   }
 
