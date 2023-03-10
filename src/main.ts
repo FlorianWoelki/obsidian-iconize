@@ -81,7 +81,7 @@ export default class IconFolderPlugin extends Plugin {
     this.registerEvent(this.app.workspace.on('layout-change', () => this.handleChangeLayout()));
 
     this.registerEvent(
-      this.app.workspace.on('file-menu', (menu, file) => {
+      this.app.workspace.on('file-menu', (menu, file: TFile) => {
         const addIconMenuItem = (item: MenuItem) => {
           item.setTitle('Change icon');
           item.setIcon('hashtag');
@@ -97,6 +97,12 @@ export default class IconFolderPlugin extends Plugin {
           item.onClick(() => {
             this.removeFolderIcon(file.path);
             removeFromDOM(file.path);
+
+            // Remove icon in tabs when setting is enabled.
+            if (this.getSettings().iconInTabsEnabled) {
+              iconTabs.remove(file, { replaceWithDefaultIcon: true });
+            }
+
             updateIcon(this, file);
           });
         };

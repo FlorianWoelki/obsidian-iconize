@@ -1,6 +1,7 @@
 import { TFile } from 'obsidian';
 import { getSvgFromLoadedIcon, nextIdentifier } from '../iconPackManager';
 import IconFolderPlugin, { FolderIconObject } from '../main';
+import { insertIconToNode } from '../util';
 import customRule from './customRule';
 
 /**
@@ -31,14 +32,6 @@ const getIconContainer = (filename: string): HTMLElement | undefined => {
   return iconContainer;
 };
 
-const addIconToNode = (node: HTMLElement, iconName: string): void => {
-  const iconNextIdentifier = nextIdentifier(iconName);
-  node.innerHTML = getSvgFromLoadedIcon(
-    iconName.substring(0, iconNextIdentifier),
-    iconName.substring(iconNextIdentifier),
-  );
-};
-
 const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
   const iconContainer = getIconContainer(file.basename);
   if (!iconContainer) {
@@ -64,7 +57,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
       continue;
     }
 
-    addIconToNode(iconContainer, inheritance.inheritanceIcon);
+    insertIconToNode(plugin, inheritance.inheritanceIcon, iconContainer);
     break;
   }
 
@@ -72,7 +65,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
   for (const rule of plugin.getSettings().rules) {
     const isApplicable = await customRule.isApplicable(plugin, rule, file);
     if (isApplicable) {
-      addIconToNode(iconContainer, rule.icon);
+      insertIconToNode(plugin, rule.icon, iconContainer);
       break;
     }
   }
@@ -81,25 +74,44 @@ const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
   const iconData = data.find(([dataPath]) => dataPath === file.path);
   // Check if data was not found or name of icon is not a string.
   if (!iconData || typeof iconData[1] !== 'string') {
-    // const defaultIcon =
-    //   '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-file"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
-    // iconContainer.innerHTML = defaultIcon;
     return;
   }
 
-  addIconToNode(iconContainer, iconData[1]);
+  insertIconToNode(plugin, iconData[1], iconContainer);
 };
 
-const update = (file: TFile) => {};
-
-const remove = (file: TFile) => {
+const update = (file: TFile, iconName: string) => {
   const iconContainer = getIconContainer(file.basename);
   if (!iconContainer) {
     return;
   }
 
-  // Removes the `display: none` from the obsidian styling.
-  iconContainer.style.display = 'none';
+  // insertIconToNode(plugin, iconName, iconContainer)
+};
+
+// Default icon for tabs of obsidian.
+const DEFAULT_ICON =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-file"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
+
+interface RemoveOptions {
+  /**
+   * Replaces the icon in the tab with the default obsidian icon.
+   */
+  replaceWithDefaultIcon?: boolean;
+}
+
+const remove = (file: TFile, options?: RemoveOptions) => {
+  const iconContainer = getIconContainer(file.basename);
+  if (!iconContainer) {
+    return;
+  }
+
+  if (!options?.replaceWithDefaultIcon) {
+    // Removes the display of the icon container to remove the icons from the tabs.
+    iconContainer.style.display = 'none';
+  } else {
+    iconContainer.innerHTML = DEFAULT_ICON;
+  }
 };
 
 export default {
