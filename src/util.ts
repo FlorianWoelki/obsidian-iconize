@@ -353,10 +353,18 @@ export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: Cus
     ([k, v]) => k !== 'settings' && typeof v === 'object',
   );
 
+  const openFiles = plugin.app.workspace.getLeavesOfType('markdown').reduce<Record<string, TFile>>((prev, curr) => {
+    if (curr.view.file) {
+      prev[curr.view.file.path] = curr.view.file;
+    }
+    return prev;
+  }, {});
+
   plugin.getRegisteredFileExplorers().forEach(async (explorerView) => {
     const files = Object.entries(explorerView.fileItems);
     files.forEach(async ([path, fileItem]) => {
-      const fileType = (await plugin.app.vault.adapter.stat(path)).type;
+      const stat = await plugin.app.vault.adapter.stat(path);
+      const fileType = stat.type;
       const dataFile =
         typeof plugin.getData()[path] === 'object'
           ? (plugin.getData()[path] as FolderIconObject).iconName
@@ -365,6 +373,10 @@ export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: Cus
 
       const existingIcon = dataFile || isInfluencedByInheritance;
       if (!existingIcon && doesCustomRuleIconExists(rule, path) && isToRuleApplicable(rule, fileType)) {
+        if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
+          iconTabs.remove(openFiles[path], { replaceWithDefaultIcon: true });
+        }
+
         removeFromDOM(path, fileItem.titleEl);
       }
     });
@@ -412,12 +424,23 @@ export const addCustomRuleIconsToDOM = async (
   rule: CustomRule,
   file?: TAbstractFile,
 ): Promise<void> => {
+  const openFiles = plugin.app.workspace.getLeavesOfType('markdown').reduce<Record<string, TFile>>((prev, curr) => {
+    if (curr.view.file) {
+      prev[curr.view.file.path] = curr.view.file;
+    }
+    return prev;
+  }, {});
+
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
     if (file) {
       const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
       if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
+        if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
+          iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
+        }
+
         addToDOM(plugin, file.path, rule.icon, rule.color);
       }
     } else {
@@ -428,6 +451,10 @@ export const addCustomRuleIconsToDOM = async (
           if (fileItem) {
             const fileName = path.split('/').pop();
             if (fileName.match(regex) && isToRuleApplicable(rule, fileType)) {
+              if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
+                iconTabs.add(plugin, openFiles[path], { iconName: rule.icon });
+              }
+
               const titleEl = fileItem.titleEl;
               const titleInnerEl = fileItem.titleInnerEl;
               const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
@@ -449,12 +476,20 @@ export const addCustomRuleIconsToDOM = async (
     if (file) {
       const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
       if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
+        if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
+          iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
+        }
+
         addToDOM(plugin, file.path, rule.icon, rule.color);
       }
     } else {
       plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
         const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
         if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
+          if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
+            iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
+          }
+
           addToDOM(plugin, file.path, rule.icon, rule.color);
         }
       });

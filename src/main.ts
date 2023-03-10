@@ -252,14 +252,16 @@ export default class IconFolderPlugin extends Plugin {
             iconTabs.add(this, file);
           }
         });
-
-        // Register file open event for adding icon of file to tab.
-        this.registerEvent(
-          this.app.workspace.on('file-open', (file) => {
-            iconTabs.add(this, file);
-          }),
-        );
       }
+
+      // Register file open event for adding icon of file to tab.
+      this.registerEvent(
+        this.app.workspace.on('file-open', (file) => {
+          if (this.getSettings().iconInTabsEnabled) {
+            iconTabs.add(this, file);
+          }
+        }),
+      );
     });
   }
 
