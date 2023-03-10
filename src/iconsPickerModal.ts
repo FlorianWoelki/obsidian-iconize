@@ -19,6 +19,8 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   private recentlyUsedItems: string[];
 
+  public onSelect: (iconName: string) => void | undefined;
+
   constructor(app: App, plugin: IconFolderPlugin, path: string) {
     super(app);
     this.plugin = plugin;
@@ -97,11 +99,9 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   onChooseItem(item: Icon | string): void {
-    if (typeof item === 'object') {
-      addToDOM(this.plugin, this.path, item.displayName);
-    } else {
-      addToDOM(this.plugin, this.path, item);
-    }
+    const iconName = typeof item === 'object' ? item.displayName : item;
+    addToDOM(this.plugin, this.path, iconName);
+    this.onSelect?.(iconName);
     this.plugin.addFolderIcon(this.path, item);
   }
 

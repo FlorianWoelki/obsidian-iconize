@@ -32,7 +32,11 @@ const getIconContainer = (filename: string): HTMLElement | undefined => {
   return iconContainer;
 };
 
-const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
+interface AddOptions {
+  iconName?: string;
+}
+
+const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions): Promise<void> => {
   const iconContainer = getIconContainer(file.basename);
   if (!iconContainer) {
     return;
@@ -42,6 +46,14 @@ const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
 
   // Removes the `display: none` from the obsidian styling.
   iconContainer.style.display = 'flex';
+
+  // Only add the icon name manually when it is defined in the options.
+  if (options?.iconName) {
+    insertIconToNode(plugin, options.iconName, iconContainer);
+    // TODO: Refactor to include option to `insertIconToNode` function.
+    iconContainer.style.margin = null;
+    return;
+  }
 
   // Add icons to tabs if there is some sort of inheritance going on.
   const inheritanceData = data.filter(([key, value]) => typeof value === 'object' && key !== 'settings') as [
@@ -58,6 +70,8 @@ const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
     }
 
     insertIconToNode(plugin, inheritance.inheritanceIcon, iconContainer);
+    // TODO: Refactor to include option to `insertIconToNode` function.
+    iconContainer.style.margin = null;
     break;
   }
 
@@ -66,6 +80,8 @@ const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
     const isApplicable = await customRule.isApplicable(plugin, rule, file);
     if (isApplicable) {
       insertIconToNode(plugin, rule.icon, iconContainer);
+      // TODO: Refactor to include option to `insertIconToNode` function.
+      iconContainer.style.margin = null;
       break;
     }
   }
@@ -78,15 +94,19 @@ const add = async (plugin: IconFolderPlugin, file: TFile): Promise<void> => {
   }
 
   insertIconToNode(plugin, iconData[1], iconContainer);
+  // TODO: Refactor to include option to `insertIconToNode` function.
+  iconContainer.style.margin = null;
 };
 
-const update = (file: TFile, iconName: string) => {
+const update = (plugin: IconFolderPlugin, file: TFile, iconName: string) => {
   const iconContainer = getIconContainer(file.basename);
   if (!iconContainer) {
     return;
   }
 
-  // insertIconToNode(plugin, iconName, iconContainer)
+  insertIconToNode(plugin, iconName, iconContainer);
+  // TODO: Refactor to include option to `insertIconToNode` function.
+  iconContainer.style.margin = null;
 };
 
 // Default icon for tabs of obsidian.

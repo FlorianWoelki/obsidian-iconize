@@ -88,6 +88,13 @@ export default class IconFolderPlugin extends Plugin {
           item.onClick(() => {
             const modal = new IconsPickerModal(this.app, this, file.path);
             modal.open();
+
+            // Update icon in tab when setting is enabled.
+            if (this.getSettings().iconInTabsEnabled) {
+              modal.onSelect = (iconName: string): void => {
+                iconTabs.update(this, file, iconName);
+              };
+            }
           });
         };
 
@@ -98,7 +105,7 @@ export default class IconFolderPlugin extends Plugin {
             this.removeFolderIcon(file.path);
             removeFromDOM(file.path);
 
-            // Remove icon in tabs when setting is enabled.
+            // Remove icon in tab when setting is enabled.
             if (this.getSettings().iconInTabsEnabled) {
               iconTabs.remove(file, { replaceWithDefaultIcon: true });
             }

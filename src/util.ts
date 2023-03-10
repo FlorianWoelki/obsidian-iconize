@@ -4,6 +4,7 @@ import type { ExplorerView } from './@types/obsidian';
 import { getAllLoadedIconNames, getSvgFromLoadedIcon, Icon, nextIdentifier } from './iconPackManager';
 import { CustomRule, IconFolderSettings } from './settings';
 import { TAbstractFile, TFile } from 'obsidian';
+import iconTabs from './lib/iconTabs';
 
 /**
  * This function returns all enabled icons.
@@ -567,7 +568,12 @@ export const addInheritanceForFolder = (plugin: IconFolderPlugin, folderPath: st
       plugin.removeFolderIcon(f.path);
     }
 
-    addToDOM(plugin, f.path, (folder as any).inheritanceIcon);
+    // Adds icon to tabs for inherited files.
+    if (plugin.getSettings().iconInTabsEnabled) {
+      iconTabs.add(plugin, f, { iconName: (folder as FolderIconObject).inheritanceIcon });
+    }
+
+    addToDOM(plugin, f.path, (folder as FolderIconObject).inheritanceIcon);
   });
 };
 
@@ -589,6 +595,10 @@ export const removeInheritanceForFolder = (plugin: IconFolderPlugin, folderPath:
   files.forEach((f) => {
     // when the file path is not registered in the data it should remove the icon
     if (!plugin.getData()[f.path]) {
+      // Remove icon from tabs for inherited files.
+      if (plugin.getSettings().iconInTabsEnabled) {
+        iconTabs.remove(f, { replaceWithDefaultIcon: true });
+      }
       removeFromDOM(f.path);
       updateIcon(plugin, f);
     }
