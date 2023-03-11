@@ -1,42 +1,10 @@
 import twemoji from 'twemoji';
 import IconFolderPlugin, { FolderIconObject } from './main';
 import type { ExplorerView } from './@types/obsidian';
-import { getAllLoadedIconNames, getSvgFromLoadedIcon, Icon, nextIdentifier } from './iconPackManager';
+import { getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
 import { CustomRule, IconFolderSettings } from './settings';
 import { TAbstractFile, TFile } from 'obsidian';
-import iconTabs from './lib/iconTabs';
-
-/**
- * This function returns all enabled icons.
- *
- * For example: if `Remixicons Fill` and `Fontawesome Fill` is activated, it will return all these icons.
- *
- * @public
- * @param {IconFolderPlugin} plugin - The main plugin file.
- * @returns {string[]} The enabled icons.
- */
-export const getEnabledIcons = (plugin: IconFolderPlugin): Icon[] => {
-  const settings = plugin.getSettings();
-  /*const icons = transformedIcons.remixIcons.filter((key) => {
-    return mapRemixicons(key, settings);
-  });
-
-  if (settings.enableFontawesomeFill) {
-    icons.push(...transformedIcons.faFill);
-  }
-  if (settings.enableFontawesomeLine) {
-    icons.push(...transformedIcons.faLine);
-  }
-  if (settings.enableFontawesomeBrands) {
-    icons.push(...transformedIcons.faBrands);
-  }
-
-  if (settings.enableDevicons) {
-    icons.push(...transformedIcons.deviconIcons);
-  }*/
-
-  return getAllLoadedIconNames();
-};
+// import iconTabs from './lib/iconTabs';
 
 /**
  * This function returns the svg string with the user defined css settings.
@@ -227,28 +195,6 @@ const updateCustomIconRules = (plugin: IconFolderPlugin, view: ExplorerView) => 
   });
 };
 
-export const addInheritanceIconToFile = (
-  plugin: IconFolderPlugin,
-  registeredFileExplorers: WeakSet<ExplorerView>,
-  filePath: string,
-  iconName: string,
-): void => {
-  const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
-  fileExplorers.forEach((fileExplorer) => {
-    if (registeredFileExplorers.has(fileExplorer.view)) {
-      const fileItem = fileExplorer.view.fileItems[filePath];
-      if (fileItem) {
-        const iconNode = fileItem.titleEl.createDiv();
-        iconNode.classList.add('obsidian-icon-folder-icon');
-
-        insertIconToNode(plugin, iconName, iconNode);
-
-        fileItem.titleEl.insertBefore(iconNode, fileItem.titleInnerEl);
-      }
-    }
-  });
-};
-
 /**
  * This function refreshes the icon style.
  * For that, it will manipulate the `innerHTML` of the icon and will customize the style.
@@ -271,12 +217,6 @@ export const refreshIconStyle = (plugin: IconFolderPlugin): void => {
   });
 };
 
-/**
- * This function removes the icon node from the DOM based on the passed in path.
- *
- * @public
- * @param {string} path - The path toe the to be removed DOM element.
- */
 export const removeFromDOM = (path: string, el?: HTMLElement): void => {
   const node = el ?? document.querySelector(`[data-path="${path}"]`);
   if (!node) {
@@ -374,7 +314,7 @@ export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: Cus
       const existingIcon = dataFile || isInfluencedByInheritance;
       if (!existingIcon && doesCustomRuleIconExists(rule, path) && isToRuleApplicable(rule, fileType)) {
         if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
-          iconTabs.remove(openFiles[path], { replaceWithDefaultIcon: true });
+          // iconTabs.remove(openFiles[path], { replaceWithDefaultIcon: true });
         }
 
         removeFromDOM(path, fileItem.titleEl);
@@ -438,7 +378,7 @@ export const addCustomRuleIconsToDOM = async (
       const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
       if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
         if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
-          iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
+          // iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
         }
 
         addToDOM(plugin, file.path, rule.icon, rule.color);
@@ -452,7 +392,7 @@ export const addCustomRuleIconsToDOM = async (
             const fileName = path.split('/').pop();
             if (fileName.match(regex) && isToRuleApplicable(rule, fileType)) {
               if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
-                iconTabs.add(plugin, openFiles[path], { iconName: rule.icon });
+                // iconTabs.add(plugin, openFiles[path], { iconName: rule.icon });
               }
 
               const titleEl = fileItem.titleEl;
@@ -477,7 +417,7 @@ export const addCustomRuleIconsToDOM = async (
       const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
       if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
         if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
-          iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
+          // iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
         }
 
         addToDOM(plugin, file.path, rule.icon, rule.color);
@@ -487,7 +427,7 @@ export const addCustomRuleIconsToDOM = async (
         const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
         if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
           if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
-            iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
+            // iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
           }
 
           addToDOM(plugin, file.path, rule.icon, rule.color);
@@ -580,64 +520,6 @@ export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: H
     }
     node.innerHTML = customizeIconStyle(plugin, emoji, node);
   }
-};
-
-/**
- * This function will add inheritance functionality to a specific folder.
- * It will add the inheritance icon to all child files.
- *
- * @param {IconFolderPlugin} plugin - The main plugin.
- * @param {string} folderPath - The path in the DOM where the icon will be added.
- */
-export const addInheritanceForFolder = (plugin: IconFolderPlugin, folderPath: string): void => {
-  const folder = plugin.getData()[folderPath];
-  if (!folder || typeof folder !== 'object') {
-    return;
-  }
-
-  // add icons for all the child files
-  const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
-  files.forEach((f) => {
-    if (plugin.getData()[f.path]) {
-      removeFromDOM(f.path);
-      plugin.removeFolderIcon(f.path);
-    }
-
-    // Adds icon to tabs for inherited files.
-    if (plugin.getSettings().iconInTabsEnabled) {
-      iconTabs.add(plugin, f, { iconName: (folder as FolderIconObject).inheritanceIcon });
-    }
-
-    addToDOM(plugin, f.path, (folder as FolderIconObject).inheritanceIcon);
-  });
-};
-
-/**
- * This function removes inheritance from a folder.
- * It will delete all the icons in the sub files of this folder.
- *
- * @param {IconFolderPlugin} plugin - The main plugin.
- * @param {string} folderPath - The path in the DOM where the icon will be added.
- */
-export const removeInheritanceForFolder = (plugin: IconFolderPlugin, folderPath: string): void => {
-  const folder = plugin.getData()[folderPath];
-  if (!folder || typeof folder !== 'object') {
-    return;
-  }
-
-  // remove icons from all the child files
-  const files = plugin.app.vault.getFiles().filter((f) => f.path.includes(folderPath));
-  files.forEach((f) => {
-    // when the file path is not registered in the data it should remove the icon
-    if (!plugin.getData()[f.path]) {
-      // Remove icon from tabs for inherited files.
-      if (plugin.getSettings().iconInTabsEnabled) {
-        iconTabs.remove(f, { replaceWithDefaultIcon: true });
-      }
-      removeFromDOM(f.path);
-      updateIcon(plugin, f);
-    }
-  });
 };
 
 export const isEmoji = (str: string): boolean => {

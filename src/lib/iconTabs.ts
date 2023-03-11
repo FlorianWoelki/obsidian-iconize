@@ -1,5 +1,4 @@
 import { TFile } from 'obsidian';
-import { getSvgFromLoadedIcon, nextIdentifier } from '../iconPackManager';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import { insertIconToNode } from '../util';
 import customRule from './customRule';

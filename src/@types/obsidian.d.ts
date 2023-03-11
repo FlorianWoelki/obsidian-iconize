@@ -1,4 +1,4 @@
-import { TFile, View, WorkspaceLeaf } from 'obsidian';
+import { TAbstractFile, TFile, View, WorkspaceLeaf } from 'obsidian';
 
 interface InternalPlugin {
   enabled: boolean;
@@ -60,5 +60,6 @@ interface ExplorerView extends View {
 
 interface FileItem {
   titleEl: HTMLDivElement;
+  file: TAbstractFile;
   titleInnerEl: HTMLDivElement;
 }
