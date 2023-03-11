@@ -1,22 +1,12 @@
 import { Plugin, MenuItem, TFile } from 'obsidian';
 import { ExplorerView } from './@types/obsidian';
-import {
-  createDefaultDirectory,
-  getSvgFromLoadedIcon,
-  initIconPacks,
-  loadUsedIcons,
-  nextIdentifier,
-  setPath,
-} from './iconPackManager';
+import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings';
 import {
   insertIconToNode,
   addIconsToDOM,
-  addInheritanceForFolder,
-  addInheritanceIconToFile,
   removeFromDOM,
-  removeInheritanceForFolder,
   getIconsInData,
   addCustomRuleIconsToDOM,
   doesCustomRuleIconExists,
@@ -28,6 +18,7 @@ import MetaData from './MetaData';
 import StarredInternalPlugin from './internalPlugins/starred';
 import InternalPluginInjector from './@types/internalPluginInjector';
 import iconTabs from './lib/iconTabs';
+import inheritance from './lib/inheritance';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -63,6 +54,7 @@ export default class IconFolderPlugin extends Plugin {
     MetaData.pluginName = this.manifest.id;
     console.log(`loading ${MetaData.pluginName}`);
 
+    // Registers all modified internal plugins.
     this.modifiedInternalPlugins.push(new StarredInternalPlugin(this));
 
     await this.loadIconFolderData();
@@ -127,7 +119,7 @@ export default class IconFolderPlugin extends Plugin {
           if (typeof this.data[file.path] === 'object') {
             item.setTitle('Remove inherit icon');
             item.onClick(() => {
-              removeInheritanceForFolder(this, file.path);
+              inheritance.remove(this, file.path);
               this.saveInheritanceData(file.path, null);
             });
           } else {
@@ -138,7 +130,11 @@ export default class IconFolderPlugin extends Plugin {
               // manipulate `onChooseItem` method to get custom functionality for inheriting icons
               modal.onChooseItem = (icon: Icon | string) => {
                 this.saveInheritanceData(file.path, icon);
-                addInheritanceForFolder(this, file.path);
+                if (typeof icon === 'string') {
+                  inheritance.add(this, file.path, icon);
+                } else {
+                  inheritance.add(this, file.path, icon.displayName);
+                }
               };
             });
           }
@@ -237,9 +233,7 @@ export default class IconFolderPlugin extends Plugin {
           if (file.parent.path === '/') return;
 
           inheritanceFolders.forEach(([path, obj]: [string, FolderIconObject]) => {
-            if (file.parent.path.includes(path)) {
-              addInheritanceIconToFile(this, this.registeredFileExplorers, file.path, obj.inheritanceIcon);
-            }
+            inheritance.add(this, path, obj.inheritanceIcon, { file });
           });
         }),
       );
@@ -256,7 +250,11 @@ export default class IconFolderPlugin extends Plugin {
 
       // Register file open event for adding icon of file to tab.
       this.registerEvent(
-        this.app.workspace.on('file-open', (file) => {
+        this.app.workspace.on('file-open', (file: TFile | null) => {
+          if (!file) {
+            return;
+          }
+
           if (this.getSettings().iconInTabsEnabled) {
             iconTabs.add(this, file);
           }
