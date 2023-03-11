@@ -54,24 +54,28 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
     return;
   }
 
-  // Add icons to tabs if there is some sort of inheritance going on.
-  const inheritanceData = data.filter(([key, value]) => typeof value === 'object' && key !== 'settings') as [
-    string,
-    FolderIconObject,
-  ][];
-  for (const [inheritancePath, inheritance] of inheritanceData) {
-    if (!inheritance.inheritanceIcon) {
-      continue;
-    }
+  // Files can also have custom icons inside of inheritance folders.
+  const hasIcon = plugin.getData()[file.path];
+  if (!hasIcon) {
+    // Add icons to tabs if there is some sort of inheritance going on.
+    const inheritanceData = data.filter(([key, value]) => typeof value === 'object' && key !== 'settings') as [
+      string,
+      FolderIconObject,
+    ][];
+    for (const [inheritancePath, inheritance] of inheritanceData) {
+      if (!inheritance.inheritanceIcon) {
+        continue;
+      }
 
-    if (!file.path.includes(inheritancePath)) {
-      continue;
-    }
+      if (!file.path.includes(inheritancePath)) {
+        continue;
+      }
 
-    insertIconToNode(plugin, inheritance.inheritanceIcon, iconContainer);
-    // TODO: Refactor to include option to `insertIconToNode` function.
-    iconContainer.style.margin = null;
-    break;
+      insertIconToNode(plugin, inheritance.inheritanceIcon, iconContainer);
+      // TODO: Refactor to include option to `insertIconToNode` function.
+      iconContainer.style.margin = null;
+      break;
+    }
   }
 
   // Add icons to tabs if a custom rule is applicable.
