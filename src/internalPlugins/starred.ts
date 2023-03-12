@@ -2,9 +2,10 @@ import { around } from 'monkey-around';
 import { View } from 'obsidian';
 import InternalPluginInjector from '../@types/internalPluginInjector';
 import { StarredFile } from '../@types/obsidian';
+import dom from '../lib/dom';
 import IconFolderPlugin from '../main';
 import MetaData from '../MetaData';
-import { getIconByPath, insertIconToNode } from '../util';
+import { getIconByPath } from '../util';
 
 interface StarredView extends View {
   itemLookup: WeakMap<Element, StarredFile>;
@@ -43,7 +44,7 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
       return;
     }
 
-    insertIconToNode(this.plugin, icon, iconNode as HTMLElement);
+    dom.addIconToNode(this.plugin, icon, iconNode as HTMLElement);
   }
 
   private computeNodesWithPath(callback: (node: Element, filePath: string) => void): void {

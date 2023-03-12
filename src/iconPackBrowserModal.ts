@@ -7,8 +7,9 @@ import {
   getAllIconPacks,
 } from './iconPackManager';
 import iconPacks, { IconPack } from './iconPacks';
+import dom from './lib/dom';
 import IconFolderPlugin from './main';
-import { getIconsWithPathInData, insertIconToNode, readFileSync } from './util';
+import { getIconsWithPathInData, readFileSync } from './util';
 import { downloadZipFile, getFileFromJSZipFile, readZipFile } from './zipUtil';
 
 export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
@@ -73,7 +74,7 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
               continue;
             }
 
-            insertIconToNode(this.plugin, iconName, existingIconEl);
+            dom.addIconToNode(this.plugin, iconName, existingIconEl);
           }
 
           await createFile(this.plugin, item.name, file.name, content, files[i].name); // files[i].name is the absolute path to the file.

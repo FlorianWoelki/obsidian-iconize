@@ -1,75 +1,11 @@
-import twemoji from 'twemoji';
+import emoji from './emoji';
 import IconFolderPlugin, { FolderIconObject } from './main';
 import type { ExplorerView } from './@types/obsidian';
-import { getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
 import { CustomRule, IconFolderSettings } from './settings';
 import { TAbstractFile, TFile } from 'obsidian';
 import dom from './lib/dom';
+import style from './lib/style';
 // import iconTabs from './lib/iconTabs';
-
-/**
- * This function returns the svg string with the user defined css settings.
- * It handles from the settings the `margin`, `color`, and `size`.
- *
- * In addition, this function manipulates the passed element with the user defined setting `margin`.
- *
- * @public
- * @param {IconFolderPlugin} plugin - The main plugin.
- * @param {string} icon - The to be styled icon.
- * @param {HTMLElement} el - The element that will include the margin from the user settings.
- * @returns {string} The svg with the customized css settings.
- */
-export const customizeIconStyle = (plugin: IconFolderPlugin, icon: string, el: HTMLElement): string => {
-  // Allow custom font size
-  const widthRe = new RegExp(/width="\d+(px)?"/);
-  const heightRe = new RegExp(/height="\d+(px)?"/);
-  if (icon.match(widthRe)) {
-    icon = icon.replace(widthRe, `width="${plugin.getSettings().fontSize}px"`);
-  }
-  if (icon.match(heightRe)) {
-    icon = icon.replace(heightRe, `height="${plugin.getSettings().fontSize}px"`);
-  }
-
-  // Allow custom icon color.
-  icon = colorizeIcon(icon, plugin.getSettings().iconColor);
-
-  // Change margin of icon
-  const margin = plugin.getSettings().extraMargin;
-  const normalizedMargin = {
-    top: margin.top !== undefined ? margin.top : 4,
-    right: margin.right !== undefined ? margin.right : 4,
-    left: margin.left !== undefined ? margin.left : 4,
-    bottom: margin.bottom !== undefined ? margin.bottom : 4,
-  };
-  if (plugin.getSettings().extraMargin) {
-    el.style.margin = `${normalizedMargin.top}px ${normalizedMargin.right}px ${normalizedMargin.bottom}px ${normalizedMargin.left}px`;
-  }
-
-  if (isEmoji(icon)) {
-    el.style.fontSize = `${plugin.getSettings().fontSize}px`;
-    el.style.lineHeight = `${plugin.getSettings().fontSize}px`;
-  }
-
-  return icon;
-};
-
-const colorizeIcon = (icon: string, c: string | undefined): string => {
-  const parser = new DOMParser();
-  const parsedString = parser.parseFromString(icon, 'text/html');
-  const iconElement = parsedString.querySelector('svg');
-
-  if (iconElement) {
-    if (iconElement.hasAttribute('fill') && iconElement.getAttribute('fill') !== 'none') {
-      iconElement.setAttribute('fill', c ?? 'currentColor');
-    } else if (iconElement.hasAttribute('stroke') && iconElement.getAttribute('stroke') !== 'none') {
-      iconElement.setAttribute('stroke', c ?? 'currentColor');
-    }
-
-    return iconElement.outerHTML;
-  }
-
-  return icon;
-};
 
 /**
  * This function adds the icons to the DOM.
@@ -118,7 +54,7 @@ export const addIconsToDOM = (
             const iconNode = titleEl.createDiv();
             iconNode.classList.add('obsidian-icon-folder-icon');
 
-            insertIconToNode(plugin, iconName, iconNode);
+            dom.addIconToNode(plugin, iconName, iconNode);
 
             titleEl.insertBefore(iconNode, titleInnerEl);
           }
@@ -137,7 +73,7 @@ export const addIconsToDOM = (
                 const iconNode = inheritanceFileItem.titleEl.createDiv();
                 iconNode.classList.add('obsidian-icon-folder-icon');
 
-                insertIconToNode(plugin, inheritanceIconName, iconNode);
+                dom.addIconToNode(plugin, inheritanceIconName, iconNode);
 
                 inheritanceFileItem.titleEl.insertBefore(iconNode, inheritanceFileItem.titleInnerEl);
               }
@@ -166,7 +102,7 @@ const updateCustomIconRules = (plugin: IconFolderPlugin, view: ExplorerView) => 
         const iconNode = titleEl.createDiv();
         iconNode.classList.add('obsidian-icon-folder-icon');
 
-        insertIconToNode(plugin, rule.icon, iconNode, rule.color);
+        dom.addIconToNode(plugin, rule.icon, iconNode, rule.color);
 
         titleEl.insertBefore(iconNode, titleInnerEl);
       }
@@ -212,7 +148,7 @@ export const refreshIconStyle = (plugin: IconFolderPlugin): void => {
       if (fileItem) {
         const titleEl = fileItem.titleEl;
         const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
-        iconNode.innerHTML = customizeIconStyle(plugin, iconNode.innerHTML, iconNode);
+        iconNode.innerHTML = style.applyAll(plugin, iconNode.innerHTML, iconNode);
       }
     });
   });
@@ -259,7 +195,7 @@ export const updateEmojiIconsInDOM = (plugin: IconFolderPlugin): void => {
           ? (plugin.getData()[path] as FolderIconObject).iconName
           : (plugin.getData()[path] as string);
 
-      if (isEmoji(iconName)) {
+      if (emoji.isEmoji(iconName)) {
         addToDOM(plugin, path, iconName);
       }
     });
@@ -388,7 +324,7 @@ export const addCustomRuleIconsToDOM = async (
                 const iconNode = titleEl.createDiv();
                 iconNode.classList.add('obsidian-icon-folder-icon');
 
-                insertIconToNode(plugin, rule.icon, iconNode);
+                dom.addIconToNode(plugin, rule.icon, iconNode);
 
                 titleEl.insertBefore(iconNode, titleInnerEl);
               }
@@ -462,62 +398,9 @@ export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string, c
   const iconNode = document.createElement('div');
   iconNode.classList.add('obsidian-icon-folder-icon');
 
-  insertIconToNode(plugin, icon, iconNode, color);
+  dom.addIconToNode(plugin, icon, iconNode, color);
 
   node.insertBefore(iconNode, titleNode);
-};
-
-/**
- * This function inserts a specific icon into the specified node.
- *
- * @param {IconFolderPlugin} plugin - The main plugin.
- * @param {string} icon - The icon string (can be an icon id or a unicode for emoji).
- * @param {HTMLElement} node - The element where the icon will be inserted.
- * @param color
- */
-export const insertIconToNode = (plugin: IconFolderPlugin, icon: string, node: HTMLElement, color?: string): void => {
-  const iconNextIdentifier = nextIdentifier(icon);
-  const possibleIcon = getSvgFromLoadedIcon(icon.substring(0, iconNextIdentifier), icon.substring(iconNextIdentifier));
-
-  if (possibleIcon) {
-    let iconContent = customizeIconStyle(plugin, possibleIcon, node);
-    if (color) {
-      iconContent = colorizeIcon(possibleIcon, color);
-    }
-    node.innerHTML = iconContent;
-  } else {
-    let emoji = '';
-    switch (plugin.getSettings().emojiStyle) {
-      case 'twemoji':
-        emoji = twemoji.parse(icon, {
-          base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
-          folder: 'svg',
-          ext: '.svg',
-          attributes: () => ({
-            width: '16px',
-            height: '16px',
-          }),
-        }) as any;
-        break;
-      case 'native':
-        emoji = icon;
-      default:
-        break;
-    }
-    node.innerHTML = customizeIconStyle(plugin, emoji, node);
-  }
-};
-
-export const isEmoji = (str: string): boolean => {
-  const ranges = [
-    '(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])', // U+1F680 to U+1F6FF
-  ];
-
-  if (str.match(ranges.join('|'))) {
-    return true;
-  } else {
-    return false;
-  }
 };
 
 export const getIconsInData = (plugin: IconFolderPlugin): string[] => {
@@ -527,19 +410,19 @@ export const getIconsInData = (plugin: IconFolderPlugin): string[] => {
     if (key === 'settings') {
       const rules = (value as IconFolderSettings).rules;
       rules.forEach((rule: CustomRule) => {
-        if (!isEmoji(rule.icon)) {
+        if (!emoji.isEmoji(rule.icon)) {
           result.push(rule.icon);
         }
       });
     } else if (key !== 'settings' && key !== 'migrated') {
-      if (typeof value === 'string' && !isEmoji(value)) {
+      if (typeof value === 'string' && !emoji.isEmoji(value)) {
         result.push(value);
       } else if (typeof value === 'object') {
         const v = value as FolderIconObject;
-        if (v.iconName !== null && !isEmoji(v.iconName)) {
+        if (v.iconName !== null && !emoji.isEmoji(v.iconName)) {
           result.push(v.iconName);
         }
-        if (v.inheritanceIcon !== null && !isEmoji(v.inheritanceIcon)) {
+        if (v.inheritanceIcon !== null && !emoji.isEmoji(v.inheritanceIcon)) {
           result.push(v.inheritanceIcon);
         }
       }
@@ -562,21 +445,21 @@ export const readFileSync = async (file: File): Promise<string> => {
 export const getIconByPath = (plugin: IconFolderPlugin, filePath: string): string | undefined => {
   if (filePath !== 'settings' && filePath !== 'migrated') {
     const value = plugin.getData()[filePath];
-    if (typeof value === 'string' && !isEmoji(value)) {
+    if (typeof value === 'string' && !emoji.isEmoji(value)) {
       return value;
     } else if (typeof value === 'object') {
       const v = value as FolderIconObject;
-      if (v.iconName !== null && !isEmoji(v.iconName)) {
+      if (v.iconName !== null && !emoji.isEmoji(v.iconName)) {
         return v.iconName;
       }
-      if (v.inheritanceIcon !== null && !isEmoji(v.inheritanceIcon)) {
+      if (v.inheritanceIcon !== null && !emoji.isEmoji(v.inheritanceIcon)) {
         return v.inheritanceIcon;
       }
     }
   }
 
   const rules = (plugin.getData()['settings'] as IconFolderSettings)?.rules;
-  const rule = rules.find((rule: CustomRule) => !isEmoji(rule.icon) && doesCustomRuleIconExists(rule, filePath));
+  const rule = rules.find((rule: CustomRule) => !emoji.isEmoji(rule.icon) && doesCustomRuleIconExists(rule, filePath));
   if (rule) {
     return rule.icon;
   }
@@ -589,18 +472,18 @@ export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
   Object.entries(plugin.getData()).forEach(([key, value]: [string, string | FolderIconObject]) => {
     if (key !== 'settings' && key !== 'migrated') {
       if (typeof value === 'string') {
-        if (!isEmoji(value)) {
+        if (!emoji.isEmoji(value)) {
           result.push({ key, value });
           return;
         }
       }
 
       if (typeof value === 'object') {
-        if (value.iconName !== null && !isEmoji(value.iconName)) {
+        if (value.iconName !== null && !emoji.isEmoji(value.iconName)) {
           result.push({ key, value: value.iconName });
           return;
         }
-        if (value.inheritanceIcon !== null && !isEmoji(value.inheritanceIcon)) {
+        if (value.inheritanceIcon !== null && !emoji.isEmoji(value.inheritanceIcon)) {
           result.push({ key, value: value.inheritanceIcon });
           return;
         }

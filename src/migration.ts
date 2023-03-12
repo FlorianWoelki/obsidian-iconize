@@ -1,5 +1,5 @@
-import IconFolderPlugin, { FolderIconObject } from './main';
-import { getIconsWithPathInData, isEmoji } from './util';
+import IconFolderPlugin from './main';
+import { getIconsWithPathInData } from './util';
 
 const migrationMap = [
   {

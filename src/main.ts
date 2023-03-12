@@ -3,14 +3,7 @@ import { ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings';
-import {
-  insertIconToNode,
-  addIconsToDOM,
-  getIconsInData,
-  addCustomRuleIconsToDOM,
-  doesCustomRuleIconExists,
-  updateIcon,
-} from './util';
+import { addIconsToDOM, getIconsInData, addCustomRuleIconsToDOM, doesCustomRuleIconExists, updateIcon } from './util';
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
 import MetaData from './MetaData';
@@ -188,7 +181,7 @@ export default class IconFolderPlugin extends Plugin {
         const iconNode = child.containerEl.createDiv();
         iconNode.classList.add('obsidian-icon-folder-icon');
 
-        insertIconToNode(this, this.data[file.path] as string, iconNode);
+        dom.addIconToNode(this, this.data[file.path] as string, iconNode);
 
         iconNode.insertAfter(collapseEl);
       }

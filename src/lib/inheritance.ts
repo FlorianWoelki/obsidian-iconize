@@ -1,7 +1,7 @@
 import { TAbstractFile, TFile } from 'obsidian';
 import { FileItem } from '../@types/obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
-import { insertIconToNode, updateIcon } from '../util';
+import { updateIcon } from '../util';
 import dom from './dom';
 import iconTabs from './iconTabs';
 
@@ -36,7 +36,7 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
   const addIcon = (fileItem: FileItem): void => {
     const iconNode = fileItem.titleEl.createDiv();
     iconNode.classList.add('obsidian-icon-folder-icon');
-    insertIconToNode(plugin, iconName, iconNode);
+    dom.addIconToNode(plugin, iconName, iconNode);
     fileItem.titleEl.insertBefore(iconNode, fileItem.titleInnerEl);
 
     // Adds icon to tabs for inherited files.

@@ -1,7 +1,7 @@
 import { TFile } from 'obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
-import { insertIconToNode } from '../util';
 import customRule from './customRule';
+import dom from './dom';
 
 /**
  * Get all icon containers of all open tabs. The icon container mostly relies next to the
@@ -54,7 +54,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
 
     // Only add the icon name manually when it is defined in the options.
     if (options?.iconName) {
-      insertIconToNode(plugin, options.iconName, iconContainer);
+      dom.addIconToNode(plugin, options.iconName, iconContainer);
       // TODO: Refactor to include option to `insertIconToNode` function.
       iconContainer.style.margin = null;
       continue;
@@ -77,7 +77,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
           continue;
         }
 
-        insertIconToNode(plugin, inheritance.inheritanceIcon, iconContainer);
+        dom.addIconToNode(plugin, inheritance.inheritanceIcon, iconContainer);
         // TODO: Refactor to include option to `insertIconToNode` function.
         iconContainer.style.margin = null;
         break;
@@ -88,7 +88,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
     for (const rule of plugin.getSettings().rules) {
       const isApplicable = await customRule.isApplicable(plugin, rule, file);
       if (isApplicable) {
-        insertIconToNode(plugin, rule.icon, iconContainer);
+        dom.addIconToNode(plugin, rule.icon, iconContainer);
         // TODO: Refactor to include option to `insertIconToNode` function.
         iconContainer.style.margin = null;
         break;
@@ -102,7 +102,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
       continue;
     }
 
-    insertIconToNode(plugin, iconData[1], iconContainer);
+    dom.addIconToNode(plugin, iconData[1], iconContainer);
     // TODO: Refactor to include option to `insertIconToNode` function.
     iconContainer.style.margin = null;
   }
@@ -115,7 +115,7 @@ const update = (plugin: IconFolderPlugin, file: TFile, iconName: string) => {
   }
 
   for (const iconContainer of iconContainers) {
-    insertIconToNode(plugin, iconName, iconContainer);
+    dom.addIconToNode(plugin, iconName, iconContainer);
     // TODO: Refactor to include option to `insertIconToNode` function.
     iconContainer.style.margin = null;
   }

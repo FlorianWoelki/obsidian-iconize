@@ -2,7 +2,7 @@ import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
 import emoji from './emoji';
-import { addToDOM, isEmoji } from './util';
+import { addToDOM } from './util';
 import { doesIconExists, getAllLoadedIconNames, getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
 
 export interface Icon {
@@ -29,7 +29,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
     const pluginRecentltyUsedItems = [...plugin.getSettings().recentlyUsedIcons];
     this.recentlyUsedItems = pluginRecentltyUsedItems.reverse().filter((iconName) => {
-      return doesIconExists(iconName) || isEmoji(iconName);
+      return doesIconExists(iconName) || emoji.isEmoji(iconName);
     });
 
     this.resultContainerEl.classList.add('obsidian-icon-folder-modal');
@@ -54,9 +54,9 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     if (this.inputEl.value.length === 0) {
       this.renderIndex = 0;
       this.recentlyUsedItems.forEach((iconName) => {
-        if (this.plugin.isSomeEmojiStyleActive() && isEmoji(iconName)) {
+        if (this.plugin.isSomeEmojiStyleActive() && emoji.isEmoji(iconName)) {
           iconKeys.push({
-            name: emoji[iconName],
+            name: emoji.shortNames[iconName],
             prefix: 'Emoji',
             displayName: iconName,
           });
@@ -81,7 +81,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     }
 
     if (this.plugin.isSomeEmojiStyleActive()) {
-      Object.entries(emoji).forEach(([unicode, shortName]) => {
+      Object.entries(emoji.shortNames).forEach(([unicode, shortName]) => {
         iconKeys.push({
           name: shortName,
           prefix: 'Emoji',

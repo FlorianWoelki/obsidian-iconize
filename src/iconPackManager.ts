@@ -1,6 +1,6 @@
 import { Notice, Plugin } from 'obsidian';
 import MetaData from './MetaData';
-import { extract } from './svgExtractor';
+import svg from './lib/svg';
 
 export interface Icon {
   name: string;
@@ -190,7 +190,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
     filename: iconName,
     svgContent,
     svgViewbox,
-    svgElement: extract(content),
+    svgElement: svg.extract(content),
   };
 
   return icon;
