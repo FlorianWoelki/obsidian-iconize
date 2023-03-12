@@ -4,6 +4,7 @@ import type { ExplorerView } from './@types/obsidian';
 import { getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
 import { CustomRule, IconFolderSettings } from './settings';
 import { TAbstractFile, TFile } from 'obsidian';
+import dom from './lib/dom';
 // import iconTabs from './lib/iconTabs';
 
 /**
@@ -217,21 +218,6 @@ export const refreshIconStyle = (plugin: IconFolderPlugin): void => {
   });
 };
 
-export const removeFromDOM = (path: string, el?: HTMLElement): void => {
-  const node = el ?? document.querySelector(`[data-path="${path}"]`);
-  if (!node) {
-    console.error('element with data path not found', path);
-    return;
-  }
-
-  const iconNode = node.querySelector('.obsidian-icon-folder-icon');
-  if (!iconNode) {
-    return;
-  }
-
-  iconNode.remove();
-};
-
 export const updateIcon = (plugin: IconFolderPlugin, file: TAbstractFile) => {
   // Try to add custom rule icons back.
   plugin.getSettings().rules.forEach(async (rule) => {
@@ -317,7 +303,7 @@ export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: Cus
           // iconTabs.remove(openFiles[path], { replaceWithDefaultIcon: true });
         }
 
-        removeFromDOM(path, fileItem.titleEl);
+        dom.removeIconInNode(fileItem.titleEl);
       }
     });
   });
@@ -448,7 +434,7 @@ export const addCustomRuleIconsToDOM = async (
  */
 export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string, color?: string): void => {
   if (plugin.getData()[path]) {
-    removeFromDOM(path);
+    dom.removeIconInPath(path);
   }
 
   const node = document.querySelector(`[data-path="${path}"]`);

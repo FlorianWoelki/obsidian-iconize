@@ -13,7 +13,8 @@ import {
   normalizeFileName,
 } from '../iconPackManager';
 import IconFolderPlugin from '../main';
-import { addToDOM, readFileSync, removeFromDOM } from '../util';
+import { addToDOM, readFileSync } from '../util';
+import dom from '../lib/dom';
 
 export default class CustomIconPackSetting extends IconFolderSetting {
   private textComponent: TextComponent;
@@ -128,7 +129,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
           Object.entries(this.plugin.getData()).forEach(async ([k, v]) => {
             const doesPathExist = await this.plugin.app.vault.adapter.exists(k, true);
             if (doesPathExist && typeof v === 'string') {
-              removeFromDOM(k);
+              dom.removeIconInPath(k);
               addToDOM(this.plugin, k, v);
             }
           });

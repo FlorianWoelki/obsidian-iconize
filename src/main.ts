@@ -6,7 +6,6 @@ import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './set
 import {
   insertIconToNode,
   addIconsToDOM,
-  removeFromDOM,
   getIconsInData,
   addCustomRuleIconsToDOM,
   doesCustomRuleIconExists,
@@ -19,6 +18,7 @@ import StarredInternalPlugin from './internalPlugins/starred';
 import InternalPluginInjector from './@types/internalPluginInjector';
 import iconTabs from './lib/iconTabs';
 import inheritance from './lib/inheritance';
+import dom from './lib/dom';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -95,7 +95,7 @@ export default class IconFolderPlugin extends Plugin {
           item.setIcon('trash');
           item.onClick(() => {
             this.removeFolderIcon(file.path);
-            removeFromDOM(file.path);
+            dom.removeIconInPath(file.path);
 
             // Remove icon in tab when setting is enabled.
             if (this.getSettings().iconInTabsEnabled) {
@@ -215,7 +215,7 @@ export default class IconFolderPlugin extends Plugin {
         this.app.vault.on('rename', (file, oldPath) => {
           this.getSettings().rules.forEach(async (rule) => {
             if (doesCustomRuleIconExists(rule, oldPath)) {
-              removeFromDOM(file.path);
+              dom.removeIconInPath(file.path);
             }
 
             await addCustomRuleIconsToDOM(this, rule, file);

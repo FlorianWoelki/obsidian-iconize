@@ -1,4 +1,4 @@
-const removeNode = (el: HTMLElement): void => {
+const removeIconInNode = (el: HTMLElement): void => {
   const iconNode = el.querySelector('.obsidian-icon-folder-icon');
   if (!iconNode) {
     return;
@@ -7,19 +7,17 @@ const removeNode = (el: HTMLElement): void => {
   iconNode.remove();
 };
 
-const removePath = (path: string): void => {
-  const node = document.querySelector(`[data-path="${path}"]`);
+const removeIconInPath = (path: string): void => {
+  const node = document.querySelector(`[data-path="${path}"]`) as HTMLElement | undefined;
   if (!node) {
     console.error('element with data path not found', path);
     return;
   }
 
-  const iconNode = node.querySelector('.obsidian-icon-folder-icon');
-  if (!iconNode) {
-    return;
-  }
-
-  iconNode.remove();
+  removeIconInNode(node);
 };
 
-export default {};
+export default {
+  removeIconInNode,
+  removeIconInPath,
+};
