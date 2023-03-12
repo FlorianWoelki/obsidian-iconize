@@ -4,31 +4,36 @@ import { insertIconToNode } from '../util';
 import customRule from './customRule';
 
 /**
- * Gets the icon container inside of a tab. The icon container mostly relies next to the
+ * Get all icon containers of all open tabs. The icon container mostly relies next to the
  * element with the actual name of the file.
  * @param filename String that will be used to get the icon container.
- * @returns HTMLElement when the icon container was found or undefined when not.
+ * @returns An array of HTMLElement of the icon containers.
  */
-const getIconContainer = (filename: string): HTMLElement | undefined => {
-  // Checks if tab header element exists with the `aria-label` attribute.
-  const node = document.querySelector(`[aria-label="${filename}"]`);
-  if (!node || !node.hasAttribute('draggable') || node.children.length === 0) {
-    return undefined;
-  }
+const getIconContainers = (filename: string): HTMLElement[] => {
+  // Gets all tab header elements with the `aria-label` attribute.
+  const nodes = document.querySelectorAll(`[aria-label="${filename}"]`);
+  const containers: HTMLElement[] = [];
+  nodes.forEach((node) => {
+    if (!node.hasAttribute('draggable') || node.children.length === 0) {
+      return;
+    }
 
-  // Gets the inner header container of the tab.
-  const headerInnerContainer = node.children[0];
-  if (!headerInnerContainer || headerInnerContainer.children.length === 0) {
-    return undefined;
-  }
+    // Gets the inner header container of the tab.
+    const headerInnerContainer = node.children[0];
+    if (!headerInnerContainer || headerInnerContainer.children.length === 0) {
+      return;
+    }
 
-  // Gets the icon container inside of the inner header container.
-  const iconContainer = headerInnerContainer.children[0] as HTMLElement | undefined;
-  if (!iconContainer) {
-    return undefined;
-  }
+    // Gets the icon container inside of the inner header container.
+    const iconContainer = headerInnerContainer.children[0] as HTMLElement | undefined;
+    if (!iconContainer) {
+      return;
+    }
 
-  return iconContainer;
+    containers.push(iconContainer);
+  });
+
+  return containers;
 };
 
 interface AddOptions {
@@ -36,80 +41,84 @@ interface AddOptions {
 }
 
 const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions): Promise<void> => {
-  const iconContainer = getIconContainer(file.basename);
-  if (!iconContainer) {
+  const iconContainers = getIconContainers(file.basename);
+  if (iconContainers.length === 0) {
     return;
   }
 
   const data = Object.entries(plugin.getData());
 
-  // Removes the `display: none` from the obsidian styling.
-  iconContainer.style.display = 'flex';
+  for (const iconContainer of iconContainers) {
+    // Removes the `display: none` from the obsidian styling.
+    iconContainer.style.display = 'flex';
 
-  // Only add the icon name manually when it is defined in the options.
-  if (options?.iconName) {
-    insertIconToNode(plugin, options.iconName, iconContainer);
+    // Only add the icon name manually when it is defined in the options.
+    if (options?.iconName) {
+      insertIconToNode(plugin, options.iconName, iconContainer);
+      // TODO: Refactor to include option to `insertIconToNode` function.
+      iconContainer.style.margin = null;
+      continue;
+    }
+
+    // Files can also have custom icons inside of inheritance folders.
+    const hasIcon = plugin.getData()[file.path];
+    if (!hasIcon) {
+      // Add icons to tabs if there is some sort of inheritance going on.
+      const inheritanceData = data.filter(([key, value]) => typeof value === 'object' && key !== 'settings') as [
+        string,
+        FolderIconObject,
+      ][];
+      for (const [inheritancePath, inheritance] of inheritanceData) {
+        if (!inheritance.inheritanceIcon) {
+          continue;
+        }
+
+        if (!file.path.includes(inheritancePath)) {
+          continue;
+        }
+
+        insertIconToNode(plugin, inheritance.inheritanceIcon, iconContainer);
+        // TODO: Refactor to include option to `insertIconToNode` function.
+        iconContainer.style.margin = null;
+        break;
+      }
+    }
+
+    // Add icons to tabs if a custom rule is applicable.
+    for (const rule of plugin.getSettings().rules) {
+      const isApplicable = await customRule.isApplicable(plugin, rule, file);
+      if (isApplicable) {
+        insertIconToNode(plugin, rule.icon, iconContainer);
+        // TODO: Refactor to include option to `insertIconToNode` function.
+        iconContainer.style.margin = null;
+        break;
+      }
+    }
+
+    // Add icons to tabs if there is an icon set.
+    const iconData = data.find(([dataPath]) => dataPath === file.path);
+    // Check if data was not found or name of icon is not a string.
+    if (!iconData || typeof iconData[1] !== 'string') {
+      continue;
+    }
+
+    insertIconToNode(plugin, iconData[1], iconContainer);
     // TODO: Refactor to include option to `insertIconToNode` function.
     iconContainer.style.margin = null;
-    return;
   }
-
-  // Files can also have custom icons inside of inheritance folders.
-  const hasIcon = plugin.getData()[file.path];
-  if (!hasIcon) {
-    // Add icons to tabs if there is some sort of inheritance going on.
-    const inheritanceData = data.filter(([key, value]) => typeof value === 'object' && key !== 'settings') as [
-      string,
-      FolderIconObject,
-    ][];
-    for (const [inheritancePath, inheritance] of inheritanceData) {
-      if (!inheritance.inheritanceIcon) {
-        continue;
-      }
-
-      if (!file.path.includes(inheritancePath)) {
-        continue;
-      }
-
-      insertIconToNode(plugin, inheritance.inheritanceIcon, iconContainer);
-      // TODO: Refactor to include option to `insertIconToNode` function.
-      iconContainer.style.margin = null;
-      break;
-    }
-  }
-
-  // Add icons to tabs if a custom rule is applicable.
-  for (const rule of plugin.getSettings().rules) {
-    const isApplicable = await customRule.isApplicable(plugin, rule, file);
-    if (isApplicable) {
-      insertIconToNode(plugin, rule.icon, iconContainer);
-      // TODO: Refactor to include option to `insertIconToNode` function.
-      iconContainer.style.margin = null;
-      break;
-    }
-  }
-
-  // Add icons to tabs if there is an icon set.
-  const iconData = data.find(([dataPath]) => dataPath === file.path);
-  // Check if data was not found or name of icon is not a string.
-  if (!iconData || typeof iconData[1] !== 'string') {
-    return;
-  }
-
-  insertIconToNode(plugin, iconData[1], iconContainer);
-  // TODO: Refactor to include option to `insertIconToNode` function.
-  iconContainer.style.margin = null;
 };
 
 const update = (plugin: IconFolderPlugin, file: TFile, iconName: string) => {
-  const iconContainer = getIconContainer(file.basename);
-  if (!iconContainer) {
+  const iconContainers = getIconContainers(file.basename);
+  if (iconContainers.length === 0) {
     return;
   }
 
-  insertIconToNode(plugin, iconName, iconContainer);
-  // TODO: Refactor to include option to `insertIconToNode` function.
-  iconContainer.style.margin = null;
+  for (const iconContainer of iconContainers) {
+    insertIconToNode(plugin, iconName, iconContainer);
+    // TODO: Refactor to include option to `insertIconToNode` function.
+    iconContainer.style.margin = null;
+  }
 };
 
 // Default icon for tabs of obsidian.
@@ -124,16 +133,18 @@ interface RemoveOptions {
 }
 
 const remove = (file: TFile, options?: RemoveOptions) => {
-  const iconContainer = getIconContainer(file.basename);
-  if (!iconContainer) {
+  const iconContainers = getIconContainers(file.basename);
+  if (iconContainers.length === 0) {
     return;
   }
 
-  if (!options?.replaceWithDefaultIcon) {
-    // Removes the display of the icon container to remove the icons from the tabs.
-    iconContainer.style.display = 'none';
-  } else {
-    iconContainer.innerHTML = DEFAULT_ICON;
+  for (const iconContainer of iconContainers) {
+    if (!options?.replaceWithDefaultIcon) {
+      // Removes the display of the icon container to remove the icons from the tabs.
+      iconContainer.style.display = 'none';
+    } else {
+      iconContainer.innerHTML = DEFAULT_ICON;
+    }
   }
 };
 
