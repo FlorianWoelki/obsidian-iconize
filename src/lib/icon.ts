@@ -1,6 +1,7 @@
 import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import customRule from './customRule';
+import inheritance from './inheritance';
 
 const getByPath = (plugin: IconFolderPlugin, path: string): string | undefined => {
   if (path !== 'settings' && path !== 'migrated') {
@@ -15,12 +16,14 @@ const getByPath = (plugin: IconFolderPlugin, path: string): string | undefined =
       if (v.iconName !== null && !emoji.isEmoji(v.iconName)) {
         return v.iconName;
       }
-
-      // If the inheritance folder has an inheritance icon, return it.
-      if (v.inheritanceIcon !== null && !emoji.isEmoji(v.inheritanceIcon)) {
-        return v.inheritanceIcon;
-      }
     }
+  }
+
+  // Tries to get the inheritance icon for the path and returns its inheritance icon if
+  // it exists.
+  const inheritanceIcon = inheritance.getByPath(plugin, path);
+  if (inheritanceIcon) {
+    return inheritanceIcon.inheritanceIcon;
   }
 
   // Tries to get the custom rule for the path and returns its icon if it exists.

@@ -98,7 +98,20 @@ const remove = (plugin: IconFolderPlugin, folderPath: string): void => {
   }
 };
 
+const getByPath = (plugin: IconFolderPlugin, path: string): FolderIconObject | undefined => {
+  const folders = getFolders(plugin);
+  const [_, folderIcon] = Object.entries(folders).find(([folderPath]) => path.includes(folderPath));
+  return folderIcon;
+};
+
+const doesExistInPath = (plugin: IconFolderPlugin, path: string): boolean => {
+  const folders = getFolders(plugin);
+  return Object.keys(folders).some((folderPath) => path.includes(folderPath));
+};
+
 export default {
   add,
   remove,
+  getByPath,
+  doesExistInPath,
 };
