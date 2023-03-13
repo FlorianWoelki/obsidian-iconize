@@ -1,5 +1,5 @@
+import icon from './lib/icon';
 import IconFolderPlugin from './main';
-import { getIconsWithPathInData } from './util';
 
 const migrationMap = [
   {
@@ -21,7 +21,7 @@ const migrationMap = [
 
 export const migrateIcons = (plugin: IconFolderPlugin) => {
   const data = { ...plugin.getData() };
-  const entries = getIconsWithPathInData(plugin);
+  const entries = icon.getAllWithPath(plugin);
 
   entries.forEach((entry) => {
     if (entry) {

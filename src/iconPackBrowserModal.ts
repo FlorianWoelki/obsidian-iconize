@@ -8,8 +8,9 @@ import {
 } from './iconPackManager';
 import iconPacks, { IconPack } from './iconPacks';
 import dom from './lib/dom';
+import icon from './lib/icon';
 import IconFolderPlugin from './main';
-import { getIconsWithPathInData, readFileSync } from './util';
+import { readFileSync } from './util';
 import { downloadZipFile, getFileFromJSZipFile, readZipFile } from './zipUtil';
 
 export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
@@ -50,7 +51,7 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
     await createIconPackDirectory(this.plugin, item.name);
     downloadZipFile(item.downloadLink).then((zipBlob) => {
       readZipFile(zipBlob, item.path).then(async (files) => {
-        const existingIcons = getIconsWithPathInData(this.plugin);
+        const existingIcons = icon.getAllWithPath(this.plugin);
         for (let i = 0; i < files.length; i++) {
           const file = await getFileFromJSZipFile(files[i]);
           const content = await readFileSync(file);

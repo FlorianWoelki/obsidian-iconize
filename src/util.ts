@@ -373,30 +373,3 @@ export const readFileSync = async (file: File): Promise<string> => {
 
   return content;
 };
-
-export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
-  const result: { key: string; value: string }[] = [];
-  Object.entries(plugin.getData()).forEach(([key, value]: [string, string | FolderIconObject]) => {
-    if (key !== 'settings' && key !== 'migrated') {
-      if (typeof value === 'string') {
-        if (!emoji.isEmoji(value)) {
-          result.push({ key, value });
-          return;
-        }
-      }
-
-      if (typeof value === 'object') {
-        if (value.iconName !== null && !emoji.isEmoji(value.iconName)) {
-          result.push({ key, value: value.iconName });
-          return;
-        }
-        if (value.inheritanceIcon !== null && !emoji.isEmoji(value.inheritanceIcon)) {
-          result.push({ key, value: value.inheritanceIcon });
-          return;
-        }
-      }
-    }
-  });
-
-  return result;
-};
