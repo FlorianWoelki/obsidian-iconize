@@ -1,5 +1,5 @@
-import { Plugin, MenuItem, TFile } from 'obsidian';
-import { ExplorerView } from './@types/obsidian';
+import { Plugin, MenuItem, TFile, WorkspaceLeaf } from 'obsidian';
+import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings';
@@ -242,18 +242,21 @@ export default class IconFolderPlugin extends Plugin {
         });
       }
 
-      // Register file open event for adding icon of file to tab.
-      this.registerEvent(
-        this.app.workspace.on('file-open', (file: TFile | null) => {
-          if (!file) {
-            return;
-          }
+      // Register active leaf change event for adding icon of file to tab.
+      this.app.workspace.on('active-leaf-change', (leaf: WorkspaceLeaf) => {
+        if (!this.getSettings().iconInTabsEnabled) {
+          return;
+        }
 
-          if (this.getSettings().iconInTabsEnabled) {
-            iconTabs.add(this, file);
-          }
-        }),
-      );
+        if (leaf.view.getViewType() !== 'markdown') {
+          return;
+        }
+
+        const explorerLeaf = leaf as ExplorerLeaf;
+        if (explorerLeaf.view.file) {
+          iconTabs.add(this, explorerLeaf.view.file);
+        }
+      });
     });
   }
 
