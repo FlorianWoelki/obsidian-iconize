@@ -44,7 +44,7 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
       return;
     }
 
-    dom.addIconToNode(this.plugin, icon, iconNode as HTMLElement);
+    dom.setIconForNode(this.plugin, icon, iconNode as HTMLElement);
   }
 
   private computeNodesWithPath(callback: (node: Element, filePath: string) => void): void {

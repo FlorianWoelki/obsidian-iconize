@@ -2,8 +2,8 @@ import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
 import emoji from './emoji';
-import { addToDOM } from './util';
 import { doesIconExists, getAllLoadedIconNames, getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
+import dom from './lib/dom';
 
 export interface Icon {
   name: string;
@@ -100,7 +100,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   onChooseItem(item: Icon | string): void {
     const iconName = typeof item === 'object' ? item.displayName : item;
-    addToDOM(this.plugin, this.path, iconName);
+    dom.createIconNode(this.plugin, this.path, iconName);
     this.onSelect?.(iconName);
     this.plugin.addFolderIcon(this.path, item);
   }

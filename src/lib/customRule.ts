@@ -1,6 +1,7 @@
 import { TAbstractFile } from 'obsidian';
 import IconFolderPlugin from '../main';
 import { CustomRule } from '../settings';
+import dom from './dom';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
@@ -47,7 +48,7 @@ const add = async (plugin: IconFolderPlugin, rule: CustomRule, file?: TAbstractF
     if (file) {
       const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
       if (file.name.match(regex) && doesMatchFileType(rule, fileType)) {
-        // addToDOM(plugin, file.path, rule.icon, rule.color);
+        dom.createIconNode(plugin, file.path, rule.icon, rule.color);
       }
     } else {
       plugin.getRegisteredFileExplorers().forEach(async (explorerView) => {
@@ -64,7 +65,7 @@ const add = async (plugin: IconFolderPlugin, rule: CustomRule, file?: TAbstractF
                 const iconNode = titleEl.createDiv();
                 iconNode.classList.add('obsidian-icon-folder-icon');
 
-                // insertIconToNode(plugin, rule.icon, iconNode);
+                dom.setIconForNode(plugin, rule.icon, iconNode);
 
                 titleEl.insertBefore(iconNode, titleInnerEl);
               }
@@ -78,13 +79,13 @@ const add = async (plugin: IconFolderPlugin, rule: CustomRule, file?: TAbstractF
     if (file) {
       const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
       if (file.name.includes(rule.rule) && doesMatchFileType(rule, fileType)) {
-        // addToDOM(plugin, file.path, rule.icon, rule.color);
+        dom.createIconNode(plugin, file.path, rule.icon, rule.color);
       }
     } else {
       plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
         const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
         if (file.name.includes(rule.rule) && doesMatchFileType(rule, fileType)) {
-          // addToDOM(plugin, file.path, rule.icon, rule.color);
+          dom.createIconNode(plugin, file.path, rule.icon, rule.color);
         }
       });
     }

@@ -36,7 +36,7 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
   const addIcon = (fileItem: FileItem): void => {
     const iconNode = fileItem.titleEl.createDiv();
     iconNode.classList.add('obsidian-icon-folder-icon');
-    dom.addIconToNode(plugin, iconName, iconNode);
+    dom.setIconForNode(plugin, iconName, iconNode);
     fileItem.titleEl.insertBefore(iconNode, fileItem.titleInnerEl);
 
     // Adds icon to tabs for inherited files.

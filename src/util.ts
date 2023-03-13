@@ -54,7 +54,7 @@ export const addIconsToDOM = (
             const iconNode = titleEl.createDiv();
             iconNode.classList.add('obsidian-icon-folder-icon');
 
-            dom.addIconToNode(plugin, iconName, iconNode);
+            dom.setIconForNode(plugin, iconName, iconNode);
 
             titleEl.insertBefore(iconNode, titleInnerEl);
           }
@@ -73,7 +73,7 @@ export const addIconsToDOM = (
                 const iconNode = inheritanceFileItem.titleEl.createDiv();
                 iconNode.classList.add('obsidian-icon-folder-icon');
 
-                dom.addIconToNode(plugin, inheritanceIconName, iconNode);
+                dom.setIconForNode(plugin, inheritanceIconName, iconNode);
 
                 inheritanceFileItem.titleEl.insertBefore(iconNode, inheritanceFileItem.titleInnerEl);
               }
@@ -102,7 +102,7 @@ const updateCustomIconRules = (plugin: IconFolderPlugin, view: ExplorerView) => 
         const iconNode = titleEl.createDiv();
         iconNode.classList.add('obsidian-icon-folder-icon');
 
-        dom.addIconToNode(plugin, rule.icon, iconNode, rule.color);
+        dom.setIconForNode(plugin, rule.icon, iconNode, rule.color);
 
         titleEl.insertBefore(iconNode, titleInnerEl);
       }
@@ -196,7 +196,7 @@ export const updateEmojiIconsInDOM = (plugin: IconFolderPlugin): void => {
           : (plugin.getData()[path] as string);
 
       if (emoji.isEmoji(iconName)) {
-        addToDOM(plugin, path, iconName);
+        dom.createIconNode(plugin, path, iconName);
       }
     });
 
@@ -252,7 +252,7 @@ export const colorizeCustomRuleIcons = (plugin: IconFolderPlugin, rule: CustomRu
     plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
       const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
       if (file.name.match(regex) && isToRuleApplicable(rule, fileType)) {
-        addToDOM(plugin, file.path, rule.icon, rule.color);
+        dom.createIconNode(plugin, file.path, rule.icon, rule.color);
       }
     });
   } catch {
@@ -260,7 +260,7 @@ export const colorizeCustomRuleIcons = (plugin: IconFolderPlugin, rule: CustomRu
     plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
       const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
       if (file.name.includes(rule.rule) && isToRuleApplicable(rule, fileType)) {
-        addToDOM(plugin, file.path, rule.icon, rule.color);
+        dom.createIconNode(plugin, file.path, rule.icon, rule.color);
       }
     });
   }
@@ -303,7 +303,7 @@ export const addCustomRuleIconsToDOM = async (
           // iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
         }
 
-        addToDOM(plugin, file.path, rule.icon, rule.color);
+        dom.createIconNode(plugin, file.path, rule.icon, rule.color);
       }
     } else {
       plugin.getRegisteredFileExplorers().forEach(async (explorerView) => {
@@ -324,7 +324,7 @@ export const addCustomRuleIconsToDOM = async (
                 const iconNode = titleEl.createDiv();
                 iconNode.classList.add('obsidian-icon-folder-icon');
 
-                dom.addIconToNode(plugin, rule.icon, iconNode);
+                dom.setIconForNode(plugin, rule.icon, iconNode);
 
                 titleEl.insertBefore(iconNode, titleInnerEl);
               }
@@ -342,7 +342,7 @@ export const addCustomRuleIconsToDOM = async (
           // iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
         }
 
-        addToDOM(plugin, file.path, rule.icon, rule.color);
+        dom.createIconNode(plugin, file.path, rule.icon, rule.color);
       }
     } else {
       plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
@@ -352,55 +352,11 @@ export const addCustomRuleIconsToDOM = async (
             // iconTabs.add(plugin, file as TFile, { iconName: rule.icon });
           }
 
-          addToDOM(plugin, file.path, rule.icon, rule.color);
+          dom.createIconNode(plugin, file.path, rule.icon, rule.color);
         }
       });
     }
   }
-};
-
-/**
- * This function adds an icon to the DOM based on a specific path.
- * In addition, before added to the DOM, it will customize the icon style.
- *
- * @public
- * @param {IconFolderPlugin} plugin - The main plugin.
- * @param {string} path - The path in the DOM where the icon will be added.
- * @param {string} icon - The icon that will be added to the DOM - can be an icon id or codepoint for emoji.
- */
-export const addToDOM = (plugin: IconFolderPlugin, path: string, icon: string, color?: string): void => {
-  if (plugin.getData()[path]) {
-    dom.removeIconInPath(path);
-  }
-
-  const node = document.querySelector(`[data-path="${path}"]`);
-  if (!node) {
-    console.error('element with data path not found', path);
-    return;
-  }
-
-  let titleNode = node.querySelector('.nav-folder-title-content');
-  if (!titleNode) {
-    titleNode = node.querySelector('.nav-file-title-content');
-
-    if (!titleNode) {
-      console.error('element with title not found');
-      return;
-    }
-  }
-
-  // check if there is a possible inheritance icon in the DOM
-  const possibleInheritanceIcon = node.querySelector('.obsidian-icon-folder-icon');
-  if (possibleInheritanceIcon) {
-    possibleInheritanceIcon.remove();
-  }
-
-  const iconNode = document.createElement('div');
-  iconNode.classList.add('obsidian-icon-folder-icon');
-
-  dom.addIconToNode(plugin, icon, iconNode, color);
-
-  node.insertBefore(iconNode, titleNode);
 };
 
 export const getIconsInData = (plugin: IconFolderPlugin): string[] => {

@@ -54,7 +54,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
 
     // Only add the icon name manually when it is defined in the options.
     if (options?.iconName) {
-      dom.addIconToNode(plugin, options.iconName, iconContainer);
+      dom.setIconForNode(plugin, options.iconName, iconContainer);
       // TODO: Refactor to include option to `insertIconToNode` function.
       iconContainer.style.margin = null;
       continue;
@@ -77,7 +77,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
           continue;
         }
 
-        dom.addIconToNode(plugin, inheritance.inheritanceIcon, iconContainer);
+        dom.setIconForNode(plugin, inheritance.inheritanceIcon, iconContainer);
         // TODO: Refactor to include option to `insertIconToNode` function.
         iconContainer.style.margin = null;
         break;
@@ -88,7 +88,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
     for (const rule of plugin.getSettings().rules) {
       const isApplicable = await customRule.isApplicable(plugin, rule, file);
       if (isApplicable) {
-        dom.addIconToNode(plugin, rule.icon, iconContainer);
+        dom.setIconForNode(plugin, rule.icon, iconContainer);
         // TODO: Refactor to include option to `insertIconToNode` function.
         iconContainer.style.margin = null;
         break;
@@ -102,7 +102,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
       continue;
     }
 
-    dom.addIconToNode(plugin, iconData[1], iconContainer);
+    dom.setIconForNode(plugin, iconData[1], iconContainer);
     // TODO: Refactor to include option to `insertIconToNode` function.
     iconContainer.style.margin = null;
   }
@@ -115,7 +115,7 @@ const update = (plugin: IconFolderPlugin, file: TFile, iconName: string) => {
   }
 
   for (const iconContainer of iconContainers) {
-    dom.addIconToNode(plugin, iconName, iconContainer);
+    dom.setIconForNode(plugin, iconName, iconContainer);
     // TODO: Refactor to include option to `insertIconToNode` function.
     iconContainer.style.margin = null;
   }

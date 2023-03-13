@@ -74,7 +74,7 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
               continue;
             }
 
-            dom.addIconToNode(this.plugin, iconName, existingIconEl);
+            dom.setIconForNode(this.plugin, iconName, existingIconEl);
           }
 
           await createFile(this.plugin, item.name, file.name, content, files[i].name); // files[i].name is the absolute path to the file.

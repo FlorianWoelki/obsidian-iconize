@@ -181,7 +181,7 @@ export default class IconFolderPlugin extends Plugin {
         const iconNode = child.containerEl.createDiv();
         iconNode.classList.add('obsidian-icon-folder-icon');
 
-        dom.addIconToNode(this, this.data[file.path] as string, iconNode);
+        dom.setIconForNode(this, this.data[file.path] as string, iconNode);
 
         iconNode.insertAfter(collapseEl);
       }

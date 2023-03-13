@@ -33,13 +33,14 @@ const removeIconInPath = (path: string): void => {
 };
 
 /**
- * Adds an icon or emoji to an HTMLElement based on the specified icon name and color.
+ * Sets an icon or emoji for an HTMLElement based on the specified icon name and color.
+ * The function manipulates the specified node inline.
  * @param plugin Instance of the IconFolderPlugin.
  * @param iconName Name of the icon or emoji to add.
  * @param node HTMLElement to which the icon or emoji will be added.
  * @param color Optional color of the icon to add.
  */
-const addIconToNode = (plugin: IconFolderPlugin, iconName: string, node: HTMLElement, color?: string): void => {
+const setIconForNode = (plugin: IconFolderPlugin, iconName: string, node: HTMLElement, color?: string): void => {
   // Gets the possible icon based on the icon name.
   const iconNextIdentifier = nextIdentifier(iconName);
   const possibleIcon = getSvgFromLoadedIcon(
@@ -79,8 +80,55 @@ const addIconToNode = (plugin: IconFolderPlugin, iconName: string, node: HTMLEle
   }
 };
 
+/**
+ * Creates an icon node for the specified path and inserts it to the DOM.
+ * @param plugin Instance of the IconFolderPlugin.
+ * @param path Path for which the icon node will be created.
+ * @param iconName Name of the icon or emoji to add.
+ * @param color Optional color of the icon to add.
+ */
+const createIconNode = (plugin: IconFolderPlugin, path: string, iconName: string, color?: string): void => {
+  // TODO: Refactor to more efficient solution.
+  if (plugin.getData()[path]) {
+    removeIconInPath(path);
+  }
+
+  // Tries to find the node that has the path.
+  const node = document.querySelector(`[data-path="${path}"]`);
+  if (!node) {
+    console.error('element with data path not found', path);
+    return;
+  }
+
+  // Get the folder or file title node.
+  let titleNode = node.querySelector('.nav-folder-title-content');
+  if (!titleNode) {
+    titleNode = node.querySelector('.nav-file-title-content');
+
+    if (!titleNode) {
+      console.error('element with title not found');
+      return;
+    }
+  }
+
+  // Check for possible inheritance and remove the inherited icon node.
+  const possibleInheritanceIcon = node.querySelector('.obsidian-icon-folder-icon');
+  if (possibleInheritanceIcon) {
+    possibleInheritanceIcon.remove();
+  }
+
+  // Creates a new icon node and inserts it to the DOM.
+  const iconNode = document.createElement('div');
+  iconNode.classList.add('obsidian-icon-folder-icon');
+
+  setIconForNode(plugin, iconName, iconNode, color);
+
+  node.insertBefore(iconNode, titleNode);
+};
+
 export default {
-  addIconToNode,
+  setIconForNode,
+  createIconNode,
   removeIconInNode,
   removeIconInPath,
 };
