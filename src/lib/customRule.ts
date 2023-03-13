@@ -1,6 +1,7 @@
 import { TAbstractFile } from 'obsidian';
+import emoji from '../emoji';
 import IconFolderPlugin from '../main';
-import { CustomRule } from '../settings';
+import { CustomRule, IconFolderSettings } from '../settings';
 import dom from './dom';
 
 export type CustomRuleFileType = 'file' | 'folder';
@@ -15,9 +16,9 @@ const doesMatchFileType = (rule: CustomRule, fileType: CustomRuleFileType): bool
 
 /**
  * Determines whether a given file matches a specified custom rule.
- * @param plugin The plugin object containing the app and other plugin data.
- * @param rule The custom rule to check against the file.
- * @param file The file to check against the custom rule.
+ * @param plugin Plugin object containing the app and other plugin data.
+ * @param rule Custom rule to check against the file.
+ * @param file File to check against the custom rule.
  * @returns A promise that resolves to true if the file matches the rule, false otherwise.
  */
 const isApplicable = async (plugin: IconFolderPlugin, rule: CustomRule, file: TAbstractFile): Promise<boolean> => {
@@ -92,7 +93,46 @@ const add = async (plugin: IconFolderPlugin, rule: CustomRule, file?: TAbstractF
   }
 };
 
+/**
+ * Determines whether a given rule exists in a given path.
+ * @param rule Rule to check for.
+ * @param path Path to check in.
+ * @returns True if the rule exists in the path, false otherwise.
+ */
+const doesExistInPath = (rule: CustomRule, path: string): boolean => {
+  const name = path.split('/').pop();
+  try {
+    // Rule is in some sort of regex.
+    const regex = new RegExp(rule.rule);
+    if (name.match(regex)) {
+      return true;
+    }
+  } catch {
+    // Rule is not in some sort of regex, check for basic string match.
+    return name.includes(rule.rule);
+  }
+
+  return false;
+};
+
+/**
+ * Gets a custom rule by its path.
+ * @param plugin Instance of the plugin.
+ * @param path Path to check for.
+ * @returns The custom rule if it exists, undefined otherwise.
+ */
+const getByPath = (plugin: IconFolderPlugin, path: string): CustomRule | undefined => {
+  if (path === 'settings' || path === 'migrated') {
+    return undefined;
+  }
+
+  const rules = (plugin.getData()['settings'] as IconFolderSettings)?.rules;
+  return rules.find((rule) => !emoji.isEmoji(rule.icon) && doesExistInPath(rule, path));
+};
+
 export default {
+  doesExistInPath,
+  getByPath,
   add,
   isApplicable,
 };

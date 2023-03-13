@@ -3,9 +3,9 @@ import { View } from 'obsidian';
 import InternalPluginInjector from '../@types/internalPluginInjector';
 import { StarredFile } from '../@types/obsidian';
 import dom from '../lib/dom';
+import icon from '../lib/icon';
 import IconFolderPlugin from '../main';
 import MetaData from '../MetaData';
-import { getIconByPath } from '../util';
 
 interface StarredView extends View {
   itemLookup: WeakMap<Element, StarredFile>;
@@ -38,13 +38,13 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
   }
 
   private setIcon(filePath: string, node: Element | undefined): void {
-    const icon = getIconByPath(this.plugin, filePath);
+    const iconName = icon.getByPath(this.plugin, filePath);
     const iconNode = node.querySelector('.nav-file-icon');
-    if (!iconNode || !icon) {
+    if (!iconNode || !iconName) {
       return;
     }
 
-    dom.setIconForNode(this.plugin, icon, iconNode as HTMLElement);
+    dom.setIconForNode(this.plugin, iconName, iconNode as HTMLElement);
   }
 
   private computeNodesWithPath(callback: (node: Element, filePath: string) => void): void {

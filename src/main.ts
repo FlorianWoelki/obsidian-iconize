@@ -3,7 +3,7 @@ import { ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings';
-import { addIconsToDOM, getIconsInData, addCustomRuleIconsToDOM, doesCustomRuleIconExists, updateIcon } from './util';
+import { addIconsToDOM, getIconsInData, addCustomRuleIconsToDOM, updateIcon } from './util';
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
 import MetaData from './MetaData';
@@ -12,6 +12,7 @@ import InternalPluginInjector from './@types/internalPluginInjector';
 import iconTabs from './lib/iconTabs';
 import inheritance from './lib/inheritance';
 import dom from './lib/dom';
+import customRule from './lib/customRule';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -207,7 +208,7 @@ export default class IconFolderPlugin extends Plugin {
       this.registerEvent(
         this.app.vault.on('rename', (file, oldPath) => {
           this.getSettings().rules.forEach(async (rule) => {
-            if (doesCustomRuleIconExists(rule, oldPath)) {
+            if (customRule.doesExistInPath(rule, oldPath)) {
               dom.removeIconInPath(file.path);
             }
 

@@ -5,6 +5,7 @@ import { CustomRule, IconFolderSettings } from './settings';
 import { TAbstractFile, TFile } from 'obsidian';
 import dom from './lib/dom';
 import style from './lib/style';
+import customRule from './lib/customRule';
 // import iconTabs from './lib/iconTabs';
 
 /**
@@ -161,31 +162,6 @@ export const updateIcon = (plugin: IconFolderPlugin, file: TAbstractFile) => {
   });
 };
 
-/**
- * This function checks if a custom rule icon exists in the path.
- *
- * @param {CustomRule} rule - The custom rule that will be checked on.
- * @param {string} path - The path that will be checked on.
- * @returns {boolean} If the icon with the path and rule exists and should be removed.
- */
-export const doesCustomRuleIconExists = (rule: CustomRule, path: string): boolean => {
-  const name = path.split('/').pop();
-  try {
-    // Rule is in some sort of regex.
-    const regex = new RegExp(rule.rule);
-    if (name.match(regex)) {
-      return true;
-    }
-  } catch {
-    // Rule is not applicable to a regex format.
-    if (name.includes(rule.rule)) {
-      return true;
-    }
-  }
-
-  return false;
-};
-
 export const updateEmojiIconsInDOM = (plugin: IconFolderPlugin): void => {
   plugin.getRegisteredFileExplorers().forEach(async (explorerView) => {
     const files = Object.entries(explorerView.fileItems);
@@ -234,7 +210,7 @@ export const removeCustomRuleIconsFromDOM = (plugin: IconFolderPlugin, rule: Cus
       const isInfluencedByInheritance = inheritanceFolders.find(([key]) => path.includes(key) && fileType === 'file');
 
       const existingIcon = dataFile || isInfluencedByInheritance;
-      if (!existingIcon && doesCustomRuleIconExists(rule, path) && isToRuleApplicable(rule, fileType)) {
+      if (!existingIcon && customRule.doesExistInPath(rule, path) && isToRuleApplicable(rule, fileType)) {
         if (plugin.getSettings().iconInTabsEnabled && fileType === 'file') {
           // iconTabs.remove(openFiles[path], { replaceWithDefaultIcon: true });
         }
@@ -396,31 +372,6 @@ export const readFileSync = async (file: File): Promise<string> => {
   });
 
   return content;
-};
-
-export const getIconByPath = (plugin: IconFolderPlugin, filePath: string): string | undefined => {
-  if (filePath !== 'settings' && filePath !== 'migrated') {
-    const value = plugin.getData()[filePath];
-    if (typeof value === 'string' && !emoji.isEmoji(value)) {
-      return value;
-    } else if (typeof value === 'object') {
-      const v = value as FolderIconObject;
-      if (v.iconName !== null && !emoji.isEmoji(v.iconName)) {
-        return v.iconName;
-      }
-      if (v.inheritanceIcon !== null && !emoji.isEmoji(v.inheritanceIcon)) {
-        return v.inheritanceIcon;
-      }
-    }
-  }
-
-  const rules = (plugin.getData()['settings'] as IconFolderSettings)?.rules;
-  const rule = rules.find((rule: CustomRule) => !emoji.isEmoji(rule.icon) && doesCustomRuleIconExists(rule, filePath));
-  if (rule) {
-    return rule.icon;
-  }
-
-  return undefined;
 };
 
 export const getIconsWithPathInData = (plugin: IconFolderPlugin) => {
