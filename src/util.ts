@@ -4,7 +4,6 @@ import type { ExplorerView } from './@types/obsidian';
 import { CustomRule, IconFolderSettings } from './settings';
 import { TAbstractFile, TFile } from 'obsidian';
 import dom from './lib/dom';
-import style from './lib/style';
 import customRule from './lib/customRule';
 // import iconTabs from './lib/iconTabs';
 
@@ -130,28 +129,6 @@ const updateCustomIconRules = (plugin: IconFolderPlugin, view: ExplorerView) => 
         }
       });
     }
-  });
-};
-
-/**
- * This function refreshes the icon style.
- * For that, it will manipulate the `innerHTML` of the icon and will customize the style.
- *
- * @public
- * @param {IconFolderPlugin} plugin - The main plugin.
- */
-export const refreshIconStyle = (plugin: IconFolderPlugin): void => {
-  const data = Object.entries(plugin.getData());
-  const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
-  fileExplorers.forEach((fileExplorer) => {
-    data.forEach(([key]) => {
-      const fileItem = fileExplorer.view.fileItems[key];
-      if (fileItem) {
-        const titleEl = fileItem.titleEl;
-        const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
-        iconNode.innerHTML = style.applyAll(plugin, iconNode.innerHTML, iconNode);
-      }
-    });
   });
 };
 

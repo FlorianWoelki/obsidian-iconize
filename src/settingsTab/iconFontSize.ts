@@ -1,7 +1,7 @@
 import { Setting } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import { DEFAULT_SETTINGS } from '../settings';
-import { refreshIconStyle } from '../util';
+import style from '../lib/style';
 
 export default class IconFontSizeSetting extends IconFolderSetting {
   public display(): void {
@@ -17,7 +17,7 @@ export default class IconFontSizeSetting extends IconFolderSetting {
             this.plugin.getSettings().fontSize = val;
             await this.plugin.saveIconFolderData();
 
-            refreshIconStyle(this.plugin);
+            style.refreshAllIcons(this.plugin);
           });
       });
   }

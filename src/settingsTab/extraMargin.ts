@@ -1,7 +1,7 @@
 import { DropdownComponent, Setting, SliderComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import { ExtraMarginSettings } from '../settings';
-import { refreshIconStyle } from '../util';
+import style from '../lib/style';
 
 export default class ExtraMarginSetting extends IconFolderSetting {
   public display(): void {
@@ -31,8 +31,7 @@ export default class ExtraMarginSetting extends IconFolderSetting {
           };
         }
         await this.plugin.saveIconFolderData();
-
-        refreshIconStyle(this.plugin);
+        style.refreshAllIcons(this.plugin);
       });
 
     extraMarginDropdown.onChange((val: keyof ExtraMarginSettings) => {

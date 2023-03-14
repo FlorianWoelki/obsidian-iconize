@@ -1,3 +1,6 @@
+// This library file does not include any other dependency and is a standalone file that
+// only include utility functions for manipulating or extracting svg information.
+
 /**
  * Extracts an SVG string from a given input string and returns a cleaned up and
  * formatted SVG string.
