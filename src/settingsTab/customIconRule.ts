@@ -19,10 +19,15 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
     this.refreshDisplay = refreshDisplay;
   }
 
-  private updateIconTabs(rule: CustomRule): void {
+  private async updateIconTabs(rule: CustomRule): Promise<void> {
     if (this.plugin.getSettings().iconInTabsEnabled) {
       for (const openedFile of getAllOpenedFiles(this.plugin)) {
-        iconTabs.add(this.plugin, openedFile, { iconName: rule.icon });
+        const applicable = await customRule.isApplicable(this.plugin, rule, openedFile);
+        if (!applicable) {
+          continue;
+        }
+
+        iconTabs.add(this.plugin, openedFile, { iconName: rule.icon, iconColor: rule.color });
       }
     }
   }
@@ -86,6 +91,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           await this.plugin.saveIconFolderData();
 
           customRule.addToAllFiles(this.plugin, rule);
+          this.updateIconTabs(rule);
         });
       settingRuleEl.components.push(colorPicker);
 

@@ -38,6 +38,7 @@ const getIconContainers = (filename: string): HTMLElement[] => {
 
 interface AddOptions {
   iconName?: string;
+  iconColor?: string;
 }
 
 const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions): Promise<void> => {
@@ -46,6 +47,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
     return;
   }
 
+  const iconColor = options?.iconColor ?? plugin.getSettings().iconColor;
   const data = Object.entries(plugin.getData());
 
   for (const iconContainer of iconContainers) {
@@ -54,7 +56,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
 
     // Only add the icon name manually when it is defined in the options.
     if (options?.iconName) {
-      dom.setIconForNode(plugin, options.iconName, iconContainer, plugin.getSettings().iconColor);
+      dom.setIconForNode(plugin, options.iconName, iconContainer, iconColor);
       // TODO: Refactor to include option to `insertIconToNode` function.
       iconContainer.style.margin = null;
       continue;
@@ -77,7 +79,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
           continue;
         }
 
-        dom.setIconForNode(plugin, inheritance.inheritanceIcon, iconContainer, plugin.getSettings().iconColor);
+        dom.setIconForNode(plugin, inheritance.inheritanceIcon, iconContainer, iconColor);
         // TODO: Refactor to include option to `insertIconToNode` function.
         iconContainer.style.margin = null;
         break;
@@ -102,7 +104,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
       continue;
     }
 
-    dom.setIconForNode(plugin, iconData[1], iconContainer, plugin.getSettings().iconColor);
+    dom.setIconForNode(plugin, iconData[1], iconContainer, iconColor);
     // TODO: Refactor to include option to `insertIconToNode` function.
     iconContainer.style.margin = null;
   }

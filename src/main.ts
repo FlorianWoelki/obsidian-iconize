@@ -61,7 +61,6 @@ export default class IconFolderPlugin extends Plugin {
     await this.migrate();
 
     const usedIconNames = icon.getAllWithPath(this).map((value) => value.icon);
-    console.log(usedIconNames);
     await loadUsedIcons(this, usedIconNames);
 
     initIconPacks(this);
