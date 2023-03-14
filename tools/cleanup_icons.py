@@ -15,10 +15,11 @@ iconset_mapping = {
 }
 
 cur_path = pathlib.Path(__file__).parent.resolve()
+data_file = pathlib.Path(cur_path, "data.json")
 icons_path = pathlib.Path(cur_path, "icons")
 
 files_used = []
-with open(pathlib.Path(cur_path, "data.json"), "r") as f:
+with open(data_file, "r") as f:
     data = json.load(f)
     data.pop("settings")
     icons = set(data.values())
@@ -35,12 +36,20 @@ with open(pathlib.Path(cur_path, "data.json"), "r") as f:
 
 files_to_remove, files_to_keep = [], []
 
-for icon in pathlib.Path(cur_path, "icons").glob("**/*.svg"):
+for icon in icons_path.glob("**/*.svg"):
     (files_to_remove if icon not in files_used else files_to_keep).append(icon)
 
 if len(files_used) != len(files_to_keep):
     print(
         f"Warning: `data.json` assigned {len(files_used)} unique icons, but only {len(files_to_keep)} of those have been found on the disk."
+    )
+    print(
+        "could not find the following icons on disk:",
+        [
+            str(f.relative_to(icons_path)).replace("\\", "/")
+            for f in files_used
+            if f not in files_to_keep
+        ],
     )
 print(f"Delete {len(files_to_remove)} files (keep {len(files_to_keep)})? (y/N)")
 
