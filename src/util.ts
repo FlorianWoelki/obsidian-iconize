@@ -1,11 +1,8 @@
-import emoji from './emoji';
 import IconFolderPlugin, { FolderIconObject } from './main';
 import type { ExplorerView } from './@types/obsidian';
-import { CustomRule, IconFolderSettings } from './settings';
 import { TFile } from 'obsidian';
 import dom from './lib/dom';
 import customRule from './lib/customRule';
-// import iconTabs from './lib/iconTabs';
 
 /**
  * This function adds the icons to the DOM.
@@ -86,24 +83,6 @@ export const addIconsToDOM = (
     if (callback) {
       callback();
     }
-  });
-
-  customRule.addAll(plugin);
-};
-
-export const updateEmojiIconsInDOM = (plugin: IconFolderPlugin): void => {
-  plugin.getRegisteredFileExplorers().forEach(async (explorerView) => {
-    const files = Object.entries(explorerView.fileItems);
-    files.forEach(async ([path]) => {
-      const iconName =
-        typeof plugin.getData()[path] === 'object'
-          ? (plugin.getData()[path] as FolderIconObject).iconName
-          : (plugin.getData()[path] as string);
-
-      if (emoji.isEmoji(iconName)) {
-        dom.createIconNode(plugin, path, iconName);
-      }
-    });
   });
 
   customRule.addAll(plugin);
