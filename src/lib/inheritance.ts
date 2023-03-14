@@ -1,7 +1,6 @@
 import { TAbstractFile, TFile } from 'obsidian';
 import { FileItem } from '../@types/obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
-import { updateIcon } from '../util';
 import dom from './dom';
 import iconTabs from './iconTabs';
 
@@ -93,7 +92,6 @@ const remove = (plugin: IconFolderPlugin, folderPath: string): void => {
       }
 
       dom.removeIconInPath(file.path);
-      updateIcon(plugin, file);
     }
   }
 };

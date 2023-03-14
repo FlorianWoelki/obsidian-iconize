@@ -3,7 +3,7 @@ import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings';
-import { addIconsToDOM, getIconsInData, addCustomRuleIconsToDOM, updateIcon } from './util';
+import { addIconsToDOM } from './util';
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
 import MetaData from './MetaData';
@@ -13,6 +13,7 @@ import iconTabs from './lib/iconTabs';
 import inheritance from './lib/inheritance';
 import dom from './lib/dom';
 import customRule from './lib/customRule';
+import icon from './lib/icon';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -59,7 +60,9 @@ export default class IconFolderPlugin extends Plugin {
 
     await this.migrate();
 
-    await loadUsedIcons(this, getIconsInData(this));
+    const usedIconNames = icon.getAllWithPath(this).map((value) => value.icon);
+    console.log(usedIconNames);
+    await loadUsedIcons(this, usedIconNames);
 
     initIconPacks(this);
 
@@ -96,7 +99,7 @@ export default class IconFolderPlugin extends Plugin {
               iconTabs.remove(file, { replaceWithDefaultIcon: true });
             }
 
-            updateIcon(this, file);
+            customRule.addAll(this);
           });
         };
 
@@ -212,7 +215,7 @@ export default class IconFolderPlugin extends Plugin {
               dom.removeIconInPath(file.path);
             }
 
-            await addCustomRuleIconsToDOM(this, rule, file);
+            await customRule.add(this, rule, file);
           });
         }),
       );

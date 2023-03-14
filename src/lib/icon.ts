@@ -4,7 +4,7 @@ import customRule from './customRule';
 import inheritance from './inheritance';
 
 /**
- * Gets the icon of a given path.
+ * Gets the icon of a given path. This function returns the first occurrence of an icon.
  * @param plugin Instance of the IconFolderPlugin.
  * @param path Path to get the icon of.
  * @returns The icon of the path if it exists, undefined otherwise.
@@ -44,18 +44,34 @@ const getByPath = (plugin: IconFolderPlugin, path: string): string | undefined =
   return undefined;
 };
 
+interface IconWithPath {
+  path: string;
+  icon: string;
+}
+
 /**
  * Gets all the icons with their paths as an object.
  * @param plugin Instance of the IconFolderPlugin.
  * @returns An object that consists of the paths as the keys and the values as the
  * icon names.
  */
-const getAllWithPath = (plugin: IconFolderPlugin): Record<string, string>[] => {
-  const result: Record<string, string>[] = [];
+const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
+  const result: IconWithPath[] = [];
   Object.keys(plugin.getData()).forEach((path) => {
+    if (path === 'settings' || path === 'migrated') {
+      return;
+    }
+
     const icon = getByPath(plugin, path);
     if (icon) {
       result.push({ path, icon });
+    }
+
+    // Check again for custom rule because `getByPath` only returns the first occurrence.
+    // TODO: Need to refactor this.
+    const rule = customRule.getByPath(plugin, path);
+    if (rule) {
+      result.push({ path, icon: rule.icon });
     }
   });
   return result;

@@ -1,11 +1,17 @@
 import { TAbstractFile } from 'obsidian';
 import emoji from '../emoji';
-import IconFolderPlugin from '../main';
+import IconFolderPlugin, { FolderIconObject } from '../main';
 import { CustomRule, IconFolderSettings } from '../settings';
 import dom from './dom';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
+/**
+ * Checks if the file type is equal to the `for` property of the custom rule.
+ * @param rule Custom rule that will be checked.
+ * @param fileType File type that will be checked.
+ * @returns Boolean whether the custom rule `for` matches the file type or not.
+ */
 const doesMatchFileType = (rule: CustomRule, fileType: CustomRuleFileType): boolean => {
   return (
     rule.for === 'everything' ||
@@ -39,56 +45,80 @@ const isApplicable = async (plugin: IconFolderPlugin, rule: CustomRule, file: TA
   }
 };
 
-const addAll = async (plugin: IconFolderPlugin, rule: CustomRule) => {};
+/**
+ * Removes the icon from the custom rule from all the files, if applicable.
+ * @param plugin Instance of the IconFolderPlugin.
+ * @param rule Custom rule where the nodes will be removed based on this rule.
+ */
+const removeFromAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promise<void> => {
+  for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
+    const files = Object.entries(fileExplorer.fileItems);
+    for (const [path, fileItem] of files) {
+      const fileType = (await plugin.app.vault.adapter.stat(path)).type;
+      // Gets the icon name of the inheritance object or by the value directly.
+      let iconName = plugin.getData()[path];
+      if (typeof plugin.getData()[path] === 'object') {
+        iconName = (plugin.getData()[path] as FolderIconObject).iconName;
+      }
 
-// TODO: Refactor.
-const add = async (plugin: IconFolderPlugin, rule: CustomRule, file?: TAbstractFile) => {
+      if (!iconName && doesExistInPath(rule, path) && doesMatchFileType(rule, fileType)) {
+        dom.removeIconInNode(fileItem.titleEl);
+      }
+    }
+  }
+};
+
+/**
+ * Tries to apply all custom rules to all files. This function iterates over all the saved
+ * custom rules and calls {@link addToAllFiles}.
+ * @param plugin Instance of the IconFolderPlugin.
+ */
+const addAll = async (plugin: IconFolderPlugin): Promise<void> => {
+  for (const rule of plugin.getSettings().rules) {
+    await addToAllFiles(plugin, rule);
+  }
+};
+
+/**
+ * Tries to add all specific custom rule icon to all registered files. It does that by
+ * calling the {@link add} function.
+ * @param plugin Instance of the IconFolderPlugin.
+ * @param rule Custom rule that will be applied, if applicable, to all files.
+ */
+const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promise<void> => {
+  for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
+    const files = Object.values(fileExplorer.fileItems);
+    for (const fileItem of files) {
+      await add(plugin, rule, fileItem.file);
+    }
+  }
+};
+
+/**
+ * Tries to add the icon of the custom rule to a file or folder. This function also checks
+ * if the file type matches the `for` property of the custom rule.
+ * @param plugin Instance of the IconFolderPlugin.
+ * @param rule Custom rule that will be used to check if the rule is applicable to the file.
+ * @param file File or folder that will be used to possibly create the icon for.
+ */
+const add = async (plugin: IconFolderPlugin, rule: CustomRule, file: TAbstractFile): Promise<void> => {
+  // Gets the type of the file.
+  const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+
+  if (!doesMatchFileType(rule, fileType)) {
+    return;
+  }
+
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
-    if (file) {
-      const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-      if (file.name.match(regex) && doesMatchFileType(rule, fileType)) {
-        dom.createIconNode(plugin, file.path, rule.icon, rule.color);
-      }
-    } else {
-      plugin.getRegisteredFileExplorers().forEach(async (explorerView) => {
-        const files = Object.entries(explorerView.fileItems);
-        files.forEach(async ([path, fileItem]) => {
-          const fileType = (await plugin.app.vault.adapter.stat(path)).type;
-          if (fileItem) {
-            const fileName = path.split('/').pop();
-            if (fileName.match(regex) && doesMatchFileType(rule, fileType)) {
-              const titleEl = fileItem.titleEl;
-              const titleInnerEl = fileItem.titleInnerEl;
-              const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
-              if (!existingIcon) {
-                const iconNode = titleEl.createDiv();
-                iconNode.classList.add('obsidian-icon-folder-icon');
-
-                dom.setIconForNode(plugin, rule.icon, iconNode);
-
-                titleEl.insertBefore(iconNode, titleInnerEl);
-              }
-            }
-          }
-        });
-      });
+    if (file.name.match(regex)) {
+      dom.createIconNode(plugin, file.path, rule.icon, rule.color);
     }
   } catch {
     // Rule is not applicable to a regex format.
-    if (file) {
-      const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-      if (file.name.includes(rule.rule) && doesMatchFileType(rule, fileType)) {
-        dom.createIconNode(plugin, file.path, rule.icon, rule.color);
-      }
-    } else {
-      plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
-        const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-        if (file.name.includes(rule.rule) && doesMatchFileType(rule, fileType)) {
-          dom.createIconNode(plugin, file.path, rule.icon, rule.color);
-        }
-      });
+    if (file.name.includes(rule.rule)) {
+      dom.createIconNode(plugin, file.path, rule.icon, rule.color);
     }
   }
 };
@@ -133,6 +163,9 @@ const getByPath = (plugin: IconFolderPlugin, path: string): CustomRule | undefin
 export default {
   doesExistInPath,
   getByPath,
+  removeFromAllFiles,
   add,
+  addAll,
+  addToAllFiles,
   isApplicable,
 };

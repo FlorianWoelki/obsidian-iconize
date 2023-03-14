@@ -2,8 +2,10 @@ import { App, Notice, Setting, TextComponent, ColorComponent, ButtonComponent, M
 import IconFolderSetting from './iconFolderSetting';
 import IconsPickerModal from '../iconsPickerModal';
 import IconFolderPlugin from '../main';
-import { addCustomRuleIconsToDOM, colorizeCustomRuleIcons, removeCustomRuleIconsFromDOM } from '../util';
+import { getAllOpenedFiles } from '../util';
 import { CustomRule } from '../settings';
+import customRule from '../lib/customRule';
+import iconTabs from '../lib/iconTabs';
 
 export default class CustomIconRuleSetting extends IconFolderSetting {
   private app: App;
@@ -15,6 +17,14 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
     super(plugin, containerEl);
     this.app = app;
     this.refreshDisplay = refreshDisplay;
+  }
+
+  private updateIconTabs(rule: CustomRule): void {
+    if (this.plugin.getSettings().iconInTabsEnabled) {
+      for (const openedFile of getAllOpenedFiles(this.plugin)) {
+        iconTabs.add(this.plugin, openedFile, { iconName: rule.icon });
+      }
+    }
   }
 
   public display(): void {
@@ -58,7 +68,8 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             new Notice('Icon rule added.');
             this.textComponent.setValue('');
 
-            await addCustomRuleIconsToDOM(this.plugin, rule);
+            await customRule.addToAllFiles(this.plugin, rule);
+            this.updateIconTabs(rule);
           };
           modal.open();
         });
@@ -74,7 +85,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           rule.color = value;
           await this.plugin.saveIconFolderData();
 
-          colorizeCustomRuleIcons(this.plugin, rule);
+          customRule.addToAllFiles(this.plugin, rule);
         });
       settingRuleEl.components.push(colorPicker);
 
@@ -92,7 +103,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         btn.setTooltip(`Icon applicable to: ${isFor}`);
 
         btn.onClick(async () => {
-          removeCustomRuleIconsFromDOM(this.plugin, { ...rule, for: isFor });
+          await customRule.removeFromAllFiles(this.plugin, { ...rule, for: isFor });
 
           if (isFor === 'folders') {
             rule.for = 'everything';
@@ -102,13 +113,15 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             rule.for = 'files';
           }
 
-          await addCustomRuleIconsToDOM(this.plugin, rule);
+          await customRule.addToAllFiles(this.plugin, rule);
+          this.updateIconTabs(rule);
 
           await this.plugin.saveIconFolderData();
           this.refreshDisplay();
 
           this.plugin.getSettings().rules.forEach(async (previousRule) => {
-            await addCustomRuleIconsToDOM(this.plugin, previousRule);
+            await customRule.addToAllFiles(this.plugin, previousRule);
+            this.updateIconTabs(previousRule);
           });
         });
       });
@@ -141,9 +154,11 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             new Notice('Custom rule updated.');
 
             // Refresh the DOM.
-            removeCustomRuleIconsFromDOM(this.plugin, rule);
+            await customRule.removeFromAllFiles(this.plugin, rule);
+            this.updateIconTabs(rule);
             newRules.forEach(async (rule) => {
-              await addCustomRuleIconsToDOM(this.plugin, rule);
+              await customRule.addToAllFiles(this.plugin, rule);
+              this.updateIconTabs(rule);
             });
 
             modal.close();
@@ -169,10 +184,12 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           this.refreshDisplay();
           new Notice('Custom rule deleted.');
 
-          removeCustomRuleIconsFromDOM(this.plugin, rule);
+          await customRule.removeFromAllFiles(this.plugin, rule);
+          this.updateIconTabs(rule);
           const previousRules = this.plugin.getSettings().rules.filter((r) => rule.for === r.for);
           previousRules.forEach(async (previousRule) => {
-            await addCustomRuleIconsToDOM(this.plugin, previousRule);
+            await customRule.addToAllFiles(this.plugin, previousRule);
+            this.updateIconTabs(previousRule);
           });
         });
       });

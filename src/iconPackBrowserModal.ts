@@ -61,9 +61,9 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
           }
 
           const iconName = icon.prefix + icon.name;
-          const existingIcon = existingIcons.find((el) => el.value === iconName);
+          const existingIcon = existingIcons.find((el) => el.icon === iconName);
           if (existingIcon) {
-            const path = existingIcon.key;
+            const path = existingIcon.path;
             const container = this.plugin.app.workspace.containerEl.querySelector(`[data-path="${path}"]`);
             if (!container) {
               continue;

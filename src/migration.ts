@@ -25,16 +25,16 @@ export const migrateIcons = (plugin: IconFolderPlugin) => {
 
   entries.forEach((entry) => {
     if (entry) {
-      const { key, value } = entry;
+      const { path, icon } = entry;
 
       const migration = migrationMap.find(
-        (migration) => value.substring(0, 2) === migration.oldIconPackPrefix && value.includes(migration.identifier),
+        (migration) => icon.substring(0, 2) === migration.oldIconPackPrefix && icon.includes(migration.identifier),
       );
 
       if (migration) {
-        data[key] =
+        data[path] =
           migration.transformation +
-          value.substring(migration.oldIconPackPrefix.length, value.indexOf(migration.identifier));
+          icon.substring(migration.oldIconPackPrefix.length, icon.indexOf(migration.identifier));
       }
     }
   });
