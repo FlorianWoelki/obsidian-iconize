@@ -54,7 +54,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
 
     // Only add the icon name manually when it is defined in the options.
     if (options?.iconName) {
-      dom.setIconForNode(plugin, options.iconName, iconContainer);
+      dom.setIconForNode(plugin, options.iconName, iconContainer, plugin.getSettings().iconColor);
       // TODO: Refactor to include option to `insertIconToNode` function.
       iconContainer.style.margin = null;
       continue;
@@ -77,7 +77,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
           continue;
         }
 
-        dom.setIconForNode(plugin, inheritance.inheritanceIcon, iconContainer);
+        dom.setIconForNode(plugin, inheritance.inheritanceIcon, iconContainer, plugin.getSettings().iconColor);
         // TODO: Refactor to include option to `insertIconToNode` function.
         iconContainer.style.margin = null;
         break;
@@ -88,7 +88,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
     for (const rule of plugin.getSettings().rules) {
       const isApplicable = await customRule.isApplicable(plugin, rule, file);
       if (isApplicable) {
-        dom.setIconForNode(plugin, rule.icon, iconContainer);
+        dom.setIconForNode(plugin, rule.icon, iconContainer, rule.color);
         // TODO: Refactor to include option to `insertIconToNode` function.
         iconContainer.style.margin = null;
         break;
@@ -102,7 +102,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
       continue;
     }
 
-    dom.setIconForNode(plugin, iconData[1], iconContainer);
+    dom.setIconForNode(plugin, iconData[1], iconContainer, plugin.getSettings().iconColor);
     // TODO: Refactor to include option to `insertIconToNode` function.
     iconContainer.style.margin = null;
   }
