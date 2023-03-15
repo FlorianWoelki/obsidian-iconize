@@ -238,10 +238,14 @@ export default class IconFolderPlugin extends Plugin {
           if (file.parent.path === '/') return;
 
           inheritanceFolders.forEach(([path, obj]: [string, FolderIconObject]) => {
-            inheritance.add(this, path, obj.inheritanceIcon, { file });
-            if (this.getSettings().iconInTabsEnabled) {
-              iconTabs.add(this, file as TFile, { iconName: obj.inheritanceIcon });
-            }
+            inheritance.add(this, path, obj.inheritanceIcon, {
+              file,
+              onAdd: (file) => {
+                if (this.getSettings().iconInTabsEnabled) {
+                  iconTabs.add(this, file as TFile, { iconName: obj.inheritanceIcon });
+                }
+              },
+            });
           });
         }),
       );
