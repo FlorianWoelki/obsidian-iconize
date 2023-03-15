@@ -3,7 +3,6 @@ import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings';
-import { addIconsToDOM } from './util';
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
 import MetaData from './MetaData';
@@ -202,7 +201,7 @@ export default class IconFolderPlugin extends Plugin {
       }
     });
 
-    addIconsToDOM(this, data, this.registeredFileExplorers, () => {
+    icon.addAll(this, data, this.registeredFileExplorers, () => {
       //const searchLeaveDom = this.getSearchLeave().dom;
       //searchLeaveDom.changed = () => this.addIconsToSearch();
 

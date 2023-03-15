@@ -1,7 +1,82 @@
+import { ExplorerView } from '../@types/obsidian';
 import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import customRule from './customRule';
+import dom from './dom';
 import inheritance from './inheritance';
+
+/**
+ * This function adds all the possible icons to the corresponding nodes. It adds the icons,
+ * that are defined in the data as a basic string to the nodes, the inheritance folder
+ * icons, and also the custom rule icons.
+ * @param plugin Instance of IconFolderPlugin.
+ * @param data Data that will be used to add all the icons to the nodes.
+ * @param registeredFileExplorers A WeakSet of file explorers that are being used as a
+ * cache for already handled file explorers.
+ * @param callback Callback is being called whenever the icons are added to one file
+ * explorer.
+ */
+export const addAll = (
+  plugin: IconFolderPlugin,
+  data: [string, string | FolderIconObject][],
+  registeredFileExplorers: WeakSet<ExplorerView>,
+  callback?: () => void,
+): void => {
+  const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
+  for (const fileExplorer of fileExplorers) {
+    if (registeredFileExplorers.has(fileExplorer.view)) {
+      continue;
+    }
+
+    registeredFileExplorers.add(fileExplorer.view);
+
+    // create a map with registered file paths to have constant look up time
+    const registeredFilePaths: Record<string, boolean> = {};
+    for (const [path] of data) {
+      registeredFilePaths[path] = true;
+    }
+
+    for (const [dataPath, value] of data) {
+      const fileItem = fileExplorer.view.fileItems[dataPath];
+      if (fileItem) {
+        const titleEl = fileItem.titleEl;
+        const titleInnerEl = fileItem.titleInnerEl;
+
+        // Need to check this because refreshing the plugin will duplicate all the icons.
+        if (titleEl.children.length === 2 || titleEl.children.length === 1) {
+          // Gets the icon name directly or from the inheritance folder.
+          const iconName = typeof value === 'string' ? value : value.iconName;
+          if (iconName) {
+            // Removes a possible existing icon.
+            const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
+            if (existingIcon) {
+              existingIcon.remove();
+            }
+
+            // Creates the new node with the icon inside.
+            const iconNode = titleEl.createDiv();
+            iconNode.classList.add('obsidian-icon-folder-icon');
+
+            dom.setIconForNode(plugin, iconName, iconNode);
+
+            titleEl.insertBefore(iconNode, titleInnerEl);
+          }
+
+          // Handle possible inheritance for the folder.
+          if (typeof value === 'object' && value.inheritanceIcon) {
+            inheritance.add(plugin, dataPath, value.inheritanceIcon);
+          }
+        }
+      }
+    }
+
+    // Callback function to register other events to this file explorer.
+    callback?.();
+  }
+
+  // Handles the custom rules.
+  customRule.addAll(plugin);
+};
 
 /**
  * Gets the icon of a given path. This function returns the first occurrence of an icon.
@@ -78,6 +153,7 @@ const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
 };
 
 export default {
+  addAll,
   getByPath,
   getAllWithPath,
 };
