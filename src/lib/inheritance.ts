@@ -2,10 +2,14 @@ import { TAbstractFile, TFile } from 'obsidian';
 import { FileItem } from '../@types/obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import dom from './dom';
-import iconTabs from './iconTabs';
 
 interface AddOptions {
   file?: TAbstractFile;
+  onAdd?: (file: TAbstractFile) => void;
+}
+
+interface RemoveOptions {
+  onRemove?: (file: TFile) => void;
 }
 
 /**
@@ -24,6 +28,10 @@ const getFolders = (plugin: IconFolderPlugin): Record<string, FolderIconObject> 
     }, {});
 };
 
+const getFiles = (plugin: IconFolderPlugin, folderPath: string) => {
+  return plugin.app.vault.getFiles().filter((file) => file.path.includes(folderPath));
+};
+
 const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, options?: AddOptions): void => {
   const folder = plugin.getData()[folderPath];
   // Checks if data exists and if the data is some kind of object type.
@@ -38,10 +46,7 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
     dom.setIconForNode(plugin, iconName, iconNode);
     fileItem.titleEl.insertBefore(iconNode, fileItem.titleInnerEl);
 
-    // Adds icon to tabs for inherited files.
-    if (plugin.getSettings().iconInTabsEnabled) {
-      iconTabs.add(plugin, fileItem.file as TFile, { iconName: (folder as FolderIconObject).inheritanceIcon });
-    }
+    options?.onAdd?.(fileItem.file);
   };
 
   const inheritanceFolders = getFolders(plugin);
@@ -73,7 +78,7 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
   }
 };
 
-const remove = (plugin: IconFolderPlugin, folderPath: string): void => {
+const remove = (plugin: IconFolderPlugin, folderPath: string, options?: RemoveOptions): void => {
   const folder = plugin.getData()[folderPath];
   // Checks if data exists and if the data is some kind of object type.
   if (!folder || typeof folder !== 'object') {
@@ -81,17 +86,13 @@ const remove = (plugin: IconFolderPlugin, folderPath: string): void => {
   }
 
   // Gets all files that include the folder path of the currently opened vault.
-  const files = plugin.app.vault.getFiles().filter((file) => file.path.includes(folderPath));
+  const files = getFiles(plugin, folderPath);
 
   for (const file of files) {
     // When the file path is not registered in the data it should remove the icon.
     if (!plugin.getData()[file.path]) {
-      // Removes the icon from the tabs for inherited files.
-      if (plugin.getSettings().iconInTabsEnabled) {
-        iconTabs.remove(file, { replaceWithDefaultIcon: true });
-      }
-
       dom.removeIconInPath(file.path);
+      options?.onRemove?.(file);
     }
   }
 };
@@ -110,6 +111,7 @@ const doesExistInPath = (plugin: IconFolderPlugin, path: string): boolean => {
 export default {
   add,
   remove,
+  getFiles,
   getByPath,
   doesExistInPath,
 };

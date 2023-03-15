@@ -114,7 +114,14 @@ export default class IconFolderPlugin extends Plugin {
           if (typeof this.data[file.path] === 'object') {
             item.setTitle('Remove inherit icon');
             item.onClick(() => {
-              inheritance.remove(this, file.path);
+              inheritance.remove(this, file.path, {
+                onRemove: (file) => {
+                  // Removes the icons from the file tabs inside of the inheritance.
+                  if (this.getSettings().iconInTabsEnabled) {
+                    iconTabs.remove(file, { replaceWithDefaultIcon: true });
+                  }
+                },
+              });
               this.saveInheritanceData(file.path, null);
             });
           } else {
@@ -125,11 +132,14 @@ export default class IconFolderPlugin extends Plugin {
               // manipulate `onChooseItem` method to get custom functionality for inheriting icons
               modal.onChooseItem = (icon: Icon | string) => {
                 this.saveInheritanceData(file.path, icon);
-                if (typeof icon === 'string') {
-                  inheritance.add(this, file.path, icon);
-                } else {
-                  inheritance.add(this, file.path, icon.displayName);
-                }
+                const iconName = typeof icon === 'string' ? icon : icon.displayName;
+                inheritance.add(this, file.path, iconName, {
+                  onAdd: (file) => {
+                    if (this.getSettings().iconInTabsEnabled) {
+                      iconTabs.add(this, file as TFile, { iconName });
+                    }
+                  },
+                });
               };
             });
           }
@@ -229,19 +239,12 @@ export default class IconFolderPlugin extends Plugin {
 
           inheritanceFolders.forEach(([path, obj]: [string, FolderIconObject]) => {
             inheritance.add(this, path, obj.inheritanceIcon, { file });
+            if (this.getSettings().iconInTabsEnabled) {
+              iconTabs.add(this, file as TFile, { iconName: obj.inheritanceIcon });
+            }
           });
         }),
       );
-
-      if (this.getSettings().iconInTabsEnabled) {
-        // Adds icons to already open files.
-        this.app.workspace.getLeavesOfType('markdown').forEach((leaf) => {
-          const file = leaf.view.file;
-          if (file) {
-            iconTabs.add(this, file);
-          }
-        });
-      }
 
       // Register active leaf change event for adding icon of file to tab.
       this.registerEvent(

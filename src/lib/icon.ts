@@ -3,6 +3,7 @@ import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import customRule from './customRule';
 import dom from './dom';
+import iconTabs from './iconTabs';
 import inheritance from './inheritance';
 
 /**
@@ -76,6 +77,16 @@ export const addAll = (
 
   // Handles the custom rules.
   customRule.addAll(plugin);
+
+  // Adds icons to already open file tabs.
+  if (plugin.getSettings().iconInTabsEnabled) {
+    for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
+      const file = leaf.view.file;
+      if (file) {
+        iconTabs.add(plugin, file);
+      }
+    }
+  }
 };
 
 /**
@@ -91,6 +102,10 @@ const getByPath = (plugin: IconFolderPlugin, path: string): string | undefined =
 
   // Checks if the path has an icon.
   const value = plugin.getData()[path];
+  if (!value) {
+    return undefined;
+  }
+
   if (typeof value === 'string' && !emoji.isEmoji(value)) {
     // If the value is a plain icon name, return it.
     return value;
