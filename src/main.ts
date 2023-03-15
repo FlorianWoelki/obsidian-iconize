@@ -244,20 +244,22 @@ export default class IconFolderPlugin extends Plugin {
       }
 
       // Register active leaf change event for adding icon of file to tab.
-      this.app.workspace.on('active-leaf-change', (leaf: WorkspaceLeaf) => {
-        if (!this.getSettings().iconInTabsEnabled) {
-          return;
-        }
+      this.registerEvent(
+        this.app.workspace.on('active-leaf-change', (leaf: WorkspaceLeaf) => {
+          if (!this.getSettings().iconInTabsEnabled) {
+            return;
+          }
 
-        if (leaf.view.getViewType() !== 'markdown') {
-          return;
-        }
+          if (leaf.view.getViewType() !== 'markdown') {
+            return;
+          }
 
-        const explorerLeaf = leaf as ExplorerLeaf;
-        if (explorerLeaf.view.file) {
-          iconTabs.add(this, explorerLeaf.view.file);
-        }
-      });
+          const explorerLeaf = leaf as ExplorerLeaf;
+          if (explorerLeaf.view.file) {
+            iconTabs.add(this, explorerLeaf.view.file);
+          }
+        }),
+      );
     });
   }
 
