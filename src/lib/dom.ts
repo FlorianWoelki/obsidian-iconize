@@ -1,8 +1,8 @@
 import twemoji from 'twemoji';
 import { getSvgFromLoadedIcon, nextIdentifier } from '../iconPackManager';
 import IconFolderPlugin from '../main';
-import style from './style';
-import svg from './svg';
+import style from './util/style';
+import svg from './util/svg';
 
 /**
  * Removes the `obsidian-icon-folder-icon` icon node from the provided HTMLElement.

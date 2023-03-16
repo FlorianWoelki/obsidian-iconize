@@ -1,6 +1,6 @@
 import { Notice, Plugin } from 'obsidian';
 import MetaData from './MetaData';
-import svg from './lib/svg';
+import svg from './lib/util/svg';
 
 export interface Icon {
   name: string;

@@ -2,8 +2,8 @@
 // only include utility functions for setting styles for nodes or icons. The only
 // dependency is the `svg` library.
 
-import emoji from '../emoji';
-import IconFolderPlugin from '../main';
+import emoji from '../../emoji';
+import IconFolderPlugin from '../../main';
 import svg from './svg';
 
 interface Margin {

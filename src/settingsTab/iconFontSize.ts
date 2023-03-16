@@ -1,7 +1,7 @@
 import { Setting } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import { DEFAULT_SETTINGS } from '../settings';
-import style from '../lib/style';
+import style from '../lib/util/style';
 
 export default class IconFontSizeSetting extends IconFolderSetting {
   public display(): void {
