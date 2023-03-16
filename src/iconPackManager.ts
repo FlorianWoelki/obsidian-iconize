@@ -286,6 +286,8 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
 };
 
 export const addIconToIconPack = (iconPackName: string, iconName: string, iconContent: string): Icon | undefined => {
+  // Normalize the icon name to remove `-` or `_` in the name.
+  iconName = getNormalizedName(iconName);
   const icon = generateIcon(iconPackName, iconName, iconContent);
   if (!icon) {
     console.warn(`[obsidian-icon-folder] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`);
