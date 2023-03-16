@@ -1,7 +1,7 @@
 import { TAbstractFile, TFile } from 'obsidian';
 import { FileItem } from '../@types/obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
-import dom from './dom';
+import dom from './util/dom';
 
 interface AddOptions {
   file?: TAbstractFile;

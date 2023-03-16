@@ -2,7 +2,7 @@ import { ExplorerView } from '../@types/obsidian';
 import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import customRule from './customRule';
-import dom from './dom';
+import dom from './util/dom';
 import iconTabs from './iconTabs';
 import inheritance from './inheritance';
 

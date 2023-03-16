@@ -1,7 +1,7 @@
 import { Setting } from 'obsidian';
 import emoji from '../emoji';
 import customRule from '../lib/customRule';
-import dom from '../lib/dom';
+import dom from '../lib/util/dom';
 import { FolderIconObject } from '../main';
 import IconFolderSetting from './iconFolderSetting';
 

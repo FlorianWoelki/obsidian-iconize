@@ -3,7 +3,7 @@ import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
 import emoji from './emoji';
 import { doesIconExists, getAllLoadedIconNames, getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
-import dom from './lib/dom';
+import dom from './lib/util/dom';
 
 export interface Icon {
   name: string;

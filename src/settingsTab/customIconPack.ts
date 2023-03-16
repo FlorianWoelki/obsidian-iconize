@@ -14,7 +14,7 @@ import {
 } from '../iconPackManager';
 import IconFolderPlugin from '../main';
 import { readFileSync } from '../util';
-import dom from '../lib/dom';
+import dom from '../lib/util/dom';
 
 export default class CustomIconPackSetting extends IconFolderSetting {
   private textComponent: TextComponent;

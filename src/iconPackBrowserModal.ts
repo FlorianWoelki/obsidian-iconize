@@ -7,7 +7,7 @@ import {
   getAllIconPacks,
 } from './iconPackManager';
 import iconPacks, { IconPack } from './iconPacks';
-import dom from './lib/dom';
+import dom from './lib/util/dom';
 import icon from './lib/icon';
 import IconFolderPlugin from './main';
 import { readFileSync } from './util';

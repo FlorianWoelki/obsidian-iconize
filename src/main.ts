@@ -10,7 +10,7 @@ import StarredInternalPlugin from './internalPlugins/starred';
 import InternalPluginInjector from './@types/internalPluginInjector';
 import iconTabs from './lib/iconTabs';
 import inheritance from './lib/inheritance';
-import dom from './lib/dom';
+import dom from './lib/util/dom';
 import customRule from './lib/customRule';
 import icon from './lib/icon';
 

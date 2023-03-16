@@ -2,7 +2,7 @@ import { around } from 'monkey-around';
 import { View } from 'obsidian';
 import InternalPluginInjector from '../@types/internalPluginInjector';
 import { StarredFile } from '../@types/obsidian';
-import dom from '../lib/dom';
+import dom from '../lib/util/dom';
 import icon from '../lib/icon';
 import IconFolderPlugin from '../main';
 import MetaData from '../MetaData';

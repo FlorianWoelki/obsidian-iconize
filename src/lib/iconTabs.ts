@@ -1,7 +1,7 @@
 import { TFile } from 'obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import customRule from './customRule';
-import dom from './dom';
+import dom from './util/dom';
 
 /**
  * Get all icon containers of all open tabs. The icon container mostly relies next to the
