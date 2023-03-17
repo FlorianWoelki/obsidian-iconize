@@ -17,13 +17,21 @@ const removeIconInNode = (el: HTMLElement): void => {
   iconNode.remove();
 };
 
+interface RemoveOptions {
+  /**
+   * The container that will be used to remove the icon. If not defined, it will try to
+   * find the path within the `document`.
+   */
+  container?: HTMLElement;
+}
+
 /**
  * Removes the 'obsidian-icon-folder-icon' icon node from the HTMLElement corresponding
  * to the specified file path.
  * @param path File path for which the icon node will be removed.
  */
-const removeIconInPath = (path: string): void => {
-  const node = document.querySelector(`[data-path="${path}"]`) as HTMLElement | undefined;
+const removeIconInPath = (path: string, options?: RemoveOptions): void => {
+  const node = options?.container ?? document.querySelector(`[data-path="${path}"]`);
   if (!node) {
     console.error('element with data path not found', path);
     return;
@@ -80,6 +88,18 @@ const setIconForNode = (plugin: IconFolderPlugin, iconName: string, node: HTMLEl
   }
 };
 
+interface CreateOptions {
+  /**
+   * The container that will be used to insert the icon. If not defined, it will try to
+   * find the path within the `document`.
+   */
+  container?: HTMLElement;
+  /**
+   * The color that will be applied to the icon.
+   */
+  color?: string;
+}
+
 /**
  * Creates an icon node for the specified path and inserts it to the DOM.
  * @param plugin Instance of the IconFolderPlugin.
@@ -87,14 +107,15 @@ const setIconForNode = (plugin: IconFolderPlugin, iconName: string, node: HTMLEl
  * @param iconName Name of the icon or emoji to add.
  * @param color Optional color of the icon to add.
  */
-const createIconNode = (plugin: IconFolderPlugin, path: string, iconName: string, color?: string): void => {
+const createIconNode = (plugin: IconFolderPlugin, path: string, iconName: string, options?: CreateOptions): void => {
   // TODO: Refactor to more efficient solution.
   if (plugin.getData()[path]) {
-    removeIconInPath(path);
+    removeIconInPath(path, { container: options?.container });
   }
 
-  // Tries to find the node that has the path.
-  const node = document.querySelector(`[data-path="${path}"]`);
+  // Get the container from the provided options or try to find the node that has the
+  // path from the document itself.
+  const node = options?.container ?? document.querySelector(`[data-path="${path}"]`);
   if (!node) {
     console.error('element with data path not found', path);
     return;
@@ -121,7 +142,7 @@ const createIconNode = (plugin: IconFolderPlugin, path: string, iconName: string
   const iconNode = document.createElement('div');
   iconNode.classList.add('obsidian-icon-folder-icon');
 
-  setIconForNode(plugin, iconName, iconNode, color);
+  setIconForNode(plugin, iconName, iconNode, options?.color);
 
   node.insertBefore(iconNode, titleNode);
 };

@@ -89,7 +89,7 @@ const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promis
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);
     for (const fileItem of files) {
-      await add(plugin, rule, fileItem.file);
+      await add(plugin, fileItem.titleEl, rule, fileItem.file);
     }
   }
 };
@@ -98,10 +98,16 @@ const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promis
  * Tries to add the icon of the custom rule to a file or folder. This function also checks
  * if the file type matches the `for` property of the custom rule.
  * @param plugin Instance of the IconFolderPlugin.
+ * @param container Element where the icon will be added if the custom rules matches.
  * @param rule Custom rule that will be used to check if the rule is applicable to the file.
  * @param file File or folder that will be used to possibly create the icon for.
  */
-const add = async (plugin: IconFolderPlugin, rule: CustomRule, file: TAbstractFile): Promise<void> => {
+const add = async (
+  plugin: IconFolderPlugin,
+  container: HTMLElement,
+  rule: CustomRule,
+  file: TAbstractFile,
+): Promise<void> => {
   // Gets the type of the file.
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
 
@@ -113,12 +119,12 @@ const add = async (plugin: IconFolderPlugin, rule: CustomRule, file: TAbstractFi
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
     if (file.name.match(regex)) {
-      dom.createIconNode(plugin, file.path, rule.icon, rule.color);
+      dom.createIconNode(plugin, file.path, rule.icon, { color: rule.color, container });
     }
   } catch {
     // Rule is not applicable to a regex format.
     if (file.name.includes(rule.rule)) {
-      dom.createIconNode(plugin, file.path, rule.icon, rule.color);
+      dom.createIconNode(plugin, file.path, rule.icon, { color: rule.color, container });
     }
   }
 };

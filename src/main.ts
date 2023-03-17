@@ -223,7 +223,7 @@ export default class IconFolderPlugin extends Plugin {
               dom.removeIconInPath(file.path);
             }
 
-            await customRule.add(this, rule, file);
+            await customRule.add(this, document.body, rule, file);
           });
         }),
       );
