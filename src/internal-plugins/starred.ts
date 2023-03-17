@@ -65,7 +65,6 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
     this.computeNodesWithPath((node, filePath) => {
       nodesWithPath[filePath] = node;
     });
-    console.log(nodesWithPath);
 
     Object.entries(nodesWithPath).forEach(([filePath, node]) => this.setIcon(filePath, node as HTMLElement));
   }

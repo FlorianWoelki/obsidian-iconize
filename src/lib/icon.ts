@@ -100,12 +100,7 @@ const getByPath = (plugin: IconFolderPlugin, path: string): string | undefined =
     return undefined;
   }
 
-  // Checks if the path has an icon.
   const value = plugin.getData()[path];
-  if (!value) {
-    return undefined;
-  }
-
   if (typeof value === 'string' && !emoji.isEmoji(value)) {
     // If the value is a plain icon name, return it.
     return value;
