@@ -6,7 +6,7 @@ import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './set
 import { migrateIcons } from './migration';
 import IconFolderSettingsTab from './settingsTab';
 import MetaData from './MetaData';
-import StarredInternalPlugin from './internalPlugins/starred';
+import StarredInternalPlugin from './internal-plugins/starred';
 import InternalPluginInjector from './@types/internalPluginInjector';
 import iconTabs from './lib/iconTabs';
 import inheritance from './lib/inheritance';
