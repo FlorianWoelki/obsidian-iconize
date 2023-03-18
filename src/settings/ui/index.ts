@@ -1,5 +1,5 @@
 import { App, PluginSettingTab } from 'obsidian';
-import IconFolderPlugin from '../main';
+import IconFolderPlugin from '../../main';
 import CustomIconPackSetting from './customIconPack';
 import CustomIconRuleSetting from './customIconRule';
 import EmojiStyleSetting from './emojiStyle';

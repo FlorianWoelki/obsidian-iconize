@@ -1,6 +1,6 @@
 import { Setting, ColorComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import style from '../lib/util/style';
+import style from '../../lib/util/style';
 
 export default class IconColorSetting extends IconFolderSetting {
   public display(): void {

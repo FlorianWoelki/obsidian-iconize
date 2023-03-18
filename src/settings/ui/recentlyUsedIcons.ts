@@ -1,6 +1,6 @@
 import { Setting } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import { DEFAULT_SETTINGS } from '../settings-data';
+import { DEFAULT_SETTINGS } from '../data';
 
 export default class RecentlyUsedIconsSetting extends IconFolderSetting {
   public display(): void {
