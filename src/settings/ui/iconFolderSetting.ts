@@ -1,4 +1,4 @@
-import IconFolderPlugin from '../../main';
+import IconFolderPlugin from '@app/main';
 
 export default abstract class IconFolderSetting {
   protected plugin: IconFolderPlugin;

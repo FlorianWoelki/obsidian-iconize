@@ -11,10 +11,10 @@ import {
   getIconPack,
   getPath,
   normalizeFileName,
-} from '../../iconPackManager';
-import IconFolderPlugin from '../../main';
-import { readFileSync } from '../../util';
-import dom from '../../lib/util/dom';
+} from '@app/iconPackManager';
+import IconFolderPlugin from '@app/main';
+import { readFileSync } from '@app/util';
+import dom from '@lib/util/dom';
 
 export default class CustomIconPackSetting extends IconFolderSetting {
   private textComponent: TextComponent;

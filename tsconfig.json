@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      "@app/*": ["src/*"],
+      "@lib/*": ["src/lib/*"]
+    },
     "inlineSourceMap": true,
     "inlineSources": true,
     "allowSyntheticDefaultImports": true,

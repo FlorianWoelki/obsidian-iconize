@@ -1,11 +1,11 @@
 import { around } from 'monkey-around';
 import { View } from 'obsidian';
-import InternalPluginInjector from '../@types/internalPluginInjector';
-import { StarredFile } from '../@types/obsidian';
-import dom from '../lib/util/dom';
-import icon from '../lib/icon';
-import IconFolderPlugin from '../main';
-import MetaData from '../MetaData';
+import InternalPluginInjector from '@app/@types/internalPluginInjector';
+import { StarredFile } from '@app/@types/obsidian';
+import dom from '@lib/util/dom';
+import icon from '@lib/icon';
+import IconFolderPlugin from '@app/main';
+import MetaData from '@app/MetaData';
 
 interface StarredView extends View {
   itemLookup: WeakMap<Element, StarredFile>;

@@ -1,11 +1,11 @@
 import { App, Notice, Setting, TextComponent, ColorComponent, ButtonComponent, Modal } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import IconsPickerModal from '../../iconsPickerModal';
-import IconFolderPlugin from '../../main';
-import { getAllOpenedFiles } from '../../util';
+import IconsPickerModal from '@app/iconsPickerModal';
+import IconFolderPlugin from '@app/main';
+import { getAllOpenedFiles } from '@app/util';
 import { CustomRule } from '../data';
-import customRule from '../../lib/customRule';
-import iconTabs from '../../lib/iconTabs';
+import customRule from '@lib/customRule';
+import iconTabs from '@lib/iconTabs';
 
 export default class CustomIconRuleSetting extends IconFolderSetting {
   private app: App;

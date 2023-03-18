@@ -1,5 +1,5 @@
 import { TAbstractFile, View, WorkspaceLeaf } from 'obsidian';
-import IconFolderPlugin from '../main';
+import IconFolderPlugin from '@app/main';
 
 interface FileExplorerWorkspaceLeaf extends WorkspaceLeaf {
   containerEl: HTMLElement;

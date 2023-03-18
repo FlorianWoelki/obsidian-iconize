@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@commitlint/cli': ^13.2.1
   '@commitlint/config-conventional': ^13.2.0
+  '@rollup/plugin-alias': ^4.0.3
   '@rollup/plugin-babel': ^6.0.3
   '@rollup/plugin-commonjs': ^18.1.0
   '@rollup/plugin-node-resolve': ^11.2.1
@@ -33,6 +34,7 @@ dependencies:
 devDependencies:
   '@commitlint/cli': 13.2.1
   '@commitlint/config-conventional': 13.2.0
+  '@rollup/plugin-alias': 4.0.3_rollup@2.79.1
   '@rollup/plugin-commonjs': 18.1.0_rollup@2.79.1
   '@rollup/plugin-node-resolve': 11.2.1_rollup@2.79.1
   '@rollup/plugin-typescript': 8.5.0_sbiskyiysxhldmns7rmnvoiszu
@@ -309,6 +311,19 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
+    dev: true
+
+  /@rollup/plugin-alias/4.0.3_rollup@2.79.1:
+    resolution: {integrity: sha512-ZuDWE1q4PQDhvm/zc5Prun8sBpLJy41DMptYrS6MhAy9s9kL/doN1613BWfEchGVfKxzliJ3BjbOPizXX38DbQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      rollup: 2.79.1
+      slash: 4.0.0
     dev: true
 
   /@rollup/plugin-babel/6.0.3_rollup@2.79.1:
@@ -2189,6 +2204,11 @@ packages:
   /slash/3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
+    dev: true
+
+  /slash/4.0.0:
+    resolution: {integrity: sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==}
+    engines: {node: '>=12'}
     dev: true
 
   /slice-ansi/3.0.0:

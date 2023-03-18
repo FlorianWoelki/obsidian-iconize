@@ -1,6 +1,7 @@
 import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import alias from '@rollup/plugin-alias';
 import copyFile from './copy-file';
 import { obsidianExportPath } from './env';
 
@@ -24,6 +25,12 @@ export default {
   },
   external: ['obsidian'],
   plugins: [
+    alias({
+      entries: {
+        '@app': 'src',
+        '@lib': 'src/lib',
+      },
+    }),
     typescript(),
     nodeResolve({ browser: true }),
     commonjs(),

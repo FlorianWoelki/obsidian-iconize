@@ -1,8 +1,8 @@
 import { Setting } from 'obsidian';
-import emoji from '../../emoji';
-import customRule from '../../lib/customRule';
-import dom from '../../lib/util/dom';
-import { FolderIconObject } from '../../main';
+import emoji from '@app/emoji';
+import customRule from '@lib/customRule';
+import dom from '@lib/util/dom';
+import { FolderIconObject } from '@app/main';
 import IconFolderSetting from './iconFolderSetting';
 
 export default class EmojiStyleSetting extends IconFolderSetting {
