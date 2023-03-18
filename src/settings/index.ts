@@ -11,7 +11,7 @@ import PredefinedIconPacksSetting from './predefinedIconPacks';
 import RecentlyUsedIconsSetting from './recentlyUsedIcons';
 import ToggleIconInTabs from './toggleIconInTabs';
 
-export default class IconFolderSettingsTab extends PluginSettingTab {
+export default class IconFolderSettings extends PluginSettingTab {
   private plugin: IconFolderPlugin;
 
   constructor(app: App, plugin: IconFolderPlugin) {

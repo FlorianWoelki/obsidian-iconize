@@ -1,6 +1,6 @@
 import { DropdownComponent, Setting, SliderComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import { ExtraMarginSettings } from '../settings';
+import { ExtraMarginSettings } from '../settings-data';
 import style from '../lib/util/style';
 
 export default class ExtraMarginSetting extends IconFolderSetting {

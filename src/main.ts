@@ -2,9 +2,9 @@ import { Plugin, MenuItem, TFile, WorkspaceLeaf } from 'obsidian';
 import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
-import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings';
+import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings-data';
 import { migrateIcons } from './migration';
-import IconFolderSettingsTab from './settingsTab';
+import IconFolderSettingsUI from './settings';
 import MetaData from './MetaData';
 import StarredInternalPlugin from './internal-plugins/starred';
 import InternalPluginInjector from './@types/internalPluginInjector';
@@ -165,7 +165,7 @@ export default class IconFolderPlugin extends Plugin {
       }),
     );
 
-    this.addSettingTab(new IconFolderSettingsTab(this.app, this));
+    this.addSettingTab(new IconFolderSettingsUI(this.app, this));
   }
 
   public isSomeEmojiStyleActive(): boolean {

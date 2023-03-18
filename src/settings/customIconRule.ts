@@ -3,7 +3,7 @@ import IconFolderSetting from './iconFolderSetting';
 import IconsPickerModal from '../iconsPickerModal';
 import IconFolderPlugin from '../main';
 import { getAllOpenedFiles } from '../util';
-import { CustomRule } from '../settings';
+import { CustomRule } from '../settings-data';
 import customRule from '../lib/customRule';
 import iconTabs from '../lib/iconTabs';
 
