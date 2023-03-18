@@ -19,7 +19,12 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
     this.refreshDisplay = refreshDisplay;
   }
 
-  private async updateIconTabs(rule: CustomRule): Promise<void> {
+  /**
+   * Updates all the open files based on the custom rule that was specified.
+   * @param rule Rule that will be used to update all the icons for all opened files.
+   * @param remove Whether to remove the icons that are applicable to the rule or not.
+   */
+  private async updateIconTabs(rule: CustomRule, remove: boolean): Promise<void> {
     if (this.plugin.getSettings().iconInTabsEnabled) {
       for (const openedFile of getAllOpenedFiles(this.plugin)) {
         const applicable = await customRule.isApplicable(this.plugin, rule, openedFile);
@@ -27,7 +32,11 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           continue;
         }
 
-        iconTabs.add(this.plugin, openedFile, { iconName: rule.icon, iconColor: rule.color });
+        if (remove) {
+          iconTabs.remove(openedFile, { replaceWithDefaultIcon: true });
+        } else {
+          iconTabs.add(this.plugin, openedFile, { iconName: rule.icon, iconColor: rule.color });
+        }
       }
     }
   }
@@ -74,7 +83,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             this.textComponent.setValue('');
 
             await customRule.addToAllFiles(this.plugin, rule);
-            this.updateIconTabs(rule);
+            this.updateIconTabs(rule, false);
           };
           modal.open();
         });
@@ -91,7 +100,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           await this.plugin.saveIconFolderData();
 
           customRule.addToAllFiles(this.plugin, rule);
-          this.updateIconTabs(rule);
+          this.updateIconTabs(rule, false);
         });
       settingRuleEl.components.push(colorPicker);
 
@@ -120,14 +129,14 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           }
 
           await customRule.addToAllFiles(this.plugin, rule);
-          this.updateIconTabs(rule);
+          this.updateIconTabs(rule, false);
 
           await this.plugin.saveIconFolderData();
           this.refreshDisplay();
 
           this.plugin.getSettings().rules.forEach(async (previousRule) => {
             await customRule.addToAllFiles(this.plugin, previousRule);
-            this.updateIconTabs(previousRule);
+            this.updateIconTabs(previousRule, false);
           });
         });
       });
@@ -161,10 +170,10 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
 
             // Refresh the DOM.
             await customRule.removeFromAllFiles(this.plugin, rule);
-            this.updateIconTabs(rule);
+            this.updateIconTabs(rule, true);
             newRules.forEach(async (rule) => {
               await customRule.addToAllFiles(this.plugin, rule);
-              this.updateIconTabs(rule);
+              this.updateIconTabs(rule, false);
             });
 
             modal.close();
@@ -191,11 +200,12 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           new Notice('Custom rule deleted.');
 
           await customRule.removeFromAllFiles(this.plugin, rule);
-          this.updateIconTabs(rule);
+
+          this.updateIconTabs(rule, true);
           const previousRules = this.plugin.getSettings().rules.filter((r) => rule.for === r.for);
           previousRules.forEach(async (previousRule) => {
             await customRule.addToAllFiles(this.plugin, previousRule);
-            this.updateIconTabs(previousRule);
+            this.updateIconTabs(previousRule, false);
           });
         });
       });
