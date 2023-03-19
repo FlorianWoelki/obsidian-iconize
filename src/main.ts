@@ -118,10 +118,12 @@ export default class IconFolderPlugin extends Plugin {
 
         menu.addItem(addIconMenuItem);
 
-        const isFilePathInData = this.getData()[file.path];
+        const filePathData = this.getData()[file.path];
+        const inheritanceFolderHasIcon =
+          typeof filePathData === 'object' && (filePathData as FolderIconObject).iconName !== null;
         // Only add remove icon menu item when the file path exists in the data.
         // We do not want to show this menu item for e.g. inheritance or custom rules.
-        if (isFilePathInData) {
+        if (filePathData && (typeof filePathData === 'string' || inheritanceFolderHasIcon)) {
           menu.addItem(removeIconMenuItem);
         }
 
