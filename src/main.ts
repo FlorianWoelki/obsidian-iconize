@@ -363,7 +363,19 @@ export default class IconFolderPlugin extends Plugin {
 
   addFolderIcon(path: string, icon: Icon | string): void {
     const iconName = typeof icon === 'object' ? icon.displayName : icon;
-    this.data[path] = iconName;
+
+    // Check if inheritance is active for this path.
+    if (typeof this.data[path] === 'object') {
+      const currentValue = this.data[path] as FolderIconObject;
+      this.data[path] = {
+        ...currentValue,
+        iconName,
+      };
+    } else {
+      this.data[path] = iconName;
+    }
+
+    // Update recently used icons.
     if (!this.getSettings().recentlyUsedIcons.includes(iconName)) {
       if (this.getSettings().recentlyUsedIcons.length >= this.getSettings().recentlyUsedIconsSize) {
         this.getSettings().recentlyUsedIcons = this.getSettings().recentlyUsedIcons.slice(
