@@ -118,10 +118,10 @@ export default class IconFolderPlugin extends Plugin {
 
         menu.addItem(addIconMenuItem);
 
-        const node = document.querySelector(`[data-path="${file.path}"]`);
-        const iconNode = node.querySelector('.obsidian-icon-folder-icon');
-
-        if (iconNode) {
+        const isFilePathInData = this.getData()[file.path];
+        // Only add remove icon menu item when the file path exists in the data.
+        // We do not want to show this menu item for e.g. inheritance or custom rules.
+        if (isFilePathInData) {
           menu.addItem(removeIconMenuItem);
         }
 
