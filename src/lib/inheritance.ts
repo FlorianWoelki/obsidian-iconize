@@ -108,10 +108,17 @@ const doesExistInPath = (plugin: IconFolderPlugin, path: string): boolean => {
   return Object.keys(folders).some((folderPath) => path.includes(folderPath));
 };
 
+const getFolderPathByFilePath = (plugin: IconFolderPlugin, filePath: string): string => {
+  const folders = getFolders(plugin);
+  const foundFolderIcon = Object.entries(folders).find(([folderPath]) => filePath.includes(folderPath));
+  return foundFolderIcon?.[0]; // Returns the folder path when defined.
+};
+
 export default {
   add,
   remove,
   getFiles,
   getByPath,
+  getFolderPathByFilePath,
   doesExistInPath,
 };

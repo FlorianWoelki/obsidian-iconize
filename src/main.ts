@@ -97,6 +97,21 @@ export default class IconFolderPlugin extends Plugin {
               iconTabs.remove(file, { replaceWithDefaultIcon: true });
             }
 
+            // Check for possible inheritance and add the icon if an inheritance exists.
+            if (inheritance.doesExistInPath(this, file.path)) {
+              const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
+              const folderInheritance = inheritance.getByPath(this, file.path);
+              const iconName = folderInheritance.inheritanceIcon;
+              inheritance.add(this, folderPath, iconName, {
+                file,
+                onAdd: (file) => {
+                  if (this.getSettings().iconInTabsEnabled) {
+                    iconTabs.add(this, file as TFile, { iconName });
+                  }
+                },
+              });
+            }
+
             customRule.addAll(this);
           });
         };
