@@ -152,6 +152,12 @@ const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
       result.push({ path, icon });
     }
 
+    // Check for inheritance folder and insert the inheritance icon.
+    const inheritanceFolder = inheritance.getByPath(plugin, path);
+    if (inheritanceFolder) {
+      result.push({ path, icon: inheritanceFolder.inheritanceIcon });
+    }
+
     // Check again for custom rule because `getByPath` only returns the first occurrence.
     // TODO: Need to refactor this.
     const rule = customRule.getByPath(plugin, path);
