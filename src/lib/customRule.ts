@@ -162,7 +162,7 @@ const getByPath = (plugin: IconFolderPlugin, path: string): CustomRule | undefin
     return undefined;
   }
 
-  const rules = (plugin.getData()['settings'] as IconFolderSettings)?.rules;
+  const rules = plugin.getSettings().rules;
   return rules.find((rule) => !emoji.isEmoji(rule.icon) && doesExistInPath(rule, path));
 };
 

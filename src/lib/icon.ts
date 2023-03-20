@@ -137,8 +137,8 @@ interface IconWithPath {
 /**
  * Gets all the icons with their paths as an object.
  * @param plugin Instance of the IconFolderPlugin.
- * @returns An object that consists of the paths as the keys and the values as the
- * icon names.
+ * @returns An object that consists of the path and the icon name for the data, inheritance,
+ * or custom rule.
  */
 const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
   const result: IconWithPath[] = [];
@@ -157,14 +157,12 @@ const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
     if (inheritanceFolder) {
       result.push({ path, icon: inheritanceFolder.inheritanceIcon });
     }
-
-    // Check again for custom rule because `getByPath` only returns the first occurrence.
-    // TODO: Need to refactor this.
-    const rule = customRule.getByPath(plugin, path);
-    if (rule) {
-      result.push({ path, icon: rule.icon });
-    }
   });
+
+  // Add all icons for the custom rules with the rule as the path.
+  for (const rule of plugin.getSettings().rules) {
+    result.push({ path: rule.rule, icon: rule.icon });
+  }
   return result;
 };
 
