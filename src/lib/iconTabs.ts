@@ -87,13 +87,12 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
     }
 
     // Add icons to tabs if a custom rule is applicable.
-    for (const rule of plugin.getSettings().rules) {
+    for (const rule of customRule.getSortedRules(plugin)) {
       const isApplicable = await customRule.isApplicable(plugin, rule, file);
       if (isApplicable) {
         dom.setIconForNode(plugin, rule.icon, iconContainer, rule.color);
         // TODO: Refactor to include option to `insertIconToNode` function.
         iconContainer.style.margin = null;
-        break;
       }
     }
 

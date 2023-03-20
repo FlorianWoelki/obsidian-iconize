@@ -69,12 +69,22 @@ const removeFromAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): P
 };
 
 /**
+ * Really dumb way to sort the custom rules. At the moment, it only sorts the custom rules
+ * based on the `localCompare` function.
+ * @param plugin Instance of IconFolderPlugin.
+ * @returns An array of sorted custom rules.
+ */
+const getSortedRules = (plugin: IconFolderPlugin): CustomRule[] => {
+  return plugin.getSettings().rules.sort((a, b) => a.rule.localeCompare(b.rule));
+};
+
+/**
  * Tries to apply all custom rules to all files. This function iterates over all the saved
  * custom rules and calls {@link addToAllFiles}.
  * @param plugin Instance of the IconFolderPlugin.
  */
 const addAll = async (plugin: IconFolderPlugin): Promise<void> => {
-  for (const rule of plugin.getSettings().rules) {
+  for (const rule of getSortedRules(plugin)) {
     await addToAllFiles(plugin, rule);
   }
 };
@@ -162,12 +172,12 @@ const getByPath = (plugin: IconFolderPlugin, path: string): CustomRule | undefin
     return undefined;
   }
 
-  const rules = plugin.getSettings().rules;
-  return rules.find((rule) => !emoji.isEmoji(rule.icon) && doesExistInPath(rule, path));
+  return getSortedRules(plugin).find((rule) => !emoji.isEmoji(rule.icon) && doesExistInPath(rule, path));
 };
 
 export default {
   doesExistInPath,
+  getSortedRules,
   getByPath,
   removeFromAllFiles,
   add,

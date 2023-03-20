@@ -135,7 +135,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           await this.plugin.saveIconFolderData();
           this.refreshDisplay();
 
-          this.plugin.getSettings().rules.forEach(async (previousRule) => {
+          customRule.getSortedRules(this.plugin).forEach(async (previousRule) => {
             await customRule.addToAllFiles(this.plugin, previousRule);
             this.updateIconTabs(previousRule, false);
           });

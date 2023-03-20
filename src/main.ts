@@ -235,7 +235,7 @@ export default class IconFolderPlugin extends Plugin {
       // Register rename event for adding icons with custom rules to the DOM.
       this.registerEvent(
         this.app.vault.on('rename', (file, oldPath) => {
-          this.getSettings().rules.forEach(async (rule) => {
+          customRule.getSortedRules(this).forEach(async (rule) => {
             if (customRule.doesExistInPath(rule, oldPath)) {
               dom.removeIconInPath(file.path);
             }
