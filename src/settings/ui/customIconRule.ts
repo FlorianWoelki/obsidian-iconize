@@ -118,6 +118,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         btn.setTooltip(`Icon applicable to: ${isFor}`);
 
         btn.onClick(async () => {
+          this.updateIconTabs(rule, true);
           await customRule.removeFromAllFiles(this.plugin, { ...rule, for: isFor });
 
           if (isFor === 'folders') {
