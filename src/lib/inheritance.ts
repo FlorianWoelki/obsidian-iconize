@@ -28,6 +28,12 @@ const getFolders = (plugin: IconFolderPlugin): Record<string, FolderIconObject> 
     }, {});
 };
 
+/**
+ * Gets all the files where that file path includes the specified folder path.
+ * @param plugin Instance of IconFolderPlugin.
+ * @param folderPath Folder path that will be used to check if the file includes this.
+ * @returns An array of files that include the folder path.
+ */
 const getFiles = (plugin: IconFolderPlugin, folderPath: string) => {
   return plugin.app.vault.getFiles().filter((file) => file.path.includes(folderPath));
 };
@@ -117,6 +123,7 @@ const getFolderPathByFilePath = (plugin: IconFolderPlugin, filePath: string): st
 export default {
   add,
   remove,
+  getFolders,
   getFiles,
   getByPath,
   getFolderPathByFilePath,

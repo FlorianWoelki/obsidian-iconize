@@ -175,7 +175,27 @@ const getByPath = (plugin: IconFolderPlugin, path: string): CustomRule | undefin
   return getSortedRules(plugin).find((rule) => !emoji.isEmoji(rule.icon) && doesExistInPath(rule, path));
 };
 
+/**
+ * Gets all the files and directories that can be applied to the specific custom rule.
+ * @param plugin Instance of IconFolderPlugin.
+ * @param rule Custom rule that will be checked for.
+ * @returns An array of files and directories that match the custom rule.
+ */
+const getFiles = (plugin: IconFolderPlugin, rule: CustomRule): TAbstractFile[] => {
+  const result: TAbstractFile[] = [];
+  for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
+    const files = Object.values(fileExplorer.fileItems);
+    for (const fileItem of files) {
+      if (doesExistInPath(rule, fileItem.file.path)) {
+        result.push(fileItem.file);
+      }
+    }
+  }
+  return result;
+};
+
 export default {
+  getFiles,
   doesExistInPath,
   getSortedRules,
   getByPath,
