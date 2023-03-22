@@ -10,7 +10,7 @@ import IconFolderPlugin from '@app/main';
  */
 const refreshStyleOfIcons = (plugin: IconFolderPlugin): void => {
   // Refreshes the icon style for all normally added icons.
-  style.refreshAllIcons(plugin);
+  style.refreshIconNodes(plugin);
 
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
   for (const fileExplorer of fileExplorers) {

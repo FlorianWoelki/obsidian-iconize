@@ -62,7 +62,7 @@ const applyAll = (plugin: IconFolderPlugin, iconString: string, container: HTMLE
  * class is defined. This function only modifies the styling of the node.
  * @param plugin Instance of the IconFolderPlugin.
  */
-const refreshAllIcons = (plugin: IconFolderPlugin): void => {
+const refreshIconNodes = (plugin: IconFolderPlugin): void => {
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
   for (const fileExplorer of fileExplorers) {
     Object.keys(plugin.getData()).forEach((path) => {
@@ -79,5 +79,5 @@ const refreshAllIcons = (plugin: IconFolderPlugin): void => {
 export default {
   applyAll,
   setMargin,
-  refreshAllIcons,
+  refreshIconNodes,
 };
