@@ -1,6 +1,6 @@
 import { Setting, ColorComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import style from '@lib/util/style';
+import helper from '../helper';
 
 export default class IconColorSetting extends IconFolderSetting {
   public display(): void {
@@ -13,7 +13,7 @@ export default class IconColorSetting extends IconFolderSetting {
         this.plugin.getSettings().iconColor = value;
         await this.plugin.saveIconFolderData();
 
-        style.refreshAllIcons(this.plugin);
+        helper.refreshStyleOfIcons(this.plugin);
       });
 
     colorCustomization.addButton((button) => {
@@ -25,7 +25,7 @@ export default class IconColorSetting extends IconFolderSetting {
           this.plugin.getSettings().iconColor = null;
           await this.plugin.saveIconFolderData();
 
-          style.refreshAllIcons(this.plugin);
+          helper.refreshStyleOfIcons(this.plugin);
         });
     });
 
