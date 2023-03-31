@@ -64,7 +64,7 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
       // Handles the addition of the inheritance icon for only one file.
       const fileItem = fileExplorer.fileItems[options.file.path];
       const inFolder = options.file.path.includes(folderPath);
-      const hasIcon = plugin.getData()[fileItem.file.path];
+      const hasIcon = fileItem && plugin.getData()[fileItem.file.path];
       if (!fileItem || !inFolder || hasIcon) {
         continue;
       }
