@@ -1,6 +1,7 @@
 import customRule from '@lib/customRule';
 import inheritance from '@lib/inheritance';
 import style from '@lib/util/style';
+import dom from '@lib/util/dom';
 import IconFolderPlugin from '@app/main';
 
 /**
@@ -19,7 +20,7 @@ const refreshStyleOfIcons = (plugin: IconFolderPlugin): void => {
       // Apply style for the icon node itself.
       const folderItem = fileExplorer.view.fileItems[folderPath];
       if (folderItem) {
-        const titleEl = folderItem.titleEl;
+        const titleEl = dom.getFileItemTitleEl(folderItem);
         const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
         iconNode.innerHTML = style.applyAll(plugin, iconNode.innerHTML, iconNode);
       }
@@ -28,7 +29,7 @@ const refreshStyleOfIcons = (plugin: IconFolderPlugin): void => {
       const files = inheritance.getFiles(plugin, folderPath);
       for (const file of files) {
         const fileItem = fileExplorer.view.fileItems[file.path];
-        const titleEl = fileItem.titleEl;
+        const titleEl = dom.getFileItemTitleEl(fileItem);
         const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
         iconNode.innerHTML = style.applyAll(plugin, iconNode.innerHTML, iconNode);
       }
@@ -44,7 +45,7 @@ const refreshStyleOfIcons = (plugin: IconFolderPlugin): void => {
         }
 
         const fileItem = fileExplorer.view.fileItems[file.path];
-        const titleEl = fileItem.titleEl;
+        const titleEl = dom.getFileItemTitleEl(fileItem);
         const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
         iconNode.innerHTML = style.applyAll(plugin, iconNode.innerHTML, iconNode);
       }

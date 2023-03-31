@@ -59,7 +59,15 @@ interface ExplorerView extends View {
 }
 
 interface FileItem {
-  titleEl: HTMLDivElement;
+  /**
+   * @deprecated After Obsidian 1.2.0, use `selfEl` instead.
+   */
+  titleEl?: HTMLDivElement;
+  /**
+   * @deprecated After Obsidian 1.2.0, use `innerEl` instead.
+   */
+  titleInnerEl?: HTMLDivElement;
+  selfEl: HTMLDivElement;
+  innerEl: HTMLDivElement;
   file: TAbstractFile;
-  titleInnerEl: HTMLDivElement;
 }

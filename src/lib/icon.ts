@@ -40,8 +40,8 @@ export const addAll = (
     for (const [dataPath, value] of data) {
       const fileItem = fileExplorer.view.fileItems[dataPath];
       if (fileItem) {
-        const titleEl = fileItem.titleEl;
-        const titleInnerEl = fileItem.titleInnerEl;
+        const titleEl = dom.getFileItemTitleEl(fileItem);
+        const titleInnerEl = dom.getFileItemInnerTitleEl(fileItem);
 
         // Need to check this because refreshing the plugin will duplicate all the icons.
         if (titleEl.children.length === 2 || titleEl.children.length === 1) {

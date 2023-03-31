@@ -47,10 +47,12 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
 
   // A inner function that helps to add the inheritance icon to the DOM.
   const addIcon = (fileItem: FileItem): void => {
-    const iconNode = fileItem.titleEl.createDiv();
+    const titleEl = dom.getFileItemTitleEl(fileItem);
+    const innerTitleEl = dom.getFileItemInnerTitleEl(fileItem);
+    const iconNode = titleEl.createDiv();
     iconNode.classList.add('obsidian-icon-folder-icon');
     dom.setIconForNode(plugin, iconName, iconNode);
-    fileItem.titleEl.insertBefore(iconNode, fileItem.titleInnerEl);
+    titleEl.insertBefore(iconNode, innerTitleEl);
 
     options?.onAdd?.(fileItem.file);
   };
