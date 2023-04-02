@@ -99,7 +99,7 @@ const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promis
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);
     for (const fileItem of files) {
-      await add(plugin, dom.getFileItemInnerTitleEl(fileItem), rule, fileItem.file);
+      await add(plugin, dom.getFileItemTitleEl(fileItem), rule, fileItem.file);
     }
   }
 };
