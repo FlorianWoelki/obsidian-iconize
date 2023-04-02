@@ -1,7 +1,7 @@
 import { TAbstractFile } from 'obsidian';
 import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
-import { CustomRule, IconFolderSettings } from '../settings/data';
+import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 
 export type CustomRuleFileType = 'file' | 'folder';
@@ -28,13 +28,15 @@ const doesMatchFileType = (rule: CustomRule, fileType: CustomRuleFileType): bool
  * @returns A promise that resolves to true if the file matches the rule, false otherwise.
  */
 const isApplicable = async (plugin: IconFolderPlugin, rule: CustomRule, file: TAbstractFile): Promise<boolean> => {
+  console.log("IS APPLICABLE");
   // Gets the file type based on the specified file path.
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-
+  //probably usefull for tabs checking icons
+  const hasIcon = plugin.getData()[file.path];
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
-    if (!file.name.match(regex)) {
+    if (!file.name.match(regex) || hasIcon) {
       return false;
     }
 
@@ -120,8 +122,9 @@ const add = async (
 ): Promise<void> => {
   // Gets the type of the file.
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-
-  if (!doesMatchFileType(rule, fileType)) {
+  //need to check if the file has an icon already
+  const hasIcon = plugin.getData()[file.path];
+  if (!doesMatchFileType(rule, fileType) || hasIcon) {
     return;
   }
 
