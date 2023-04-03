@@ -103,40 +103,40 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       const iconPackSetting = new Setting(this.containerEl)
         .setName(iconPack.name)
         .setDesc(`Total icons: ${iconPack.icons.length}`);
+      // iconPackSetting.addButton((btn) => {
+      //   btn.setIcon('broken-link');
+      //   btn.setTooltip('Try to fix icon pack');
+      //   btn.onClick(async () => {
+      //     new Notice('Try to fix icon pack...');
+      //     getIconPack(iconPack.name).icons = [];
+      //     const icons = await getFilesInDirectory(this.plugin, `${getPath()}/${iconPack.name}`);
+      //     for (let i = 0; i < icons.length; i++) {
+      //       const filePath = icons[i];
+      //       const fileName = filePath.split('/').pop();
+      //       const file = await this.plugin.app.vault.adapter.read(filePath);
+      //       const iconContent = file
+      //         .replace(/stroke="#fff"/g, 'stroke="currentColor"')
+      //         .replace(/fill="#fff"/g, 'fill="currentColor"');
+
+      //       await this.plugin.app.vault.adapter.write(filePath, iconContent);
+      //       await normalizeFileName(this.plugin, filePath);
+
+      //       addIconToIconPack(iconPack.name, fileName, iconContent);
+      //     }
+      //     new Notice('...tried to fix icon pack');
+
+      //     // Refreshes the DOM.
+      //     Object.entries(this.plugin.getData()).forEach(async ([k, v]) => {
+      //       const doesPathExist = await this.plugin.app.vault.adapter.exists(k, true);
+      //       if (doesPathExist && typeof v === 'string') {
+      //         // dom.removeIconInPath(k);
+      //         dom.createIconNode(this.plugin, k, v);
+      //       }
+      //     });
+      //   });
+      // });
       iconPackSetting.addButton((btn) => {
-        btn.setIcon('broken-link');
-        btn.setTooltip('Try to fix icon pack');
-        btn.onClick(async () => {
-          new Notice('Try to fix icon pack...');
-          getIconPack(iconPack.name).icons = [];
-          const icons = await getFilesInDirectory(this.plugin, `${getPath()}/${iconPack.name}`);
-          for (let i = 0; i < icons.length; i++) {
-            const filePath = icons[i];
-            const fileName = filePath.split('/').pop();
-            const file = await this.plugin.app.vault.adapter.read(filePath);
-            const iconContent = file
-              .replace(/stroke="#fff"/g, 'stroke="currentColor"')
-              .replace(/fill="#fff"/g, 'fill="currentColor"');
-
-            await this.plugin.app.vault.adapter.write(filePath, iconContent);
-            await normalizeFileName(this.plugin, filePath);
-
-            addIconToIconPack(iconPack.name, fileName, iconContent);
-          }
-          new Notice('...tried to fix icon pack');
-
-          // Refreshes the DOM.
-          Object.entries(this.plugin.getData()).forEach(async ([k, v]) => {
-            const doesPathExist = await this.plugin.app.vault.adapter.exists(k, true);
-            if (doesPathExist && typeof v === 'string') {
-              // dom.removeIconInPath(k);
-              dom.createIconNode(this.plugin, k, v);
-            }
-          });
-        });
-      });
-      iconPackSetting.addButton((btn) => {
-        btn.setIcon('create-new');
+        btn.setIcon('plus');
         btn.setTooltip('Add an icon');
         btn.onClick(async () => {
           const fileSelector = document.createElement('input');

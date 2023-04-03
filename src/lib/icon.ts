@@ -148,20 +148,22 @@ const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
     }
 
     const icon = getByPath(plugin, path);
-    if (icon) {
+    if (icon && !emoji.isEmoji(icon)) {
       result.push({ path, icon });
     }
 
     // Check for inheritance folder and insert the inheritance icon.
     const inheritanceFolder = inheritance.getByPath(plugin, path);
-    if (inheritanceFolder) {
+    if (inheritanceFolder && !emoji.isEmoji(inheritanceFolder.inheritanceIcon)) {
       result.push({ path, icon: inheritanceFolder.inheritanceIcon });
     }
   });
 
   // Add all icons for the custom rules with the rule as the path.
   for (const rule of plugin.getSettings().rules) {
-    result.push({ path: rule.rule, icon: rule.icon });
+    if (!emoji.isEmoji(rule.icon)) {
+      result.push({ path: rule.rule, icon: rule.icon });
+    }
   }
   return result;
 };

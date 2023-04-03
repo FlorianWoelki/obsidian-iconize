@@ -180,6 +180,11 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
   }
 
   const svgContentMatch = content.match(svgContentRegex);
+  if (!svgContentMatch) {
+    console.log(`skipping icon with invalid svg content: ${content}`);
+    return null;
+  }
+
   const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, '').replace(/<svg.+?>/g, ''))[0];
 
   const iconPackPrefix = createIconPackPrefix(iconPackName);

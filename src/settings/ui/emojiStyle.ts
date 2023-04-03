@@ -1,9 +1,12 @@
-import { Setting } from 'obsidian';
+import { Setting, TFile } from 'obsidian';
 import emoji from '@app/emoji';
 import customRule from '@lib/customRule';
 import dom from '@lib/util/dom';
 import { FolderIconObject } from '@app/main';
 import IconFolderSetting from './iconFolderSetting';
+import inheritance from '../../lib/inheritance';
+import iconTabs from '../../lib/iconTabs';
+import { getAllOpenedFiles } from '../../util';
 
 export default class EmojiStyleSetting extends IconFolderSetting {
   public display(): void {
@@ -22,16 +25,37 @@ export default class EmojiStyleSetting extends IconFolderSetting {
   }
 
   private updateDOM(): void {
+    const openFiles = getAllOpenedFiles(this.plugin);
     for (const fileExplorer of this.plugin.getRegisteredFileExplorers()) {
-      const paths = Object.keys(fileExplorer.fileItems);
-      for (const path of paths) {
-        let iconName = this.plugin.getData()[path] as string;
+      const fileItems = Object.entries(fileExplorer.fileItems);
+      for (const [path, fileItem] of fileItems) {
+        let iconName = this.plugin.getData()[path] as string | undefined | null;
+        if (!iconName) {
+          continue;
+        }
+
         if (typeof this.plugin.getData()[path] === 'object') {
-          iconName = (this.plugin.getData()[path] as FolderIconObject).iconName;
+          const inheritanceData = this.plugin.getData()[path] as FolderIconObject;
+          iconName = inheritanceData.iconName;
+
+          // Handle updating the emoji style for the inheritance icon.
+          if (emoji.isEmoji(inheritanceData.inheritanceIcon)) {
+            for (const file of inheritance.getFiles(this.plugin, path)) {
+              dom.createIconNode(this.plugin, file.path, inheritanceData.inheritanceIcon);
+              iconTabs.update(this.plugin, file, inheritanceData.inheritanceIcon);
+            }
+          }
+        }
+
+        // `iconName` is `null` indicates that for the inheritance object the icon name
+        // on the node itself does not exist.
+        if (!iconName) {
+          continue;
         }
 
         if (emoji.isEmoji(iconName)) {
           dom.createIconNode(this.plugin, path, iconName);
+          iconTabs.update(this.plugin, fileItem.file as TFile, iconName);
         }
       }
     }
