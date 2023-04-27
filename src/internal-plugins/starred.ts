@@ -7,6 +7,9 @@ import icon from '@lib/icon';
 import IconFolderPlugin from '@app/main';
 import MetaData from '@app/MetaData';
 
+
+/** @deprecated since Obsidian 1.2.6 in favor of bookmarks  */
+
 interface StarredView extends View {
   itemLookup: WeakMap<Element, StarredFile>;
 }

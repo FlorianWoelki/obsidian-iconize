@@ -1,4 +1,4 @@
-import { Plugin, MenuItem, TFile, WorkspaceLeaf } from 'obsidian';
+import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion } from 'obsidian';
 import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
@@ -49,7 +49,10 @@ export default class IconFolderPlugin extends Plugin {
     console.log(`loading ${MetaData.pluginName}`);
 
     // Registers all modified internal plugins.
-    this.modifiedInternalPlugins.push(new StarredInternalPlugin(this));
+    // check if obsidian is under version 0.12.6
+    if (!requireApiVersion('0.12.6')) {
+      this.modifiedInternalPlugins.push(new StarredInternalPlugin(this));
+    }
 
     await this.loadIconFolderData();
     setPath(this.getSettings().iconPacksPath);
