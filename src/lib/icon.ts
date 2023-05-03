@@ -5,6 +5,7 @@ import customRule from './customRule';
 import dom from './util/dom';
 import iconTabs from './iconTabs';
 import inheritance from './inheritance';
+import { getFileItemInnerTitleEl, getFileItemTitleEl } from '../util';
 
 /**
  * This function adds all the possible icons to the corresponding nodes. It adds the icons,
@@ -40,8 +41,8 @@ export const addAll = (
     for (const [dataPath, value] of data) {
       const fileItem = fileExplorer.view.fileItems[dataPath];
       if (fileItem) {
-        const titleEl = dom.getFileItemTitleEl(fileItem);
-        const titleInnerEl = dom.getFileItemInnerTitleEl(fileItem);
+        const titleEl = getFileItemTitleEl(fileItem);
+        const titleInnerEl = getFileItemInnerTitleEl(fileItem);
 
         // Need to check this because refreshing the plugin will duplicate all the icons.
         if (titleEl.children.length === 2 || titleEl.children.length === 1) {

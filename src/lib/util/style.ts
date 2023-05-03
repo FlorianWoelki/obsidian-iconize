@@ -5,7 +5,7 @@
 import emoji from '../../emoji';
 import IconFolderPlugin from '../../main';
 import svg from './svg';
-import dom from './dom';
+import { getFileItemTitleEl } from '../../util';
 
 interface Margin {
   top: number;
@@ -69,7 +69,7 @@ const refreshIconNodes = (plugin: IconFolderPlugin): void => {
     Object.keys(plugin.getData()).forEach((path) => {
       const fileItem = fileExplorer.view.fileItems[path];
       if (fileItem) {
-        const titleEl = dom.getFileItemTitleEl(fileItem);
+        const titleEl = getFileItemTitleEl(fileItem);
         const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
         iconNode.innerHTML = applyAll(plugin, iconNode.innerHTML, iconNode);
       }

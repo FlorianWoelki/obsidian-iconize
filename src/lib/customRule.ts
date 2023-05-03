@@ -3,6 +3,7 @@ import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import { CustomRule, IconFolderSettings } from '../settings/data';
 import dom from './util/dom';
+import { getFileItemTitleEl } from '../util';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
@@ -62,7 +63,7 @@ const removeFromAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): P
       }
 
       if (!iconName && doesExistInPath(rule, path) && doesMatchFileType(rule, fileType)) {
-        dom.removeIconInNode(dom.getFileItemTitleEl(fileItem));
+        dom.removeIconInNode(getFileItemTitleEl(fileItem));
       }
     }
   }
@@ -99,7 +100,7 @@ const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promis
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);
     for (const fileItem of files) {
-      await add(plugin, dom.getFileItemTitleEl(fileItem), rule, fileItem.file);
+      await add(plugin, getFileItemTitleEl(fileItem), rule, fileItem.file);
     }
   }
 };
@@ -121,7 +122,8 @@ const add = async (
   // Gets the type of the file.
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
 
-  if (!doesMatchFileType(rule, fileType)) {
+  const hasIcon = plugin.getData()[file.path];
+  if (!doesMatchFileType(rule, fileType) || hasIcon) {
     return;
   }
 
