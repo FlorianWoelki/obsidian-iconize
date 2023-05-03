@@ -148,13 +148,23 @@ const createIconNode = (plugin: IconFolderPlugin, path: string, iconName: string
   node.insertBefore(iconNode, titleNode);
 };
 
-function getFileItemTitleEl(fileItem: FileItem): HTMLElement {
+/**
+ * Gets the file item title element by either accessing `titleEl` or `selfEl`.
+ * @param fileItem FileItem which will be used to retrieve the title element from.
+ * @returns HTMLElement which is the title element.
+ */
+const getFileItemTitleEl = (fileItem: FileItem): HTMLElement => {
   return fileItem.titleEl ?? fileItem.selfEl;
-}
+};
 
-function getFileItemInnerTitleEl(fileItem: FileItem): HTMLElement {
+/**
+ * Gets the file item inner title element by either accessing `titleInnerEl` or `innerEl`.
+ * @param fileItem FileItem which will be used to retrieve the inner title element from.
+ * @returns HTMLElement which is the inner title element.
+ */
+const getFileItemInnerTitleEl = (fileItem: FileItem): HTMLElement => {
   return fileItem.titleInnerEl ?? fileItem.innerEl;
-}
+};
 
 export default {
   setIconForNode,
