@@ -1,3 +1,4 @@
+import { FileItem } from '@app/@types/obsidian';
 import twemoji from 'twemoji';
 import { getSvgFromLoadedIcon, nextIdentifier } from '../../iconPackManager';
 import IconFolderPlugin from '../../main';
@@ -147,9 +148,19 @@ const createIconNode = (plugin: IconFolderPlugin, path: string, iconName: string
   node.insertBefore(iconNode, titleNode);
 };
 
+function getFileItemTitleEl(fileItem: FileItem): HTMLElement {
+  return fileItem.titleEl ?? fileItem.selfEl;
+}
+
+function getFileItemInnerTitleEl(fileItem: FileItem): HTMLElement {
+  return fileItem.titleInnerEl ?? fileItem.innerEl;
+}
+
 export default {
   setIconForNode,
   createIconNode,
   removeIconInNode,
   removeIconInPath,
+  getFileItemTitleEl,
+  getFileItemInnerTitleEl,
 };
