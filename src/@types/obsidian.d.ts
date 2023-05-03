@@ -20,10 +20,31 @@ interface StarredInternalPlugin extends InternalPlugin {
   };
 }
 
+interface BookmarkItem {
+  ctime: number;
+  type: 'file';
+  path: string;
+  title: string;
+}
+
+interface BookmarkItemValue {
+  el: HTMLElement;
+  item: BookmarkItem;
+}
+
+interface BookmarkInternalPlugin extends InternalPlugin {
+  instance: {
+    addItem: (file: BookmarkItem) => void;
+    removeItem: (file: BookmarkItem) => void;
+    items: BookmarkItem[];
+  };
+}
+
 interface FileExplorerInternalPlugin extends InternalPlugin {}
 
 interface InternalPlugins {
   starred: StarredInternalPlugin;
+  bookmarks: BookmarkInternalPlugin;
   'file-explorer': FileExplorerInternalPlugin;
 }
 

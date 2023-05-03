@@ -13,6 +13,7 @@ import inheritance from './lib/inheritance';
 import dom from './lib/util/dom';
 import customRule from './lib/customRule';
 import icon from './lib/icon';
+import BookmarkInternalPlugin from './internal-plugins/bookmark';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -52,6 +53,8 @@ export default class IconFolderPlugin extends Plugin {
     // Only adds star plugin for obsidian under v0.12.6.
     if (!requireApiVersion('0.12.6')) {
       this.modifiedInternalPlugins.push(new StarredInternalPlugin(this));
+    } else if (requireApiVersion('1.2.0')) {
+      this.modifiedInternalPlugins.push(new BookmarkInternalPlugin(this));
     }
 
     await this.loadIconFolderData();
