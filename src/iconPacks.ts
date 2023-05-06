@@ -49,4 +49,10 @@ export default {
     path: '',
     downloadLink: 'https://github.com/lucide-icons/lucide/releases/download/v0.122.0/lucide-icons-0.122.0.zip',
   },
+  tablerIcons: {
+    name: 'tabler-icons',
+    displayName: 'Tabler Icons',
+    path: 'svg',
+    downloadLink: 'https://github.com/tabler/tabler-icons/releases/download/v2.17.0/tabler-icons-2.17.0.zip',
+  },
 } as { [key: string]: IconPack };
