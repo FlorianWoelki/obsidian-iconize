@@ -36,6 +36,7 @@ let iconPacks: {
 }[] = [];
 
 export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: string): Promise<void> => {
+  // Tries to move all icon packs to the new folder.
   for (let i = 0; i < iconPacks.length; i++) {
     const iconPack = iconPacks[i];
     const doesDirExist = await createDirectory(plugin, iconPack.name);
@@ -59,11 +60,17 @@ export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: 
     new Notice(`...moved ${iconPack.name}`);
   }
 
+  // Removes all the existing icon packs in the `from` directory.
   for (let i = 0; i < iconPacks.length; i++) {
     const iconPack = iconPacks[i];
     if (await plugin.app.vault.adapter.exists(`${from}/${iconPack.name}`)) {
       await plugin.app.vault.adapter.rmdir(`${from}/${iconPack.name}`, true);
     }
+  }
+
+  // Remove root directory that contains all the icon packs.
+  if (!to.startsWith(from)) {
+    await plugin.app.vault.adapter.rmdir(`${from}`, true);
   }
 };
 
