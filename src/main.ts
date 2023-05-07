@@ -258,7 +258,7 @@ export default class IconFolderPlugin extends Plugin {
             ([k, v]) => k !== 'settings' && typeof v === 'object',
           );
 
-          if (file.parent.path === '/') return;
+          if (!file.parent || file.parent.path === '/') return;
 
           inheritanceFolders.forEach(([path, obj]: [string, FolderIconObject]) => {
             inheritance.add(this, path, obj.inheritanceIcon, {

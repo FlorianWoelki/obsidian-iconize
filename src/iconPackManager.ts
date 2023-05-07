@@ -270,6 +270,12 @@ export const loadIcon = async (plugin: Plugin, iconPacks: string[], iconName: st
 };
 
 export const initIconPacks = async (plugin: Plugin): Promise<void> => {
+  // Remove the beginning slash because paths which start with `/` are the same as without
+  // a slash.
+  if (path.startsWith('/')) {
+    path = path.slice(1);
+  }
+
   // Load all the custom generated icon packs.
   const loadedIconPacks = await plugin.app.vault.adapter.list(path);
   for (let i = 0; i < loadedIconPacks.folders.length; i++) {
