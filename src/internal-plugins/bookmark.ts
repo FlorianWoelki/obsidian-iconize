@@ -52,16 +52,34 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
       return;
     }
 
-    const { itemDoms, containerEl } = this.leaf;
-    // Retrieves all the items of the bookmark plugin which areo objects.
-    const items = this.bookmark.instance.items;
-    items.forEach((item) => {
+    /**
+     * Retrieves the lookup item from the bookmark plugin and calls the callback with the
+     * element and the path of the item.
+     * @param item BookmarkItem object which can be a folder or a file.
+     * @param itemDoms WeakMap of the bookmark plugin which contains the lookup item.
+     */
+    const retrieveLookupItem = (item: BookmarkItem, itemDoms: WeakMap<BookmarkItem, BookmarkItemValue>): void => {
       const lookupItem = itemDoms.get(item);
       if (!lookupItem) {
         return;
       }
 
+      if (item.items) {
+        // If the item is a folder, then we need to retrieve all the items inside it.
+        for (const subItem of item.items) {
+          retrieveLookupItem(subItem, itemDoms);
+        }
+      }
+
+      // If the item is a file, then we can call the callback.
       callback(lookupItem.el, item.path);
+    };
+
+    const { itemDoms, containerEl } = this.leaf;
+    // Retrieves all the items of the bookmark plugin which areo objects.
+    const items = this.bookmark.instance.items;
+    items.forEach((item) => {
+      retrieveLookupItem(item, itemDoms);
     });
   }
 
