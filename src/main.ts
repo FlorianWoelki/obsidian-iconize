@@ -97,6 +97,7 @@ export default class IconFolderPlugin extends Plugin {
           item.onClick(() => {
             this.removeFolderIcon(file.path);
             dom.removeIconInPath(file.path);
+            this.notifyPlugins();
 
             // Remove icon in tab when setting is enabled.
             if (this.getSettings().iconInTabsEnabled) {
@@ -195,30 +196,10 @@ export default class IconFolderPlugin extends Plugin {
     return this.getSettings().emojiStyle !== 'none';
   }
 
-  private getSearchLeave(): ExplorerView {
-    return this.app.workspace.getLeavesOfType('search')[0].view;
-  }
-
-  private addIconsToSearch(): void {
-    console.log(this.app.workspace.getLeavesOfType('backlink'));
-    const searchLeaveDom = this.getSearchLeave().dom;
-    searchLeaveDom.children.forEach((child) => {
-      const file = child.file as TFile;
-      const collapseEl = child.collapseEl as HTMLElement;
-
-      const existingIcon = child.containerEl.querySelector('.obsidian-icon-folder-icon');
-      if (existingIcon) {
-        existingIcon.remove();
-      }
-
-      const iconName = this.data[file.path] as string | undefined;
-      if (iconName) {
-        const iconNode = child.containerEl.createDiv();
-        iconNode.classList.add('obsidian-icon-folder-icon');
-
-        dom.setIconForNode(this, this.data[file.path] as string, iconNode);
-
-        iconNode.insertAfter(collapseEl);
+  public notifyPlugins(): void {
+    this.modifiedInternalPlugins.forEach((internalPlugin) => {
+      if (internalPlugin.enabled) {
+        internalPlugin.onMount();
       }
     });
   }

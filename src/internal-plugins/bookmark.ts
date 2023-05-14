@@ -37,10 +37,13 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
     return undefined;
   }
 
-  private setIcon(filePath: string, node: Element | undefined): void {
+  private setIconOrRemove(filePath: string, node: Element | undefined): void {
     const iconName = icon.getByPath(this.plugin, filePath);
     const iconNode = node.querySelector('.tree-item-icon');
-    if (!iconNode || !iconName) {
+    if (!iconName || !iconNode) {
+      if (iconNode) {
+        iconNode.remove();
+      }
       return;
     }
 
@@ -71,8 +74,10 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
         }
       }
 
-      // If the item is a file, then we can call the callback.
-      callback(lookupItem.el, item.path);
+      // If the item is a `file`, then we can call the callback.
+      if (item.type === 'file') {
+        callback(lookupItem.el, item.path);
+      }
     };
 
     const { itemDoms, containerEl } = this.leaf;
@@ -89,7 +94,7 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
       nodesWithPath[filePath] = node;
     });
 
-    Object.entries(nodesWithPath).forEach(([filePath, node]) => this.setIcon(filePath, node));
+    Object.entries(nodesWithPath).forEach(([filePath, node]) => this.setIconOrRemove(filePath, node));
   }
 
   register(): void {
