@@ -22,7 +22,7 @@ interface StarredInternalPlugin extends InternalPlugin {
 
 interface BookmarkItem {
   ctime: number;
-  type: 'file' | 'folder';
+  type: 'file' | 'folder' | 'group';
   path: string;
   title: string;
   items?: BookmarkItem[];

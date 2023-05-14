@@ -39,12 +39,25 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
 
   private setIconOrRemove(filePath: string, node: Element | undefined): void {
     const iconName = icon.getByPath(this.plugin, filePath);
-    const iconNode = node.querySelector('.tree-item-icon');
-    if (!iconName || !iconNode) {
+    let iconNode = node.querySelector('.tree-item-icon');
+    if (!iconName) {
       if (iconNode) {
         iconNode.remove();
       }
       return;
+    }
+
+    // If the icon node is not defined, then we need to recreate it.
+    if (!iconNode) {
+      // Get the tree-item-self element where the original icon is set.
+      const treeItemSelf = node.querySelector('.tree-item-self');
+      if (!treeItemSelf) {
+        return;
+      }
+
+      iconNode = node.createDiv({ cls: 'tree-item-icon' });
+      // Prepends the icon to the tree-item-self element as a first child.
+      treeItemSelf.prepend(iconNode);
     }
 
     dom.setIconForNode(this.plugin, iconName, iconNode as HTMLElement);
@@ -74,8 +87,8 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
         }
       }
 
-      // If the item is a `file`, then we can call the callback.
-      if (item.type === 'file') {
+      // If the item is a `file` or a `folder` (not of type `group`), then we can call the callback.
+      if (item.type === 'file' || item.type === 'folder') {
         callback(lookupItem.el, item.path);
       }
     };
