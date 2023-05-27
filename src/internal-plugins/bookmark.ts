@@ -140,8 +140,8 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
     this.plugin.register(
       around(this.bookmark.instance, {
         addItem: function (next) {
-          return function (file) {
-            next.call(this, file);
+          return function (...args) {
+            next.call(this, ...args);
             // TODO: Remove in the future, I could not think of a better way to do this.
             setTimeout(() => {
               self.onMount();
@@ -149,8 +149,8 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
           };
         },
         removeItem: function (next) {
-          return function (file) {
-            next.call(this, file);
+          return function (...args) {
+            next.call(this, ...args);
             self.onMount();
           };
         },
