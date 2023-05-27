@@ -42,7 +42,7 @@ export default class EmojiStyleSetting extends IconFolderSetting {
           if (emoji.isEmoji(inheritanceData.inheritanceIcon)) {
             for (const file of inheritance.getFiles(this.plugin, path)) {
               dom.createIconNode(this.plugin, file.path, inheritanceData.inheritanceIcon);
-              iconTabs.update(this.plugin, file, inheritanceData.inheritanceIcon);
+              iconTabs.update(this.plugin, file as TFile, inheritanceData.inheritanceIcon);
             }
           }
         }

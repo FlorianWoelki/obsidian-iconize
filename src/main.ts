@@ -142,7 +142,7 @@ export default class IconFolderPlugin extends Plugin {
                 onRemove: (file) => {
                   // Removes the icons from the file tabs inside of the inheritance.
                   if (this.getSettings().iconInTabsEnabled) {
-                    iconTabs.remove(file, { replaceWithDefaultIcon: true });
+                    iconTabs.remove(file as TFile, { replaceWithDefaultIcon: true });
                   }
                 },
               });

@@ -1,4 +1,4 @@
-import { TAbstractFile, TFile } from 'obsidian';
+import { TAbstractFile } from 'obsidian';
 import { FileItem } from '../@types/obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import dom from './util/dom';
@@ -10,7 +10,7 @@ interface AddOptions {
 }
 
 interface RemoveOptions {
-  onRemove?: (file: TFile) => void;
+  onRemove?: (file: TAbstractFile) => void;
 }
 
 /**
@@ -36,7 +36,7 @@ const getFolders = (plugin: IconFolderPlugin): Record<string, FolderIconObject> 
  * @returns An array of files that include the folder path.
  */
 const getFiles = (plugin: IconFolderPlugin, folderPath: string) => {
-  return plugin.app.vault.getFiles().filter((file) => file.path.includes(folderPath));
+  return plugin.app.vault.getAllLoadedFiles().filter((file) => file.path.includes(folderPath));
 };
 
 const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, options?: AddOptions): void => {
