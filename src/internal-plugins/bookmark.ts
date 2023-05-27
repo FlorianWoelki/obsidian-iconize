@@ -39,7 +39,7 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
 
   private setIconOrRemove(filePath: string, node: Element | undefined): void {
     const iconName = icon.getByPath(this.plugin, filePath);
-    let iconNode = node.querySelector('.tree-item-icon');
+    let iconNode = node.querySelector('.tree-item-icon') as HTMLElement | null;
     if (!iconName) {
       if (iconNode) {
         iconNode.remove();
@@ -60,7 +60,10 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
       treeItemSelf.prepend(iconNode);
     }
 
-    dom.setIconForNode(this.plugin, iconName, iconNode as HTMLElement);
+    const defaultMargin = iconNode.style.margin;
+    dom.setIconForNode(this.plugin, iconName, iconNode);
+    // Reset the margin to the default value to prevent overlapping with the text.
+    iconNode.style.margin = defaultMargin;
   }
 
   private computeNodesWithPath(callback: (node: HTMLElement, filePath: string) => void): void {
