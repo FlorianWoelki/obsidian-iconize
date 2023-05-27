@@ -6,6 +6,7 @@ import dom from '@lib/util/dom';
 import icon from '@lib/icon';
 import IconFolderPlugin from '@app/main';
 import MetaData from '@app/MetaData';
+import { DEFAULT_FILE_ICON, DEFAULT_FOLDER_ICON } from '../util';
 
 interface BookmarksView extends View {
   itemDoms: WeakMap<BookmarkItem, BookmarkItemValue>;
@@ -42,7 +43,14 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
     let iconNode = node.querySelector('.tree-item-icon') as HTMLElement | null;
     if (!iconName) {
       if (iconNode) {
-        iconNode.remove();
+        // Reset the icon to the default obsidian icon.
+        const items = this.bookmark.instance.items;
+        const item = items.find((item) => item.path === filePath);
+        if (item.type === 'file') {
+          iconNode.innerHTML = DEFAULT_FILE_ICON;
+        } else if (item.type === 'folder') {
+          iconNode.innerHTML = DEFAULT_FOLDER_ICON;
+        }
       }
       return;
     }
@@ -134,7 +142,10 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
         addItem: function (next) {
           return function (file) {
             next.call(this, file);
-            self.onMount();
+            // TODO: Remove in the future, I could not think of a better way to do this.
+            setTimeout(() => {
+              self.onMount();
+            }, 1000);
           };
         },
         removeItem: function (next) {

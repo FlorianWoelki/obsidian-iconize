@@ -2,6 +2,7 @@ import { TFile } from 'obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import customRule from './customRule';
 import dom from './util/dom';
+import { DEFAULT_FILE_ICON } from '../util';
 
 /**
  * Get all icon containers of all open tabs. The icon container mostly relies next to the
@@ -122,10 +123,6 @@ const update = (plugin: IconFolderPlugin, file: TFile, iconName: string) => {
   }
 };
 
-// Default icon for tabs of obsidian.
-const DEFAULT_ICON =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-file"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
-
 interface RemoveOptions {
   /**
    * Replaces the icon in the tab with the default obsidian icon.
@@ -144,7 +141,7 @@ const remove = (file: TFile, options?: RemoveOptions) => {
       // Removes the display of the icon container to remove the icons from the tabs.
       iconContainer.style.display = 'none';
     } else {
-      iconContainer.innerHTML = DEFAULT_ICON;
+      iconContainer.innerHTML = DEFAULT_FILE_ICON;
     }
   }
 };
