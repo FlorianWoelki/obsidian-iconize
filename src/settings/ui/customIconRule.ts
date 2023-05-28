@@ -6,6 +6,9 @@ import { getAllOpenedFiles } from '@app/util';
 import { CustomRule } from '../data';
 import customRule from '@lib/customRule';
 import iconTabs from '@lib/iconTabs';
+import dom from '../../lib/util/dom';
+import style from '../../lib/util/style';
+import svg from '../../lib/util/svg';
 
 export default class CustomIconRuleSetting extends IconFolderSetting {
   private app: App;
@@ -39,6 +42,14 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         }
       }
     }
+  }
+
+  private createDescriptionEl(container: HTMLElement, text: string): void {
+    const description = container.createEl('p', {
+      text,
+      cls: 'setting-item-description',
+    });
+    description.style.marginBottom = 'var(--size-2-2)';
   }
 
   public display(): void {
@@ -93,17 +104,6 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
     this.plugin.getSettings().rules.forEach((rule) => {
       const settingRuleEl = new Setting(this.containerEl).setName(rule.rule).setDesc(`Icon: ${rule.icon}`);
 
-      const colorPicker = new ColorComponent(settingRuleEl.controlEl)
-        .setValue(rule.color ?? '#000000')
-        .onChange(async (value) => {
-          rule.color = value;
-          await this.plugin.saveIconFolderData();
-
-          customRule.addToAllFiles(this.plugin, rule);
-          this.updateIconTabs(rule, false);
-        });
-      settingRuleEl.components.push(colorPicker);
-
       // Add the configuration button for configuring where the custom rule gets applied to.
       settingRuleEl.addButton((btn) => {
         const isFor: typeof rule.for = rule.for ?? 'everything';
@@ -149,22 +149,82 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         btn.onClick(() => {
           // Create modal and its children elements.
           const modal = new Modal(this.plugin.app);
+          modal.contentEl.style.display = 'block';
           modal.modalEl.classList.add('obsidian-icon-folder-custom-rule-modal');
           modal.titleEl.createEl('h3', { text: 'Edit custom rule' });
+
+          // Create the input for the rule.
+          this.createDescriptionEl(modal.contentEl, 'Regex or simple string');
           const input = new TextComponent(modal.contentEl);
           input.setValue(rule.rule);
-          const button = new ButtonComponent(modal.contentEl);
-          button.setButtonText('Save');
-          button.onClick(async () => {
-            // Update the rules with new edited rule.
-            const newRules = this.plugin.getSettings().rules.map((r) => {
-              if (rule.rule === r.rule && rule.color === r.color && rule.icon === r.icon && rule.for === r.for) {
-                return { ...r, rule: input.getValue() };
-              }
-              return r;
-            });
-            this.plugin.getSettings().rules = newRules;
+          input.onChange(async (value) => {
+            rule.rule = value;
+          });
 
+          // Create the change icon button with icon preview.
+          this.createDescriptionEl(modal.contentEl, 'Custom rule icon');
+          const iconContainer = modal.contentEl.createDiv();
+          iconContainer.style.display = 'flex';
+          iconContainer.style.alignItems = 'center';
+          iconContainer.style.justifyContent = 'space-between';
+          const iconEl = iconContainer.createDiv();
+          const iconPreviewEl = iconEl.createDiv();
+          dom.setIconForNode(this.plugin, rule.icon, iconPreviewEl);
+          iconEl.style.display = 'flex';
+          iconEl.style.alignItems = 'center';
+          iconEl.style.justifyContent = 'space-between';
+          iconEl.style.margin = null;
+          iconPreviewEl.innerHTML = svg.setFontSize(iconPreviewEl.innerHTML, 20);
+          const iconNameEl = iconEl.createEl('div', { cls: 'setting-item-description' });
+          iconNameEl.style.paddingTop = '0';
+          iconNameEl.style.marginLeft = 'var(--size-2-2)';
+          iconNameEl.innerText = rule.icon;
+
+          const changeIconBtn = new ButtonComponent(iconContainer);
+          changeIconBtn.setButtonText('Change icon');
+          changeIconBtn.onClick(async () => {
+            const modal = new IconsPickerModal(this.app, this.plugin, rule.icon);
+            modal.onChooseItem = async (item) => {
+              let icon = '';
+              if (typeof item === 'object') {
+                icon = item.displayName;
+              } else {
+                icon = item;
+              }
+
+              rule.icon = icon;
+              dom.setIconForNode(this.plugin, rule.icon, iconPreviewEl);
+              iconPreviewEl.innerHTML = svg.setFontSize(iconPreviewEl.innerHTML, 20);
+              iconNameEl.innerText = rule.icon;
+            };
+            modal.open();
+          });
+
+          // Create the color picker for the rule.
+          this.createDescriptionEl(modal.contentEl, 'Color of the icon');
+          const colorContainer = modal.contentEl.createDiv();
+          colorContainer.style.display = 'flex';
+          colorContainer.style.alignItems = 'center';
+          colorContainer.style.justifyContent = 'space-between';
+          const colorPicker = new ColorComponent(colorContainer)
+            .setValue(rule.color ?? '#000000')
+            .onChange(async (value) => {
+              rule.color = value;
+            });
+          const defaultColorButton = new ButtonComponent(colorContainer);
+          defaultColorButton.setTooltip('Set color to the default one');
+          defaultColorButton.setButtonText('Default');
+          defaultColorButton.onClick(async () => {
+            rule.color = undefined;
+            colorPicker.setValue('#000000');
+          });
+
+          // Create the save button.
+          const button = new ButtonComponent(modal.contentEl);
+          button.buttonEl.style.marginTop = 'var(--size-4-4)';
+          button.buttonEl.style.float = 'right';
+          button.setButtonText('Save Changes');
+          button.onClick(async () => {
             await this.plugin.saveIconFolderData();
             this.refreshDisplay();
             new Notice('Custom rule updated.');
@@ -172,7 +232,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             // Refresh the DOM.
             await customRule.removeFromAllFiles(this.plugin, rule);
             this.updateIconTabs(rule, true);
-            newRules.forEach(async (rule) => {
+            this.plugin.getSettings().rules.forEach(async (rule) => {
               await customRule.addToAllFiles(this.plugin, rule);
               this.updateIconTabs(rule, false);
             });
