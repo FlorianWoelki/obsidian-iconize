@@ -61,6 +61,7 @@ const setIconForNode = (plugin: IconFolderPlugin, iconName: string, node: HTMLEl
     // The icon is possibly not an emoji.
     let iconContent = style.applyAll(plugin, possibleIcon, node);
     if (color) {
+      node.style.color = color;
       iconContent = svg.colorize(possibleIcon, color);
     }
     node.innerHTML = iconContent;

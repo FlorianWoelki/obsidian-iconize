@@ -206,17 +206,15 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           colorContainer.style.display = 'flex';
           colorContainer.style.alignItems = 'center';
           colorContainer.style.justifyContent = 'space-between';
-          const colorPicker = new ColorComponent(colorContainer)
-            .setValue(rule.color ?? '#000000')
-            .onChange(async (value) => {
-              rule.color = value;
-            });
+          const colorPicker = new ColorComponent(colorContainer).setValue(rule.color ?? '#000000').onChange((value) => {
+            rule.color = value;
+          });
           const defaultColorButton = new ButtonComponent(colorContainer);
           defaultColorButton.setTooltip('Set color to the default one');
           defaultColorButton.setButtonText('Default');
-          defaultColorButton.onClick(async () => {
-            rule.color = undefined;
+          defaultColorButton.onClick(() => {
             colorPicker.setValue('#000000');
+            rule.color = undefined;
           });
 
           // Create the save button.

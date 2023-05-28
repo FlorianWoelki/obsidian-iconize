@@ -36,6 +36,7 @@ const setMargin = (el: HTMLElement, margin: Margin): HTMLElement => {
  */
 const applyAll = (plugin: IconFolderPlugin, iconString: string, container: HTMLElement): string => {
   iconString = svg.setFontSize(iconString, plugin.getSettings().fontSize);
+  container.style.color = plugin.getSettings().iconColor;
   iconString = svg.colorize(iconString, plugin.getSettings().iconColor);
 
   // Sets the margin of an element.
@@ -70,8 +71,10 @@ const refreshIconNodes = (plugin: IconFolderPlugin): void => {
       const fileItem = fileExplorer.view.fileItems[path];
       if (fileItem) {
         const titleEl = getFileItemTitleEl(fileItem);
-        const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
-        iconNode.innerHTML = applyAll(plugin, iconNode.innerHTML, iconNode);
+        const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement | null;
+        if (iconNode) {
+          iconNode.innerHTML = applyAll(plugin, iconNode.innerHTML, iconNode);
+        }
       }
     });
   }

@@ -22,8 +22,10 @@ const refreshStyleOfIcons = (plugin: IconFolderPlugin): void => {
       const folderItem = fileExplorer.view.fileItems[folderPath];
       if (folderItem) {
         const titleEl = getFileItemTitleEl(folderItem);
-        const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
-        iconNode.innerHTML = style.applyAll(plugin, iconNode.innerHTML, iconNode);
+        const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement | null;
+        if (iconNode) {
+          iconNode.innerHTML = style.applyAll(plugin, iconNode.innerHTML, iconNode);
+        }
       }
 
       // Apply style for all files in this inheritance.
@@ -31,8 +33,10 @@ const refreshStyleOfIcons = (plugin: IconFolderPlugin): void => {
       for (const file of files) {
         const fileItem = fileExplorer.view.fileItems[file.path];
         const titleEl = getFileItemTitleEl(fileItem);
-        const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
-        iconNode.innerHTML = style.applyAll(plugin, iconNode.innerHTML, iconNode);
+        const iconNode = titleEl.querySelector('.obsidian-icon-folder-icon') as HTMLElement | null;
+        if (iconNode) {
+          iconNode.innerHTML = style.applyAll(plugin, iconNode.innerHTML, iconNode);
+        }
       }
     }
 
