@@ -74,17 +74,17 @@ export const addAll = (
 
     // Callback function to register other events to this file explorer.
     callback?.();
-  }
 
-  // Handles the custom rules.
-  customRule.addAll(plugin);
+    // Handles the custom rules.
+    customRule.addAll(plugin);
 
-  // Adds icons to already open file tabs.
-  if (plugin.getSettings().iconInTabsEnabled) {
-    for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
-      const file = leaf.view.file;
-      if (file) {
-        iconTabs.add(plugin, file);
+    // Adds icons to already open file tabs.
+    if (plugin.getSettings().iconInTabsEnabled) {
+      for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
+        const file = leaf.view.file;
+        if (file) {
+          iconTabs.add(plugin, file);
+        }
       }
     }
   }

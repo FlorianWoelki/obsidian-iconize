@@ -219,7 +219,8 @@ export default class IconFolderPlugin extends Plugin {
       //const searchLeaveDom = this.getSearchLeave().dom;
       //searchLeaveDom.changed = () => this.addIconsToSearch();
 
-      // Register rename event for adding icons with custom rules to the DOM.
+      // Register rename event for adding icons with custom rules to the DOM and updating
+      // inheritance when file was moved to another directory.
       this.registerEvent(
         this.app.vault.on('rename', (file, oldPath) => {
           customRule.getSortedRules(this).forEach(async (rule) => {
@@ -229,6 +230,21 @@ export default class IconFolderPlugin extends Plugin {
 
             await customRule.add(this, document.body, rule, file);
           });
+
+          if (inheritance.doesExistInPath(this, file.path)) {
+            const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
+            const folderInheritance = inheritance.getByPath(this, file.path);
+            const iconName = folderInheritance.inheritanceIcon;
+            dom.removeIconInPath(file.path);
+            inheritance.add(this, folderPath, iconName, {
+              file,
+              onAdd: (file) => {
+                if (this.getSettings().iconInTabsEnabled) {
+                  iconTabs.add(this, file as TFile, { iconName });
+                }
+              },
+            });
+          }
         }),
       );
 
