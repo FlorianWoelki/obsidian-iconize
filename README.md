@@ -1,4 +1,6 @@
-# Obsidian Icon Folder [![CodeQL](https://github.com/FlorianWoelki/obsidian-icon-folder/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/FlorianWoelki/obsidian-icon-folder/actions/workflows/codeql-analysis.yml)
+# Obsidian Icon Folder
+
+<a href="https://www.buymeacoffee.com/flowoelki" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ![Preview Image](https://raw.githubusercontent.com/FlorianWoelki/obsidian-icon-folder/main/docs/preview-image.png)
 
