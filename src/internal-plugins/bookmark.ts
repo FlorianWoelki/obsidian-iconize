@@ -46,9 +46,9 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
         // Reset the icon to the default obsidian icon.
         const items = this.bookmark.instance.items;
         const item = items.find((item) => item.path === filePath);
-        if (item.type === 'file') {
+        if (item?.type === 'file') {
           iconNode.innerHTML = DEFAULT_FILE_ICON;
-        } else if (item.type === 'folder') {
+        } else if (item?.type === 'folder') {
           iconNode.innerHTML = DEFAULT_FOLDER_ICON;
         }
       }
