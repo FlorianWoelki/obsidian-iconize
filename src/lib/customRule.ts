@@ -100,7 +100,7 @@ const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promis
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);
     for (const fileItem of files) {
-      await add(plugin, getFileItemTitleEl(fileItem), rule, fileItem.file);
+      await add(plugin, rule, fileItem.file, getFileItemTitleEl(fileItem));
     }
   }
 };
@@ -115,9 +115,9 @@ const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promis
  */
 const add = async (
   plugin: IconFolderPlugin,
-  container: HTMLElement,
   rule: CustomRule,
   file: TAbstractFile,
+  container?: HTMLElement,
 ): Promise<void> => {
   // Gets the type of the file.
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
