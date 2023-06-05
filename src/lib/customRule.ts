@@ -109,9 +109,9 @@ const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promis
  * Tries to add the icon of the custom rule to a file or folder. This function also checks
  * if the file type matches the `for` property of the custom rule.
  * @param plugin Instance of the IconFolderPlugin.
- * @param container Element where the icon will be added if the custom rules matches.
  * @param rule Custom rule that will be used to check if the rule is applicable to the file.
  * @param file File or folder that will be used to possibly create the icon for.
+ * @param container Optional element where the icon will be added if the custom rules matches.
  */
 const add = async (
   plugin: IconFolderPlugin,
