@@ -59,12 +59,12 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
   };
 
   const inheritanceFolders = getFolders(plugin);
-
+  // Note: When searching for parent path substrings within a child path, parent path substrings are always followed by '/'
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     if (options?.file) {
       // Handles the addition of the inheritance icon for only one file.
       const fileItem = fileExplorer.fileItems[options.file.path];
-      const inFolder = options.file.path.includes(folderPath);
+      const inFolder = options.file.path.includes(folderPath + '/');
       const hasIcon = fileItem && plugin.getData()[fileItem.file.path];
       if (!fileItem || !inFolder || hasIcon) {
         continue;
@@ -74,7 +74,7 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
     } else {
       // Handles the addition of a completely new inheritance for a folder.
       for (const [path, fileItem] of Object.entries(fileExplorer.fileItems)) {
-        const inFolder = path.includes(folderPath);
+        const inFolder = path.includes(folderPath  + '/');
         const isInheritanceDirectory = inheritanceFolders[path];
         const hasIcon = plugin.getData()[fileItem.file.path];
         if (!inFolder || isInheritanceDirectory || hasIcon) {
