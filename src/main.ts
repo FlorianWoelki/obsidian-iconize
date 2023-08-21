@@ -1,6 +1,14 @@
 import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion } from 'obsidian';
 import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
-import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
+import {
+  createDefaultDirectory,
+  getIconPackNameByPrefix,
+  initIconPacks,
+  loadUsedIcons,
+  nextIdentifier,
+  removeIconFromIconPackDirectory,
+  setPath,
+} from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings/data';
 import { migrateIcons } from './migration';
@@ -350,6 +358,9 @@ export default class IconFolderPlugin extends Plugin {
       return;
     }
 
+    // Saves the icon name with prefix to remove it from the icon pack directory later.
+    const iconNameWithPrefix = this.data[path];
+
     if (typeof this.data[path] === 'object') {
       const currentValue = this.data[path] as FolderIconObject;
       this.data[path] = {
@@ -358,6 +369,19 @@ export default class IconFolderPlugin extends Plugin {
       };
     } else {
       delete this.data[path];
+    }
+
+    // Removes the icon from the icon pack directory if it is not used as an icon somewhere
+    // else.
+    if (iconNameWithPrefix && typeof iconNameWithPrefix === 'string') {
+      const identifier = nextIdentifier(iconNameWithPrefix);
+      const prefix = iconNameWithPrefix.substring(0, identifier);
+      const iconName = iconNameWithPrefix.substring(identifier);
+      const iconPackName = getIconPackNameByPrefix(prefix);
+      const duplicatedIcon = this.getDataPathByValue(iconNameWithPrefix);
+      if (!duplicatedIcon) {
+        removeIconFromIconPackDirectory(this, iconPackName, iconName);
+      }
     }
 
     //this.addIconsToSearch();
@@ -433,7 +457,7 @@ export default class IconFolderPlugin extends Plugin {
     return this.registeredFileExplorers;
   }
 
-  getDataPathByValue(value: string): string {
+  getDataPathByValue(value: string): string | undefined {
     return Object.entries(this.data).find(([k, v]) => {
       if (typeof v === 'string') {
         if (value === v) {

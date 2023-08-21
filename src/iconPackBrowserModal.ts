@@ -1,17 +1,8 @@
 import { App, FuzzyMatch, FuzzySuggestModal, Notice } from 'obsidian';
-import {
-  addIconToIconPack,
-  createFile,
-  createIconPackDirectory,
-  createIconPackPrefix,
-  getAllIconPacks,
-} from './iconPackManager';
+import { createIconPackPrefix, createZipFile, getAllIconPacks } from './iconPackManager';
 import iconPacks, { IconPack } from './iconPacks';
-import dom from './lib/util/dom';
-import icon from './lib/icon';
 import IconFolderPlugin from './main';
-import { readFileSync } from './util';
-import { downloadZipFile, getFileFromJSZipFile, readZipFile } from './zipUtil';
+import { downloadZipFile } from './zipUtil';
 
 export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
   private plugin: IconFolderPlugin;
@@ -48,43 +39,11 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
 
   async onChooseItem(item: IconPack, _event: MouseEvent | KeyboardEvent): Promise<void> {
     new Notice(`Adding ${item.displayName}...`);
-    await createIconPackDirectory(this.plugin, item.name);
-    downloadZipFile(item.downloadLink).then((zipBlob) => {
-      readZipFile(zipBlob, item.path).then(async (files) => {
-        const existingIcons = icon.getAllWithPath(this.plugin);
-        for (let i = 0; i < files.length; i++) {
-          const file = await getFileFromJSZipFile(files[i]);
-          const content = await readFileSync(file);
-          const icon = addIconToIconPack(item.name, file.name, content);
-          if (!icon) {
-            continue;
-          }
 
-          const iconName = icon.prefix + icon.name;
-          const existingIcon = existingIcons.find((el) => el.icon === iconName);
-          if (existingIcon) {
-            const path = existingIcon.path;
-            const container = this.plugin.app.workspace.containerEl.querySelector(`[data-path="${path}"]`);
-            if (!container) {
-              continue;
-            }
+    const arrayBuffer = await downloadZipFile(item.downloadLink);
+    await createZipFile(this.plugin, `${item.name}.zip`, arrayBuffer);
 
-            const existingIconEl = container.querySelector('.obsidian-icon-folder-icon') as HTMLElement;
-
-            if (!existingIconEl) {
-              continue;
-            }
-
-            dom.setIconForNode(this.plugin, iconName, existingIconEl);
-          }
-
-          await createFile(this.plugin, item.name, file.name, content, files[i].name); // files[i].name is the absolute path to the file.
-        }
-
-        new Notice(`...${item.displayName} added`);
-        this.onAddedIconPack();
-      });
-    });
+    new Notice(`...${item.displayName} added`);
   }
 
   renderSuggestion(item: FuzzyMatch<IconPack>, el: HTMLElement): void {

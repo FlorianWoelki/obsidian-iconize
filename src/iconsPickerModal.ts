@@ -2,11 +2,20 @@ import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
 import emoji from './emoji';
-import { doesIconExists, getAllLoadedIconNames, getSvgFromLoadedIcon, nextIdentifier } from './iconPackManager';
+import {
+  addIconToIconPack,
+  doesIconExists,
+  extractIconToIconPack,
+  getAllLoadedIconNames,
+  getIconPackNameByPrefix,
+  getSvgFromLoadedIcon,
+  nextIdentifier,
+} from './iconPackManager';
 import dom from './lib/util/dom';
 
 export interface Icon {
   name: string;
+  iconPackName: string | null; // Can be `null` if the icon is an emoji.
   displayName: string;
   prefix: string;
 }
@@ -17,7 +26,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   private renderIndex: number = 0;
 
-  private recentlyUsedItems: string[];
+  private recentlyUsedItems: Set<string>;
 
   public onSelect: (iconName: string) => void | undefined;
 
@@ -28,9 +37,11 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     this.limit = 150;
 
     const pluginRecentltyUsedItems = [...plugin.getSettings().recentlyUsedIcons];
-    this.recentlyUsedItems = pluginRecentltyUsedItems.reverse().filter((iconName) => {
-      return doesIconExists(iconName) || emoji.isEmoji(iconName);
-    });
+    this.recentlyUsedItems = new Set(
+      pluginRecentltyUsedItems.reverse().filter((iconName) => {
+        return doesIconExists(iconName) || emoji.isEmoji(iconName);
+      }),
+    );
 
     this.resultContainerEl.classList.add('obsidian-icon-folder-modal');
   }
@@ -59,15 +70,19 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
             name: emoji.shortNames[iconName],
             prefix: 'Emoji',
             displayName: iconName,
+            iconPackName: null,
           });
           return;
         }
 
         const nextLetter = nextIdentifier(iconName);
+        const iconPrefix = iconName.substring(0, nextLetter);
+        const iconPackName = getIconPackNameByPrefix(iconPrefix);
         iconKeys.push({
           name: iconName.substring(nextLetter),
-          prefix: iconName.substring(0, nextLetter),
+          prefix: iconPrefix,
           displayName: iconName,
+          iconPackName: iconPackName,
         });
       });
     }
@@ -77,6 +92,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
         name: icon.name,
         prefix: icon.prefix,
         displayName: icon.prefix + icon.name,
+        iconPackName: icon.iconPackName,
       });
     }
 
@@ -86,11 +102,13 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
           name: shortName,
           prefix: 'Emoji',
           displayName: unicode,
+          iconPackName: null,
         });
         iconKeys.push({
           name: unicode,
           prefix: 'Emoji',
           displayName: unicode,
+          iconPackName: null,
         });
       });
     }
@@ -99,10 +117,20 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   onChooseItem(item: Icon | string): void {
-    const iconName = typeof item === 'object' ? item.displayName : item;
-    dom.createIconNode(this.plugin, this.path, iconName);
-    this.onSelect?.(iconName);
+    const iconNameWithPrefix = typeof item === 'object' ? item.displayName : item;
+    dom.createIconNode(this.plugin, this.path, iconNameWithPrefix);
+    this.onSelect?.(iconNameWithPrefix);
     this.plugin.addFolderIcon(this.path, item);
+    // Extracts the icon file to the icon pack.
+    if (typeof item === 'object') {
+      const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
+      const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
+      const possibleIcon = getSvgFromLoadedIcon(iconNameWithPrefix.substring(0, iconNextIdentifier), iconName);
+      if (possibleIcon) {
+        const icon = addIconToIconPack(item.iconPackName, `${iconName}.svg`, possibleIcon);
+        extractIconToIconPack(this.plugin, icon, possibleIcon);
+      }
+    }
     this.plugin.notifyPlugins();
   }
 
@@ -116,13 +144,13 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     // }
 
     // Render subheadlines for modal.
-    if (this.recentlyUsedItems.length !== 0 && this.inputEl.value.length === 0) {
+    if (this.recentlyUsedItems.size !== 0 && this.inputEl.value.length === 0) {
       if (this.renderIndex === 0) {
         const subheadline = this.resultContainerEl.createDiv();
         subheadline.classList.add('obsidian-icon-folder-subheadline');
         subheadline.innerText = 'Recently used Icons:';
         this.resultContainerEl.prepend(subheadline);
-      } else if (this.renderIndex === this.recentlyUsedItems.length - 1) {
+      } else if (this.renderIndex === this.recentlyUsedItems.size - 1) {
         const subheadline = this.resultContainerEl.createDiv();
         subheadline.classList.add('obsidian-icon-folder-subheadline');
         subheadline.innerText = 'All Icons:';
