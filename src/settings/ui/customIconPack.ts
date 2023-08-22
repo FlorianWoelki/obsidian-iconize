@@ -3,18 +3,13 @@ import IconFolderSetting from './iconFolderSetting';
 import {
   addIconToIconPack,
   createFile,
-  createIconPackDirectory,
+  createCustomIconPackDirectory,
   deleteIconPack,
   doesIconPackExist,
   getAllIconPacks,
-  getFilesInDirectory,
-  getIconPack,
-  getPath,
-  normalizeFileName,
 } from '@app/iconPackManager';
 import IconFolderPlugin from '@app/main';
 import { readFileSync } from '@app/util';
-import dom from '@lib/util/dom';
 
 export default class CustomIconPackSetting extends IconFolderSetting {
   private textComponent: TextComponent;
@@ -92,7 +87,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
             return;
           }
 
-          await createIconPackDirectory(this.plugin, normalizedName);
+          await createCustomIconPackDirectory(this.plugin, normalizedName);
           this.textComponent.setValue('');
           this.refreshDisplay();
           new Notice('Icon pack successfully created.');

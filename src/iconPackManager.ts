@@ -37,6 +37,7 @@ const preloadedIcons: Icon[] = [];
 let iconPacks: {
   name: string;
   prefix: string;
+  custom: boolean;
   icons: Icon[];
 }[] = [];
 
@@ -79,10 +80,10 @@ export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: 
   }
 };
 
-export const createIconPackDirectory = async (plugin: Plugin, dir: string): Promise<void> => {
+export const createCustomIconPackDirectory = async (plugin: Plugin, dir: string): Promise<void> => {
   await createDirectory(plugin, dir);
   const prefix = createIconPackPrefix(dir);
-  iconPacks.push({ name: dir, icons: [], prefix });
+  iconPacks.push({ name: dir, icons: [], prefix, custom: true });
 };
 
 export const deleteIconPack = async (plugin: Plugin, dir: string): Promise<void> => {
@@ -292,20 +293,46 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
   }
 
   const loadedIconPacks = await plugin.app.vault.adapter.list(path);
-  // Extract all zip files.
+  // Extract all zip files which will be downloaded icon packs.
   const zipFiles: Record<string, JSZip.JSZipObject[]> = {};
   for (let i = 0; i < loadedIconPacks.files.length; i++) {
     const fileName = loadedIconPacks.files[i];
     if (fileName.endsWith('.zip')) {
       const arrayBuffer = await plugin.app.vault.adapter.readBinary(fileName);
       const files = await readZipFile(arrayBuffer);
-      zipFiles[fileName] = files;
+      const iconPackName = fileName.split('/').pop().split('.zip')[0];
+      zipFiles[iconPackName] = files;
     }
+  }
+
+  // Check for custom-made icon packs.
+  for (let i = 0; i < loadedIconPacks.folders.length; i++) {
+    const folderName = loadedIconPacks.folders[i].split('/').pop();
+    // Continue if the icon pack does have a zip file.
+    if (zipFiles[folderName]) {
+      continue;
+    }
+
+    const files = await getFilesInDirectory(plugin, `${path}/${folderName}`);
+    const loadedIcons: Icon[] = [];
+    // Convert files into loaded svgs.
+    for (let j = 0; j < files.length; j++) {
+      const iconNameRegex = files[j].match(new RegExp(path + '/' + folderName + '/(.*)'));
+      const iconName = iconNameRegex[1];
+      const iconContent = await plugin.app.vault.adapter.read(files[j]);
+      const icon = generateIcon(folderName, iconName, iconContent);
+      if (icon) {
+        loadedIcons.push(icon);
+      }
+    }
+
+    const prefix = createIconPackPrefix(folderName);
+    iconPacks.push({ name: folderName, icons: loadedIcons, prefix, custom: true });
+    console.log(`loaded icon pack ${folderName} (${loadedIcons.length})`);
   }
 
   // Extract all files from the zip files.
   for (const zipFile in zipFiles) {
-    const iconPackName = zipFile.split('/').pop().split('.zip')[0];
     const files = zipFiles[zipFile];
     const loadedIcons: Icon[] = [];
     // Convert files into loaded svgs.
@@ -313,15 +340,15 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
       const file = await getFileFromJSZipFile(files[j]);
       const iconContent = await file.text();
       const iconName = file.name;
-      const icon = generateIcon(iconPackName, iconName, iconContent);
+      const icon = generateIcon(zipFile, iconName, iconContent);
       if (icon) {
         loadedIcons.push(icon);
       }
     }
 
-    const prefix = createIconPackPrefix(iconPackName);
-    iconPacks.push({ name: iconPackName, icons: loadedIcons, prefix });
-    console.log(`loaded icon pack ${iconPackName} (${loadedIcons.length})`);
+    const prefix = createIconPackPrefix(zipFile);
+    iconPacks.push({ name: zipFile, icons: loadedIcons, prefix, custom: false });
+    console.log(`loaded icon pack ${zipFile} (${loadedIcons.length})`);
   }
 };
 
@@ -350,7 +377,11 @@ export const removeIconFromIconPackDirectory = (
   iconPackName: string,
   iconName: string,
 ): Promise<void> => {
-  return plugin.app.vault.adapter.rmdir(`${path}/${iconPackName}/${iconName}.svg`, true);
+  const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
+  // Checks if icon pack is custom-made.
+  if (!iconPack.custom) {
+    return plugin.app.vault.adapter.rmdir(`${path}/${iconPackName}/${iconName}.svg`, true);
+  }
 };
 
 export const extractIconToIconPack = async (plugin: Plugin, icon: Icon, iconContent: string) => {
