@@ -45,6 +45,7 @@ export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: 
   // Tries to move all icon packs to the new folder.
   for (let i = 0; i < iconPacks.length; i++) {
     const iconPack = iconPacks[i];
+    // Tries to create a new directory in the new path.
     const doesDirExist = await createDirectory(plugin, iconPack.name);
     if (doesDirExist) {
       new Notice(`Directory with name ${iconPack.name} already exists.`);
@@ -53,14 +54,17 @@ export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: 
 
     new Notice(`Moving ${iconPack.name}...`);
 
-    for (let j = 0; j < iconPack.icons.length; j++) {
-      const icon = iconPack.icons[j];
-      if (await plugin.app.vault.adapter.exists(`${from}/${iconPack.name}`)) {
-        await plugin.app.vault.adapter.copy(
-          `${from}/${iconPack.name}/${icon.filename}`,
-          `${to}/${iconPack.name}/${icon.filename}`,
-        );
-      }
+    // Move the zip file.
+    if (await plugin.app.vault.adapter.exists(`${from}/${iconPack.name}.zip`)) {
+      await plugin.app.vault.adapter.copy(`${from}/${iconPack.name}.zip`, `${to}/${iconPack.name}.zip`);
+    }
+
+    // Move all other files inside of the iconpack directory.
+    const filesInDirectory = await getFilesInDirectory(plugin, `${from}/${iconPack.name}`);
+
+    for (const file of filesInDirectory) {
+      const fileName = file.split('/').pop();
+      await plugin.app.vault.adapter.copy(`${from}/${iconPack.name}/${fileName}`, `${to}/${iconPack.name}/${fileName}`);
     }
 
     new Notice(`...moved ${iconPack.name}`);
