@@ -452,6 +452,12 @@ export default class IconFolderPlugin extends Plugin {
     return this.registeredFileExplorers;
   }
 
+  /**
+   * Returns a possible data path by the given value. This function checks for direct icon,
+   * inheritance icon and custom rules.
+   * @param value String that will be used to find the data path.
+   * @returns String that is the data path or `undefined` if no data path was found.
+   */
   getDataPathByValue(value: string): string | undefined {
     return Object.entries(this.data).find(([k, v]) => {
       if (typeof v === 'string') {
