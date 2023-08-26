@@ -1,3 +1,11 @@
+import {
+  addIconToIconPack,
+  extractIconToIconPack,
+  getIconPackNameByPrefix,
+  getSvgFromLoadedIcon,
+  nextIdentifier,
+  removeIconFromIconPackDirectory,
+} from '@app/iconPackManager';
 import { FileItem } from './@types/obsidian';
 import IconFolderPlugin from './main';
 import { TFile } from 'obsidian';
@@ -57,4 +65,42 @@ export const getFileItemTitleEl = (fileItem: FileItem): HTMLElement => {
  */
 export const getFileItemInnerTitleEl = (fileItem: FileItem): HTMLElement => {
   return fileItem.titleInnerEl ?? fileItem.innerEl;
+};
+
+/**
+ * A utility function which will add the icon to the icon pack and then extract the icon
+ * to the icon pack.
+ * @param plugin IconFolderPlugin that will be used for extracting the icon.
+ * @param iconNameWithPrefix String that will be used to add the icon to the icon pack.
+ */
+export const saveIconToIconPack = (plugin: IconFolderPlugin, iconNameWithPrefix: string): void => {
+  const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
+  const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
+  const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
+  const possibleIcon = getSvgFromLoadedIcon(iconPrefix, iconName);
+  if (!possibleIcon) {
+    console.error(`Icon ${iconNameWithPrefix} could not be found.`);
+    return;
+  }
+
+  const iconPackName = getIconPackNameByPrefix(iconPrefix);
+  const icon = addIconToIconPack(iconPackName, `${iconName}.svg`, possibleIcon);
+  extractIconToIconPack(plugin, icon, possibleIcon);
+};
+
+/**
+ * A utility function which will remove the icon from the icon pack by removing the icon
+ * file from the icon pack directory.
+ * @param plugin IconFolderPlugin that will be used for removing the icon.
+ * @param iconNameWithPrefix String that will be used to remove the icon from the icon pack.
+ */
+export const removeIconFromIconPack = (plugin: IconFolderPlugin, iconNameWithPrefix: string): void => {
+  const identifier = nextIdentifier(iconNameWithPrefix);
+  const prefix = iconNameWithPrefix.substring(0, identifier);
+  const iconName = iconNameWithPrefix.substring(identifier);
+  const iconPackName = getIconPackNameByPrefix(prefix);
+  const duplicatedIcon = plugin.getDataPathByValue(iconNameWithPrefix);
+  if (!duplicatedIcon) {
+    removeIconFromIconPackDirectory(plugin, iconPackName, iconName);
+  }
 };
