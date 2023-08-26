@@ -459,6 +459,14 @@ export default class IconFolderPlugin extends Plugin {
           return k;
         }
       } else if (typeof v === 'object') {
+        // Check for custom rules.
+        if (k === 'settings') {
+          // `rules` are defined in the settings object.
+          const rules = (v as IconFolderSettings).rules;
+          return rules.find((rule) => rule.icon === value);
+        }
+
+        // Check for inheritance icons.
         v = v as FolderIconObject;
         if (value === v.iconName || value === v.inheritanceIcon) {
           return k;
