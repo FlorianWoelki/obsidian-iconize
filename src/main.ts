@@ -126,9 +126,12 @@ export default class IconFolderPlugin extends Plugin {
 
         menu.addItem((item: MenuItem) => {
           if (Platform.isDesktop) {
-          item
-            .setTitle("Icon Folder")
-            .setIcon('tag')
+            item
+              .setTitle("Icon Folder")
+              .setIcon('tag')
+          } else {
+            menu.addSeparator();
+            item.setIsLabel(true);
           }
           //eslint-disable-next-line 
           // @ts-ignore
