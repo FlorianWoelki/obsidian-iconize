@@ -1,4 +1,4 @@
-import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion } from 'obsidian';
+import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion, Menu, Platform } from 'obsidian';
 import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
@@ -124,57 +124,66 @@ export default class IconFolderPlugin extends Plugin {
           });
         };
 
-        menu.addItem(addIconMenuItem);
+        menu.addItem((item: MenuItem) => {
+          if (Platform.isDesktop) {
+          item
+            .setTitle("Icon Folder")
+            .setIcon('tag')
+          }
+          //eslint-disable-next-line 
+          // @ts-ignore
+          const subMenu = Platform.isDesktop ? item.setSubmenu() as Menu : menu;
+          subMenu.addItem(addIconMenuItem);
+          
 
-        const filePathData = this.getData()[file.path];
-        const inheritanceFolderHasIcon =
-          typeof filePathData === 'object' && (filePathData as FolderIconObject).iconName !== null;
-        // Only add remove icon menu item when the file path exists in the data.
-        // We do not want to show this menu item for e.g. inheritance or custom rules.
-        if (filePathData && (typeof filePathData === 'string' || inheritanceFolderHasIcon)) {
-          menu.addItem(removeIconMenuItem);
-        }
-
-        const inheritIcon = (item: MenuItem) => {
-          const iconData = this.data[file.path] as FolderIconObject | string;
-          if (typeof iconData === 'object') {
-            item.setTitle('Remove inherit icon');
-            item.onClick(() => {
-              inheritance.remove(this, file.path, {
-                onRemove: (file) => {
-                  // Removes the icons from the file tabs inside of the inheritance.
-                  if (this.getSettings().iconInTabsEnabled) {
-                    iconTabs.remove(file as TFile, { replaceWithDefaultIcon: true });
-                  }
-                },
-              });
-              this.saveInheritanceData(file.path, null);
-              removeIconFromIconPack(this, iconData.inheritanceIcon);
-            });
-          } else {
-            item.setTitle('Inherit icon');
-            item.onClick(() => {
-              const modal = new IconsPickerModal(this.app, this, file.path);
-              modal.open();
-              // manipulate `onChooseItem` method to get custom functionality for inheriting icons
-              modal.onChooseItem = (icon: Icon | string) => {
-                this.saveInheritanceData(file.path, icon);
-                const iconName = typeof icon === 'string' ? icon : icon.displayName;
-                saveIconToIconPack(this, iconName);
-                inheritance.add(this, file.path, iconName, {
-                  onAdd: (file) => {
+          const filePathData = this.getData()[file.path];
+          const inheritanceFolderHasIcon =
+            typeof filePathData === 'object' && (filePathData as FolderIconObject).iconName !== null;
+          // Only add remove icon menu item when the file path exists in the data.
+          // We do not want to show this menu item for e.g. inheritance or custom rules.
+          if (filePathData && (typeof filePathData === 'string' || inheritanceFolderHasIcon)) {
+            subMenu.addItem(removeIconMenuItem);
+          }  
+          const inheritIcon = (item: MenuItem) => {
+            const iconData = this.data[file.path] as FolderIconObject | string;
+            if (typeof iconData === 'object') {
+              item.setTitle('Remove inherit icon');
+              item.onClick(() => {
+                inheritance.remove(this, file.path, {
+                  onRemove: (file) => {
+                    // Removes the icons from the file tabs inside of the inheritance.
                     if (this.getSettings().iconInTabsEnabled) {
-                      iconTabs.add(this, file as TFile, { iconName });
+                      iconTabs.remove(file as TFile, { replaceWithDefaultIcon: true });
                     }
                   },
                 });
-              };
-            });
-          }
-          item.setIcon('vertical-three-dots');
-        };
-
-        menu.addItem(inheritIcon);
+                this.saveInheritanceData(file.path, null);
+                removeIconFromIconPack(this, iconData.inheritanceIcon);
+              });
+            } else {
+              item.setTitle('Inherit icon');
+              item.onClick(() => {
+                const modal = new IconsPickerModal(this.app, this, file.path);
+                modal.open();
+                // manipulate `onChooseItem` method to get custom functionality for inheriting icons
+                modal.onChooseItem = (icon: Icon | string) => {
+                  this.saveInheritanceData(file.path, icon);
+                  const iconName = typeof icon === 'string' ? icon : icon.displayName;
+                  saveIconToIconPack(this, iconName);
+                  inheritance.add(this, file.path, iconName, {
+                    onAdd: (file) => {
+                      if (this.getSettings().iconInTabsEnabled) {
+                        iconTabs.add(this, file as TFile, { iconName });
+                      }
+                    },
+                  });
+                };
+              });
+            }
+            item.setIcon('vertical-three-dots');
+          };
+          subMenu.addItem(inheritIcon);
+        });
       }),
     );
 
