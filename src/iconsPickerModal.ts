@@ -10,6 +10,7 @@ import {
   nextIdentifier,
 } from './iconPackManager';
 import dom from './lib/util/dom';
+import { saveIconToIconPack } from '@app/util';
 
 export interface Icon {
   name: string;
@@ -121,7 +122,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     this.plugin.addFolderIcon(this.path, item);
     // Extracts the icon file to the icon pack.
     if (typeof item === 'object') {
-      this.plugin.saveAndAddIconToIconPack(item);
+      saveIconToIconPack(this.plugin, iconNameWithPrefix);
     }
     this.plugin.notifyPlugins();
   }

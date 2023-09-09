@@ -2,12 +2,11 @@ import { App, Notice, Setting, TextComponent, ColorComponent, ButtonComponent, M
 import IconFolderSetting from './iconFolderSetting';
 import IconsPickerModal from '@app/iconsPickerModal';
 import IconFolderPlugin from '@app/main';
-import { getAllOpenedFiles } from '@app/util';
+import { getAllOpenedFiles, removeIconFromIconPack, saveIconToIconPack } from '@app/util';
 import { CustomRule } from '../data';
 import customRule from '@lib/customRule';
 import iconTabs from '@lib/iconTabs';
 import dom from '../../lib/util/dom';
-import style from '../../lib/util/style';
 import svg from '../../lib/util/svg';
 
 export default class CustomIconRuleSetting extends IconFolderSetting {
@@ -92,6 +91,8 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             this.refreshDisplay();
             new Notice('Icon rule added.');
             this.textComponent.setValue('');
+
+            saveIconToIconPack(this.plugin, rule.icon);
 
             await customRule.addToAllFiles(this.plugin, rule);
             this.updateIconTabs(rule, false);
@@ -259,6 +260,8 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           new Notice('Custom rule deleted.');
 
           await customRule.removeFromAllFiles(this.plugin, rule);
+
+          removeIconFromIconPack(this.plugin, rule.icon);
 
           this.updateIconTabs(rule, true);
           const previousRules = this.plugin.getSettings().rules.filter((r) => rule.for === r.for);

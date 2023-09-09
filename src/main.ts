@@ -1,17 +1,6 @@
 import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion } from 'obsidian';
 import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
-import {
-  addIconToIconPack,
-  createDefaultDirectory,
-  extractIconToIconPack,
-  getIconPackNameByPrefix,
-  getSvgFromLoadedIcon,
-  initIconPacks,
-  loadUsedIcons,
-  nextIdentifier,
-  removeIconFromIconPackDirectory,
-  setPath,
-} from './iconPackManager';
+import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings/data';
 import { migrateIcons } from './migration';
@@ -25,6 +14,7 @@ import dom from './lib/util/dom';
 import customRule from './lib/customRule';
 import icon from './lib/icon';
 import BookmarkInternalPlugin from './internal-plugins/bookmark';
+import { removeIconFromIconPack, saveIconToIconPack } from '@app/util';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -146,7 +136,8 @@ export default class IconFolderPlugin extends Plugin {
         }
 
         const inheritIcon = (item: MenuItem) => {
-          if (typeof this.data[file.path] === 'object') {
+          const iconData = this.data[file.path] as FolderIconObject | string;
+          if (typeof iconData === 'object') {
             item.setTitle('Remove inherit icon');
             item.onClick(() => {
               inheritance.remove(this, file.path, {
@@ -157,9 +148,8 @@ export default class IconFolderPlugin extends Plugin {
                   }
                 },
               });
-              const iconWithPrefix = (this.data[file.path] as FolderIconObject).inheritanceIcon;
               this.saveInheritanceData(file.path, null);
-              this.saveAndRemoveIconFromIconPack(iconWithPrefix);
+              removeIconFromIconPack(this, iconData.inheritanceIcon);
             });
           } else {
             item.setTitle('Inherit icon');
@@ -168,12 +158,9 @@ export default class IconFolderPlugin extends Plugin {
               modal.open();
               // manipulate `onChooseItem` method to get custom functionality for inheriting icons
               modal.onChooseItem = (icon: Icon | string) => {
-                if (typeof icon === 'object') {
-                  this.saveAndAddIconToIconPack(icon);
-                }
-
                 this.saveInheritanceData(file.path, icon);
                 const iconName = typeof icon === 'string' ? icon : icon.displayName;
+                saveIconToIconPack(this, iconName);
                 inheritance.add(this, file.path, iconName, {
                   onAdd: (file) => {
                     if (this.getSettings().iconInTabsEnabled) {
@@ -368,7 +355,7 @@ export default class IconFolderPlugin extends Plugin {
     }
 
     // Saves the icon name with prefix to remove it from the icon pack directory later.
-    const iconNameWithPrefix = this.data[path];
+    const iconData = this.data[path];
 
     if (typeof this.data[path] === 'object') {
       const currentValue = this.data[path] as FolderIconObject;
@@ -382,34 +369,18 @@ export default class IconFolderPlugin extends Plugin {
 
     // Removes the icon from the icon pack directory if it is not used as an icon somewhere
     // else.
-    if (iconNameWithPrefix && typeof iconNameWithPrefix === 'string') {
-      this.saveAndRemoveIconFromIconPack(iconNameWithPrefix);
+    if (iconData) {
+      let iconNameWithPrefix = iconData as string | FolderIconObject;
+      if (typeof iconData === 'object') {
+        iconNameWithPrefix = (iconData as FolderIconObject).iconName;
+      } else {
+        iconNameWithPrefix = iconData as string;
+      }
+      removeIconFromIconPack(this, iconNameWithPrefix);
     }
 
     //this.addIconsToSearch();
     this.saveIconFolderData();
-  }
-
-  saveAndRemoveIconFromIconPack(iconNameWithPrefix: string): void {
-    const identifier = nextIdentifier(iconNameWithPrefix);
-    const prefix = iconNameWithPrefix.substring(0, identifier);
-    const iconName = iconNameWithPrefix.substring(identifier);
-    const iconPackName = getIconPackNameByPrefix(prefix);
-    const duplicatedIcon = this.getDataPathByValue(iconNameWithPrefix);
-    if (!duplicatedIcon) {
-      removeIconFromIconPackDirectory(this, iconPackName, iconName);
-    }
-  }
-
-  saveAndAddIconToIconPack(item: Icon): void {
-    const iconNameWithPrefix = typeof item === 'object' ? item.displayName : item;
-    const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
-    const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
-    const possibleIcon = getSvgFromLoadedIcon(iconNameWithPrefix.substring(0, iconNextIdentifier), iconName);
-    if (possibleIcon) {
-      const icon = addIconToIconPack(item.iconPackName, `${iconName}.svg`, possibleIcon);
-      extractIconToIconPack(this, icon, possibleIcon);
-    }
   }
 
   addFolderIcon(path: string, icon: Icon | string): void {
@@ -481,6 +452,12 @@ export default class IconFolderPlugin extends Plugin {
     return this.registeredFileExplorers;
   }
 
+  /**
+   * Returns a possible data path by the given value. This function checks for direct icon,
+   * inheritance icon and custom rules.
+   * @param value String that will be used to find the data path.
+   * @returns String that is the data path or `undefined` if no data path was found.
+   */
   getDataPathByValue(value: string): string | undefined {
     return Object.entries(this.data).find(([k, v]) => {
       if (typeof v === 'string') {
@@ -488,6 +465,14 @@ export default class IconFolderPlugin extends Plugin {
           return k;
         }
       } else if (typeof v === 'object') {
+        // Check for custom rules.
+        if (k === 'settings') {
+          // `rules` are defined in the settings object.
+          const rules = (v as IconFolderSettings).rules;
+          return rules.find((rule) => rule.icon === value);
+        }
+
+        // Check for inheritance icons.
         v = v as FolderIconObject;
         if (value === v.iconName || value === v.inheritanceIcon) {
           return k;
