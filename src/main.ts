@@ -1,8 +1,11 @@
 import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion } from 'obsidian';
 import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
 import {
+  addIconToIconPack,
   createDefaultDirectory,
+  extractIconToIconPack,
   getIconPackNameByPrefix,
+  getSvgFromLoadedIcon,
   initIconPacks,
   loadUsedIcons,
   nextIdentifier,
@@ -154,7 +157,9 @@ export default class IconFolderPlugin extends Plugin {
                   }
                 },
               });
+              const iconWithPrefix = (this.data[file.path] as FolderIconObject).inheritanceIcon;
               this.saveInheritanceData(file.path, null);
+              this.saveAndRemoveIconFromIconPack(iconWithPrefix);
             });
           } else {
             item.setTitle('Inherit icon');
@@ -163,6 +168,10 @@ export default class IconFolderPlugin extends Plugin {
               modal.open();
               // manipulate `onChooseItem` method to get custom functionality for inheriting icons
               modal.onChooseItem = (icon: Icon | string) => {
+                if (typeof icon === 'object') {
+                  this.saveAndAddIconToIconPack(icon);
+                }
+
                 this.saveInheritanceData(file.path, icon);
                 const iconName = typeof icon === 'string' ? icon : icon.displayName;
                 inheritance.add(this, file.path, iconName, {
@@ -374,18 +383,33 @@ export default class IconFolderPlugin extends Plugin {
     // Removes the icon from the icon pack directory if it is not used as an icon somewhere
     // else.
     if (iconNameWithPrefix && typeof iconNameWithPrefix === 'string') {
-      const identifier = nextIdentifier(iconNameWithPrefix);
-      const prefix = iconNameWithPrefix.substring(0, identifier);
-      const iconName = iconNameWithPrefix.substring(identifier);
-      const iconPackName = getIconPackNameByPrefix(prefix);
-      const duplicatedIcon = this.getDataPathByValue(iconNameWithPrefix);
-      if (!duplicatedIcon) {
-        removeIconFromIconPackDirectory(this, iconPackName, iconName);
-      }
+      this.saveAndRemoveIconFromIconPack(iconNameWithPrefix);
     }
 
     //this.addIconsToSearch();
     this.saveIconFolderData();
+  }
+
+  saveAndRemoveIconFromIconPack(iconNameWithPrefix: string): void {
+    const identifier = nextIdentifier(iconNameWithPrefix);
+    const prefix = iconNameWithPrefix.substring(0, identifier);
+    const iconName = iconNameWithPrefix.substring(identifier);
+    const iconPackName = getIconPackNameByPrefix(prefix);
+    const duplicatedIcon = this.getDataPathByValue(iconNameWithPrefix);
+    if (!duplicatedIcon) {
+      removeIconFromIconPackDirectory(this, iconPackName, iconName);
+    }
+  }
+
+  saveAndAddIconToIconPack(item: Icon): void {
+    const iconNameWithPrefix = typeof item === 'object' ? item.displayName : item;
+    const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
+    const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
+    const possibleIcon = getSvgFromLoadedIcon(iconNameWithPrefix.substring(0, iconNextIdentifier), iconName);
+    if (possibleIcon) {
+      const icon = addIconToIconPack(item.iconPackName, `${iconName}.svg`, possibleIcon);
+      extractIconToIconPack(this, icon, possibleIcon);
+    }
   }
 
   addFolderIcon(path: string, icon: Icon | string): void {

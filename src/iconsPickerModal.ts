@@ -3,9 +3,7 @@ import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from './main';
 import emoji from './emoji';
 import {
-  addIconToIconPack,
   doesIconExists,
-  extractIconToIconPack,
   getAllLoadedIconNames,
   getIconPackNameByPrefix,
   getSvgFromLoadedIcon,
@@ -123,13 +121,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     this.plugin.addFolderIcon(this.path, item);
     // Extracts the icon file to the icon pack.
     if (typeof item === 'object') {
-      const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
-      const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
-      const possibleIcon = getSvgFromLoadedIcon(iconNameWithPrefix.substring(0, iconNextIdentifier), iconName);
-      if (possibleIcon) {
-        const icon = addIconToIconPack(item.iconPackName, `${iconName}.svg`, possibleIcon);
-        extractIconToIconPack(this.plugin, icon, possibleIcon);
-      }
+      this.plugin.saveAndAddIconToIconPack(item);
     }
     this.plugin.notifyPlugins();
   }
