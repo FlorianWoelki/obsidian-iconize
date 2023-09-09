@@ -1,4 +1,4 @@
-import { TAbstractFile } from 'obsidian';
+import { TAbstractFile, TFolder } from 'obsidian';
 import { FileItem } from '../@types/obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import dom from './util/dom';
@@ -58,8 +58,6 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
     options?.onAdd?.(fileItem.file);
   };
 
-  const inheritanceFolders = getFolders(plugin);
-
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     if (options?.file) {
       // Handles the addition of the inheritance icon for only one file.
@@ -74,10 +72,15 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
     } else {
       // Handles the addition of a completely new inheritance for a folder.
       for (const [path, fileItem] of Object.entries(fileExplorer.fileItems)) {
+        // Checks if the file is in the folder and not a directory.
+        if (fileItem.file.parent?.path !== folderPath) {
+          continue;
+        }
+
+        const isFolder = (fileItem.file as TFolder).children !== undefined;
         const inFolder = path.includes(folderPath);
-        const isInheritanceDirectory = inheritanceFolders[path];
         const hasIcon = plugin.getData()[fileItem.file.path];
-        if (!inFolder || isInheritanceDirectory || hasIcon) {
+        if (!inFolder || hasIcon || isFolder) {
           continue;
         }
 
@@ -98,6 +101,10 @@ const remove = (plugin: IconFolderPlugin, folderPath: string, options?: RemoveOp
   const files = getFiles(plugin, folderPath);
 
   for (const file of files) {
+    if (file.parent?.path !== folderPath) {
+      continue;
+    }
+
     // When the file path is not registered in the data it should remove the icon.
     if (!plugin.getData()[file.path]) {
       dom.removeIconInPath(file.path);
