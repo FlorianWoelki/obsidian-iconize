@@ -13,7 +13,7 @@ export interface CustomRule {
 }
 
 export interface IconFolderSettings {
-  migrated: boolean;
+  migrated: number;
   iconPacksPath: string;
   fontSize: number;
   emojiStyle: 'none' | 'native' | 'twemoji';
@@ -26,7 +26,7 @@ export interface IconFolderSettings {
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
-  migrated: false,
+  migrated: 1,
   iconPacksPath: '.obsidian/plugins/obsidian-icon-folder/icons',
   fontSize: 16,
   emojiStyle: 'none',
