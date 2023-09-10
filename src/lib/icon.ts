@@ -25,6 +25,7 @@ export const addAll = (
   callback?: () => void,
 ): void => {
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
+
   for (const fileExplorer of fileExplorers) {
     if (registeredFileExplorers.has(fileExplorer.view)) {
       continue;
@@ -32,10 +33,14 @@ export const addAll = (
 
     registeredFileExplorers.add(fileExplorer.view);
 
-    // create a map with registered file paths to have constant look up time
-    const registeredFilePaths: Record<string, boolean> = {};
-    for (const [path] of data) {
-      registeredFilePaths[path] = true;
+    // Adds icons to already open file tabs.
+    if (plugin.getSettings().iconInTabsEnabled) {
+      for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
+        const file = leaf.view.file;
+        if (file) {
+          iconTabs.add(plugin, file);
+        }
+      }
     }
 
     for (const [dataPath, value] of data) {
@@ -74,20 +79,10 @@ export const addAll = (
 
     // Callback function to register other events to this file explorer.
     callback?.();
-
-    // Handles the custom rules.
-    customRule.addAll(plugin);
-
-    // Adds icons to already open file tabs.
-    if (plugin.getSettings().iconInTabsEnabled) {
-      for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
-        const file = leaf.view.file;
-        if (file) {
-          iconTabs.add(plugin, file);
-        }
-      }
-    }
   }
+
+  // Handles the custom rules.
+  customRule.addAll(plugin);
 };
 
 /**

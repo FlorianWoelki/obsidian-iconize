@@ -31,8 +31,22 @@ export default class IconFolderPlugin extends Plugin {
     if (!this.getSettings().migrated) {
       console.log('migrating icons...');
       this.data = migrateIcons(this);
-      this.getSettings().migrated = true;
+      this.getSettings().migrated++;
       console.log('...icons migrated');
+    }
+
+    // @ts-ignore
+    if (this.getSettings().migrated === true) {
+      this.getSettings().migrated = 1;
+    }
+
+    // Migration for new syncing mechanism.
+    if (this.getSettings().migrated === 1) {
+      new Notice(
+        'Please delete your old icon packs and redownload your icon packs to use the new syncing mechanism.',
+        20000,
+      );
+      this.getSettings().migrated++;
     }
 
     const extraPadding = (this.getSettings() as any).extraPadding as ExtraMarginSettings;

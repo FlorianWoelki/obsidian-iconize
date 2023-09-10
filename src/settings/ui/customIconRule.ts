@@ -103,6 +103,8 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
       });
 
     this.plugin.getSettings().rules.forEach((rule) => {
+      // Keeping track of the old rule so that we can get a reference to it for old values.
+      const oldRule = { ...rule };
       const settingRuleEl = new Setting(this.containerEl).setName(rule.rule).setDesc(`Icon: ${rule.icon}`);
 
       // Add the configuration button for configuring where the custom rule gets applied to.
@@ -224,9 +226,15 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           button.buttonEl.style.float = 'right';
           button.setButtonText('Save Changes');
           button.onClick(async () => {
+            // Tries to remove the previously used icon from the icon pack.
+            removeIconFromIconPack(this.plugin, oldRule.icon);
+
             await this.plugin.saveIconFolderData();
             this.refreshDisplay();
             new Notice('Custom rule updated.');
+
+            // Tries to add the newly used icon to the icon pack.
+            saveIconToIconPack(this.plugin, rule.icon);
 
             // Refresh the DOM.
             await customRule.removeFromAllFiles(this.plugin, rule);
