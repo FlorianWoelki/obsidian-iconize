@@ -92,7 +92,14 @@ export const createCustomIconPackDirectory = async (plugin: Plugin, dir: string)
 
 export const deleteIconPack = async (plugin: Plugin, dir: string): Promise<void> => {
   iconPacks = iconPacks.filter((iconPack) => iconPack.name !== dir);
-  await plugin.app.vault.adapter.rmdir(`${path}/${dir}`, true);
+  // Check for the icon pack directory and delete it.
+  if (await plugin.app.vault.adapter.exists(`${path}/${dir}`)) {
+    await plugin.app.vault.adapter.rmdir(`${path}/${dir}`, true);
+  }
+  // Check for the icon pack zip file and delete it.
+  if (await plugin.app.vault.adapter.exists(`${path}/${dir}.zip`)) {
+    await plugin.app.vault.adapter.rmdir(`${path}/${dir}.zip`, true);
+  }
 };
 
 export const doesIconPackExist = (plugin: Plugin, iconPackName: string): Promise<boolean> => {
@@ -338,22 +345,25 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
   // Extract all files from the zip files.
   for (const zipFile in zipFiles) {
     const files = zipFiles[zipFile];
-    const loadedIcons: Icon[] = [];
-    // Convert files into loaded svgs.
-    for (let j = 0; j < files.length; j++) {
-      const file = await getFileFromJSZipFile(files[j]);
-      const iconContent = await file.text();
-      const iconName = file.name;
-      const icon = generateIcon(zipFile, iconName, iconContent);
-      if (icon) {
-        loadedIcons.push(icon);
-      }
-    }
-
+    const loadedIcons: Icon[] = await getLoadedIconsFromZipFile(zipFile, files);
     const prefix = createIconPackPrefix(zipFile);
     iconPacks.push({ name: zipFile, icons: loadedIcons, prefix, custom: false });
     console.log(`loaded icon pack ${zipFile} (${loadedIcons.length})`);
   }
+};
+
+const getLoadedIconsFromZipFile = async (iconPackName: string, files: JSZip.JSZipObject[]): Promise<Icon[]> => {
+  const loadedIcons: Icon[] = [];
+  for (let j = 0; j < files.length; j++) {
+    const file = await getFileFromJSZipFile(files[j]);
+    const iconContent = await file.text();
+    const iconName = file.name;
+    const icon = generateIcon(iconPackName, iconName, iconContent);
+    if (icon) {
+      loadedIcons.push(icon);
+    }
+  }
+  return loadedIcons;
 };
 
 export const addIconToIconPack = (iconPackName: string, iconName: string, iconContent: string): Icon | undefined => {
@@ -405,6 +415,14 @@ export const getAllLoadedIconNames = (): Icon[] => {
     total.push(...iconPack.icons);
     return total;
   }, []);
+};
+
+export const registerIconPack = async (name: string, arrayBuffer: ArrayBuffer) => {
+  const files = await readZipFile(arrayBuffer);
+  const loadedIcons: Icon[] = await getLoadedIconsFromZipFile(name, files);
+  const prefix = createIconPackPrefix(name);
+  iconPacks.push({ name, icons: loadedIcons, prefix, custom: false });
+  console.log(`loaded icon pack ${name} (${loadedIcons.length})`);
 };
 
 export const doesIconExists = (iconName: string): boolean => {
