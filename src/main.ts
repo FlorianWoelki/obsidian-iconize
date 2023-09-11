@@ -1,4 +1,4 @@
-import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion, Menu, Platform, Notice } from 'obsidian';
+import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion, Menu, Platform, Notice, TFolder } from 'obsidian';
 import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, getNormalizedName, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
@@ -262,18 +262,21 @@ export default class IconFolderPlugin extends Plugin {
           });
 
           if (inheritance.doesExistInPath(this, file.path)) {
-            const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
-            const folderInheritance = inheritance.getByPath(this, file.path);
-            const iconName = folderInheritance.inheritanceIcon;
-            dom.removeIconInPath(file.path);
-            inheritance.add(this, folderPath, iconName, {
-              file,
-              onAdd: (file) => {
-                if (this.getSettings().iconInTabsEnabled) {
-                  iconTabs.add(this, file as TFile, { iconName });
-                }
-              },
-            });
+            const isFolder = (file as TFolder).children !== undefined;
+            if (!isFolder) {
+              const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
+              const folderInheritance = inheritance.getByPath(this, file.path);
+              const iconName = folderInheritance.inheritanceIcon;
+              dom.removeIconInPath(file.path);
+              inheritance.add(this, folderPath, iconName, {
+                file,
+                onAdd: (file) => {
+                  if (this.getSettings().iconInTabsEnabled) {
+                    iconTabs.add(this, file as TFile, { iconName });
+                  }
+                },
+              });
+            }
           }
         }),
       );
@@ -285,7 +288,9 @@ export default class IconFolderPlugin extends Plugin {
             ([k, v]) => k !== 'settings' && typeof v === 'object',
           );
 
-          if (!file.parent || file.parent.path === '/') return;
+          const isFolder = (file as TFolder).children !== undefined;
+
+          if (!file.parent || file.parent.path === '/' || isFolder) return;
 
           inheritanceFolders.forEach(([path, obj]: [string, FolderIconObject]) => {
             inheritance.add(this, path, obj.inheritanceIcon, {
