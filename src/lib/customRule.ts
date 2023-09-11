@@ -22,27 +22,6 @@ const doesMatchFileType = (rule: CustomRule, fileType: CustomRuleFileType): bool
 };
 
 /**
- * Determines whether a given filepath matches a specified custom rule.
- * @param rule Custom rule to check against the file.
- * @param path File path to check against the custom rule.
- * @returns True if the file matches the rule, false otherwise.
- */
-
-const doestMatchPath = (rule: CustomRule, path: string, fileType: CustomRuleFileType): boolean => {
-  // Gets the file type based on the specified file path.
-  if (!rule.filepath)
-    return doesMatchFileType(rule, fileType);
-  try {
-    // Rule is in some sort of regex.
-    const regex = new RegExp(rule.rule);
-    return path.match(regex) ? true : doesMatchFileType(rule, fileType);
-  } catch {
-    // Rule is not in some sort of regex, check for basic string match.
-    return path.includes(rule.rule) ? true : doesMatchFileType(rule, fileType);
-  }
-};
-
-/**
  * Determines whether a given file matches a specified custom rule.
  * @param plugin Plugin object containing the app and other plugin data.
  * @param rule Custom rule to check against the file.
@@ -144,10 +123,10 @@ const add = async (
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
 
   const hasIcon = plugin.getData()[file.path];
-  if (!doestMatchPath(rule, file.path, fileType) || hasIcon) {
+  if (!doesMatchFileType(rule, fileType) || hasIcon) {
     return;
   }
-  const toMatch = rule.filepath ? file.path : file.name;  
+  const toMatch = rule.filepath ? file.path : file.name;
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
