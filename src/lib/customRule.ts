@@ -148,7 +148,7 @@ const add = async (
  * @returns True if the rule exists in the path, false otherwise.
  */
 const doesExistInPath = (rule: CustomRule, path: string): boolean => {
-  const name = path.split('/').pop();
+  const name = rule.useFilePath ? path : path.split('/').pop();
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
