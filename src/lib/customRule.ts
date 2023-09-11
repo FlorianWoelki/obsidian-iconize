@@ -130,10 +130,7 @@ const add = async (
     hasIcon = plugin.getData()[file.path] as string;
   }
   const hasInheritanceIcon = inheritance.getByPath(plugin, file.path) && fileType === "file";
-  if (file.path.includes("sandbox"))
-    console.log(`${file.path} has inheritance icon: ${hasInheritanceIcon}`);
   if (!doesMatchFileType(rule, fileType) || hasIcon || hasInheritanceIcon) {
-    console.log(`Skipping ${file.path}: ${!doesMatchFileType(rule, fileType)} ${hasIcon} ${hasInheritanceIcon}}`);
     return;
   }
   const toMatch = rule.useFilePath ? file.path : file.name;
