@@ -126,7 +126,7 @@ const add = async (
   if (!doesMatchFileType(rule, fileType) || hasIcon) {
     return;
   }
-  const toMatch = rule.filepath ? file.path : file.name;
+  const toMatch = rule.useFilePath ? file.path : file.name;
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
