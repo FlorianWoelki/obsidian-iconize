@@ -4,6 +4,7 @@ import IconFolderPlugin, { FolderIconObject } from '../main';
 import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
+import inheritance from './inheritance';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
@@ -123,7 +124,8 @@ const add = async (
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
 
   const hasIcon = plugin.getData()[file.path];
-  if (!doesMatchFileType(rule, fileType) || hasIcon) {
+  const hasInheritanceIcon = inheritance.getByPath(plugin, file.path);
+  if (!doesMatchFileType(rule, fileType) || hasIcon || hasInheritanceIcon) {
     return;
   }
   const toMatch = rule.useFilePath ? file.path : file.name;
