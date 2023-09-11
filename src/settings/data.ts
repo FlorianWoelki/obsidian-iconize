@@ -9,7 +9,7 @@ export interface CustomRule {
   rule: string;
   icon: string;
   color?: string;
-  filepath?:boolean;
+  useFilePath?:boolean;
   for?: 'everything' | 'files' | 'folders';
 }
 

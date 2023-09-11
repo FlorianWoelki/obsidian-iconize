@@ -204,12 +204,12 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           });
 
           new Setting(modal.contentEl)
-            .setName('File path')
-            .setDesc('Whether to apply the icon to all file/folder that match the filepath.')
+            .setName('Use file path')
+            .setDesc('Whether to apply the icon to all files/folders that match the file path.')
             .addToggle((toggle) => {
-              toggle.setValue(rule.filepath !== undefined);
+              toggle.setValue(rule.useFilePath !== undefined);
               toggle.onChange(async (value) => {
-                rule.filepath = value ? true : undefined;
+                rule.useFilePath = value;
               });
             });
 
@@ -229,7 +229,6 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             colorPicker.setValue('#000000');
             rule.color = undefined;
           });
-
 
           // Create the save button.
           const button = new ButtonComponent(modal.contentEl);
