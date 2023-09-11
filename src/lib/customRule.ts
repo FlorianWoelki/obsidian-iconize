@@ -123,9 +123,17 @@ const add = async (
   // Gets the type of the file.
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
 
-  const hasIcon = plugin.getData()[file.path];
+  let hasIcon = plugin.getData()[file.path];
+  if (typeof plugin.getData()[file.path] === 'object') {
+    hasIcon = (plugin.getData()[file.path] as FolderIconObject).iconName;
+  } else if (typeof plugin.getData()[file.path] === 'string') {
+    hasIcon = plugin.getData()[file.path] as string;
+  }
   const hasInheritanceIcon = inheritance.getByPath(plugin, file.path) && fileType === "file";
+  if (file.path.includes("sandbox"))
+    console.log(`${file.path} has inheritance icon: ${hasInheritanceIcon}`);
   if (!doesMatchFileType(rule, fileType) || hasIcon || hasInheritanceIcon) {
+    console.log(`Skipping ${file.path}: ${!doesMatchFileType(rule, fileType)} ${hasIcon} ${hasInheritanceIcon}}`);
     return;
   }
   const toMatch = rule.useFilePath ? file.path : file.name;
