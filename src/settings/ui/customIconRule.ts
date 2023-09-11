@@ -8,6 +8,7 @@ import customRule from '@lib/customRule';
 import iconTabs from '@lib/iconTabs';
 import dom from '../../lib/util/dom';
 import svg from '../../lib/util/svg';
+import { getNormalizedName } from '../../iconPackManager';
 
 export default class CustomIconRuleSetting extends IconFolderSetting {
   private app: App;
@@ -77,12 +78,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
 
           const modal = new IconsPickerModal(this.app, this.plugin, '');
           modal.onChooseItem = async (item) => {
-            let icon = '';
-            if (typeof item === 'object') {
-              icon = item.displayName;
-            } else {
-              icon = item;
-            }
+            const icon = getNormalizedName(typeof item === 'object' ? item.displayName : item);
 
             const rule: CustomRule = { rule: this.textComponent.getValue(), icon, for: 'everything' };
             this.plugin.getSettings().rules = [...this.plugin.getSettings().rules, rule];
@@ -188,17 +184,11 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           changeIconBtn.onClick(async () => {
             const modal = new IconsPickerModal(this.app, this.plugin, rule.icon);
             modal.onChooseItem = async (item) => {
-              let icon = '';
-              if (typeof item === 'object') {
-                icon = item.displayName;
-              } else {
-                icon = item;
-              }
-
+              const icon = typeof item === 'object' ? item.displayName : item;
               rule.icon = icon;
               dom.setIconForNode(this.plugin, rule.icon, iconPreviewEl);
               iconPreviewEl.innerHTML = svg.setFontSize(iconPreviewEl.innerHTML, 20);
-              iconNameEl.innerText = rule.icon;
+              iconNameEl.innerText = getNormalizedName(rule.icon);
             };
             modal.open();
           });
@@ -239,12 +229,12 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             // Tries to remove the previously used icon from the icon pack.
             removeIconFromIconPack(this.plugin, oldRule.icon);
 
-            await this.plugin.saveIconFolderData();
-            this.refreshDisplay();
-            new Notice('Custom rule updated.');
-
             // Tries to add the newly used icon to the icon pack.
             saveIconToIconPack(this.plugin, rule.icon);
+
+            rule.icon = getNormalizedName(rule.icon);
+            this.refreshDisplay();
+            new Notice('Custom rule updated.');
 
             // Refresh the DOM.
             await customRule.removeFromAllFiles(this.plugin, rule);
@@ -254,6 +244,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
               this.updateIconTabs(rule, false);
             });
 
+            await this.plugin.saveIconFolderData();
             modal.close();
           });
 
