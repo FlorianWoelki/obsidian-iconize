@@ -193,6 +193,16 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             modal.open();
           });
 
+          new Setting(modal.contentEl)
+            .setName('Use file path')
+            .setDesc('Whether to apply the icon to all files/folders that match the file path.')
+            .addToggle((toggle) => {
+              toggle.setValue(rule.useFilePath !== undefined);
+              toggle.onChange(async (value) => {
+                rule.useFilePath = value;
+              });
+            });
+
           // Create the color picker for the rule.
           this.createDescriptionEl(modal.contentEl, 'Color of the icon');
           const colorContainer = modal.contentEl.createDiv();
