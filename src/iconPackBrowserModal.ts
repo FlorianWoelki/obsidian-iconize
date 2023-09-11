@@ -1,5 +1,5 @@
 import { App, FuzzyMatch, FuzzySuggestModal, Notice } from 'obsidian';
-import { createIconPackPrefix, createZipFile, getAllIconPacks } from './iconPackManager';
+import { registerIconPack, createIconPackPrefix, createZipFile, getAllIconPacks } from './iconPackManager';
 import iconPacks, { IconPack } from './iconPacks';
 import IconFolderPlugin from './main';
 import { downloadZipFile } from './zipUtil';
@@ -42,8 +42,10 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
 
     const arrayBuffer = await downloadZipFile(item.downloadLink);
     await createZipFile(this.plugin, `${item.name}.zip`, arrayBuffer);
+    await registerIconPack(item.name, arrayBuffer);
 
     new Notice(`...${item.displayName} added`);
+    this.onAddedIconPack();
   }
 
   renderSuggestion(item: FuzzyMatch<IconPack>, el: HTMLElement): void {
