@@ -203,6 +203,16 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             modal.open();
           });
 
+          new Setting(modal.contentEl)
+            .setName('File path')
+            .setDesc('Whether to apply the icon to all file/folder that match the filepath.')
+            .addToggle((toggle) => {
+              toggle.setValue(rule.filepath !== undefined);
+              toggle.onChange(async (value) => {
+                rule.filepath = value ? true : undefined;
+              });
+            });
+
           // Create the color picker for the rule.
           this.createDescriptionEl(modal.contentEl, 'Color of the icon');
           const colorContainer = modal.contentEl.createDiv();
@@ -219,6 +229,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             colorPicker.setValue('#000000');
             rule.color = undefined;
           });
+
 
           // Create the save button.
           const button = new ButtonComponent(modal.contentEl);

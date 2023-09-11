@@ -1,7 +1,7 @@
 import { TAbstractFile } from 'obsidian';
 import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
-import { CustomRule, IconFolderSettings } from '../settings/data';
+import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
 
@@ -19,6 +19,27 @@ const doesMatchFileType = (rule: CustomRule, fileType: CustomRuleFileType): bool
     (rule.for === 'files' && fileType === 'file') ||
     (rule.for === 'folders' && fileType === 'folder')
   );
+};
+
+/**
+ * Determines whether a given filepath matches a specified custom rule.
+ * @param rule Custom rule to check against the file.
+ * @param path File path to check against the custom rule.
+ * @returns True if the file matches the rule, false otherwise.
+ */
+
+const doestMatchPath = (rule: CustomRule, path: string, fileType: CustomRuleFileType): boolean => {
+  // Gets the file type based on the specified file path.
+  if (!rule.filepath)
+    return doesMatchFileType(rule, fileType);
+  try {
+    // Rule is in some sort of regex.
+    const regex = new RegExp(rule.rule);
+    return path.match(regex) ? true : doesMatchFileType(rule, fileType);
+  } catch {
+    // Rule is not in some sort of regex, check for basic string match.
+    return path.includes(rule.rule) ? true : doesMatchFileType(rule, fileType);
+  }
 };
 
 /**
@@ -123,19 +144,19 @@ const add = async (
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
 
   const hasIcon = plugin.getData()[file.path];
-  if (!doesMatchFileType(rule, fileType) || hasIcon) {
+  if (!doestMatchPath(rule, file.path, fileType) || hasIcon) {
     return;
   }
-
+  const toMatch = rule.filepath ? file.path : file.name;  
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
-    if (file.name.match(regex)) {
+    if (toMatch.match(regex)) {
       dom.createIconNode(plugin, file.path, rule.icon, { color: rule.color, container });
     }
   } catch {
     // Rule is not applicable to a regex format.
-    if (file.name.includes(rule.rule)) {
+    if (toMatch.includes(rule.rule)) {
       dom.createIconNode(plugin, file.path, rule.icon, { color: rule.color, container });
     }
   }
