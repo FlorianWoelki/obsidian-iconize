@@ -126,11 +126,11 @@ export const getNormalizedName = (s: string) => {
     .join('');
 };
 
-export const normalizeFileName = async (plugin: Plugin, oldPath: string) => {
-  const fileName = oldPath.split('/').pop();
-  const newPath = oldPath.substring(0, oldPath.indexOf(fileName)) + getNormalizedName(fileName);
-  await plugin.app.vault.adapter.rename(oldPath, newPath);
-};
+// export const normalizeFileName = async (plugin: Plugin, oldPath: string) => {
+//   const fileName = oldPath.split('/').pop();
+//   const newPath = oldPath.substring(0, oldPath.indexOf(fileName)) + getNormalizedName(fileName);
+//   await plugin.app.vault.adapter.rename(oldPath, newPath);
+// };
 
 export const createZipFile = async (plugin: Plugin, filename: string, buffer: ArrayBuffer) => {
   await plugin.app.vault.adapter.writeBinary(`${path}/${filename}`, buffer);
