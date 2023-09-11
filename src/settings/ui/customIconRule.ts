@@ -1,4 +1,4 @@
-import { App, Notice, Setting, TextComponent, ColorComponent, ButtonComponent, Modal } from 'obsidian';
+import { App, Notice, Setting, TextComponent, ColorComponent, ButtonComponent, Modal, ToggleComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import IconsPickerModal from '@app/iconsPickerModal';
 import IconFolderPlugin from '@app/main';
@@ -160,6 +160,21 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             rule.rule = value;
           });
 
+          const useFilePathContainer = modal.contentEl.createDiv();
+          useFilePathContainer.style.display = 'flex';
+          useFilePathContainer.style.alignItems = 'center';
+          useFilePathContainer.style.justifyContent = 'space-between';
+          useFilePathContainer.style.marginTop = 'var(--size-4-5)';
+          const useFilePathDescription = useFilePathContainer.createEl('p', {
+            text: 'Whether to apply the icon to all files/folders that match the file path.',
+            cls: 'setting-item-description',
+          });
+          useFilePathDescription.style.margin = '0';
+          useFilePathDescription.style.marginBottom = 'var(--size-2-2)';
+          new ToggleComponent(useFilePathContainer).setValue(rule.useFilePath === true).onChange((value) => {
+            rule.useFilePath = value;
+          });
+
           // Create the change icon button with icon preview.
           this.createDescriptionEl(modal.contentEl, 'Custom rule icon');
           const iconContainer = modal.contentEl.createDiv();
@@ -227,7 +242,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             new Notice('Custom rule updated.');
 
             // Refresh the DOM.
-            await customRule.removeFromAllFiles(this.plugin, rule);
+            await customRule.removeFromAllFiles(this.plugin, oldRule);
             this.updateIconTabs(rule, true);
             this.plugin.getSettings().rules.forEach(async (rule) => {
               await customRule.addToAllFiles(this.plugin, rule);

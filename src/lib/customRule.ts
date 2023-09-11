@@ -1,7 +1,7 @@
 import { TAbstractFile } from 'obsidian';
 import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
-import { CustomRule, IconFolderSettings } from '../settings/data';
+import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
 
@@ -126,16 +126,16 @@ const add = async (
   if (!doesMatchFileType(rule, fileType) || hasIcon) {
     return;
   }
-
+  const toMatch = rule.useFilePath ? file.path : file.name;
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
-    if (file.name.match(regex)) {
+    if (toMatch.match(regex)) {
       dom.createIconNode(plugin, file.path, rule.icon, { color: rule.color, container });
     }
   } catch {
     // Rule is not applicable to a regex format.
-    if (file.name.includes(rule.rule)) {
+    if (toMatch.includes(rule.rule)) {
       dom.createIconNode(plugin, file.path, rule.icon, { color: rule.color, container });
     }
   }
@@ -148,7 +148,7 @@ const add = async (
  * @returns True if the rule exists in the path, false otherwise.
  */
 const doesExistInPath = (rule: CustomRule, path: string): boolean => {
-  const name = path.split('/').pop();
+  const name = rule.useFilePath ? path : path.split('/').pop();
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
