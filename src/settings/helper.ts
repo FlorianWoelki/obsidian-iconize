@@ -42,7 +42,7 @@ const refreshStyleOfIcons = (plugin: IconFolderPlugin): void => {
 
     // Refreshes the icon style for all custom icon rules, when the color of the rule is
     // not defined.
-    for (const rule of customRule.getSortedRules(plugin)) {
+    for (const rule of plugin.getSettings().rules) {
       const files = customRule.getFiles(plugin, rule);
       for (const file of files) {
         if (rule.color) {

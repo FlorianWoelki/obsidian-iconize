@@ -134,7 +134,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           await this.plugin.saveIconFolderData();
           this.refreshDisplay();
 
-          customRule.getSortedRules(this.plugin).forEach(async (previousRule) => {
+          this.plugin.getSettings().rules.forEach(async (previousRule) => {
             await customRule.addToAllFiles(this.plugin, previousRule);
             this.updateIconTabs(previousRule, false);
           });
@@ -285,6 +285,55 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           });
         });
       });
+
+      const index = this.plugin.getSettings().rules.findIndex(
+        (r) => rule.rule === r.rule && rule.color === r.color && rule.icon === r.icon && rule.for === r.for,
+      );
+      
+      settingRuleEl.addExtraButton((btn) => {
+        btn.setDisabled(index === 0);
+        btn.extraSettingsEl.style.cursor = index === 0 ? 'not-allowed' : 'default';
+        btn.extraSettingsEl.style.opacity = index === 0 ? '50%' : '100%';
+        btn.setIcon('arrow-up');
+        btn.setTooltip('Move the custom rule up');
+        btn.onClick(async () => {
+          const previousRule = this.plugin.getSettings().rules[index - 1];
+          this.plugin.getSettings().rules[index - 1] = rule;
+          this.plugin.getSettings().rules[index] = previousRule;
+          await this.plugin.saveIconFolderData();
+          //update DOM
+          await customRule.removeFromAllFiles(this.plugin, oldRule);
+          this.updateIconTabs(rule, true);
+          this.plugin.getSettings().rules.forEach(async (rule) => {
+            await customRule.addToAllFiles(this.plugin, rule);
+            this.updateIconTabs(rule, false);
+          });
+          this.refreshDisplay();
+        });
+      })
+
+      settingRuleEl.addExtraButton((btn) => {
+        btn.setDisabled(index === this.plugin.getSettings().rules.length - 1);
+        btn.extraSettingsEl.style.cursor = index === this.plugin.getSettings().rules.length - 1 ? 'not-allowed' : 'default';
+        btn.extraSettingsEl.style.opacity = index === this.plugin.getSettings().rules.length - 1 ? '50%' : '100%';
+        btn.setIcon('arrow-down');
+        btn.setTooltip('Move the custom rule down');
+        btn.onClick(async () => {
+          // Swap the current rule with the next rule.
+          const nextRule = this.plugin.getSettings().rules[index + 1];
+          this.plugin.getSettings().rules[index + 1] = rule;
+          this.plugin.getSettings().rules[index] = nextRule;
+          //update DOM
+          await customRule.removeFromAllFiles(this.plugin, oldRule);
+          this.updateIconTabs(rule, true);
+          this.plugin.getSettings().rules.forEach(async (rule) => {
+            await customRule.addToAllFiles(this.plugin, rule);
+            this.updateIconTabs(rule, false);
+          });
+          await this.plugin.saveIconFolderData();
+          this.refreshDisplay();
+        });
+      })
     });
   }
 }
