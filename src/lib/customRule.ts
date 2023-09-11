@@ -124,7 +124,7 @@ const add = async (
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
 
   const hasIcon = plugin.getData()[file.path];
-  const hasInheritanceIcon = inheritance.getByPath(plugin, file.path);
+  const hasInheritanceIcon = inheritance.getByPath(plugin, file.path) && fileType === "file";
   if (!doesMatchFileType(rule, fileType) || hasIcon || hasInheritanceIcon) {
     return;
   }
