@@ -1,6 +1,6 @@
 import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion, Notice } from 'obsidian';
 import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
-import { createDefaultDirectory, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
+import { createDefaultDirectory, getNormalizedName, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
 import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings/data';
 import { migrateIcons } from './migration';
@@ -315,7 +315,7 @@ export default class IconFolderPlugin extends Plugin {
       const folderObject = currentValue as FolderIconObject;
 
       if (folderObject.iconName) {
-        this.data[folderPath] = folderObject.iconName;
+        this.data[folderPath] = getNormalizedName(folderObject.iconName);
       } else {
         delete this.data[folderPath];
       }
@@ -328,20 +328,20 @@ export default class IconFolderPlugin extends Plugin {
         if (typeof currentValue === 'string') {
           this.data[folderPath] = {
             iconName: currentValue as string,
-            inheritanceIcon: typeof icon === 'object' ? icon.displayName : icon,
+            inheritanceIcon: getNormalizedName(typeof icon === 'object' ? icon.displayName : icon),
           };
         }
         // check if it has already a inheritance icon
         else if (folderPath !== 'settings') {
           this.data[folderPath] = {
             ...(currentValue as FolderIconObject),
-            inheritanceIcon: typeof icon === 'object' ? icon.displayName : icon,
+            inheritanceIcon: getNormalizedName(typeof icon === 'object' ? icon.displayName : icon),
           };
         }
       } else {
         this.data[folderPath] = {
           iconName: null,
-          inheritanceIcon: typeof icon === 'object' ? icon.displayName : icon,
+          inheritanceIcon: getNormalizedName(typeof icon === 'object' ? icon.displayName : icon),
         };
       }
     }
@@ -398,7 +398,7 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   addFolderIcon(path: string, icon: Icon | string): void {
-    const iconName = typeof icon === 'object' ? icon.displayName : icon;
+    const iconName = getNormalizedName(typeof icon === 'object' ? icon.displayName : icon);
 
     // Check if inheritance is active for this path.
     if (typeof this.data[path] === 'object') {
