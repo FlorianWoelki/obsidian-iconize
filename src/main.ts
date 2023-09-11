@@ -1,4 +1,4 @@
-import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion, Menu, Platform } from 'obsidian';
+import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion, Menu, Platform, Notice } from 'obsidian';
 import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
 import { createDefaultDirectory, getNormalizedName, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
