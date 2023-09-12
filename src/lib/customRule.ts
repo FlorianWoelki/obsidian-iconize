@@ -4,7 +4,6 @@ import IconFolderPlugin, { FolderIconObject } from '../main';
 import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
-import inheritance from './inheritance';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
@@ -129,7 +128,25 @@ const add = async (
   } else if (typeof plugin.getData()[file.path] === 'string') {
     hasIcon = plugin.getData()[file.path] as string;
   }
-  const hasInheritanceIcon = inheritance.getByPath(plugin, file.path) && fileType === "file";
+  
+  /**
+   * Reimplement {@link getFolders} to avoid calling library functions that are not needed.
+   */
+  const getFoldersWithInheritance = Object.entries(plugin.getData())
+      .filter(([k, v]) => k !== 'settings' && typeof v === 'object')
+      .reduce<Record<string, FolderIconObject>>((prev, [path, value]) => {
+        prev[path] = value as FolderIconObject;
+        return prev;
+      }, {});
+  
+
+  /**
+   * Problem here: If a folder named `test` has inheritance in the root, ALL folder that contains test will have the inheritance icon, and not only the folder that is in the folder `test` originally.
+   * So we must use `startsWith` instead of `includes` to check if the file is in a folder that has inheritance.
+   */
+  const hasInheritanceIcon = Object.entries(getFoldersWithInheritance).find(([folderPath]) => file.path.startsWith(folderPath))?.[1] && fileType === 'file';
+
+
   if (!doesMatchFileType(rule, fileType) || hasIcon || hasInheritanceIcon) {
     return;
   }
