@@ -1,12 +1,15 @@
-# Obsidian Icon Folder
+> [!IMPORTANT]
+> Obsidian Icon Folder becomes Obsidian Iconize! Read [this discussion](https://github.com/FlorianWoelki/obsidian-iconize/discussions/232) for more information.
+
+# Obsidian Iconize
 
 <a href="https://www.buymeacoffee.com/florianwoelki" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-![Preview Image](https://raw.githubusercontent.com/FlorianWoelki/obsidian-icon-folder/main/docs/preview-image.png)
+![Preview Image](https://raw.githubusercontent.com/FlorianWoelki/obsidian-iconize/main/docs/preview-image.png)
 
 ## What is it?
 
-This obsidian plugin allows you to add **any** custom icon (of type `.svg`) or from an icon pack to your folder or file.
+This obsidian plugin allows you to add **any** custom icon (of type `.svg`) or from an icon pack to anything you want.
 
 ## How to use
 
@@ -14,7 +17,7 @@ There are different functionalities of displaying an icon for your folder or fil
 
 First, you need to go to the settings and download predefined icon packs or create your own.
 
-![Icon Pack Preview](https://raw.githubusercontent.com/FlorianWoelki/obsidian-icon-folder/main/docs/icon-pack-preview.png)
+![Icon Pack Preview](https://raw.githubusercontent.com/FlorianWoelki/obsidian-iconize/main/docs/icon-pack-preview.png)
 
 Right now, the following icon packs are supported by default and can be downloaded instantly:
 * [Remixicon](https://remixicon.com/)
@@ -23,13 +26,13 @@ Right now, the following icon packs are supported by default and can be download
 * [SimpleIcons](https://simpleicons.org/)
 * [LucideIcons](https://lucide.dev/)
 
-However, feel free to add your custom icon packs or submit a new one by creating a Pull Request where you update the [iconPacks.ts](https://github.com/FlorianWoelki/obsidian-icon-folder/blob/main/src/iconPacks.ts) file and upload a zip file with the icons to [this directory](https://github.com/FlorianWoelki/obsidian-icon-folder/tree/main/iconPacks).
+However, feel free to add your custom icon packs or submit a new one by creating a Pull Request where you update the [iconPacks.ts](https://github.com/FlorianWoelki/obsidian-iconize/blob/main/src/iconPacks.ts) file and upload a zip file with the icons to [this directory](https://github.com/FlorianWoelki/obsidian-iconize/tree/main/iconPacks).
 
 In addition to the custom icon pack, it is possible to drag and drop or select multiple files to your customized icon pack.
 
 Moreover, you can adjust some styling settings for all the icons like margin, color, or even the icon size.
 
-### Changing icon of the folder
+### Changing icon of a folder
 
 It is pretty simple to add an icon to your folder:
 
@@ -75,7 +78,7 @@ However, you can easily install or create icon packs you used. For example, when
 
 ### Sync issue
 
-There have been some [syncing issues regarding the icon packs](https://github.com/FlorianWoelki/obsidian-icon-folder/issues/52). You can change the icon pack path to `.obsidian/icons` to resolve the issue. Go to settings, select the plugin, and change its path to the earlier described path.
+There have been some [syncing issues regarding the icon packs](https://github.com/FlorianWoelki/obsidian-iconize/issues/52). You can change the icon pack path to `.obsidian/icons` to resolve the issue. Go to settings, select the plugin, and change its path to the earlier described path.
 
 ### Using other icon plugins with icon packs
 
@@ -87,8 +90,8 @@ Therefore, if you go to the plugin's settings, you can specify the public folder
 
 To customize this project for your needs, you can clone it and then install all dependencies:
 ```sh
-$ git clone https://github.com/FlorianWoelki/obsidian-icon-folder
-$ cd obsidian-icon-folder
+$ git clone https://github.com/FlorianWoelki/obsidian-iconize
+$ cd obsidian-iconize
 $ pnpm i
 ```
 
@@ -96,7 +99,7 @@ After the installation, you need to create a `env.js` file in the root directory
 
 ```js
 export const obsidianExportPath =
-  '<path-to-obsidian-vault>/.obsidian/plugins/obsidian-icon-folder/';
+  '<path-to-obsidian-vault>/.obsidian/plugins/obsidian-iconize/';
 ```
 
 Afterwards, you can start the rollup dev server by using:
