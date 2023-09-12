@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> Obsidian Icon Folder because Obsidian Iconize! Read [this discussion](https://github.com/FlorianWoelki/obsidian-iconize/discussions/232) for more information.
+> Obsidian Icon Folder becomes Obsidian Iconize! Read [this discussion](https://github.com/FlorianWoelki/obsidian-iconize/discussions/232) for more information.
 
 # Obsidian Iconize
 
