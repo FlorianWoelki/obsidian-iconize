@@ -1,5 +1,5 @@
 {
-  "name": "obsidian-icon-folder",
+  "name": "obsidian-iconize",
   "version": "2.2.1",
   "description": "This plugin allows to add an emoji or an icon to a folder or file.",
   "main": "main.js",
@@ -14,7 +14,7 @@
   "keywords": [],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FlorianWoelki/obsidian-icon-folder.git"
+    "url": "git+https://github.com/FlorianWoelki/obsidian-iconize.git"
   },
   "author": "Florian Woelki",
   "license": "MIT",
