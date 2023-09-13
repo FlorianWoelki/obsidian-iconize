@@ -3,7 +3,7 @@ import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import { CustomRule } from '../settings/data';
 import dom from './util/dom';
-import { getFileItemTitleEl } from '../util';
+import { doesElementHasIcon, getFileItemTitleEl } from '../util';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
@@ -92,7 +92,9 @@ const addAll = async (plugin: IconFolderPlugin): Promise<void> => {
 
 /**
  * Tries to add all specific custom rule icon to all registered files. It does that by
- * calling the {@link add} function.
+ * calling the {@link add} function. Furthermore, it also checks whether the file or folder
+ * already has an icon. Custom rules should have the lowest priority and will get ignored
+ * if an icon already exists in the file or folder.
  * @param plugin Instance of the IconFolderPlugin.
  * @param rule Custom rule that will be applied, if applicable, to all files.
  */
@@ -100,6 +102,10 @@ const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promis
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);
     for (const fileItem of files) {
+      if (doesElementHasIcon(fileItem.selfEl)) {
+        continue;
+      }
+
       await add(plugin, rule, fileItem.file, getFileItemTitleEl(fileItem));
     }
   }

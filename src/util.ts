@@ -68,6 +68,16 @@ export const getFileItemInnerTitleEl = (fileItem: FileItem): HTMLElement => {
 };
 
 /**
+ * Checks if the element has an icon by checking if the element has a child with the
+ * class `obsidian-icon-folder-icon`.
+ * @param element HTMLElement which will be checked if it has an icon.
+ * @returns Boolean whether the element has an icon or not.
+ */
+export const doesElementHasIcon = (element: HTMLElement): boolean => {
+  return element.querySelector('.obsidian-icon-folder-icon') !== null;
+};
+
+/**
  * A utility function which will add the icon to the icon pack and then extract the icon
  * to the icon pack.
  * @param plugin IconFolderPlugin that will be used for extracting the icon.
