@@ -3,13 +3,16 @@
 
 # Obsidian Iconize
 
-<a href="https://www.buymeacoffee.com/florianwoelki" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-
 ![Preview Image](https://raw.githubusercontent.com/FlorianWoelki/obsidian-iconize/main/docs/preview-image.png)
 
 ## What is it?
 
 This obsidian plugin allows you to add **any** custom icon (of type `.svg`) or from an icon pack to anything you want.
+
+If you like this plugin, feel free to support the development by buying a coffee:
+
+<a href="https://www.buymeacoffee.com/florianwoelki" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
 
 ## How to use
 
