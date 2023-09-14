@@ -149,9 +149,20 @@ const createIconNode = (plugin: IconFolderPlugin, path: string, iconName: string
   node.insertBefore(iconNode, titleNode);
 };
 
+/**
+ * Checks if the element has an icon node by checking if the element has a child with the
+ * class `obsidian-icon-folder-icon`.
+ * @param element HTMLElement which will be checked if it has an icon.
+ * @returns Boolean whether the element has an icon or not.
+ */
+const doesElementHasIconNode = (element: HTMLElement): boolean => {
+  return element.querySelector('.obsidian-icon-folder-icon') !== null;
+};
+
 export default {
   setIconForNode,
   createIconNode,
+  doesElementHasIconNode,
   removeIconInNode,
   removeIconInPath,
 };

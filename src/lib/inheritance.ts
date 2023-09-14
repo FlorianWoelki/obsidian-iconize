@@ -2,7 +2,7 @@ import { TAbstractFile, TFolder } from 'obsidian';
 import { FileItem } from '../@types/obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import dom from './util/dom';
-import { doesElementHasIcon, getFileItemInnerTitleEl, getFileItemTitleEl } from '../util';
+import { getFileItemInnerTitleEl, getFileItemTitleEl } from '../util';
 
 interface AddOptions {
   file?: TAbstractFile;
@@ -70,7 +70,7 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
 
       // Checks if the file item has an already existing icon and removes it.
       const container = getFileItemTitleEl(fileItem);
-      if (doesElementHasIcon(container)) {
+      if (dom.doesElementHasIconNode(container)) {
         dom.removeIconInNode(container);
       }
 
@@ -92,7 +92,7 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
 
         const container = getFileItemTitleEl(fileItem);
         // Checks if the file item has an already existing icon and removes it.
-        if (doesElementHasIcon(container)) {
+        if (dom.doesElementHasIconNode(container)) {
           dom.removeIconInNode(container);
         }
 

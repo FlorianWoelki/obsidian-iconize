@@ -3,7 +3,7 @@ import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import { CustomRule } from '../settings/data';
 import dom from './util/dom';
-import { doesElementHasIcon, getFileItemTitleEl } from '../util';
+import { getFileItemTitleEl } from '../util';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
@@ -121,7 +121,7 @@ const add = async (
   file: TAbstractFile,
   container?: HTMLElement,
 ): Promise<void> => {
-  if (container && doesElementHasIcon(container)) {
+  if (container && dom.doesElementHasIconNode(container)) {
     return;
   }
 
