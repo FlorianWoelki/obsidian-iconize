@@ -102,10 +102,6 @@ const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promis
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);
     for (const fileItem of files) {
-      if (doesElementHasIcon(fileItem.selfEl)) {
-        continue;
-      }
-
       await add(plugin, rule, fileItem.file, getFileItemTitleEl(fileItem));
     }
   }
@@ -125,10 +121,14 @@ const add = async (
   file: TAbstractFile,
   container?: HTMLElement,
 ): Promise<void> => {
+  if (container && doesElementHasIcon(container)) {
+    return;
+  }
+
   // Gets the type of the file.
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
 
-  const hasIcon = plugin.getData()[file.path];
+  const hasIcon = plugin.getIconNameFromPath(file.path);
   if (!doesMatchFileType(rule, fileType) || hasIcon) {
     return;
   }

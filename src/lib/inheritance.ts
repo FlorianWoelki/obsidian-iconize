@@ -69,8 +69,9 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
       }
 
       // Checks if the file item has an already existing icon and removes it.
-      if (doesElementHasIcon(fileItem.selfEl)) {
-        dom.removeIconInNode(fileItem.selfEl);
+      const container = getFileItemTitleEl(fileItem);
+      if (doesElementHasIcon(container)) {
+        dom.removeIconInNode(container);
       }
 
       addIcon(fileItem);
@@ -89,9 +90,10 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
           continue;
         }
 
+        const container = getFileItemTitleEl(fileItem);
         // Checks if the file item has an already existing icon and removes it.
-        if (doesElementHasIcon(fileItem.selfEl)) {
-          dom.removeIconInNode(fileItem.selfEl);
+        if (doesElementHasIcon(container)) {
+          dom.removeIconInNode(container);
         }
 
         addIcon(fileItem);
