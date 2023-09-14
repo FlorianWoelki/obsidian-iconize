@@ -92,7 +92,9 @@ const addAll = async (plugin: IconFolderPlugin): Promise<void> => {
 
 /**
  * Tries to add all specific custom rule icon to all registered files. It does that by
- * calling the {@link add} function.
+ * calling the {@link add} function. Furthermore, it also checks whether the file or folder
+ * already has an icon. Custom rules should have the lowest priority and will get ignored
+ * if an icon already exists in the file or folder.
  * @param plugin Instance of the IconFolderPlugin.
  * @param rule Custom rule that will be applied, if applicable, to all files.
  */
@@ -119,10 +121,14 @@ const add = async (
   file: TAbstractFile,
   container?: HTMLElement,
 ): Promise<void> => {
+  if (container && dom.doesElementHasIconNode(container)) {
+    return;
+  }
+
   // Gets the type of the file.
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
 
-  const hasIcon = plugin.getData()[file.path];
+  const hasIcon = plugin.getIconNameFromPath(file.path);
   if (!doesMatchFileType(rule, fileType) || hasIcon) {
     return;
   }

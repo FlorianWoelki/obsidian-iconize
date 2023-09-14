@@ -241,15 +241,9 @@ export default class IconFolderPlugin extends Plugin {
       // inheritance when file was moved to another directory.
       this.registerEvent(
         this.app.vault.on('rename', (file, oldPath) => {
-          customRule.getSortedRules(this).forEach(async (rule) => {
-            if (customRule.doesExistInPath(rule, oldPath)) {
-              dom.removeIconInPath(file.path);
-            }
-
-            await customRule.add(this, rule, file, undefined);
-          });
-
-          if (inheritance.doesExistInPath(this, file.path)) {
+          const inheritanceExists = inheritance.doesExistInPath(this, oldPath);
+          if (inheritanceExists) {
+            // Apply inheritance to the renamed file.
             const isFolder = (file as TFolder).children !== undefined;
             if (!isFolder) {
               const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
@@ -265,6 +259,15 @@ export default class IconFolderPlugin extends Plugin {
                 },
               });
             }
+          } else {
+            // Apply custom rules to the renamed file.
+            customRule.getSortedRules(this).forEach((rule) => {
+              if (customRule.doesExistInPath(rule, oldPath)) {
+                dom.removeIconInPath(file.path);
+              }
+
+              customRule.add(this, rule, file, undefined);
+            });
           }
         }),
       );
@@ -465,6 +468,14 @@ export default class IconFolderPlugin extends Plugin {
 
   getData(): Record<string, boolean | string | IconFolderSettings | FolderIconObject> {
     return this.data;
+  }
+
+  getIconNameFromPath(path: string): string | undefined {
+    if (typeof this.getData()[path] === 'object') {
+      return (this.getData()[path] as FolderIconObject).iconName;
+    }
+
+    return this.getData()[path] as string;
   }
 
   getRegisteredFileExplorers(): Set<ExplorerView> {

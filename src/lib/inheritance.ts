@@ -68,6 +68,12 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
         continue;
       }
 
+      // Checks if the file item has an already existing icon and removes it.
+      const container = getFileItemTitleEl(fileItem);
+      if (dom.doesElementHasIconNode(container)) {
+        dom.removeIconInNode(container);
+      }
+
       addIcon(fileItem);
     } else {
       // Handles the addition of a completely new inheritance for a folder.
@@ -82,6 +88,12 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
         const hasIcon = plugin.getData()[fileItem.file.path];
         if (!inFolder || hasIcon || isFolder) {
           continue;
+        }
+
+        const container = getFileItemTitleEl(fileItem);
+        // Checks if the file item has an already existing icon and removes it.
+        if (dom.doesElementHasIconNode(container)) {
+          dom.removeIconInNode(container);
         }
 
         addIcon(fileItem);
