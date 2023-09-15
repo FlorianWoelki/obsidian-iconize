@@ -7,6 +7,8 @@
     "prepare": "husky install",
     "precommit": "lint-staged",
     "dev": "rollup --config rollup.config.js -w",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
@@ -46,7 +48,8 @@
     "rollup": "^2.79.1",
     "tslib": "^2.6.2",
     "twemoji": "^14.0.2",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "vuepress": "^1.9.10"
   },
   "dependencies": {
     "@rollup/plugin-babel": "^6.0.3",
