@@ -34,7 +34,7 @@ export default {
     name: 'icon-brew',
     displayName: 'Icon Brew',
     path: '',
-    downloadLink: 'https://github.com/FlorianWoelki/obsidian-icon-folder/raw/main/iconPacks/icon-brew.zip',
+    downloadLink: 'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/icon-brew.zip',
   },
   /* https://simpleicons.org/ */
   simpleIcons: {
