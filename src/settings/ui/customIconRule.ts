@@ -80,7 +80,12 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           modal.onChooseItem = async (item) => {
             const icon = getNormalizedName(typeof item === 'object' ? item.displayName : item);
 
-            const rule: CustomRule = { rule: this.textComponent.getValue(), icon, for: 'everything' };
+            const rule: CustomRule = {
+              rule: this.textComponent.getValue(),
+              icon,
+              for: 'everything',
+              order: this.plugin.getSettings().rules.length,
+            };
             this.plugin.getSettings().rules = [...this.plugin.getSettings().rules, rule];
             await this.plugin.saveIconFolderData();
 

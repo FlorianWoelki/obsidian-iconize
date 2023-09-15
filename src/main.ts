@@ -49,6 +49,17 @@ export default class IconFolderPlugin extends Plugin {
       this.getSettings().migrated++;
     }
 
+    // Migration for new order functionality of custom rules.
+    if (this.getSettings().migrated === 2) {
+      // Sorting alphabetically was the default behavior before.
+      this.getSettings()
+        .rules.sort((a, b) => a.rule.localeCompare(b.rule))
+        .forEach((rule, i) => {
+          rule.order = i;
+        });
+      this.getSettings().migrated++;
+    }
+
     const extraPadding = (this.getSettings() as any).extraPadding as ExtraMarginSettings;
     if (extraPadding) {
       if (extraPadding.top !== 2 || extraPadding.bottom !== 2 || extraPadding.left !== 2 || extraPadding.right !== 2) {
