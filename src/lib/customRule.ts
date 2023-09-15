@@ -70,13 +70,12 @@ const removeFromAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): P
 };
 
 /**
- * Really dumb way to sort the custom rules. At the moment, it only sorts the custom rules
- * based on the `localCompare` function.
+ * Gets all the custom rules sorted by their rule property in ascending order.
  * @param plugin Instance of IconFolderPlugin.
  * @returns An array of sorted custom rules.
  */
 const getSortedRules = (plugin: IconFolderPlugin): CustomRule[] => {
-  return plugin.getSettings().rules.sort((a, b) => a.rule.localeCompare(b.rule));
+  return plugin.getSettings().rules.sort((a, b) => a.order - b.order);
 };
 
 /**

@@ -107,6 +107,54 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
       // Keeping track of the old rule so that we can get a reference to it for old values.
       const oldRule = { ...rule };
       const settingRuleEl = new Setting(this.containerEl).setName(rule.rule).setDesc(`Icon: ${rule.icon}`);
+      const currentOrder = rule.order;
+
+      /**
+       * Re-orders the custom rule based on the value that is passed in.
+       * @param valueForReorder Number that will be used to determine whether to swap the
+       * custom rule with the next rule or the previous rule.
+       */
+      const orderCustomRules = async (valueForReorder: number): Promise<void> => {
+        const otherRule = this.plugin.getSettings().rules[currentOrder + valueForReorder];
+        // Swap the current rule with the next rule.
+        otherRule.order = otherRule.order - valueForReorder;
+        rule.order = currentOrder + valueForReorder;
+        // Refreshes the DOM.
+        await customRule.removeFromAllFiles(this.plugin, oldRule);
+        this.updateIconTabs(rule, true);
+        await this.plugin.saveIconFolderData();
+        customRule.getSortedRules(this.plugin).forEach(async (rule) => {
+          await customRule.addToAllFiles(this.plugin, rule);
+          this.updateIconTabs(rule, false);
+        });
+        this.refreshDisplay();
+      };
+
+      // Add the move down custom rule button to re-order the custom rule.
+      settingRuleEl.addExtraButton((btn) => {
+        const isFirstOrder = currentOrder === 0;
+        btn.setDisabled(isFirstOrder);
+        btn.extraSettingsEl.style.cursor = isFirstOrder ? 'not-allowed' : 'default';
+        btn.extraSettingsEl.style.opacity = isFirstOrder ? '50%' : '100%';
+        btn.setIcon('arrow-up');
+        btn.setTooltip('Prioritize the custom rule');
+        btn.onClick(async () => {
+          await orderCustomRules(-1);
+        });
+      });
+
+      // Add the move up custom rule button to re-order the custom rule.
+      settingRuleEl.addExtraButton((btn) => {
+        const isLastOrder = currentOrder === this.plugin.getSettings().rules.length - 1;
+        btn.setDisabled(isLastOrder);
+        btn.extraSettingsEl.style.cursor = isLastOrder ? 'not-allowed' : 'default';
+        btn.extraSettingsEl.style.opacity = isLastOrder ? '50%' : '100%';
+        btn.setIcon('arrow-down');
+        btn.setTooltip('Deprioritize the custom rule');
+        btn.onClick(async () => {
+          await orderCustomRules(1);
+        });
+      });
 
       // Add the configuration button for configuring where the custom rule gets applied to.
       settingRuleEl.addButton((btn) => {
