@@ -111,6 +111,8 @@ export const obsidianExportPath =
   '<path-to-obsidian-vault>/.obsidian/plugins/obsidian-iconize/';
 ```
 
+Make sure you create the directory specified in that variable if it does not exist yet.
+
 Afterwards, you can start the rollup dev server by using:
 
 ```sh
