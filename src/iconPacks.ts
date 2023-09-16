@@ -5,7 +5,7 @@ export interface IconPack {
   downloadLink: string;
 }
 
-export default {
+const iconPacks = {
   faBrands: {
     name: 'font-awesome-brands',
     displayName: 'FontAwesome Brands',
@@ -56,3 +56,16 @@ export default {
     downloadLink: 'https://github.com/tabler/tabler-icons/releases/download/v2.34.0/tabler-icons-2.34.0.zip',
   },
 } as { [key: string]: IconPack };
+
+/**
+ * Returns a possible path to the icon pack.
+ * @param name String of the icon pack name.
+ * @returns String of the path to the icon pack or undefined if the icon pack does not
+ * exist.
+ */
+export const getExtraPath = (iconPackName: string): string | undefined => {
+  const path = Object.values(iconPacks).find((iconPack) => iconPack.name === iconPackName)?.path;
+  return path.length === 0 ? undefined : path;
+};
+
+export default iconPacks;
