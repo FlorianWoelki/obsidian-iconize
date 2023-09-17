@@ -159,16 +159,16 @@ const add = async (
  * @returns True if the rule exists in the path, false otherwise.
  */
 const doesExistInPath = (rule: CustomRule, path: string): boolean => {
-  const name = rule.useFilePath ? path : path.split('/').pop();
+  const toMatch = rule.useFilePath ? path : path.split('/').pop();
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
-    if (name.match(regex)) {
+    if (toMatch.match(regex)) {
       return true;
     }
   } catch {
     // Rule is not in some sort of regex, check for basic string match.
-    return name.includes(rule.rule);
+    return toMatch.includes(rule.rule);
   }
 
   return false;

@@ -251,7 +251,7 @@ export default class IconFolderPlugin extends Plugin {
       // Register rename event for adding icons with custom rules to the DOM and updating
       // inheritance when file was moved to another directory.
       this.registerEvent(
-        this.app.vault.on('rename', (file, oldPath) => {
+        this.app.vault.on('rename', async (file, oldPath) => {
           const inheritanceExists = inheritance.doesExistInPath(this, oldPath);
           if (inheritanceExists) {
             // Apply inheritance to the renamed file.
@@ -271,23 +271,15 @@ export default class IconFolderPlugin extends Plugin {
               });
             }
           } else {
-            const sortedRules = customRule.getSortedRules(this);
-
-            // Removes possible icons from the renamed file.
-            sortedRules.forEach((rule) => {
-              if (customRule.doesExistInPath(rule, oldPath)) {
-                dom.removeIconInPath(file.path);
-              }
-            });
-
-            // Apply custom rules to the renamed file.
-            sortedRules.forEach((rule) => {
-              if (customRule.doesExistInPath(rule, oldPath)) {
-                return;
+            for (const rule of customRule.getSortedRules(this)) {
+              const applicable = await customRule.isApplicable(this, rule, file);
+              if (!applicable) {
+                continue;
               }
 
-              customRule.add(this, rule, file, undefined);
-            });
+              iconTabs.update(this, file as TFile, rule.icon);
+              break;
+            }
           }
         }),
       );
