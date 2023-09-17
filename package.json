@@ -41,7 +41,7 @@
     "lint-staged": "^11.2.6",
     "mkdirp": "^1.0.4",
     "monkey-around": "^2.3.0",
-    "obsidian": "^0.16.3",
+    "obsidian": "^1.4.11",
     "prettier": "^2.8.8",
     "rollup": "^2.79.1",
     "tslib": "^2.6.2",
