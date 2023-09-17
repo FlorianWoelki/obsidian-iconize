@@ -4,6 +4,7 @@ import svg from './lib/util/svg';
 import { getFileFromJSZipFile, readZipFile } from './zipUtil';
 import JSZip from 'jszip';
 import IconFolderPlugin from './main';
+import { getExtraPath } from './iconPacks';
 
 export interface Icon {
   name: string;
@@ -354,7 +355,15 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
 
 const getLoadedIconsFromZipFile = async (iconPackName: string, files: JSZip.JSZipObject[]): Promise<Icon[]> => {
   const loadedIcons: Icon[] = [];
+  const extraPath = getExtraPath(iconPackName);
+
   for (let j = 0; j < files.length; j++) {
+    // Checks if the icon pack has an extra path. Also ignores files which do not start
+    // with the extra path.
+    if (extraPath && !files[j].name.startsWith(extraPath)) {
+      continue;
+    }
+
     const file = await getFileFromJSZipFile(files[j]);
     const iconContent = await file.text();
     const iconName = file.name;
