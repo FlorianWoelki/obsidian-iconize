@@ -1,11 +1,13 @@
 ---
 home: true
-actionText: Counter Component
-actionLink: /counter/
-# features:
-# - title: Embedded Vue Components
-#   details: A Vue counter developed using Vue is embedded in this documentation.
-# - title: Documentation made with VuePress
-#   details: This entire documentation was made with VuePress which parsed Markdown files and corresponding assets using webpack.
-# footer: Developed using VuePress
+actionText: Get Started
+actionLink: /guide/getting-started
+features:
+- title: Simplicity
+  details: Install the plugin, download your most favorite icon pack and you are ready to go.
+- title: Iconize your Vault
+  details: Set an icon almost everywhere you want. For example on a folder, file or even in a text or in a title.
+- title: Community Driven
+  details: The plugin is open source and everyone can contribute bug reports, features, or ideas to it.
+footer: MIT Licensed | Copyright © 2021-present Florian Woelki
 ---

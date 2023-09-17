@@ -2,14 +2,17 @@ module.exports = {
   title: 'Obsidian Iconize',
   description: 'Documentation of using the Iconize plugin.',
   themeConfig: {
-    nav: [{ text: 'Counter', link: '/counter/' }],
+    nav: [{ text: 'Guide', link: '/guide/' }],
     sidebar: [
       {
-        title: 'Counter',
+        title: 'Guide',
         collapsable: false,
         children: [
-          ['/counter/usage', 'Usage'],
-          ['/counter/see-also', 'See Also'],
+          ['/guide/getting-started', 'Getting Started'],
+          ['/guide/icon-packs', 'Icon Packs'],
+          ['/guide/icon-tabs', 'Icon in Tabs'],
+          ['/guide/inheritance', 'Inheritance'],
+          ['/guide/custom-rules', 'Custom Rules'],
         ],
       },
     ],
