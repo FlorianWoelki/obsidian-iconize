@@ -2,7 +2,7 @@ module.exports = {
   title: 'Obsidian Iconize',
   description: 'Documentation of using the Iconize plugin.',
   themeConfig: {
-    nav: [{ text: 'Guide', link: '/guide/' }],
+    nav: [{ text: 'Guide', link: '/guide/getting-started' }],
     sidebar: [
       {
         title: 'Guide',
