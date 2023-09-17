@@ -271,10 +271,19 @@ export default class IconFolderPlugin extends Plugin {
               });
             }
           } else {
-            // Apply custom rules to the renamed file.
-            customRule.getSortedRules(this).forEach((rule) => {
+            const sortedRules = customRule.getSortedRules(this);
+
+            // Removes possible icons from the renamed file.
+            sortedRules.forEach((rule) => {
               if (customRule.doesExistInPath(rule, oldPath)) {
                 dom.removeIconInPath(file.path);
+              }
+            });
+
+            // Apply custom rules to the renamed file.
+            sortedRules.forEach((rule) => {
+              if (customRule.doesExistInPath(rule, oldPath)) {
+                return;
               }
 
               customRule.add(this, rule, file, undefined);

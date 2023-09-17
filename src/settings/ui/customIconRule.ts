@@ -2,7 +2,7 @@ import { App, Notice, Setting, TextComponent, ColorComponent, ButtonComponent, M
 import IconFolderSetting from './iconFolderSetting';
 import IconsPickerModal from '@app/iconsPickerModal';
 import IconFolderPlugin from '@app/main';
-import { getAllOpenedFiles, removeIconFromIconPack, saveIconToIconPack } from '@app/util';
+import { getAllOpenedFiles, getFileItemTitleEl, removeIconFromIconPack, saveIconToIconPack } from '@app/util';
 import { CustomRule } from '../data';
 import customRule from '@lib/customRule';
 import iconTabs from '@lib/iconTabs';
@@ -27,9 +27,13 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
    * @param rule Rule that will be used to update all the icons for all opened files.
    * @param remove Whether to remove the icons that are applicable to the rule or not.
    */
-  private async updateIconTabs(rule: CustomRule, remove: boolean): Promise<void> {
+  private async updateIconTabs(rule: CustomRule, remove: boolean, cachedPaths: string[] = []): Promise<void> {
     if (this.plugin.getSettings().iconInTabsEnabled) {
       for (const openedFile of getAllOpenedFiles(this.plugin)) {
+        if (cachedPaths.includes(openedFile.path)) {
+          continue;
+        }
+
         const applicable = await customRule.isApplicable(this.plugin, rule, openedFile);
         if (!applicable) {
           continue;
@@ -121,12 +125,30 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         rule.order = currentOrder + valueForReorder;
         // Refreshes the DOM.
         await customRule.removeFromAllFiles(this.plugin, oldRule);
-        this.updateIconTabs(rule, true);
         await this.plugin.saveIconFolderData();
-        customRule.getSortedRules(this.plugin).forEach(async (rule) => {
-          await customRule.addToAllFiles(this.plugin, rule);
-          this.updateIconTabs(rule, false);
-        });
+
+        const addedPaths: string[] = [];
+        for (const fileExplorer of this.plugin.getRegisteredFileExplorers()) {
+          const files = Object.values(fileExplorer.fileItems);
+          for (const rule of customRule.getSortedRules(this.plugin)) {
+            // Removes the icon tabs from all opened files.
+            this.updateIconTabs(rule, true, addedPaths);
+            // Adds the icon tabs to all opened files.
+            this.updateIconTabs(rule, false, addedPaths);
+
+            for (const fileItem of files) {
+              if (addedPaths.includes(fileItem.file.path)) {
+                continue;
+              }
+
+              const added = await customRule.add(this.plugin, rule, fileItem.file, getFileItemTitleEl(fileItem));
+              if (added) {
+                addedPaths.push(fileItem.file.path);
+              }
+            }
+          }
+        }
+
         this.refreshDisplay();
       };
 
