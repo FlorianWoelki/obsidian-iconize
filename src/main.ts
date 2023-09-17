@@ -271,6 +271,25 @@ export default class IconFolderPlugin extends Plugin {
               });
             }
           } else {
+            const sortedRules = customRule.getSortedRules(this);
+
+            // Removes possible icons from the renamed file.
+            sortedRules.forEach((rule) => {
+              if (customRule.doesExistInPath(rule, oldPath)) {
+                dom.removeIconInPath(file.path);
+              }
+            });
+
+            // Adds possible icons to the renamed file.
+            sortedRules.forEach((rule) => {
+              if (customRule.doesExistInPath(rule, oldPath)) {
+                return;
+              }
+
+              customRule.add(this, rule, file, undefined);
+            });
+
+            // Updates icon tabs for the renamed file.
             for (const rule of customRule.getSortedRules(this)) {
               const applicable = await customRule.isApplicable(this, rule, file);
               if (!applicable) {
