@@ -50,6 +50,17 @@ export default class IconFolderPlugin extends Plugin {
       this.getSettings().migrated++;
     }
 
+    // Migration for new order functionality of custom rules.
+    if (this.getSettings().migrated === 2) {
+      // Sorting alphabetically was the default behavior before.
+      this.getSettings()
+        .rules.sort((a, b) => a.rule.localeCompare(b.rule))
+        .forEach((rule, i) => {
+          rule.order = i;
+        });
+      this.getSettings().migrated++;
+    }
+
     const extraPadding = (this.getSettings() as any).extraPadding as ExtraMarginSettings;
     if (extraPadding) {
       if (extraPadding.top !== 2 || extraPadding.bottom !== 2 || extraPadding.left !== 2 || extraPadding.right !== 2) {
@@ -241,7 +252,7 @@ export default class IconFolderPlugin extends Plugin {
       // Register rename event for adding icons with custom rules to the DOM and updating
       // inheritance when file was moved to another directory.
       this.registerEvent(
-        this.app.vault.on('rename', (file, oldPath) => {
+        this.app.vault.on('rename', async (file, oldPath) => {
           const inheritanceExists = inheritance.doesExistInPath(this, oldPath);
           if (inheritanceExists) {
             // Apply inheritance to the renamed file.
@@ -261,14 +272,34 @@ export default class IconFolderPlugin extends Plugin {
               });
             }
           } else {
-            // Apply custom rules to the renamed file.
-            customRule.getSortedRules(this).forEach((rule) => {
+            const sortedRules = customRule.getSortedRules(this);
+
+            // Removes possible icons from the renamed file.
+            sortedRules.forEach((rule) => {
               if (customRule.doesExistInPath(rule, oldPath)) {
                 dom.removeIconInPath(file.path);
+              }
+            });
+
+            // Adds possible icons to the renamed file.
+            sortedRules.forEach((rule) => {
+              if (customRule.doesExistInPath(rule, oldPath)) {
+                return;
               }
 
               customRule.add(this, rule, file, undefined);
             });
+
+            // Updates icon tabs for the renamed file.
+            for (const rule of customRule.getSortedRules(this)) {
+              const applicable = await customRule.isApplicable(this, rule, file);
+              if (!applicable) {
+                continue;
+              }
+
+              iconTabs.update(this, file as TFile, rule.icon);
+              break;
+            }
           }
         }),
       );

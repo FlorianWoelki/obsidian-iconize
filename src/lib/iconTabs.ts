@@ -94,6 +94,7 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
         dom.setIconForNode(plugin, rule.icon, iconContainer, rule.color);
         // TODO: Refactor to include option to `insertIconToNode` function.
         iconContainer.style.margin = null;
+        break;
       }
     }
 
