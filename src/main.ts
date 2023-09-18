@@ -215,6 +215,11 @@ export default class IconFolderPlugin extends Plugin {
     // renaming event
     this.registerEvent(
       this.app.vault.on('rename', (file, oldPath) => {
+        // Check if the file was moved and had an icon before.
+        if (this.data[oldPath]) {
+          dom.createIconNode(this, file.path, this.data[oldPath] as string);
+        }
+
         this.renameFolder(file.path, oldPath);
       }),
     );
