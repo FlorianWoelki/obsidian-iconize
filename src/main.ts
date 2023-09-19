@@ -100,6 +100,16 @@ export default class IconFolderPlugin extends Plugin {
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
     this.registerEvent(this.app.workspace.on('layout-change', () => this.handleChangeLayout()));
 
+    //search deleted files since last session
+    const copyData = { ...this.data };
+    delete copyData.settings;
+    const allPath = Object.keys(copyData);
+    const allFiles = this.app.vault.getFiles();
+    const deletedFiles = allPath.filter((path) => !allFiles.find((file) => file.path === path));
+    for (const path of deletedFiles) {
+      this.removeFolderIcon(path);
+    }
+
     this.registerEvent(
       this.app.workspace.on('file-menu', (menu, file: TFile) => {
         const addIconMenuItem = (item: MenuItem) => {
@@ -268,7 +278,7 @@ export default class IconFolderPlugin extends Plugin {
             if (!isFolder) {
               const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
               const folderInheritance = inheritance.getByPath(this, file.path);
-              const iconName = folderInheritance.inheritanceIcon;
+              const iconName = folderInheritance?.inheritanceIcon;
               dom.removeIconInPath(file.path);
               inheritance.add(this, folderPath, iconName, {
                 file,
@@ -438,7 +448,8 @@ export default class IconFolderPlugin extends Plugin {
       } else {
         iconNameWithPrefix = iconData as string;
       }
-      removeIconFromIconPack(this, iconNameWithPrefix);
+      if (iconNameWithPrefix)
+        removeIconFromIconPack(this, iconNameWithPrefix);
     }
 
     //this.addIconsToSearch();
