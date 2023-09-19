@@ -204,10 +204,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
   }
 
   const svgViewboxMatch = content.match(svgViewboxRegex);
-  let svgViewbox: string = '';
-  if (svgViewboxMatch && svgViewboxMatch.length !== 0) {
-    svgViewbox = svgViewboxMatch[0];
-  }
+  const svgViewbox: string = svgViewboxMatch && svgViewboxMatch.length !== 0 ? svgViewboxMatch[0] : '';
 
   const svgContentMatch = content.match(svgContentRegex);
   if (!svgContentMatch) {
@@ -249,12 +246,10 @@ export const createIconPackPrefix = (iconPackName: string): string => {
 export const loadUsedIcons = async (plugin: Plugin, icons: string[]) => {
   const iconPacks = (await listPath(plugin)).folders.map((iconPack) => iconPack.split('/').pop());
 
-  for (let i = 0; i < icons.length; i++) {
-    const entry = icons[i];
+  for (const entry of icons) {
     if (!entry) {
       continue;
     }
-
     await loadIcon(plugin, iconPacks, entry);
   }
 };
@@ -402,7 +397,7 @@ export const removeIconFromIconPackDirectory = (
 ): Promise<void> => {
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   // Checks if icon pack is custom-made.
-  if (!iconPack.custom) {
+  if (!iconPack?.custom) {
     return plugin.app.vault.adapter.rmdir(`${path}/${iconPackName}/${iconName}.svg`, true);
   }
 };
