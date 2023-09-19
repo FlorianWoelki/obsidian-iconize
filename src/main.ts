@@ -115,6 +115,7 @@ export default class IconFolderPlugin extends Plugin {
                 iconTabs.update(this, file, iconName);
               };
             }
+            this.cleanUpData();
           });
         };
 
@@ -142,6 +143,7 @@ export default class IconFolderPlugin extends Plugin {
                   if (this.getSettings().iconInTabsEnabled) {
                     iconTabs.add(this, file as TFile, { iconName });
                   }
+                  this.cleanUpData();
                 },
               });
             }
@@ -176,6 +178,7 @@ export default class IconFolderPlugin extends Plugin {
               });
               this.saveInheritanceData(file.path, null);
               removeIconFromIconPack(this, iconData.inheritanceIcon);
+              this.cleanUpData();
             });
           } else {
             item.setTitle('Inherit icon');
@@ -187,6 +190,7 @@ export default class IconFolderPlugin extends Plugin {
                 this.saveInheritanceData(file.path, icon);
                 const iconName = typeof icon === 'string' ? icon : icon.displayName;
                 saveIconToIconPack(this, iconName);
+                this.cleanUpData();
                 inheritance.add(this, file.path, iconName, {
                   onAdd: (file) => {
                     if (this.getSettings().iconInTabsEnabled) {
@@ -209,8 +213,6 @@ export default class IconFolderPlugin extends Plugin {
       this.app.vault.on('delete', (file) => {
         const path = file.path;
         this.removeFolderIcon(path);
-        //cleanUp all other data
-        this.cleanUpData();
       }),
     );
 
