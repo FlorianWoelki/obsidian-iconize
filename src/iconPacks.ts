@@ -65,7 +65,7 @@ const iconPacks = {
  */
 export const getExtraPath = (iconPackName: string): string | undefined => {
   const path = Object.values(iconPacks).find((iconPack) => iconPack.name === iconPackName)?.path;
-  return path.length === 0 ? undefined : path;
+  return path?.length === 0 ? undefined : path;
 };
 
 export default iconPacks;
