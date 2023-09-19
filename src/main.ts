@@ -100,16 +100,6 @@ export default class IconFolderPlugin extends Plugin {
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
     this.registerEvent(this.app.workspace.on('layout-change', () => this.handleChangeLayout()));
 
-    //search deleted files since last session
-    const copyData = { ...this.data };
-    delete copyData.settings;
-    const allPath = Object.keys(copyData);
-    const allFiles = this.app.vault.getFiles();
-    const deletedFiles = allPath.filter((path) => !allFiles.find((file) => file.path === path));
-    for (const path of deletedFiles) {
-      this.removeFolderIcon(path);
-    }
-
     this.registerEvent(
       this.app.workspace.on('file-menu', (menu, file: TFile) => {
         const addIconMenuItem = (item: MenuItem) => {
@@ -219,6 +209,8 @@ export default class IconFolderPlugin extends Plugin {
       this.app.vault.on('delete', (file) => {
         const path = file.path;
         this.removeFolderIcon(path);
+        //cleanUp all other data
+        this.cleanUpData();
       }),
     );
 
@@ -560,5 +552,16 @@ export default class IconFolderPlugin extends Plugin {
         }
       }
     }) as unknown as string;
+  }
+
+  cleanUpData(): void {
+    const copyData = { ...this.data };
+    delete copyData.settings;
+    const allPath = Object.keys(copyData);
+    const allFiles = this.app.vault.getFiles();
+    const deletedFiles = allPath.filter((path) => !allFiles.find((file) => file.path === path));
+    for (const path of deletedFiles) {
+      this.removeFolderIcon(path);
+    }
   }
 }
