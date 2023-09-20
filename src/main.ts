@@ -14,7 +14,7 @@ import dom from './lib/util/dom';
 import customRule from './lib/customRule';
 import icon from './lib/icon';
 import BookmarkInternalPlugin from './internal-plugins/bookmark';
-import { removeIconFromIconPack, saveIconToIconPack } from '@app/util';
+import { getAllOpenedFiles, removeIconFromIconPack, saveIconToIconPack } from '@app/util';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -340,6 +340,16 @@ export default class IconFolderPlugin extends Plugin {
       this.registerEvent(
         this.app.workspace.on('active-leaf-change', (leaf: WorkspaceLeaf) => {
           if (!this.getSettings().iconInTabsEnabled) {
+            return;
+          }
+
+          // TODO: Maybe change in the future to a more optimal solution.
+          // Fixes a problem when the file was clicked twice in the same tab.
+          // See https://github.com/FlorianWoelki/obsidian-iconize/issues/208.
+          if (leaf.view.getViewType() === 'file-explorer') {
+            for (const openedFile of getAllOpenedFiles(this)) {
+              iconTabs.add(this, openedFile);
+            }
             return;
           }
 
