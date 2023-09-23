@@ -5,7 +5,6 @@
   "main": "main.js",
   "scripts": {
     "prepare": "husky install",
-    "precommit": "lint-staged",
     "dev": "rollup --config rollup.config.js -w",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
@@ -20,7 +19,11 @@
   "license": "MIT",
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "eslint --fix"
+      "eslint --quiet --fix"
+    ],
+    "*.{json,js,ts,jsx,tsx,html": [
+      "prettier --write --ignore-unknown",
+      "git add"
     ]
   },
   "devDependencies": {
@@ -37,8 +40,8 @@
     "eslint": "^8.47.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "husky": "^8.0.0",
-    "lint-staged": "^11.2.6",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.1",
     "mkdirp": "^1.0.4",
     "monkey-around": "^2.3.0",
     "obsidian": "^1.4.11",
