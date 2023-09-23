@@ -18,10 +18,7 @@
   "author": "Florian Woelki",
   "license": "MIT",
   "lint-staged": {
-    "*.{js,ts,tsx}": [
-      "eslint --quiet --fix"
-    ],
-    "*.{json,js,ts,jsx,tsx,html": [
+    "*.{json,js,ts,jsx,tsx,html}": [
       "prettier --write --ignore-unknown",
       "git add"
     ]
