@@ -19,8 +19,7 @@
   "license": "MIT",
   "lint-staged": {
     "*.{json,js,ts,jsx,tsx,html}": [
-      "prettier --write --ignore-unknown",
-      "git add"
+      "prettier --write --ignore-unknown"
     ]
   },
   "devDependencies": {
