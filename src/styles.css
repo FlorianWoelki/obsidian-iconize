@@ -52,7 +52,7 @@
   flex-direction: column-reverse;
   text-align: center;
   font-size: 13px;
-  color: gray;
+  color: var(--text-muted);
   padding: 16px 8px;
   line-break: auto;
   word-break: break-word;
