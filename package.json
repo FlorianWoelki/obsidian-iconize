@@ -7,8 +7,9 @@
     "prepare": "husky install",
     "precommit": "lint-staged",
     "dev": "rollup --config rollup.config.js -w",
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs",
+    "docs:dev": "vitepress dev docs --port 3000",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
@@ -49,7 +50,7 @@
     "tslib": "^2.6.2",
     "twemoji": "^14.0.2",
     "typescript": "^4.9.5",
-    "vuepress": "^1.9.10"
+    "vitepress": "1.0.0-rc.20"
   },
   "dependencies": {
     "@rollup/plugin-babel": "^6.0.3",

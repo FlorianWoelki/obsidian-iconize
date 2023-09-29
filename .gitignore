@@ -21,3 +21,7 @@ devicon
 # obsidian
 data.json
 env.js
+
+# Vitepress
+docs/.vitepress/dist
+docs/.vitepress/cache
