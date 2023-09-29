@@ -9,10 +9,17 @@ module.exports = {
         collapsable: false,
         children: [
           ['/guide/getting-started', 'Getting Started'],
+          ['/guide/settings', 'Settings'],
           ['/guide/icon-packs', 'Icon Packs'],
-          ['/guide/icon-tabs', 'Icon in Tabs'],
-          ['/guide/inheritance', 'Inheritance'],
-          ['/guide/custom-rules', 'Custom Rules'],
+        ],
+      },
+      {
+        title: 'Files and Folders',
+        collapsable: false,
+        children: [
+          ['/files-and-folders/icon-tabs', 'Icon in Tabs'],
+          ['/files-and-folders/inheritance', 'Inheritance'],
+          ['/files-and-folders/custom-rules', 'Custom Rules'],
         ],
       },
     ],
