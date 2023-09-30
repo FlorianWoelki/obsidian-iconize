@@ -1,6 +1,9 @@
 > [!IMPORTANT]
 > Obsidian Icon Folder becomes Obsidian Iconize! Read [this discussion](https://github.com/FlorianWoelki/obsidian-iconize/discussions/232) for more information.
 
+Refer to the official documentation for more information:
+[https://florianwoelki.github.io/obsidian-iconize/](https://florianwoelki.github.io/obsidian-iconize/) about the plugin and its functionalities.
+
 # Obsidian Iconize
 
 ![Preview Image](https://raw.githubusercontent.com/FlorianWoelki/obsidian-iconize/main/docs/preview-image.png)
