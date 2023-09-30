@@ -11,6 +11,10 @@ export default defineConfig({
       { text: 'Get Started', link: '/guide/getting-started' },
     ],
 
+    search: {
+      provider: 'local',
+    },
+
     sidebar: [
       {
         text: 'Guide',
