@@ -1,8 +1,8 @@
 # Icon in Tabs
 
 Make sure, that you've enabled the setting which is related to activating icons in tabs.
-Please refer to the [Settings](./settings.md) documentation for more information about
-this and other options.
+Please refer to the [Settings](../guide/settings.md) documentation for more information 
+about this and other options.
 
 ![Icon in tabs settings option](../assets/icon-in-tabs-settings-option.png)
 
