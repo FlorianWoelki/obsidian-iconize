@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   title: 'Obsidian Iconize',
   description: 'Add icons to anything you desire in Obsidian, including files, folders, and text.',
+  base: '/obsidian-iconize/',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
