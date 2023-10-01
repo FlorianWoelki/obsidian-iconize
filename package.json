@@ -11,6 +11,7 @@
     "docs:preview": "vitepress preview docs",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
+    "test": "vitest",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "prettify": "prettier --write '*/**/*.{js,ts,tsx}'"
   },
@@ -51,7 +52,8 @@
     "tslib": "^2.6.2",
     "twemoji": "^14.0.2",
     "typescript": "^4.9.5",
-    "vitepress": "1.0.0-rc.20"
+    "vitepress": "1.0.0-rc.20",
+    "vitest": "^0.34.6"
   },
   "dependencies": {
     "@rollup/plugin-babel": "^6.0.3",
