@@ -13,7 +13,10 @@ export type CustomRuleFileType = 'file' | 'folder';
  * @param fileType File type that will be checked.
  * @returns Boolean whether the custom rule `for` matches the file type or not.
  */
-const doesMatchFileType = (rule: CustomRule, fileType: CustomRuleFileType): boolean => {
+const doesMatchFileType = (
+  rule: CustomRule,
+  fileType: CustomRuleFileType,
+): boolean => {
   return (
     rule.for === 'everything' ||
     (rule.for === 'files' && fileType === 'file') ||
@@ -28,7 +31,11 @@ const doesMatchFileType = (rule: CustomRule, fileType: CustomRuleFileType): bool
  * @param file File to check against the custom rule.
  * @returns A promise that resolves to true if the file matches the rule, false otherwise.
  */
-const isApplicable = async (plugin: IconFolderPlugin, rule: CustomRule, file: TAbstractFile): Promise<boolean> => {
+const isApplicable = async (
+  plugin: IconFolderPlugin,
+  rule: CustomRule,
+  file: TAbstractFile,
+): Promise<boolean> => {
   // Gets the file type based on the specified file path.
   const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
   const toMatch = rule.useFilePath ? file.path : file.name;
@@ -52,7 +59,10 @@ const isApplicable = async (plugin: IconFolderPlugin, rule: CustomRule, file: TA
  * @param plugin Instance of the IconFolderPlugin.
  * @param rule Custom rule where the nodes will be removed based on this rule.
  */
-const removeFromAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promise<void> => {
+const removeFromAllFiles = async (
+  plugin: IconFolderPlugin,
+  rule: CustomRule,
+): Promise<void> => {
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.entries(fileExplorer.fileItems);
     for (const [path, fileItem] of files) {
@@ -63,7 +73,11 @@ const removeFromAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): P
         iconName = (plugin.getData()[path] as FolderIconObject).iconName;
       }
 
-      if (!iconName && doesExistInPath(rule, path) && doesMatchFileType(rule, fileType)) {
+      if (
+        !iconName &&
+        doesExistInPath(rule, path) &&
+        doesMatchFileType(rule, fileType)
+      ) {
         dom.removeIconInNode(getFileItemTitleEl(fileItem));
       }
     }
@@ -98,7 +112,10 @@ const addAll = async (plugin: IconFolderPlugin): Promise<void> => {
  * @param plugin Instance of the IconFolderPlugin.
  * @param rule Custom rule that will be applied, if applicable, to all files.
  */
-const addToAllFiles = async (plugin: IconFolderPlugin, rule: CustomRule): Promise<void> => {
+const addToAllFiles = async (
+  plugin: IconFolderPlugin,
+  rule: CustomRule,
+): Promise<void> => {
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);
     for (const fileItem of files) {
@@ -138,13 +155,19 @@ const add = async (
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
     if (toMatch.match(regex)) {
-      dom.createIconNode(plugin, file.path, rule.icon, { color: rule.color, container });
+      dom.createIconNode(plugin, file.path, rule.icon, {
+        color: rule.color,
+        container,
+      });
       return true;
     }
   } catch {
     // Rule is not applicable to a regex format.
     if (toMatch.includes(rule.rule)) {
-      dom.createIconNode(plugin, file.path, rule.icon, { color: rule.color, container });
+      dom.createIconNode(plugin, file.path, rule.icon, {
+        color: rule.color,
+        container,
+      });
       return true;
     }
   }
@@ -180,12 +203,17 @@ const doesExistInPath = (rule: CustomRule, path: string): boolean => {
  * @param path Path to check for.
  * @returns The custom rule if it exists, undefined otherwise.
  */
-const getByPath = (plugin: IconFolderPlugin, path: string): CustomRule | undefined => {
+const getByPath = (
+  plugin: IconFolderPlugin,
+  path: string,
+): CustomRule | undefined => {
   if (path === 'settings' || path === 'migrated') {
     return undefined;
   }
 
-  return getSortedRules(plugin).find((rule) => !emoji.isEmoji(rule.icon) && doesExistInPath(rule, path));
+  return getSortedRules(plugin).find(
+    (rule) => !emoji.isEmoji(rule.icon) && doesExistInPath(rule, path),
+  );
 };
 
 /**
@@ -194,7 +222,10 @@ const getByPath = (plugin: IconFolderPlugin, path: string): CustomRule | undefin
  * @param rule Custom rule that will be checked for.
  * @returns An array of files and directories that match the custom rule.
  */
-const getFiles = (plugin: IconFolderPlugin, rule: CustomRule): TAbstractFile[] => {
+const getFiles = (
+  plugin: IconFolderPlugin,
+  rule: CustomRule,
+): TAbstractFile[] => {
   const result: TAbstractFile[] = [];
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);

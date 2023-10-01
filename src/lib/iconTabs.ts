@@ -26,7 +26,9 @@ const getIconContainers = (filename: string): HTMLElement[] => {
     }
 
     // Gets the icon container inside of the inner header container.
-    const iconContainer = headerInnerContainer.children[0] as HTMLElement | undefined;
+    const iconContainer = headerInnerContainer.children[0] as
+      | HTMLElement
+      | undefined;
     if (!iconContainer) {
       return;
     }
@@ -42,7 +44,11 @@ interface AddOptions {
   iconColor?: string;
 }
 
-const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions): Promise<void> => {
+const add = async (
+  plugin: IconFolderPlugin,
+  file: TFile,
+  options?: AddOptions,
+): Promise<void> => {
   const iconContainers = getIconContainers(file.basename);
   if (iconContainers.length === 0) {
     return;
@@ -67,10 +73,9 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
     const hasIcon = plugin.getData()[file.path];
     if (!hasIcon) {
       // Add icons to tabs if there is some sort of inheritance going on.
-      const inheritanceData = data.filter(([key, value]) => typeof value === 'object' && key !== 'settings') as [
-        string,
-        FolderIconObject,
-      ][];
+      const inheritanceData = data.filter(
+        ([key, value]) => typeof value === 'object' && key !== 'settings',
+      ) as [string, FolderIconObject][];
       for (const [inheritancePath, inheritance] of inheritanceData) {
         if (!inheritance.inheritanceIcon) {
           continue;
@@ -80,7 +85,12 @@ const add = async (plugin: IconFolderPlugin, file: TFile, options?: AddOptions):
           continue;
         }
 
-        dom.setIconForNode(plugin, inheritance.inheritanceIcon, iconContainer, iconColor);
+        dom.setIconForNode(
+          plugin,
+          inheritance.inheritanceIcon,
+          iconContainer,
+          iconColor,
+        );
         // TODO: Refactor to include option to `insertIconToNode` function.
         iconContainer.style.margin = null;
         break;

@@ -50,7 +50,9 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
     dom.setIconForNode(this.plugin, iconName, iconNode as HTMLElement);
   }
 
-  private computeNodesWithPath(callback: (node: Element, filePath: string) => void): void {
+  private computeNodesWithPath(
+    callback: (node: Element, filePath: string) => void,
+  ): void {
     const { itemLookup, containerEl } = this.leaf;
     const navFileEls = containerEl.querySelectorAll('.nav-file');
     navFileEls.forEach((navFileEl) => {
@@ -69,11 +71,15 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
       nodesWithPath[filePath] = node;
     });
 
-    Object.entries(nodesWithPath).forEach(([filePath, node]) => this.setIcon(filePath, node as HTMLElement));
+    Object.entries(nodesWithPath).forEach(([filePath, node]) =>
+      this.setIcon(filePath, node as HTMLElement),
+    );
   }
 
   register(): void {
-    if (!this.plugin.app.internalPlugins.getPluginById('file-explorer').enabled) {
+    if (
+      !this.plugin.app.internalPlugins.getPluginById('file-explorer').enabled
+    ) {
       console.info(
         `[${MetaData.pluginName}/Starred] Skipping starred internal plugin registration because file-explorer is not enabled.`,
       );

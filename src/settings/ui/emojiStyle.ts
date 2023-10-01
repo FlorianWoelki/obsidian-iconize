@@ -10,7 +10,9 @@ import { getAllOpenedFiles } from '../../util';
 
 export default class EmojiStyleSetting extends IconFolderSetting {
   public display(): void {
-    const emojiStyle = new Setting(this.containerEl).setName('Emoji Style').setDesc('Change the style of your emojis.');
+    const emojiStyle = new Setting(this.containerEl)
+      .setName('Emoji Style')
+      .setDesc('Change the style of your emojis.');
     emojiStyle.addDropdown((dropdown) => {
       dropdown.addOption('none', 'None');
       dropdown.addOption('native', 'Native');
@@ -35,14 +37,24 @@ export default class EmojiStyleSetting extends IconFolderSetting {
         }
 
         if (typeof this.plugin.getData()[path] === 'object') {
-          const inheritanceData = this.plugin.getData()[path] as FolderIconObject;
+          const inheritanceData = this.plugin.getData()[
+            path
+          ] as FolderIconObject;
           iconName = inheritanceData.iconName;
 
           // Handle updating the emoji style for the inheritance icon.
           if (emoji.isEmoji(inheritanceData.inheritanceIcon)) {
             for (const file of inheritance.getFiles(this.plugin, path)) {
-              dom.createIconNode(this.plugin, file.path, inheritanceData.inheritanceIcon);
-              iconTabs.update(this.plugin, file as TFile, inheritanceData.inheritanceIcon);
+              dom.createIconNode(
+                this.plugin,
+                file.path,
+                inheritanceData.inheritanceIcon,
+              );
+              iconTabs.update(
+                this.plugin,
+                file as TFile,
+                inheritanceData.inheritanceIcon,
+              );
             }
           }
         }

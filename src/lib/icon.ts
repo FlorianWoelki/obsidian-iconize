@@ -55,7 +55,9 @@ export const addAll = (
           const iconName = typeof value === 'string' ? value : value.iconName;
           if (iconName) {
             // Removes a possible existing icon.
-            const existingIcon = titleEl.querySelector('.obsidian-icon-folder-icon');
+            const existingIcon = titleEl.querySelector(
+              '.obsidian-icon-folder-icon',
+            );
             if (existingIcon) {
               existingIcon.remove();
             }
@@ -91,7 +93,10 @@ export const addAll = (
  * @param path Path to get the icon of.
  * @returns The icon of the path if it exists, undefined otherwise.
  */
-const getByPath = (plugin: IconFolderPlugin, path: string): string | undefined => {
+const getByPath = (
+  plugin: IconFolderPlugin,
+  path: string,
+): string | undefined => {
   if (path === 'settings' || path === 'migrated') {
     return undefined;
   }
@@ -150,7 +155,10 @@ const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
 
     // Check for inheritance folder and insert the inheritance icon.
     const inheritanceFolder = inheritance.getByPath(plugin, path);
-    if (inheritanceFolder && !emoji.isEmoji(inheritanceFolder.inheritanceIcon)) {
+    if (
+      inheritanceFolder &&
+      !emoji.isEmoji(inheritanceFolder.inheritanceIcon)
+    ) {
       result.push({ path, icon: inheritanceFolder.inheritanceIcon });
     }
   });

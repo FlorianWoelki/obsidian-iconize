@@ -1,8 +1,26 @@
-import { Plugin, MenuItem, TFile, WorkspaceLeaf, requireApiVersion, Notice, TFolder } from 'obsidian';
+import {
+  Plugin,
+  MenuItem,
+  TFile,
+  WorkspaceLeaf,
+  requireApiVersion,
+  Notice,
+  TFolder,
+} from 'obsidian';
 import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
-import { createDefaultDirectory, getNormalizedName, initIconPacks, loadUsedIcons, setPath } from './iconPackManager';
+import {
+  createDefaultDirectory,
+  getNormalizedName,
+  initIconPacks,
+  loadUsedIcons,
+  setPath,
+} from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
-import { DEFAULT_SETTINGS, ExtraMarginSettings, IconFolderSettings } from './settings/data';
+import {
+  DEFAULT_SETTINGS,
+  ExtraMarginSettings,
+  IconFolderSettings,
+} from './settings/data';
 import { migrateIcons } from './migration';
 import IconFolderSettingsUI from './settings/ui';
 import MetaData from './MetaData';
@@ -14,7 +32,11 @@ import dom from './lib/util/dom';
 import customRule from './lib/customRule';
 import icon from './lib/icon';
 import BookmarkInternalPlugin from './internal-plugins/bookmark';
-import { getAllOpenedFiles, removeIconFromIconPack, saveIconToIconPack } from '@app/util';
+import {
+  getAllOpenedFiles,
+  removeIconFromIconPack,
+  saveIconToIconPack,
+} from '@app/util';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -22,7 +44,10 @@ export interface FolderIconObject {
 }
 
 export default class IconFolderPlugin extends Plugin {
-  private data: Record<string, boolean | string | IconFolderSettings | FolderIconObject>;
+  private data: Record<
+    string,
+    boolean | string | IconFolderSettings | FolderIconObject
+  >;
   private registeredFileExplorers = new Set<ExplorerView>();
 
   private modifiedInternalPlugins: InternalPluginInjector[] = [];
@@ -62,9 +87,15 @@ export default class IconFolderPlugin extends Plugin {
       this.getSettings().migrated++;
     }
 
-    const extraPadding = (this.getSettings() as any).extraPadding as ExtraMarginSettings;
+    const extraPadding = (this.getSettings() as any)
+      .extraPadding as ExtraMarginSettings;
     if (extraPadding) {
-      if (extraPadding.top !== 2 || extraPadding.bottom !== 2 || extraPadding.left !== 2 || extraPadding.right !== 2) {
+      if (
+        extraPadding.top !== 2 ||
+        extraPadding.bottom !== 2 ||
+        extraPadding.left !== 2 ||
+        extraPadding.right !== 2
+      ) {
         this.getSettings().extraMargin = extraPadding;
         delete (this.getSettings() as any)['extraPadding'];
       }
@@ -99,7 +130,9 @@ export default class IconFolderPlugin extends Plugin {
     initIconPacks(this);
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
-    this.registerEvent(this.app.workspace.on('layout-change', () => this.handleChangeLayout()));
+    this.registerEvent(
+      this.app.workspace.on('layout-change', () => this.handleChangeLayout()),
+    );
 
     this.registerEvent(
       this.app.workspace.on('file-menu', (menu, file: TFile) => {
@@ -134,7 +167,10 @@ export default class IconFolderPlugin extends Plugin {
 
             // Check for possible inheritance and add the icon if an inheritance exists.
             if (inheritance.doesExistInPath(this, file.path)) {
-              const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
+              const folderPath = inheritance.getFolderPathByFilePath(
+                this,
+                file.path,
+              );
               const folderInheritance = inheritance.getByPath(this, file.path);
               const iconName = folderInheritance.inheritanceIcon;
               inheritance.add(this, folderPath, iconName, {
@@ -155,10 +191,14 @@ export default class IconFolderPlugin extends Plugin {
 
         const filePathData = this.getData()[file.path];
         const inheritanceFolderHasIcon =
-          typeof filePathData === 'object' && (filePathData as FolderIconObject).iconName !== null;
+          typeof filePathData === 'object' &&
+          (filePathData as FolderIconObject).iconName !== null;
         // Only add remove icon menu item when the file path exists in the data.
         // We do not want to show this menu item for e.g. inheritance or custom rules.
-        if (filePathData && (typeof filePathData === 'string' || inheritanceFolderHasIcon)) {
+        if (
+          filePathData &&
+          (typeof filePathData === 'string' || inheritanceFolderHasIcon)
+        ) {
           menu.addItem(removeIconMenuItem);
         }
 
@@ -171,7 +211,9 @@ export default class IconFolderPlugin extends Plugin {
                 onRemove: (file) => {
                   // Removes the icons from the file tabs inside of the inheritance.
                   if (this.getSettings().iconInTabsEnabled) {
-                    iconTabs.remove(file as TFile, { replaceWithDefaultIcon: true });
+                    iconTabs.remove(file as TFile, {
+                      replaceWithDefaultIcon: true,
+                    });
                   }
                 },
               });
@@ -186,7 +228,8 @@ export default class IconFolderPlugin extends Plugin {
               // manipulate `onChooseItem` method to get custom functionality for inheriting icons
               modal.onChooseItem = (icon: Icon | string) => {
                 this.saveInheritanceData(file.path, icon);
-                const iconName = typeof icon === 'string' ? icon : icon.displayName;
+                const iconName =
+                  typeof icon === 'string' ? icon : icon.displayName;
                 saveIconToIconPack(this, iconName);
                 inheritance.add(this, file.path, iconName, {
                   onAdd: (file) => {
@@ -220,7 +263,9 @@ export default class IconFolderPlugin extends Plugin {
         const dataPoint = this.data[oldPath];
         if (dataPoint && oldPath !== 'settings') {
           const iconNameWithPrefix =
-            typeof dataPoint === 'object' ? (dataPoint as FolderIconObject).iconName : (dataPoint as string);
+            typeof dataPoint === 'object'
+              ? (dataPoint as FolderIconObject).iconName
+              : (dataPoint as string);
           dom.createIconNode(this, file.path, iconNameWithPrefix);
         }
 
@@ -245,7 +290,10 @@ export default class IconFolderPlugin extends Plugin {
 
   private handleChangeLayout(): void {
     // Transform data that are objects to single strings.
-    const data = Object.entries(this.data) as [string, string | FolderIconObject][];
+    const data = Object.entries(this.data) as [
+      string,
+      string | FolderIconObject,
+    ][];
 
     this.modifiedInternalPlugins.forEach((internalPlugin) => {
       if (internalPlugin.enabled) {
@@ -267,7 +315,10 @@ export default class IconFolderPlugin extends Plugin {
             // Apply inheritance to the renamed file.
             const isFolder = (file as TFolder).children !== undefined;
             if (!isFolder) {
-              const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
+              const folderPath = inheritance.getFolderPathByFilePath(
+                this,
+                file.path,
+              );
               const folderInheritance = inheritance.getByPath(this, file.path);
               const iconName = folderInheritance.inheritanceIcon;
               dom.removeIconInPath(file.path);
@@ -301,7 +352,11 @@ export default class IconFolderPlugin extends Plugin {
 
             // Updates icon tabs for the renamed file.
             for (const rule of customRule.getSortedRules(this)) {
-              const applicable = await customRule.isApplicable(this, rule, file);
+              const applicable = await customRule.isApplicable(
+                this,
+                rule,
+                file,
+              );
               if (!applicable) {
                 continue;
               }
@@ -324,16 +379,20 @@ export default class IconFolderPlugin extends Plugin {
 
           if (!file.parent || file.parent.path === '/' || isFolder) return;
 
-          inheritanceFolders.forEach(([path, obj]: [string, FolderIconObject]) => {
-            inheritance.add(this, path, obj.inheritanceIcon, {
-              file,
-              onAdd: (file) => {
-                if (this.getSettings().iconInTabsEnabled) {
-                  iconTabs.add(this, file as TFile, { iconName: obj.inheritanceIcon });
-                }
-              },
-            });
-          });
+          inheritanceFolders.forEach(
+            ([path, obj]: [string, FolderIconObject]) => {
+              inheritance.add(this, path, obj.inheritanceIcon, {
+                file,
+                onAdd: (file) => {
+                  if (this.getSettings().iconInTabsEnabled) {
+                    iconTabs.add(this, file as TFile, {
+                      iconName: obj.inheritanceIcon,
+                    });
+                  }
+                },
+              });
+            },
+          );
         }),
       );
 
@@ -367,7 +426,10 @@ export default class IconFolderPlugin extends Plugin {
     });
   }
 
-  private saveInheritanceData(folderPath: string, icon: Icon | string | null): void {
+  private saveInheritanceData(
+    folderPath: string,
+    icon: Icon | string | null,
+  ): void {
     const currentValue = this.data[folderPath];
     // if icon is null, it will remove the inheritance icon from the data
     if (icon === null && currentValue && typeof currentValue === 'object') {
@@ -387,20 +449,26 @@ export default class IconFolderPlugin extends Plugin {
         if (typeof currentValue === 'string') {
           this.data[folderPath] = {
             iconName: currentValue as string,
-            inheritanceIcon: getNormalizedName(typeof icon === 'object' ? icon.displayName : icon),
+            inheritanceIcon: getNormalizedName(
+              typeof icon === 'object' ? icon.displayName : icon,
+            ),
           };
         }
         // check if it has already a inheritance icon
         else if (folderPath !== 'settings') {
           this.data[folderPath] = {
             ...(currentValue as FolderIconObject),
-            inheritanceIcon: getNormalizedName(typeof icon === 'object' ? icon.displayName : icon),
+            inheritanceIcon: getNormalizedName(
+              typeof icon === 'object' ? icon.displayName : icon,
+            ),
           };
         }
       } else {
         this.data[folderPath] = {
           iconName: null,
-          inheritanceIcon: getNormalizedName(typeof icon === 'object' ? icon.displayName : icon),
+          inheritanceIcon: getNormalizedName(
+            typeof icon === 'object' ? icon.displayName : icon,
+          ),
         };
       }
     }
@@ -417,7 +485,11 @@ export default class IconFolderPlugin extends Plugin {
       return;
     }
 
-    Object.defineProperty(this.data, newPath, Object.getOwnPropertyDescriptor(this.data, oldPath));
+    Object.defineProperty(
+      this.data,
+      newPath,
+      Object.getOwnPropertyDescriptor(this.data, oldPath),
+    );
     delete this.data[oldPath];
     this.saveIconFolderData();
   }
@@ -457,7 +529,9 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   addFolderIcon(path: string, icon: Icon | string): void {
-    const iconName = getNormalizedName(typeof icon === 'object' ? icon.displayName : icon);
+    const iconName = getNormalizedName(
+      typeof icon === 'object' ? icon.displayName : icon,
+    );
 
     // Check if inheritance is active for this path.
     if (typeof this.data[path] === 'object') {
@@ -472,11 +546,15 @@ export default class IconFolderPlugin extends Plugin {
 
     // Update recently used icons.
     if (!this.getSettings().recentlyUsedIcons.includes(iconName)) {
-      if (this.getSettings().recentlyUsedIcons.length >= this.getSettings().recentlyUsedIconsSize) {
-        this.getSettings().recentlyUsedIcons = this.getSettings().recentlyUsedIcons.slice(
-          0,
-          this.getSettings().recentlyUsedIconsSize - 1,
-        );
+      if (
+        this.getSettings().recentlyUsedIcons.length >=
+        this.getSettings().recentlyUsedIconsSize
+      ) {
+        this.getSettings().recentlyUsedIcons =
+          this.getSettings().recentlyUsedIcons.slice(
+            0,
+            this.getSettings().recentlyUsedIconsSize - 1,
+          );
       }
 
       this.getSettings().recentlyUsedIcons.unshift(iconName);
@@ -508,16 +586,23 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   async checkRecentlyUsedIcons(): Promise<void> {
-    if (this.getSettings().recentlyUsedIcons.length > this.getSettings().recentlyUsedIconsSize) {
-      this.getSettings().recentlyUsedIcons = this.getSettings().recentlyUsedIcons.slice(
-        0,
-        this.getSettings().recentlyUsedIconsSize,
-      );
+    if (
+      this.getSettings().recentlyUsedIcons.length >
+      this.getSettings().recentlyUsedIconsSize
+    ) {
+      this.getSettings().recentlyUsedIcons =
+        this.getSettings().recentlyUsedIcons.slice(
+          0,
+          this.getSettings().recentlyUsedIconsSize,
+        );
       await this.saveIconFolderData();
     }
   }
 
-  getData(): Record<string, boolean | string | IconFolderSettings | FolderIconObject> {
+  getData(): Record<
+    string,
+    boolean | string | IconFolderSettings | FolderIconObject
+  > {
     return this.data;
   }
 

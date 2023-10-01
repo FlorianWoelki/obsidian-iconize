@@ -41,7 +41,7 @@ interface BookmarkInternalPlugin extends InternalPlugin {
   };
 }
 
-type FileExplorerInternalPlugin = InternalPlugin
+type FileExplorerInternalPlugin = InternalPlugin;
 
 interface InternalPlugins {
   starred: StarredInternalPlugin;
@@ -51,7 +51,9 @@ interface InternalPlugins {
 
 declare module 'obsidian' {
   interface Workspace {
-    getLeavesOfType(viewType: 'markdown' | 'search' | 'file-explorer'): ExplorerLeaf[];
+    getLeavesOfType(
+      viewType: 'markdown' | 'search' | 'file-explorer',
+    ): ExplorerLeaf[];
   }
 
   interface App {

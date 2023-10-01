@@ -74,7 +74,9 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
     iconNode.style.margin = defaultMargin;
   }
 
-  private computeNodesWithPath(callback: (node: HTMLElement, filePath: string) => void): void {
+  private computeNodesWithPath(
+    callback: (node: HTMLElement, filePath: string) => void,
+  ): void {
     if (!this.leaf) {
       return;
     }
@@ -85,7 +87,10 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
      * @param item BookmarkItem object which can be a folder or a file.
      * @param itemDoms WeakMap of the bookmark plugin which contains the lookup item.
      */
-    const retrieveLookupItem = (item: BookmarkItem, itemDoms: WeakMap<BookmarkItem, BookmarkItemValue>): void => {
+    const retrieveLookupItem = (
+      item: BookmarkItem,
+      itemDoms: WeakMap<BookmarkItem, BookmarkItemValue>,
+    ): void => {
       const lookupItem = itemDoms.get(item);
       if (!lookupItem) {
         return;
@@ -118,11 +123,15 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
       nodesWithPath[filePath] = node;
     });
 
-    Object.entries(nodesWithPath).forEach(([filePath, node]) => this.setIconOrRemove(filePath, node));
+    Object.entries(nodesWithPath).forEach(([filePath, node]) =>
+      this.setIconOrRemove(filePath, node),
+    );
   }
 
   register(): void {
-    if (!this.plugin.app.internalPlugins.getPluginById('file-explorer').enabled) {
+    if (
+      !this.plugin.app.internalPlugins.getPluginById('file-explorer').enabled
+    ) {
       console.info(
         `[${MetaData.pluginName}/Bookmarks] Skipping bookmark internal plugin registration because file-explorer is not enabled.`,
       );

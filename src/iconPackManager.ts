@@ -42,7 +42,11 @@ let iconPacks: {
   icons: Icon[];
 }[] = [];
 
-export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: string): Promise<void> => {
+export const moveIconPackDirectories = async (
+  plugin: Plugin,
+  from: string,
+  to: string,
+): Promise<void> => {
   // Tries to move all icon packs to the new folder.
   for (let i = 0; i < iconPacks.length; i++) {
     const iconPack = iconPacks[i];
@@ -57,15 +61,24 @@ export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: 
 
     // Move the zip file.
     if (await plugin.app.vault.adapter.exists(`${from}/${iconPack.name}.zip`)) {
-      await plugin.app.vault.adapter.copy(`${from}/${iconPack.name}.zip`, `${to}/${iconPack.name}.zip`);
+      await plugin.app.vault.adapter.copy(
+        `${from}/${iconPack.name}.zip`,
+        `${to}/${iconPack.name}.zip`,
+      );
     }
 
     // Move all other files inside of the iconpack directory.
-    const filesInDirectory = await getFilesInDirectory(plugin, `${from}/${iconPack.name}`);
+    const filesInDirectory = await getFilesInDirectory(
+      plugin,
+      `${from}/${iconPack.name}`,
+    );
 
     for (const file of filesInDirectory) {
       const fileName = file.split('/').pop();
-      await plugin.app.vault.adapter.copy(`${from}/${iconPack.name}/${fileName}`, `${to}/${iconPack.name}/${fileName}`);
+      await plugin.app.vault.adapter.copy(
+        `${from}/${iconPack.name}/${fileName}`,
+        `${to}/${iconPack.name}/${fileName}`,
+      );
     }
 
     new Notice(`...moved ${iconPack.name}`);
@@ -85,13 +98,19 @@ export const moveIconPackDirectories = async (plugin: Plugin, from: string, to: 
   }
 };
 
-export const createCustomIconPackDirectory = async (plugin: Plugin, dir: string): Promise<void> => {
+export const createCustomIconPackDirectory = async (
+  plugin: Plugin,
+  dir: string,
+): Promise<void> => {
   await createDirectory(plugin, dir);
   const prefix = createIconPackPrefix(dir);
   iconPacks.push({ name: dir, icons: [], prefix, custom: true });
 };
 
-export const deleteIconPack = async (plugin: Plugin, dir: string): Promise<void> => {
+export const deleteIconPack = async (
+  plugin: Plugin,
+  dir: string,
+): Promise<void> => {
   iconPacks = iconPacks.filter((iconPack) => iconPack.name !== dir);
   // Check for the icon pack directory and delete it.
   if (await plugin.app.vault.adapter.exists(`${path}/${dir}`)) {
@@ -103,11 +122,17 @@ export const deleteIconPack = async (plugin: Plugin, dir: string): Promise<void>
   }
 };
 
-export const doesIconPackExist = (plugin: Plugin, iconPackName: string): Promise<boolean> => {
+export const doesIconPackExist = (
+  plugin: Plugin,
+  iconPackName: string,
+): Promise<boolean> => {
   return plugin.app.vault.adapter.exists(`${path}/${iconPackName}`);
 };
 
-const createDirectory = async (plugin: Plugin, dir: string): Promise<boolean> => {
+const createDirectory = async (
+  plugin: Plugin,
+  dir: string,
+): Promise<boolean> => {
   const doesDirExist = await plugin.app.vault.adapter.exists(`${path}/${dir}`);
   if (!doesDirExist) {
     await plugin.app.vault.adapter.mkdir(`${path}/${dir}`);
@@ -133,7 +158,11 @@ export const getNormalizedName = (s: string) => {
 //   await plugin.app.vault.adapter.rename(oldPath, newPath);
 // };
 
-export const createZipFile = async (plugin: Plugin, filename: string, buffer: ArrayBuffer) => {
+export const createZipFile = async (
+  plugin: Plugin,
+  filename: string,
+  buffer: ArrayBuffer,
+) => {
   await plugin.app.vault.adapter.writeBinary(`${path}/${filename}`, buffer);
 };
 
@@ -145,13 +174,18 @@ export const createFile = async (
   absoluteFilename?: string,
 ): Promise<void> => {
   const normalizedFilename = getNormalizedName(filename);
-  const exists = await plugin.app.vault.adapter.exists(`${path}/${iconPackName}/${normalizedFilename}`);
+  const exists = await plugin.app.vault.adapter.exists(
+    `${path}/${iconPackName}/${normalizedFilename}`,
+  );
   if (exists) {
     const folderSplit = absoluteFilename.split('/');
     if (folderSplit.length >= 2) {
       const folderName = folderSplit[folderSplit.length - 2];
       const newFilename = folderName + normalizedFilename;
-      await plugin.app.vault.adapter.write(`${path}/${iconPackName}/${newFilename}`, content);
+      await plugin.app.vault.adapter.write(
+        `${path}/${iconPackName}/${newFilename}`,
+        content,
+      );
       console.info(
         `[${MetaData.pluginName}] Renamed old file ${normalizedFilename} to ${newFilename} because of duplication.`,
       );
@@ -163,10 +197,16 @@ export const createFile = async (
       console.warn(
         `[${MetaData.pluginName}] Could not create icons with duplicated file names (${normalizedFilename}).`,
       );
-      new Notice(`[${MetaData.pluginName}] Could not create duplicated icon name (${normalizedFilename})`, 8000);
+      new Notice(
+        `[${MetaData.pluginName}] Could not create duplicated icon name (${normalizedFilename})`,
+        8000,
+      );
     }
   } else {
-    await plugin.app.vault.adapter.write(`${path}/${iconPackName}/${normalizedFilename}`, content);
+    await plugin.app.vault.adapter.write(
+      `${path}/${iconPackName}/${normalizedFilename}`,
+      content,
+    );
   }
 };
 
@@ -182,21 +222,29 @@ export const getIconPack = (name: string) => {
   return iconPacks.find((ip) => ip.name === name);
 };
 
-export const getFilesInDirectory = async (plugin: Plugin, dir: string): Promise<string[]> => {
+export const getFilesInDirectory = async (
+  plugin: Plugin,
+  dir: string,
+): Promise<string[]> => {
   return (await plugin.app.vault.adapter.list(dir)).files;
 };
 
 const validIconName = /^[(A-Z)|(0-9)]/;
 const svgViewboxRegex = /viewBox="([^"]*)"/g;
 const svgContentRegex = /<svg.*>(.*?)<\/svg>/g;
-const generateIcon = (iconPackName: string, iconName: string, content: string): Icon | null => {
+const generateIcon = (
+  iconPackName: string,
+  iconName: string,
+  content: string,
+): Icon | null => {
   if (content.length === 0) {
     return;
   }
 
   content = content.replace(/(\r\n|\n|\r)/gm, '');
   content = content.replace(/>\s+</gm, '><');
-  const normalizedName = iconName.charAt(0).toUpperCase() + iconName.substring(1);
+  const normalizedName =
+    iconName.charAt(0).toUpperCase() + iconName.substring(1);
 
   if (!validIconName.exec(normalizedName)) {
     console.log(`skipping icon with invalid name: ${iconName}`);
@@ -215,7 +263,9 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
     return null;
   }
 
-  const svgContent = svgContentMatch.map((val) => val.replace(/<\/?svg>/g, '').replace(/<svg.+?>/g, ''))[0];
+  const svgContent = svgContentMatch.map((val) =>
+    val.replace(/<\/?svg>/g, '').replace(/<svg.+?>/g, ''),
+  )[0];
 
   const iconPackPrefix = createIconPackPrefix(iconPackName);
 
@@ -243,11 +293,15 @@ export const createIconPackPrefix = (iconPackName: string): string => {
     return result;
   }
 
-  return iconPackName.charAt(0).toUpperCase() + iconPackName.charAt(1).toLowerCase();
+  return (
+    iconPackName.charAt(0).toUpperCase() + iconPackName.charAt(1).toLowerCase()
+  );
 };
 
 export const loadUsedIcons = async (plugin: Plugin, icons: string[]) => {
-  const iconPacks = (await listPath(plugin)).folders.map((iconPack) => iconPack.split('/').pop());
+  const iconPacks = (await listPath(plugin)).folders.map((iconPack) =>
+    iconPack.split('/').pop(),
+  );
 
   for (let i = 0; i < icons.length; i++) {
     const entry = icons[i];
@@ -271,7 +325,11 @@ export const nextIdentifier = (iconName: string) => {
   return iconName.substring(1).search(/[(A-Z)|(0-9)]/) + 1;
 };
 
-export const loadIcon = async (plugin: Plugin, iconPacks: string[], iconName: string): Promise<void> => {
+export const loadIcon = async (
+  plugin: Plugin,
+  iconPacks: string[],
+  iconName: string,
+): Promise<void> => {
   const nextLetter = nextIdentifier(iconName);
   const prefix = iconName.substring(0, nextLetter);
   const name = iconName.substring(nextLetter);
@@ -282,13 +340,18 @@ export const loadIcon = async (plugin: Plugin, iconPacks: string[], iconName: st
   });
 
   if (!iconPack) {
-    new Notice(`Seems like you do not have an icon pack installed. (${iconName})`, 5000);
+    new Notice(
+      `Seems like you do not have an icon pack installed. (${iconName})`,
+      5000,
+    );
     return;
   }
 
   const fullPath = path + '/' + iconPack + '/' + name + '.svg';
   if (!(await plugin.app.vault.adapter.exists(fullPath))) {
-    console.warn(`[obsidian-icon-folder] icon with name "${name}" was not found (full path: ${fullPath}).`);
+    console.warn(
+      `[obsidian-icon-folder] icon with name "${name}" was not found (full path: ${fullPath}).`,
+    );
     return;
   }
 
@@ -329,7 +392,9 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
     const loadedIcons: Icon[] = [];
     // Convert files into loaded svgs.
     for (let j = 0; j < files.length; j++) {
-      const iconNameRegex = files[j].match(new RegExp(path + '/' + folderName + '/(.*)'));
+      const iconNameRegex = files[j].match(
+        new RegExp(path + '/' + folderName + '/(.*)'),
+      );
       const iconName = iconNameRegex[1];
       const iconContent = await plugin.app.vault.adapter.read(files[j]);
       const icon = generateIcon(folderName, iconName, iconContent);
@@ -339,7 +404,12 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
     }
 
     const prefix = createIconPackPrefix(folderName);
-    iconPacks.push({ name: folderName, icons: loadedIcons, prefix, custom: true });
+    iconPacks.push({
+      name: folderName,
+      icons: loadedIcons,
+      prefix,
+      custom: true,
+    });
     console.log(`loaded icon pack ${folderName} (${loadedIcons.length})`);
   }
 
@@ -348,12 +418,20 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
     const files = zipFiles[zipFile];
     const loadedIcons: Icon[] = await getLoadedIconsFromZipFile(zipFile, files);
     const prefix = createIconPackPrefix(zipFile);
-    iconPacks.push({ name: zipFile, icons: loadedIcons, prefix, custom: false });
+    iconPacks.push({
+      name: zipFile,
+      icons: loadedIcons,
+      prefix,
+      custom: false,
+    });
     console.log(`loaded icon pack ${zipFile} (${loadedIcons.length})`);
   }
 };
 
-const getLoadedIconsFromZipFile = async (iconPackName: string, files: JSZip.JSZipObject[]): Promise<Icon[]> => {
+const getLoadedIconsFromZipFile = async (
+  iconPackName: string,
+  files: JSZip.JSZipObject[],
+): Promise<Icon[]> => {
   const loadedIcons: Icon[] = [];
   const extraPath = getExtraPath(iconPackName);
 
@@ -375,18 +453,26 @@ const getLoadedIconsFromZipFile = async (iconPackName: string, files: JSZip.JSZi
   return loadedIcons;
 };
 
-export const addIconToIconPack = (iconPackName: string, iconName: string, iconContent: string): Icon | undefined => {
+export const addIconToIconPack = (
+  iconPackName: string,
+  iconName: string,
+  iconContent: string,
+): Icon | undefined => {
   // Normalize the icon name to remove `-` or `_` in the name.
   iconName = getNormalizedName(iconName);
   const icon = generateIcon(iconPackName, iconName, iconContent);
   if (!icon) {
-    console.warn(`[obsidian-icon-folder] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`);
+    console.warn(
+      `[obsidian-icon-folder] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`,
+    );
     return undefined;
   }
 
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   if (!iconPack) {
-    console.warn(`[obsidian-icon-folder] iconpack with name "${iconPackName}" was not found.`);
+    console.warn(
+      `[obsidian-icon-folder] iconpack with name "${iconPackName}" was not found.`,
+    );
     return undefined;
   }
 
@@ -403,19 +489,35 @@ export const removeIconFromIconPackDirectory = (
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   // Checks if icon pack is custom-made.
   if (!iconPack.custom) {
-    return plugin.app.vault.adapter.rmdir(`${path}/${iconPackName}/${iconName}.svg`, true);
+    return plugin.app.vault.adapter.rmdir(
+      `${path}/${iconPackName}/${iconName}.svg`,
+      true,
+    );
   }
 };
 
-export const extractIconToIconPack = async (plugin: Plugin, icon: Icon, iconContent: string) => {
-  const doesIconPackDirExist = await plugin.app.vault.adapter.exists(`${path}/${icon.iconPackName}`);
+export const extractIconToIconPack = async (
+  plugin: Plugin,
+  icon: Icon,
+  iconContent: string,
+) => {
+  const doesIconPackDirExist = await plugin.app.vault.adapter.exists(
+    `${path}/${icon.iconPackName}`,
+  );
   if (!doesIconPackDirExist) {
     await plugin.app.vault.adapter.mkdir(`${path}/${icon.iconPackName}`);
   }
 
-  const doesIconFileExists = await plugin.app.vault.adapter.exists(`${path}/${icon.iconPackName}/${icon.name}.svg`);
+  const doesIconFileExists = await plugin.app.vault.adapter.exists(
+    `${path}/${icon.iconPackName}/${icon.name}.svg`,
+  );
   if (!doesIconFileExists) {
-    await createFile(plugin, icon.iconPackName, `${icon.name}.svg`, iconContent);
+    await createFile(
+      plugin,
+      icon.iconPackName,
+      `${icon.name}.svg`,
+      iconContent,
+    );
   }
 };
 
@@ -426,7 +528,10 @@ export const getAllLoadedIconNames = (): Icon[] => {
   }, []);
 };
 
-export const registerIconPack = async (name: string, arrayBuffer: ArrayBuffer) => {
+export const registerIconPack = async (
+  name: string,
+  arrayBuffer: ArrayBuffer,
+) => {
   const files = await readZipFile(arrayBuffer);
   const loadedIcons: Icon[] = await getLoadedIconsFromZipFile(name, files);
   const prefix = createIconPackPrefix(name);
@@ -436,20 +541,29 @@ export const registerIconPack = async (name: string, arrayBuffer: ArrayBuffer) =
 
 export const doesIconExists = (iconName: string): boolean => {
   const icons = getAllLoadedIconNames();
-  return icons.find((icon) => icon.name === iconName || icon.prefix + icon.name === iconName) !== undefined;
+  return (
+    icons.find(
+      (icon) => icon.name === iconName || icon.prefix + icon.name === iconName,
+    ) !== undefined
+  );
 };
 
-export const getSvgFromLoadedIcon = (iconPrefix: string, iconName: string): string => {
+export const getSvgFromLoadedIcon = (
+  iconPrefix: string,
+  iconName: string,
+): string => {
   let icon = '';
   let foundIcon = preloadedIcons.find(
     (icon) =>
-      icon.prefix.toLowerCase() === iconPrefix.toLowerCase() && icon.name.toLowerCase() === iconName.toLowerCase(),
+      icon.prefix.toLowerCase() === iconPrefix.toLowerCase() &&
+      icon.name.toLowerCase() === iconName.toLowerCase(),
   );
   if (!foundIcon) {
     iconPacks.forEach((iconPack) => {
       const icon = iconPack.icons.find(
         (icon) =>
-          icon.prefix.toLowerCase() === iconPrefix.toLowerCase() && icon.name.toLowerCase() === iconName.toLowerCase(),
+          icon.prefix.toLowerCase() === iconPrefix.toLowerCase() &&
+          icon.name.toLowerCase() === iconName.toLowerCase(),
       );
       if (icon) {
         foundIcon = icon;

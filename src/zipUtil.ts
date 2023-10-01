@@ -17,7 +17,9 @@ export const downloadZipFile = async (url: string): Promise<ArrayBuffer> => {
  * @param file JSZip file to transform.
  * @returns File object of the JSZip file.
  */
-export const getFileFromJSZipFile = async (file: JSZip.JSZipObject): Promise<File> => {
+export const getFileFromJSZipFile = async (
+  file: JSZip.JSZipObject,
+): Promise<File> => {
   const fileData = await file.async('blob');
   const filename = file.name.split('/').pop();
   return new File([fileData], filename);
@@ -30,7 +32,10 @@ export const getFileFromJSZipFile = async (file: JSZip.JSZipObject): Promise<Fil
  * to set an extra path (like a directory inside the zip file) to filter the files.
  * @returns Array of loaded files inside the zip file.
  */
-export const readZipFile = async (bytes: ArrayBuffer, extraPath = ''): Promise<JSZip.JSZipObject[]> => {
+export const readZipFile = async (
+  bytes: ArrayBuffer,
+  extraPath = '',
+): Promise<JSZip.JSZipObject[]> => {
   const zipper = new JSZip();
   const unzippedFiles = await zipper.loadAsync(bytes);
   return Promise.resolve(unzippedFiles).then((unzipped) => {
@@ -42,12 +47,14 @@ export const readZipFile = async (bytes: ArrayBuffer, extraPath = ''): Promise<J
     // Regex for retrieving the files inside the zip file or inside the directory of a
     // zip file.
     const regex = new RegExp(extraPath + '(.+)\\.svg', 'g');
-    Object.entries(unzippedFiles.files).forEach(([_, v]: [string, JSZip.JSZipObject]) => {
-      const matched = v.name.match(regex);
-      if (!v.dir && matched && matched.length > 0) {
-        files.push(v);
-      }
-    });
+    Object.entries(unzippedFiles.files).forEach(
+      ([_, v]: [string, JSZip.JSZipObject]) => {
+        const matched = v.name.match(regex);
+        if (!v.dir && matched && matched.length > 0) {
+          files.push(v);
+        }
+      },
+    );
 
     return files;
   });

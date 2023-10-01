@@ -11,7 +11,8 @@
     "docs:preview": "vitepress preview docs",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
-    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
+    "prettify": "prettier --write '*/**/*.{js,ts,tsx}'"
   },
   "keywords": [],
   "repository": {
@@ -22,7 +23,8 @@
   "license": "MIT",
   "lint-staged": {
     "*.{json,js,ts,jsx,tsx,html}": [
-      "pnpm lint"
+      "pnpm lint",
+      "pnpm prettify"
     ]
   },
   "devDependencies": {
