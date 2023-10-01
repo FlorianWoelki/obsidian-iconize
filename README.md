@@ -1,15 +1,21 @@
 > [!IMPORTANT]
 > Obsidian Icon Folder becomes Obsidian Iconize! Read [this discussion](https://github.com/FlorianWoelki/obsidian-iconize/discussions/232) for more information.
 
-# Obsidian Iconize
+Refer to the official documentation for more information:
+[https://florianwoelki.github.io/obsidian-iconize/](https://florianwoelki.github.io/obsidian-iconize/) about the plugin and its functionalities.
 
-<a href="https://www.buymeacoffee.com/florianwoelki" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+# Obsidian Iconize
 
 ![Preview Image](https://raw.githubusercontent.com/FlorianWoelki/obsidian-iconize/main/docs/preview-image.png)
 
 ## What is it?
 
 This obsidian plugin allows you to add **any** custom icon (of type `.svg`) or from an icon pack to anything you want.
+
+If you like this plugin, feel free to support the development by buying a coffee:
+
+<a href="https://www.buymeacoffee.com/florianwoelki" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
 
 ## How to use
 
@@ -58,6 +64,12 @@ This feature allows you to add custom rules (based on regex or a simple string c
 
 To use custom rules, go to the plugin's settings, add a simple rule and an icon. Every file or folder that meets this condition will now have the icon.
 
+#### Want a default icon?
+
+You can easily set a default icon by applying a custom rule to your vault. You simply need to add a custom rule with the input `.` so that it looks like this:
+
+<img width="767" alt="image" src="https://github.com/FlorianWoelki/obsidian-iconize/assets/20746070/446b7bf2-5dff-4c45-8bab-77b87f99e778">
+
 ### Using Twemoji for Emojis as folders
 
 [Twemoji](https://github.com/twitter/twemoji) is a popular library to add universal emojis to your application. With the help of this library, you can now set an emoji as your folder icon. Just follow these steps:
@@ -101,6 +113,8 @@ After the installation, you need to create a `env.js` file in the root directory
 export const obsidianExportPath =
   '<path-to-obsidian-vault>/.obsidian/plugins/obsidian-iconize/';
 ```
+
+Make sure you create the directory specified in that variable if it does not exist yet.
 
 Afterwards, you can start the rollup dev server by using:
 

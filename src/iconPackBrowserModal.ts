@@ -1,5 +1,10 @@
 import { App, FuzzyMatch, FuzzySuggestModal, Notice } from 'obsidian';
-import { registerIconPack, createIconPackPrefix, createZipFile, getAllIconPacks } from './iconPackManager';
+import {
+  registerIconPack,
+  createIconPackPrefix,
+  createZipFile,
+  getAllIconPacks,
+} from './iconPackManager';
 import iconPacks, { IconPack } from './iconPacks';
 import IconFolderPlugin from './main';
 import { downloadZipFile } from './zipUtil';
@@ -15,6 +20,7 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
     this.inputEl.placeholder = 'Select to download icon pack';
   }
 
+  // eslint-disable-next-line
   onAddedIconPack(): void {}
 
   onOpen(): void {
@@ -34,10 +40,16 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
     const predefinedIconPacks = Object.values(iconPacks);
     const allIconPacks = getAllIconPacks();
 
-    return predefinedIconPacks.filter((iconPack) => allIconPacks.find((ip) => iconPack.name === ip.name) === undefined);
+    return predefinedIconPacks.filter(
+      (iconPack) =>
+        allIconPacks.find((ip) => iconPack.name === ip.name) === undefined,
+    );
   }
 
-  async onChooseItem(item: IconPack, _event: MouseEvent | KeyboardEvent): Promise<void> {
+  async onChooseItem(
+    item: IconPack,
+    _event: MouseEvent | KeyboardEvent,
+  ): Promise<void> {
     new Notice(`Adding ${item.displayName}...`);
 
     const arrayBuffer = await downloadZipFile(item.downloadLink);

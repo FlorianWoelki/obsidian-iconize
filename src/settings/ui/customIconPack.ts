@@ -18,7 +18,11 @@ export default class CustomIconPackSetting extends IconFolderSetting {
   private dragTargetElement: HTMLElement;
   private refreshDisplay: () => void;
 
-  constructor(plugin: IconFolderPlugin, containerEl: HTMLElement, refreshDisplay: () => void) {
+  constructor(
+    plugin: IconFolderPlugin,
+    containerEl: HTMLElement,
+    refreshDisplay: () => void,
+  ) {
     super(plugin, containerEl);
     this.refreshDisplay = refreshDisplay;
     this.dragOverElement = document.createElement('div');
@@ -80,7 +84,9 @@ export default class CustomIconPackSetting extends IconFolderSetting {
             return;
           }
 
-          const normalizedName = this.normalizeIconPackName(this.textComponent.getValue());
+          const normalizedName = this.normalizeIconPackName(
+            this.textComponent.getValue(),
+          );
 
           if (await doesIconPackExist(this.plugin, normalizedName)) {
             new Notice('Icon pack already exists.');
@@ -146,7 +152,9 @@ export default class CustomIconPackSetting extends IconFolderSetting {
               const content = await readFileSync(file);
               await createFile(this.plugin, iconPack.name, file.name, content);
               addIconToIconPack(iconPack.name, file.name, content);
-              iconPackSetting.setDesc(`Total icons: ${iconPack.icons.length} (added: ${file.name})`);
+              iconPackSetting.setDesc(
+                `Total icons: ${iconPack.icons.length} (added: ${file.name})`,
+              );
             }
             new Notice('Icons successfully added.');
           };
@@ -163,15 +171,27 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       });
 
       ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((event) => {
-        iconPackSetting.settingEl.addEventListener(event, this.preventDefaults, false);
+        iconPackSetting.settingEl.addEventListener(
+          event,
+          this.preventDefaults,
+          false,
+        );
       });
       ['dragenter', 'dragover'].forEach((event) => {
-        iconPackSetting.settingEl.addEventListener(event, () => this.highlight(iconPackSetting.settingEl), false);
+        iconPackSetting.settingEl.addEventListener(
+          event,
+          () => this.highlight(iconPackSetting.settingEl),
+          false,
+        );
       });
       ['dragleave', 'drop'].forEach((event) => {
         iconPackSetting.settingEl.addEventListener(
           event,
-          (event) => this.unhighlight(event.currentTarget as HTMLElement, iconPackSetting.settingEl),
+          (event) =>
+            this.unhighlight(
+              event.currentTarget as HTMLElement,
+              iconPackSetting.settingEl,
+            ),
           false,
         );
       });
@@ -191,7 +211,9 @@ export default class CustomIconPackSetting extends IconFolderSetting {
             const content = await readFileSync(file);
             await createFile(this.plugin, iconPack.name, file.name, content);
             addIconToIconPack(iconPack.name, file.name, content);
-            iconPackSetting.setDesc(`Total icons: ${iconPack.icons.length} (added: ${file.name})`);
+            iconPackSetting.setDesc(
+              `Total icons: ${iconPack.icons.length} (added: ${file.name})`,
+            );
           }
 
           if (successful) {

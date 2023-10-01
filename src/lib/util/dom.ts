@@ -1,4 +1,3 @@
-import { FileItem } from '@app/@types/obsidian';
 import twemoji from 'twemoji';
 import { getSvgFromLoadedIcon, nextIdentifier } from '../../iconPackManager';
 import IconFolderPlugin from '../../main';
@@ -32,7 +31,8 @@ interface RemoveOptions {
  * @param path File path for which the icon node will be removed.
  */
 const removeIconInPath = (path: string, options?: RemoveOptions): void => {
-  const node = options?.container ?? document.querySelector(`[data-path="${path}"]`);
+  const node =
+    options?.container ?? document.querySelector(`[data-path="${path}"]`);
   if (!node) {
     console.error('element with data path not found', path);
     return;
@@ -49,7 +49,12 @@ const removeIconInPath = (path: string, options?: RemoveOptions): void => {
  * @param node HTMLElement to which the icon or emoji will be added.
  * @param color Optional color of the icon to add.
  */
-const setIconForNode = (plugin: IconFolderPlugin, iconName: string, node: HTMLElement, color?: string): void => {
+const setIconForNode = (
+  plugin: IconFolderPlugin,
+  iconName: string,
+  node: HTMLElement,
+  color?: string,
+): void => {
   // Gets the possible icon based on the icon name.
   const iconNextIdentifier = nextIdentifier(iconName);
   const possibleIcon = getSvgFromLoadedIcon(
@@ -109,15 +114,16 @@ interface CreateOptions {
  * @param iconName Name of the icon or emoji to add.
  * @param color Optional color of the icon to add.
  */
-const createIconNode = (plugin: IconFolderPlugin, path: string, iconName: string, options?: CreateOptions): void => {
-  // TODO: Refactor to more efficient solution.
-  if (plugin.getData()[path]) {
-    removeIconInPath(path, { container: options?.container });
-  }
-
+const createIconNode = (
+  plugin: IconFolderPlugin,
+  path: string,
+  iconName: string,
+  options?: CreateOptions,
+): void => {
   // Get the container from the provided options or try to find the node that has the
   // path from the document itself.
-  const node = options?.container ?? document.querySelector(`[data-path="${path}"]`);
+  const node =
+    options?.container ?? document.querySelector(`[data-path="${path}"]`);
   if (!node) {
     console.error('element with data path not found', path);
     return;
@@ -134,24 +140,37 @@ const createIconNode = (plugin: IconFolderPlugin, path: string, iconName: string
     }
   }
 
-  // Check for possible inheritance and remove the inherited icon node.
-  const possibleInheritanceIcon = node.querySelector('.obsidian-icon-folder-icon');
-  if (possibleInheritanceIcon) {
-    possibleInheritanceIcon.remove();
+  let iconNode: HTMLDivElement = node.querySelector(
+    '.obsidian-icon-folder-icon',
+  );
+  // If the icon is already set in the path, we do not need to create a new div element.
+  if (iconNode) {
+    setIconForNode(plugin, iconName, iconNode, options?.color);
+  } else {
+    // Creates a new icon node and inserts it to the DOM.
+    iconNode = document.createElement('div');
+    iconNode.classList.add('obsidian-icon-folder-icon');
+
+    setIconForNode(plugin, iconName, iconNode, options?.color);
+
+    node.insertBefore(iconNode, titleNode);
   }
+};
 
-  // Creates a new icon node and inserts it to the DOM.
-  const iconNode = document.createElement('div');
-  iconNode.classList.add('obsidian-icon-folder-icon');
-
-  setIconForNode(plugin, iconName, iconNode, options?.color);
-
-  node.insertBefore(iconNode, titleNode);
+/**
+ * Checks if the element has an icon node by checking if the element has a child with the
+ * class `obsidian-icon-folder-icon`.
+ * @param element HTMLElement which will be checked if it has an icon.
+ * @returns Boolean whether the element has an icon or not.
+ */
+const doesElementHasIconNode = (element: HTMLElement): boolean => {
+  return element.querySelector('.obsidian-icon-folder-icon') !== null;
 };
 
 export default {
   setIconForNode,
   createIconNode,
+  doesElementHasIconNode,
   removeIconInNode,
   removeIconInPath,
 };

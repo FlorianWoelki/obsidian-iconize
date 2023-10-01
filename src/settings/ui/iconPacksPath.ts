@@ -1,6 +1,10 @@
 import { Notice, Setting, TextComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import { createDefaultDirectory, moveIconPackDirectories, setPath } from '@app/iconPackManager';
+import {
+  createDefaultDirectory,
+  moveIconPackDirectories,
+  setPath,
+} from '@app/iconPackManager';
 
 export default class IconPacksPathSetting extends IconFolderSetting {
   private iconPacksSettingTextComp: TextComponent;

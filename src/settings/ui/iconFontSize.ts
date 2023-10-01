@@ -12,7 +12,9 @@ export default class IconFontSizeSetting extends IconFolderSetting {
         slider
           .setLimits(10, 24, 1)
           .setDynamicTooltip()
-          .setValue(this.plugin.getSettings().fontSize ?? DEFAULT_SETTINGS.fontSize)
+          .setValue(
+            this.plugin.getSettings().fontSize ?? DEFAULT_SETTINGS.fontSize,
+          )
           .onChange(async (val) => {
             this.plugin.getSettings().fontSize = val;
             await this.plugin.saveIconFolderData();

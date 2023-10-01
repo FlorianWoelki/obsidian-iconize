@@ -31,8 +31,12 @@ export default class IconFolderSettings extends PluginSettingTab {
     new ToggleIconInTabs(plugin, containerEl).display();
 
     containerEl.createEl('h3', { text: 'Icon Packs' });
-    new PredefinedIconPacksSetting(plugin, containerEl, app, () => this.display()).display();
-    new CustomIconPackSetting(plugin, containerEl, () => this.display()).display();
+    new PredefinedIconPacksSetting(plugin, containerEl, app, () =>
+      this.display(),
+    ).display();
+    new CustomIconPackSetting(plugin, containerEl, () =>
+      this.display(),
+    ).display();
 
     containerEl.createEl('h3', { text: 'Icon Customization' });
     new IconFontSizeSetting(plugin, containerEl).display();
@@ -40,6 +44,8 @@ export default class IconFolderSettings extends PluginSettingTab {
     new ExtraMarginSetting(plugin, containerEl).display();
 
     containerEl.createEl('h3', { text: 'Custom Icon Rules' });
-    new CustomIconRuleSetting(plugin, containerEl, app, () => this.display()).display();
+    new CustomIconRuleSetting(plugin, containerEl, app, () =>
+      this.display(),
+    ).display();
   }
 }

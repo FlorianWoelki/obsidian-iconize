@@ -1,0 +1,3 @@
+# Inheritance
+
+*Documentation Coming Soon*

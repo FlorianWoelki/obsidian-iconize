@@ -14,7 +14,9 @@ const extract = (svgString: string): string => {
 
   // Create a parser for better parsing of HTML.
   const parser = new DOMParser();
-  const svg = parser.parseFromString(svgString, 'text/html').querySelector('svg');
+  const svg = parser
+    .parseFromString(svgString, 'text/html')
+    .querySelector('svg');
 
   // Removes `width` and `height` from the `style` attribute.
   if (svg.hasAttribute('style')) {
@@ -65,7 +67,10 @@ const setFontSize = (svgString: string, fontSize: number): string => {
  * @param color Color to set. Defaults to 'currentColor'.
  * @returns The modified SVG string.
  */
-const colorize = (svgString: string, color: string | undefined | null): string => {
+const colorize = (
+  svgString: string,
+  color: string | undefined | null,
+): string => {
   if (!color) {
     color = 'currentColor';
   }
@@ -78,7 +83,10 @@ const colorize = (svgString: string, color: string | undefined | null): string =
   if (svg) {
     if (svg.hasAttribute('fill') && svg.getAttribute('fill') !== 'none') {
       svg.setAttribute('fill', color);
-    } else if (svg.hasAttribute('stroke') && svg.getAttribute('stroke') !== 'none') {
+    } else if (
+      svg.hasAttribute('stroke') &&
+      svg.getAttribute('stroke') !== 'none'
+    ) {
       svg.setAttribute('stroke', color);
     }
 

@@ -23,7 +23,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   private plugin: IconFolderPlugin;
   private path: string;
 
-  private renderIndex: number = 0;
+  private renderIndex = 0;
 
   private recentlyUsedItems: Set<string>;
 
@@ -35,7 +35,9 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     this.path = path;
     this.limit = 150;
 
-    const pluginRecentltyUsedItems = [...plugin.getSettings().recentlyUsedIcons];
+    const pluginRecentltyUsedItems = [
+      ...plugin.getSettings().recentlyUsedIcons,
+    ];
     this.recentlyUsedItems = new Set(
       pluginRecentltyUsedItems.reverse().filter((iconName) => {
         return doesIconExists(iconName) || emoji.isEmoji(iconName);
@@ -116,7 +118,8 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   }
 
   onChooseItem(item: Icon | string): void {
-    const iconNameWithPrefix = typeof item === 'object' ? item.displayName : item;
+    const iconNameWithPrefix =
+      typeof item === 'object' ? item.displayName : item;
     dom.createIconNode(this.plugin, this.path, iconNameWithPrefix);
     this.onSelect?.(iconNameWithPrefix);
     this.plugin.addFolderIcon(this.path, item);
@@ -168,7 +171,9 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
         }
         el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${displayName}</div>`;
       } else {
-        el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${getSvgFromLoadedIcon(
+        el.innerHTML = `<div>${
+          el.innerHTML
+        }</div><div class="obsidian-icon-folder-icon-preview">${getSvgFromLoadedIcon(
           item.item.prefix,
           item.item.name,
         )}</div>`;

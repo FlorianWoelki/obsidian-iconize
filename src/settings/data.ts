@@ -8,6 +8,7 @@ export interface ExtraMarginSettings {
 export interface CustomRule {
   rule: string;
   icon: string;
+  order: number;
   color?: string;
   useFilePath?: boolean;
   for?: 'everything' | 'files' | 'folders';
@@ -27,8 +28,8 @@ export interface IconFolderSettings {
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
-  migrated: 1,
-  iconPacksPath: '.obsidian/plugins/obsidian-icon-folder/icons',
+  migrated: 2, // Bump up this number for migrations.
+  iconPacksPath: '.obsidian/icons', // Set to `.obsidian/icons` for to improve overall performance for Obsidian Sync.
   fontSize: 16,
   emojiStyle: 'none',
   iconColor: null,

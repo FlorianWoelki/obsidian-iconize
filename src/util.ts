@@ -27,7 +27,8 @@ export const readFileSync = async (file: File): Promise<string> => {
   const content = await new Promise<string>((resolve) => {
     const reader = new FileReader();
     reader.readAsText(file, 'UTF-8');
-    reader.onload = (readerEvent) => resolve(readerEvent.target.result as string);
+    reader.onload = (readerEvent) =>
+      resolve(readerEvent.target.result as string);
   });
 
   return content;
@@ -40,13 +41,15 @@ export const readFileSync = async (file: File): Promise<string> => {
  * @returns An array of {@link TFile} objects.
  */
 export const getAllOpenedFiles = (plugin: IconFolderPlugin): TFile[] => {
-  return plugin.app.workspace.getLeavesOfType('markdown').reduce<TFile[]>((prev, curr) => {
-    const file = curr.view.file;
-    if (file) {
-      prev.push(file);
-    }
-    return prev;
-  }, []);
+  return plugin.app.workspace
+    .getLeavesOfType('markdown')
+    .reduce<TFile[]>((prev, curr) => {
+      const file = curr.view.file;
+      if (file) {
+        prev.push(file);
+      }
+      return prev;
+    }, []);
 };
 
 /**
@@ -73,7 +76,10 @@ export const getFileItemInnerTitleEl = (fileItem: FileItem): HTMLElement => {
  * @param plugin IconFolderPlugin that will be used for extracting the icon.
  * @param iconNameWithPrefix String that will be used to add the icon to the icon pack.
  */
-export const saveIconToIconPack = (plugin: IconFolderPlugin, iconNameWithPrefix: string): void => {
+export const saveIconToIconPack = (
+  plugin: IconFolderPlugin,
+  iconNameWithPrefix: string,
+): void => {
   const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
   const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
   const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
@@ -94,7 +100,10 @@ export const saveIconToIconPack = (plugin: IconFolderPlugin, iconNameWithPrefix:
  * @param plugin IconFolderPlugin that will be used for removing the icon.
  * @param iconNameWithPrefix String that will be used to remove the icon from the icon pack.
  */
-export const removeIconFromIconPack = (plugin: IconFolderPlugin, iconNameWithPrefix: string): void => {
+export const removeIconFromIconPack = (
+  plugin: IconFolderPlugin,
+  iconNameWithPrefix: string,
+): void => {
   const identifier = nextIdentifier(iconNameWithPrefix);
   const prefix = iconNameWithPrefix.substring(0, identifier);
   const iconName = iconNameWithPrefix.substring(identifier);

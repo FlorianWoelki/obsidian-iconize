@@ -20,7 +20,9 @@ interface RemoveOptions {
  * @param plugin IconFolderPlugin that will be used to get the data from.
  * @returns An object where the keys are the paths and the values are the objects.
  */
-const getFolders = (plugin: IconFolderPlugin): Record<string, FolderIconObject> => {
+const getFolders = (
+  plugin: IconFolderPlugin,
+): Record<string, FolderIconObject> => {
   return Object.entries(plugin.getData())
     .filter(([k, v]) => k !== 'settings' && typeof v === 'object')
     .reduce<Record<string, FolderIconObject>>((prev, [path, value]) => {
@@ -36,10 +38,17 @@ const getFolders = (plugin: IconFolderPlugin): Record<string, FolderIconObject> 
  * @returns An array of files that include the folder path.
  */
 const getFiles = (plugin: IconFolderPlugin, folderPath: string) => {
-  return plugin.app.vault.getAllLoadedFiles().filter((file) => file.path.includes(folderPath));
+  return plugin.app.vault
+    .getAllLoadedFiles()
+    .filter((file) => file.path.includes(folderPath));
 };
 
-const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, options?: AddOptions): void => {
+const add = (
+  plugin: IconFolderPlugin,
+  folderPath: string,
+  iconName: string,
+  options?: AddOptions,
+): void => {
   const folder = plugin.getData()[folderPath];
   // Checks if data exists and if the data is some kind of object type.
   if (!folder || typeof folder !== 'object') {
@@ -68,6 +77,12 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
         continue;
       }
 
+      // Checks if the file item has an already existing icon and removes it.
+      const container = getFileItemTitleEl(fileItem);
+      if (dom.doesElementHasIconNode(container)) {
+        dom.removeIconInNode(container);
+      }
+
       addIcon(fileItem);
     } else {
       // Handles the addition of a completely new inheritance for a folder.
@@ -84,13 +99,23 @@ const add = (plugin: IconFolderPlugin, folderPath: string, iconName: string, opt
           continue;
         }
 
+        const container = getFileItemTitleEl(fileItem);
+        // Checks if the file item has an already existing icon and removes it.
+        if (dom.doesElementHasIconNode(container)) {
+          dom.removeIconInNode(container);
+        }
+
         addIcon(fileItem);
       }
     }
   }
 };
 
-const remove = (plugin: IconFolderPlugin, folderPath: string, options?: RemoveOptions): void => {
+const remove = (
+  plugin: IconFolderPlugin,
+  folderPath: string,
+  options?: RemoveOptions,
+): void => {
   const folder = plugin.getData()[folderPath];
   // Checks if data exists and if the data is some kind of object type.
   if (!folder || typeof folder !== 'object') {
@@ -113,9 +138,14 @@ const remove = (plugin: IconFolderPlugin, folderPath: string, options?: RemoveOp
   }
 };
 
-const getByPath = (plugin: IconFolderPlugin, path: string): FolderIconObject | undefined => {
+const getByPath = (
+  plugin: IconFolderPlugin,
+  path: string,
+): FolderIconObject | undefined => {
   const folders = getFolders(plugin);
-  const foundFolderIcon = Object.entries(folders).find(([folderPath]) => path.includes(folderPath));
+  const foundFolderIcon = Object.entries(folders).find(([folderPath]) =>
+    path.includes(folderPath),
+  );
   return foundFolderIcon?.[1]; // Returns the folder icon when defined.
 };
 
@@ -124,9 +154,14 @@ const doesExistInPath = (plugin: IconFolderPlugin, path: string): boolean => {
   return Object.keys(folders).some((folderPath) => path.includes(folderPath));
 };
 
-const getFolderPathByFilePath = (plugin: IconFolderPlugin, filePath: string): string => {
+const getFolderPathByFilePath = (
+  plugin: IconFolderPlugin,
+  filePath: string,
+): string => {
   const folders = getFolders(plugin);
-  const foundFolderIcon = Object.entries(folders).find(([folderPath]) => filePath.includes(folderPath));
+  const foundFolderIcon = Object.entries(folders).find(([folderPath]) =>
+    filePath.includes(folderPath),
+  );
   return foundFolderIcon?.[0]; // Returns the folder path when defined.
 };
 

@@ -1,15 +1,19 @@
 {
   "name": "obsidian-iconize",
-  "version": "2.2.1",
+  "version": "2.3.1",
   "description": "Add icons to anything you desire in Obsidian, including files, folders, and text.",
   "main": "main.js",
   "scripts": {
     "prepare": "husky install",
-    "precommit": "lint-staged",
     "dev": "rollup --config rollup.config.js -w",
+    "docs:dev": "vitepress dev docs --port 3000",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
-    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
+    "test": "vitest",
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
+    "prettify": "prettier --write '*/**/*.{js,ts,tsx}'"
   },
   "keywords": [],
   "repository": {
@@ -19,8 +23,9 @@
   "author": "Florian Woelki",
   "license": "MIT",
   "lint-staged": {
-    "*.{js,ts,tsx}": [
-      "eslint --fix"
+    "*.{json,js,ts,jsx,tsx,html}": [
+      "pnpm lint",
+      "pnpm prettify"
     ]
   },
   "devDependencies": {
@@ -37,16 +42,18 @@
     "eslint": "^8.47.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "husky": "^8.0.0",
-    "lint-staged": "^11.2.6",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.1",
     "mkdirp": "^1.0.4",
     "monkey-around": "^2.3.0",
-    "obsidian": "^0.16.3",
+    "obsidian": "^1.4.11",
     "prettier": "^2.8.8",
     "rollup": "^2.79.1",
     "tslib": "^2.6.2",
     "twemoji": "^14.0.2",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "vitepress": "1.0.0-rc.20",
+    "vitest": "^0.34.6"
   },
   "dependencies": {
     "@rollup/plugin-babel": "^6.0.3",

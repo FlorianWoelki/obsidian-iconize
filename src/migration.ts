@@ -28,13 +28,18 @@ export const migrateIcons = (plugin: IconFolderPlugin) => {
       const { path, icon } = entry;
 
       const migration = migrationMap.find(
-        (migration) => icon.substring(0, 2) === migration.oldIconPackPrefix && icon.includes(migration.identifier),
+        (migration) =>
+          icon.substring(0, 2) === migration.oldIconPackPrefix &&
+          icon.includes(migration.identifier),
       );
 
       if (migration) {
         data[path] =
           migration.transformation +
-          icon.substring(migration.oldIconPackPrefix.length, icon.indexOf(migration.identifier));
+          icon.substring(
+            migration.oldIconPackPrefix.length,
+            icon.indexOf(migration.identifier),
+          );
       }
     }
   });

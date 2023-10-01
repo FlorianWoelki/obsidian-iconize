@@ -18,9 +18,12 @@ export default abstract class InternalPluginInjector {
   }
 
   get fileExplorers(): FileExplorerWorkspaceLeaf[] {
-    return this.plugin.app.workspace.getLeavesOfType('file-explorer') as unknown as FileExplorerWorkspaceLeaf[];
+    return this.plugin.app.workspace.getLeavesOfType(
+      'file-explorer',
+    ) as unknown as FileExplorerWorkspaceLeaf[];
   }
 
+  // eslint-disable-next-line
   onMount(): void {}
 
   abstract get enabled(): boolean;

@@ -7,7 +7,12 @@ export default class PredefinedIconPacksSetting extends IconFolderSetting {
   private app: App;
   private refreshDisplay: () => void;
 
-  constructor(plugin: IconFolderPlugin, containerEl: HTMLElement, app: App, refreshDisplay: () => void) {
+  constructor(
+    plugin: IconFolderPlugin,
+    containerEl: HTMLElement,
+    app: App,
+    refreshDisplay: () => void,
+  ) {
     super(plugin, containerEl);
     this.app = app;
     this.refreshDisplay = refreshDisplay;
