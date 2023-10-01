@@ -68,14 +68,14 @@ const iconPacks = {
     displayName: 'Boxicons',
     path: 'svg',
     downloadLink:
-      'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/boxicons.zip',
+      'https://github.com/Lisandra-dev/boxicons/releases/download/v2.1.4/svg.zip',
   },
   rpgAwesome: {
     name: 'rpg-awesome',
     displayName: 'RPG Awesome',
-    path: '',
+    path: 'Font',
     downloadLink:
-      'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/rpg-awesome.zip',
+      'https://github.com/Lisandra-dev/rpg-awesome-raw/releases/download/v1.0.0/rpg-awesome.zip',
   },
 } as { [key: string]: IconPack };
 
