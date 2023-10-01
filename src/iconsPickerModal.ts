@@ -23,7 +23,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   private plugin: IconFolderPlugin;
   private path: string;
 
-  private renderIndex: number = 0;
+  private renderIndex = 0;
 
   private recentlyUsedItems: Set<string>;
 

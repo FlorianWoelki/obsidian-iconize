@@ -30,7 +30,7 @@ export const getFileFromJSZipFile = async (file: JSZip.JSZipObject): Promise<Fil
  * to set an extra path (like a directory inside the zip file) to filter the files.
  * @returns Array of loaded files inside the zip file.
  */
-export const readZipFile = async (bytes: ArrayBuffer, extraPath: string = ''): Promise<JSZip.JSZipObject[]> => {
+export const readZipFile = async (bytes: ArrayBuffer, extraPath = ''): Promise<JSZip.JSZipObject[]> => {
   const zipper = new JSZip();
   const unzippedFiles = await zipper.loadAsync(bytes);
   return Promise.resolve(unzippedFiles).then((unzipped) => {

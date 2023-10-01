@@ -15,6 +15,7 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
     this.inputEl.placeholder = 'Select to download icon pack';
   }
 
+  // eslint-disable-next-line
   onAddedIconPack(): void {}
 
   onOpen(): void {

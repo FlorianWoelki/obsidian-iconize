@@ -41,7 +41,7 @@ interface BookmarkInternalPlugin extends InternalPlugin {
   };
 }
 
-interface FileExplorerInternalPlugin extends InternalPlugin {}
+type FileExplorerInternalPlugin = InternalPlugin
 
 interface InternalPlugins {
   starred: StarredInternalPlugin;

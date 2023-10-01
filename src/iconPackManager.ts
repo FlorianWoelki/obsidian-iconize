@@ -204,7 +204,7 @@ const generateIcon = (iconPackName: string, iconName: string, content: string): 
   }
 
   const svgViewboxMatch = content.match(svgViewboxRegex);
-  let svgViewbox: string = '';
+  let svgViewbox = '';
   if (svgViewboxMatch && svgViewboxMatch.length !== 0) {
     svgViewbox = svgViewboxMatch[0];
   }

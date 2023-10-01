@@ -22,7 +22,7 @@
   "license": "MIT",
   "lint-staged": {
     "*.{json,js,ts,jsx,tsx,html}": [
-      "prettier --write --ignore-unknown"
+      "pnpm lint"
     ]
   },
   "devDependencies": {

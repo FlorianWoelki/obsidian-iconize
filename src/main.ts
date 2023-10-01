@@ -35,6 +35,7 @@ export default class IconFolderPlugin extends Plugin {
       console.log('...icons migrated');
     }
 
+    // eslint-disable-next-line
     // @ts-ignore - Required because an older version of the plugin saved the `migrated`
     // property as a boolean instead of a number.
     if (this.getSettings().migrated === true) {

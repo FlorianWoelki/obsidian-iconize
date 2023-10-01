@@ -87,6 +87,7 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
       return;
     }
 
+    // eslint-disable-next-line
     const self = this;
     this.plugin.register(
       around(this.starred.instance, {
