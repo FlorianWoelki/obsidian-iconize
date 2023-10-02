@@ -41,7 +41,7 @@ const iconPacks = {
     downloadLink:
       'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/icon-brew.zip',
   },
-  /* https://simpleicons.org/ */
+  /** @source https://simpleicons.org/ */
   simpleIcons: {
     name: 'simple-icons',
     displayName: 'Simple Icons',
