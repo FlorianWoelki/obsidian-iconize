@@ -63,6 +63,22 @@ const iconPacks = {
     downloadLink:
       'https://github.com/tabler/tabler-icons/releases/download/v2.34.0/tabler-icons-2.34.0.zip',
   },
+  /** @source https://boxicons.com/ */
+  boxicons: {
+    name: 'boxicons',
+    displayName: 'Boxicons',
+    path: 'svg',
+    downloadLink:
+      'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/boxicons.zip',
+  },
+  /** @source http://nagoshiashumari.github.io/Rpg-Awesome/ */
+  rpgAwesome: {
+    name: 'rpg-awesome',
+    displayName: 'RPG Awesome',
+    path: '',
+    downloadLink:
+      'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/rpg-awesome.zip',
+  },
 } as { [key: string]: IconPack };
 
 /**
