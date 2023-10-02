@@ -149,6 +149,7 @@ export default class IconFolderPlugin extends Plugin {
                 iconTabs.update(this, file, iconName);
               };
             }
+            this.cleanUpDataSettings();
           });
         };
 
@@ -184,6 +185,7 @@ export default class IconFolderPlugin extends Plugin {
             }
 
             customRule.addAll(this);
+            this.cleanUpDataSettings();
           });
         };
 
@@ -219,6 +221,7 @@ export default class IconFolderPlugin extends Plugin {
               });
               this.saveInheritanceData(file.path, null);
               removeIconFromIconPack(this, iconData.inheritanceIcon);
+              this.cleanUpDataSettings();
             });
           } else {
             item.setTitle('Inherit icon');
@@ -239,6 +242,7 @@ export default class IconFolderPlugin extends Plugin {
                   },
                 });
               };
+              this.cleanUpDataSettings();
             });
           }
           item.setIcon('vertical-three-dots');
@@ -477,7 +481,6 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   onunload() {
-    this.cleanUpDataSettings();
     console.log('unloading obsidian-icon-folder');
   }
 
