@@ -653,7 +653,6 @@ export default class IconFolderPlugin extends Plugin {
     for (const [path] of Object.entries(this.data)) {
       if (path === 'settings') continue;
       if (!this.app.vault.getAbstractFileByPath(path)) {
-        console.log(`Removing ${path} from settings.`, this.data[path]);
         this.removeFolderIcon(path);
       }
     }
