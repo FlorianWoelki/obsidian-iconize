@@ -5,5 +5,17 @@ module.exports = {
     sourceType: 'module',
   },
   extends: ['plugin:@typescript-eslint/recommended', 'prettier'],
-  rules: {},
+  rules: {
+    'no-restricted-imports': [
+      'warn',
+      {
+        patterns: [
+          {
+            group: ['../*'],
+            message: 'Usage of relative parent imports is not allowed.',
+          },
+        ],
+      },
+    ],
+  },
 };
