@@ -4,6 +4,7 @@ import IconFolderPlugin, { FolderIconObject } from '../main';
 import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
+import config from '../config';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
@@ -67,20 +68,20 @@ const removeFromAllFiles = async (
     const files = Object.entries(fileExplorer.fileItems);
     for (const [path, fileItem] of files) {
       const fileType = (await plugin.app.vault.adapter.stat(path)).type;
-      // Gets the icon name of the inheritance object or by the value directly.
-      let iconName = plugin.getData()[path];
-      if (typeof plugin.getData()[path] === 'object') {
-        iconName = (plugin.getData()[path] as FolderIconObject).iconName;
+
+      // Checks if the node of the file item has already an icon set which is not the
+      // custom rule icon.
+      const fileItemTitleEl = getFileItemTitleEl(fileItem);
+      const iconNode = fileItemTitleEl.querySelector(
+        '.obsidian-icon-folder-icon',
+      );
+      const existingIcon = iconNode?.getAttribute(config.ICON_ATTRIBUTE_NAME);
+      if (existingIcon && existingIcon !== rule.icon) {
+        continue;
       }
 
-      // TODO: Check if current file has inheritance icon.
-
-      if (
-        !iconName &&
-        doesExistInPath(rule, path) &&
-        doesMatchFileType(rule, fileType)
-      ) {
-        dom.removeIconInNode(getFileItemTitleEl(fileItem));
+      if (doesExistInPath(rule, path) && doesMatchFileType(rule, fileType)) {
+        dom.removeIconInNode(fileItemTitleEl);
       }
     }
   }
