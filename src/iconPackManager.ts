@@ -1,8 +1,8 @@
 import { Notice, Plugin } from 'obsidian';
-import MetaData from './MetaData';
 import svg from './lib/util/svg';
 import { getFileFromJSZipFile, readZipFile } from './zipUtil';
 import JSZip from 'jszip';
+import config from '@app/config';
 import IconFolderPlugin from './main';
 import { getExtraPath } from './iconPacks';
 
@@ -26,7 +26,7 @@ export const setPath = (newPath: string): void => {
   if (newPath === 'plugins/obsidian-icon-folder/icons') {
     newPath = '.obsidian/plugins/obsidian-icon-folder/icons';
     new Notice(
-      `[${MetaData.pluginName}] Due to a change in version v1.2.2, the icon pack folder changed. Please change it in the settings to not be directly in /plugins.`,
+      `[${config.PLUGIN_NAME}] Due to a change in version v1.2.2, the icon pack folder changed. Please change it in the settings to not be directly in /plugins.`,
       8000,
     );
   }
@@ -187,18 +187,18 @@ export const createFile = async (
         content,
       );
       console.info(
-        `[${MetaData.pluginName}] Renamed old file ${normalizedFilename} to ${newFilename} because of duplication.`,
+        `[${config.PLUGIN_NAME}] Renamed old file ${normalizedFilename} to ${newFilename} because of duplication.`,
       );
       new Notice(
-        `[${MetaData.pluginName}] Renamed ${normalizedFilename} to ${newFilename} to avoid duplication.`,
+        `[${config.PLUGIN_NAME}] Renamed ${normalizedFilename} to ${newFilename} to avoid duplication.`,
         8000,
       );
     } else {
       console.warn(
-        `[${MetaData.pluginName}] Could not create icons with duplicated file names (${normalizedFilename}).`,
+        `[${config.PLUGIN_NAME}] Could not create icons with duplicated file names (${normalizedFilename}).`,
       );
       new Notice(
-        `[${MetaData.pluginName}] Could not create duplicated icon name (${normalizedFilename})`,
+        `[${config.PLUGIN_NAME}] Could not create duplicated icon name (${normalizedFilename})`,
         8000,
       );
     }

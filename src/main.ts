@@ -23,7 +23,6 @@ import {
 } from './settings/data';
 import { migrateIcons } from './migration';
 import IconFolderSettingsUI from './settings/ui';
-import MetaData from './MetaData';
 import StarredInternalPlugin from './internal-plugins/starred';
 import InternalPluginInjector from './@types/internalPluginInjector';
 import iconTabs from './lib/iconTabs';
@@ -37,6 +36,7 @@ import {
   removeIconFromIconPack,
   saveIconToIconPack,
 } from '@app/util';
+import config from '@app/config';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -105,8 +105,7 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   async onload() {
-    MetaData.pluginName = this.manifest.id;
-    console.log(`loading ${MetaData.pluginName}`);
+    console.log(`loading ${config.PLUGIN_NAME}`);
 
     // Registers all modified internal plugins.
     // Only adds star plugin for obsidian under v0.12.6.

@@ -1,4 +1,5 @@
 import twemoji from 'twemoji';
+import config from '@app/config';
 import { getSvgFromLoadedIcon, nextIdentifier } from '../../iconPackManager';
 import IconFolderPlugin from '../../main';
 import style from './style';
@@ -149,6 +150,7 @@ const createIconNode = (
   } else {
     // Creates a new icon node and inserts it to the DOM.
     iconNode = document.createElement('div');
+    iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
     iconNode.classList.add('obsidian-icon-folder-icon');
 
     setIconForNode(plugin, iconName, iconNode, options?.color);

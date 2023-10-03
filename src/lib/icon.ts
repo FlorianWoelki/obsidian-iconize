@@ -16,6 +16,7 @@ import {
   nextIdentifier,
 } from '../iconPackManager';
 import { CustomRule } from '../settings/data';
+import config from '@app/config';
 
 const checkMissingIcons = async (
   plugin: IconFolderPlugin,
@@ -179,6 +180,7 @@ const addAll = (
 
             // Creates the new node with the icon inside.
             const iconNode = titleEl.createDiv();
+            iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
             iconNode.classList.add('obsidian-icon-folder-icon');
 
             dom.setIconForNode(plugin, iconName, iconNode);

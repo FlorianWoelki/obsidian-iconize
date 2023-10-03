@@ -1,4 +1,5 @@
 import { TAbstractFile, TFolder } from 'obsidian';
+import config from '@app/config';
 import { FileItem } from '../@types/obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import dom from './util/dom';
@@ -60,6 +61,7 @@ const add = (
     const titleEl = getFileItemTitleEl(fileItem);
     const innerTitleEl = getFileItemInnerTitleEl(fileItem);
     const iconNode = titleEl.createDiv();
+    iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
     iconNode.classList.add('obsidian-icon-folder-icon');
     dom.setIconForNode(plugin, iconName, iconNode);
     titleEl.insertBefore(iconNode, innerTitleEl);
