@@ -163,16 +163,28 @@ const createIconNode = (
  * Checks if the element has an icon node by checking if the element has a child with the
  * class `obsidian-icon-folder-icon`.
  * @param element HTMLElement which will be checked if it has an icon.
- * @returns Boolean whether the element has an icon or not.
+ * @returns Boolean whether the element has an icon node or not.
  */
 const doesElementHasIconNode = (element: HTMLElement): boolean => {
   return element.querySelector('.obsidian-icon-folder-icon') !== null;
+};
+
+/**
+ * Gets the icon name of the element if it has an icon node.
+ * @param element HTMLElement parent which includes a node with the icon.
+ * @returns String with the icon name if the element has an icon, `undefined` otherwise.
+ */
+const getIconFromElement = (element: HTMLElement): string | undefined => {
+  const iconNode = element.querySelector('.obsidian-icon-folder-icon');
+  const existingIcon = iconNode?.getAttribute(config.ICON_ATTRIBUTE_NAME);
+  return existingIcon;
 };
 
 export default {
   setIconForNode,
   createIconNode,
   doesElementHasIconNode,
+  getIconFromElement,
   removeIconInNode,
   removeIconInPath,
 };

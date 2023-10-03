@@ -72,10 +72,7 @@ const removeFromAllFiles = async (
       // Checks if the node of the file item has already an icon set which is not the
       // custom rule icon.
       const fileItemTitleEl = getFileItemTitleEl(fileItem);
-      const iconNode = fileItemTitleEl.querySelector(
-        '.obsidian-icon-folder-icon',
-      );
-      const existingIcon = iconNode?.getAttribute(config.ICON_ATTRIBUTE_NAME);
+      const existingIcon = dom.getIconFromElement(fileItemTitleEl);
       if (existingIcon && existingIcon !== rule.icon) {
         continue;
       }
