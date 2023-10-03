@@ -6,6 +6,121 @@ import dom from './util/dom';
 import iconTabs from './iconTabs';
 import inheritance from './inheritance';
 import { getFileItemInnerTitleEl, getFileItemTitleEl } from '../util';
+import {
+  Icon,
+  extractIconToIconPack,
+  getIconFromIconPack,
+  getIconPackNameByPrefix,
+  getPath,
+  getSvgFromLoadedIcon,
+  nextIdentifier,
+} from '../iconPackManager';
+import { CustomRule } from '../settings/data';
+
+const checkMissingIcons = async (
+  plugin: IconFolderPlugin,
+  data: [string, string | FolderIconObject][],
+): Promise<void> => {
+  const missingIcons: Map<string | CustomRule, Icon> = new Map();
+
+  const getMissingIcon = async (
+    iconNameWithPrefix: string,
+    ignoreExisting = false,
+  ): Promise<Icon | null> => {
+    const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
+    const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
+    const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
+    const iconPackName = getIconPackNameByPrefix(iconPrefix);
+
+    const icon = getIconFromIconPack(iconPackName, iconName);
+    if (!icon) {
+      console.error(`Icon file ${iconNameWithPrefix} could not be found.`);
+      return null;
+    }
+
+    const doesIconFileExists = await plugin.app.vault.adapter.exists(
+      `${getPath()}/${iconPackName}/${iconName}.svg`,
+    );
+
+    if (!doesIconFileExists) {
+      const possibleIcon = getSvgFromLoadedIcon(iconPrefix, iconName);
+      if (!possibleIcon) {
+        console.error(`Icon SVG ${iconNameWithPrefix} could not be found.`);
+        return null;
+      }
+
+      await extractIconToIconPack(plugin, icon, possibleIcon);
+      return icon;
+    }
+
+    return ignoreExisting ? null : icon;
+  };
+
+  for (const rule of plugin.getSettings().rules) {
+    if (!emoji.isEmoji(rule.icon)) {
+      const icon = await getMissingIcon(rule.icon, true);
+      if (icon) {
+        missingIcons.set(rule, icon);
+      }
+    }
+  }
+
+  for (const [dataPath, value] of data) {
+    // Check for missing icon names.
+    let iconNameWithPrefix = value as string;
+    if (typeof value === 'object') {
+      iconNameWithPrefix = value.iconName;
+    }
+
+    if (iconNameWithPrefix && !emoji.isEmoji(iconNameWithPrefix)) {
+      const icon = await getMissingIcon(iconNameWithPrefix);
+      if (icon) {
+        missingIcons.set(dataPath, icon);
+      }
+    }
+
+    // Check for missing inheritance icons.
+    const hasInheritanceIcon =
+      typeof value === 'object' && value.inheritanceIcon;
+    if (hasInheritanceIcon && !emoji.isEmoji(value.inheritanceIcon)) {
+      const icon = await getMissingIcon(value.inheritanceIcon);
+      if (icon) {
+        missingIcons.set(dataPath, icon);
+      }
+    }
+  }
+
+  // Iterates over all the missing icons with its path and adds the icon to the node.
+  for (const [data, icon] of missingIcons) {
+    // Custom rule icons are missing if the data is an object.
+    if (typeof data === 'object') {
+      customRule.removeFromAllFiles(plugin, data).then(() => {
+        customRule.addToAllFiles(plugin, data);
+      });
+      continue;
+    }
+
+    const node = document.querySelector(`[data-path="${data}"]`) as
+      | HTMLElement
+      | undefined;
+    if (!node) {
+      continue;
+    }
+
+    if (typeof plugin.getData()[data] === 'object') {
+      inheritance.add(plugin, data, icon.prefix + icon.name);
+    } else {
+      const iconNode = node.querySelector('.obsidian-icon-folder-icon') as
+        | HTMLElement
+        | undefined;
+      if (!iconNode) {
+        continue;
+      }
+
+      dom.setIconForNode(plugin, icon.prefix + icon.name, iconNode);
+    }
+  }
+};
 
 /**
  * This function adds all the possible icons to the corresponding nodes. It adds the icons,
@@ -18,7 +133,7 @@ import { getFileItemInnerTitleEl, getFileItemTitleEl } from '../util';
  * @param callback Callback is being called whenever the icons are added to one file
  * explorer.
  */
-export const addAll = (
+const addAll = (
   plugin: IconFolderPlugin,
   data: [string, string | FolderIconObject][],
   registeredFileExplorers: WeakSet<ExplorerView>,
@@ -176,4 +291,5 @@ export default {
   addAll,
   getByPath,
   getAllWithPath,
+  checkMissingIcons,
 };

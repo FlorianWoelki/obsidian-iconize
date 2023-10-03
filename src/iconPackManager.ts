@@ -548,6 +548,15 @@ export const doesIconExists = (iconName: string): boolean => {
   );
 };
 
+export const getIconFromIconPack = (iconPackName: string, iconName: string) => {
+  const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
+  if (!iconPack) {
+    return undefined;
+  }
+
+  return iconPack.icons.find((icon) => icon.name === iconName);
+};
+
 export const getSvgFromLoadedIcon = (
   iconPrefix: string,
   iconName: string,

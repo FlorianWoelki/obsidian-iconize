@@ -127,7 +127,15 @@ export default class IconFolderPlugin extends Plugin {
     const usedIconNames = icon.getAllWithPath(this).map((value) => value.icon);
     await loadUsedIcons(this, usedIconNames);
 
-    initIconPacks(this);
+    // After initialization of the icon packs, checks the vault for missing icons and
+    // adds them.
+    initIconPacks(this).then(() => {
+      const data = Object.entries(this.data) as [
+        string,
+        string | FolderIconObject,
+      ][];
+      icon.checkMissingIcons(this, data);
+    });
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
     this.registerEvent(

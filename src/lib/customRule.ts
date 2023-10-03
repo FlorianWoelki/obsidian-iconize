@@ -73,6 +73,8 @@ const removeFromAllFiles = async (
         iconName = (plugin.getData()[path] as FolderIconObject).iconName;
       }
 
+      // TODO: Check if current file has inheritance icon.
+
       if (
         !iconName &&
         doesExistInPath(rule, path) &&
