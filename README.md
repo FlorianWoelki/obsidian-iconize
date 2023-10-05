@@ -94,6 +94,8 @@ However, you can easily install or create icon packs you used. For example, when
 
 There have been some [syncing issues regarding the icon packs](https://github.com/FlorianWoelki/obsidian-iconize/issues/52). You can change the icon pack path to `.obsidian/icons` to resolve the issue. Go to settings, select the plugin, and change its path to the earlier described path.
 
+See [this documentation](https://florianwoelki.github.io/obsidian-iconize/guide/syncing.html) for more information.
+
 ### Using other icon plugins with icon packs
 
 Suppose you are using other icon pack plugins with a download functionality. In that case, it is common to change the icon pack path to a more public folder so that you have no issue syncing the icons between different devices.
