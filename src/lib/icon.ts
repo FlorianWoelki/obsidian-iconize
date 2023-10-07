@@ -5,10 +5,16 @@ import customRule from './customRule';
 import dom from './util/dom';
 import iconTabs from './iconTabs';
 import inheritance from './inheritance';
-import { getFileItemInnerTitleEl, getFileItemTitleEl } from '../util';
+import {
+  getFileItemInnerTitleEl,
+  getFileItemTitleEl,
+  removeIconFromIconPack,
+} from '../util';
 import {
   Icon,
+  createIconPackPrefix,
   extractIconToIconPack,
+  getAllIconPacks,
   getIconFromIconPack,
   getIconPackNameByPrefix,
   getPath,
@@ -23,6 +29,7 @@ const checkMissingIcons = async (
   data: [string, string | FolderIconObject][],
 ): Promise<void> => {
   const missingIcons: Map<string | CustomRule, Icon> = new Map();
+  const allIcons: Map<string, boolean> = new Map();
 
   const getMissingIcon = async (
     iconNameWithPrefix: string,
@@ -59,6 +66,8 @@ const checkMissingIcons = async (
 
   for (const rule of plugin.getSettings().rules) {
     if (!emoji.isEmoji(rule.icon)) {
+      allIcons.set(rule.icon, true);
+
       const icon = await getMissingIcon(rule.icon, true);
       if (icon) {
         missingIcons.set(rule, icon);
@@ -74,6 +83,8 @@ const checkMissingIcons = async (
     }
 
     if (iconNameWithPrefix && !emoji.isEmoji(iconNameWithPrefix)) {
+      allIcons.set(iconNameWithPrefix, true);
+
       const icon = await getMissingIcon(iconNameWithPrefix);
       if (icon) {
         missingIcons.set(dataPath, icon);
@@ -84,6 +95,8 @@ const checkMissingIcons = async (
     const hasInheritanceIcon =
       typeof value === 'object' && value.inheritanceIcon;
     if (hasInheritanceIcon && !emoji.isEmoji(value.inheritanceIcon)) {
+      allIcons.set(value.inheritanceIcon, true);
+
       const icon = await getMissingIcon(value.inheritanceIcon);
       if (icon) {
         missingIcons.set(dataPath, icon);
@@ -119,6 +132,38 @@ const checkMissingIcons = async (
       }
 
       dom.setIconForNode(plugin, icon.prefix + icon.name, iconNode);
+    }
+  }
+
+  // Remove all icon files that can not be found in the data.
+  for (const iconPack of getAllIconPacks()) {
+    const iconFiles = await plugin.app.vault.adapter.list(
+      `${getPath()}/${iconPack.name}`,
+    );
+
+    for (const iconFilePath of iconFiles.files) {
+      const iconNameWithExtension = iconFilePath.split('/').pop();
+      // Remove the file extension. .svg
+      const iconName = iconNameWithExtension?.substring(
+        0,
+        iconNameWithExtension.length - 4,
+      );
+
+      const iconNameWithPrefix = iconPack.prefix + iconName;
+      const doesIconExist = allIcons.get(iconNameWithPrefix);
+      if (!doesIconExist) {
+        const path = `${getPath()}/${iconPack.name}/${iconName}.svg`;
+        const doesPathExist = await plugin.app.vault.adapter.exists(path);
+        if (doesPathExist) {
+          console.info(
+            `[${config.PLUGIN_NAME}] Removing icon ${path} because it is not used anymore.`,
+          );
+          // Removes the icon file.
+          await plugin.app.vault.adapter.remove(
+            `${getPath()}/${iconPack.name}/${iconName}.svg`,
+          );
+        }
+      }
     }
   }
 };
