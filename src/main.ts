@@ -126,18 +126,6 @@ export default class IconFolderPlugin extends Plugin {
     const usedIconNames = icon.getAllWithPath(this).map((value) => value.icon);
     await loadUsedIcons(this, usedIconNames);
 
-    // After initialization of the icon packs, checks the vault for missing icons and
-    // adds them.
-    initIconPacks(this).then(() => {
-      if (this.getSettings().iconsBackgroundCheckEnabled) {
-        const data = Object.entries(this.data) as [
-          string,
-          string | FolderIconObject,
-        ][];
-        icon.checkMissingIcons(this, data);
-      }
-    });
-
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
     this.registerEvent(
       this.app.workspace.on('layout-change', () => this.handleChangeLayout()),
@@ -312,6 +300,18 @@ export default class IconFolderPlugin extends Plugin {
     });
 
     icon.addAll(this, data, this.registeredFileExplorers, () => {
+      // After initialization of the icon packs, checks the vault for missing icons and
+      // adds them.
+      initIconPacks(this).then(() => {
+        if (this.getSettings().iconsBackgroundCheckEnabled) {
+          const data = Object.entries(this.data) as [
+            string,
+            string | FolderIconObject,
+          ][];
+          icon.checkMissingIcons(this, data);
+        }
+      });
+
       //const searchLeaveDom = this.getSearchLeave().dom;
       //searchLeaveDom.changed = () => this.addIconsToSearch();
 

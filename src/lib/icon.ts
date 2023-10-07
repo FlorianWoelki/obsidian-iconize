@@ -23,17 +23,17 @@ import {
 } from '../iconPackManager';
 import { CustomRule } from '../settings/data';
 import config from '@app/config';
+import { Notice } from 'obsidian';
 
 const checkMissingIcons = async (
   plugin: IconFolderPlugin,
   data: [string, string | FolderIconObject][],
 ): Promise<void> => {
-  const missingIcons: Map<string | CustomRule, Icon> = new Map();
+  const missingIcons: Set<Icon> = new Set();
   const allIcons: Map<string, boolean> = new Map();
 
   const getMissingIcon = async (
     iconNameWithPrefix: string,
-    ignoreExisting = false,
   ): Promise<Icon | null> => {
     const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
     const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
@@ -61,21 +61,21 @@ const checkMissingIcons = async (
       return icon;
     }
 
-    return ignoreExisting ? null : icon;
+    return null;
   };
 
   for (const rule of plugin.getSettings().rules) {
     if (!emoji.isEmoji(rule.icon)) {
       allIcons.set(rule.icon, true);
 
-      const icon = await getMissingIcon(rule.icon, true);
+      const icon = await getMissingIcon(rule.icon);
       if (icon) {
-        missingIcons.set(rule, icon);
+        missingIcons.add(icon);
       }
     }
   }
 
-  for (const [dataPath, value] of data) {
+  for (const [_, value] of data) {
     // Check for missing icon names.
     let iconNameWithPrefix = value as string;
     if (typeof value === 'object') {
@@ -87,7 +87,7 @@ const checkMissingIcons = async (
 
       const icon = await getMissingIcon(iconNameWithPrefix);
       if (icon) {
-        missingIcons.set(dataPath, icon);
+        missingIcons.add(icon);
       }
     }
 
@@ -99,40 +99,36 @@ const checkMissingIcons = async (
 
       const icon = await getMissingIcon(value.inheritanceIcon);
       if (icon) {
-        missingIcons.set(dataPath, icon);
+        missingIcons.add(icon);
       }
     }
   }
 
+  // Show notice that background check is running.
+  if (missingIcons.size !== 0) {
+    new Notice(
+      `[${config.PLUGIN_NAME}] Background Check: found missing icons. Adding missing icons...`,
+      10000,
+    );
+  }
+
   // Iterates over all the missing icons with its path and adds the icon to the node.
-  for (const [data, icon] of missingIcons) {
-    // Custom rule icons are missing if the data is an object.
-    if (typeof data === 'object') {
-      customRule.removeFromAllFiles(plugin, data).then(() => {
-        customRule.addToAllFiles(plugin, data);
-      });
-      continue;
-    }
+  for (const icon of missingIcons) {
+    const nodesWithIcon = document.querySelectorAll(
+      `[${config.ICON_ATTRIBUTE_NAME}="${icon.prefix + icon.name}"]`,
+    );
 
-    const node = document.querySelector(`[data-path="${data}"]`) as
-      | HTMLElement
-      | undefined;
-    if (!node) {
-      continue;
-    }
+    nodesWithIcon.forEach((node: HTMLElement) => {
+      dom.setIconForNode(plugin, icon.prefix + icon.name, node);
+    });
+  }
 
-    if (typeof plugin.getData()[data] === 'object') {
-      inheritance.add(plugin, data, icon.prefix + icon.name);
-    } else {
-      const iconNode = node.querySelector('.obsidian-icon-folder-icon') as
-        | HTMLElement
-        | undefined;
-      if (!iconNode) {
-        continue;
-      }
-
-      dom.setIconForNode(plugin, icon.prefix + icon.name, iconNode);
-    }
+  // Show notice that background check was finished.
+  if (missingIcons.size !== 0) {
+    new Notice(
+      `[${config.PLUGIN_NAME}] Background Check: added missing icons`,
+      10000,
+    );
   }
 
   // Remove all icon files that can not be found in the data.
