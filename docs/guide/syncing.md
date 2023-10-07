@@ -11,5 +11,14 @@ Try setting the Iconize icon packs folder path to `.obsidian/icons`. Setting the
 icon packs path to this specific path **does not** sync the icon packs and you have
 to sync them manually. This won't clog up the synchronization process of Obsidian Sync.
 
-*Working on a background checker to ensure a smooth experience when using the path
-`.obsidian/icons`. More documentation coming soon.*
+You also need to enable the [background checker](#background-checker). Your settings
+should look like this:
+
+![syncing-icon-packs](../assets/syncing-icon-packs.png)
+
+## Background Checker
+
+Next to setting the icon packs path to `.obsidian/icons`, you should also enable the
+background checker. This will check if icons are missing and will download them in the
+background and extract them to the correct icon pack folder. In addition, it will also
+remove unused icon files from the icon packs folder (the icons will still be available).
