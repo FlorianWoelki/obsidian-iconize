@@ -143,7 +143,7 @@ const checkMissingIcons = async (
 
     for (const iconFilePath of iconFiles.files) {
       const iconNameWithExtension = iconFilePath.split('/').pop();
-      // Remove the file extension. .svg
+      // Removes the file extension.
       const iconName = iconNameWithExtension?.substring(
         0,
         iconNameWithExtension.length - 4,
