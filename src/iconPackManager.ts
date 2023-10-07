@@ -298,7 +298,10 @@ export const createIconPackPrefix = (iconPackName: string): string => {
   );
 };
 
-export const loadUsedIcons = async (plugin: Plugin, icons: string[]) => {
+export const loadUsedIcons = async (
+  plugin: IconFolderPlugin,
+  icons: string[],
+) => {
   const iconPacks = (await listPath(plugin)).folders.map((iconPack) =>
     iconPack.split('/').pop(),
   );
@@ -326,7 +329,7 @@ export const nextIdentifier = (iconName: string) => {
 };
 
 export const loadIcon = async (
-  plugin: Plugin,
+  plugin: IconFolderPlugin,
   iconPacks: string[],
   iconName: string,
 ): Promise<void> => {
@@ -340,10 +343,14 @@ export const loadIcon = async (
   });
 
   if (!iconPack) {
-    new Notice(
-      `Seems like you do not have an icon pack installed. (${iconName})`,
-      5000,
-    );
+    // Ignore because background check automatically adds the icons and icon pack
+    // directories.
+    if (!plugin.getSettings().iconsBackgroundCheckEnabled) {
+      new Notice(
+        `Seems like you do not have an icon pack installed. (${iconName})`,
+        5000,
+      );
+    }
     return;
   }
 

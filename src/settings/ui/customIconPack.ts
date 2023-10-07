@@ -203,7 +203,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
           for (let i = 0; i < files.length; i++) {
             const file = files[i];
             if (file.type !== 'image/svg+xml') {
-              new Notice(`File ${file.name} is not a XML file.`);
+              new Notice(`File ${file.name} is not a SVG file.`);
               continue;
             }
 
