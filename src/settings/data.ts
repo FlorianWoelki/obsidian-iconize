@@ -25,6 +25,7 @@ export interface IconFolderSettings {
   recentlyUsedIconsSize: number;
   rules: CustomRule[];
   iconInTabsEnabled: boolean;
+  iconsBackgroundCheckEnabled: boolean;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -43,4 +44,5 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
     left: 0,
   },
   iconInTabsEnabled: false,
+  iconsBackgroundCheckEnabled: false,
 };

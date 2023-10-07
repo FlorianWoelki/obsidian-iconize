@@ -7,6 +7,7 @@ import ExtraMarginSetting from './extraMargin';
 import IconColorSetting from './iconColor';
 import IconFontSizeSetting from './iconFontSize';
 import IconPacksPathSetting from './iconPacksPath';
+import IconPacksBackgroundChecker from './iconPacksBackgroundChecker';
 import PredefinedIconPacksSetting from './predefinedIconPacks';
 import RecentlyUsedIconsSetting from './recentlyUsedIcons';
 import ToggleIconInTabs from './toggleIconInTabs';
@@ -27,6 +28,7 @@ export default class IconFolderSettings extends PluginSettingTab {
     containerEl.createEl('h2', { text: 'Icon Folder Settings' });
     new RecentlyUsedIconsSetting(plugin, containerEl).display();
     new IconPacksPathSetting(plugin, containerEl).display();
+    new IconPacksBackgroundChecker(plugin, containerEl).display();
     new EmojiStyleSetting(plugin, containerEl).display();
     new ToggleIconInTabs(plugin, containerEl).display();
 
