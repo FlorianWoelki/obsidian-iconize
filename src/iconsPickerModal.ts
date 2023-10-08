@@ -4,6 +4,7 @@ import IconFolderPlugin from './main';
 import emoji from './emoji';
 import {
   doesIconExists,
+  getAllIconPacks,
   getAllLoadedIconNames,
   getIconPackNameByPrefix,
   getSvgFromLoadedIcon,
@@ -49,6 +50,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   onOpen() {
     super.onOpen();
+    console.log(getAllIconPacks());
   }
 
   onClose() {

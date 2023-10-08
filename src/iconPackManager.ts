@@ -402,7 +402,7 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
       const iconNameRegex = files[j].match(
         new RegExp(path + '/' + folderName + '/(.*)'),
       );
-      const iconName = iconNameRegex[1];
+      const iconName = getNormalizedName(iconNameRegex[1]);
       const iconContent = await plugin.app.vault.adapter.read(files[j]);
       const icon = generateIcon(folderName, iconName, iconContent);
       if (icon) {
@@ -451,7 +451,7 @@ const getLoadedIconsFromZipFile = async (
 
     const file = await getFileFromJSZipFile(files[j]);
     const iconContent = await file.text();
-    const iconName = file.name;
+    const iconName = getNormalizedName(file.name);
     const icon = generateIcon(iconPackName, iconName, iconContent);
     if (icon) {
       loadedIcons.push(icon);
