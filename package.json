@@ -12,6 +12,7 @@
     "build": "rollup --config rollup.config.js --environment BUILD:production",
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
     "test": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "prettify": "prettier --write '*/**/*.{js,ts,tsx}'"
   },
@@ -39,6 +40,7 @@
     "@types/node": "^14.18.54",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "@vitest/coverage-istanbul": "^0.34.6",
     "eslint": "^8.47.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
