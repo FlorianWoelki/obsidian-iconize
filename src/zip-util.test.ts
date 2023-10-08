@@ -1,5 +1,5 @@
 import { vi, it, expect, describe, afterEach } from 'vitest';
-import { downloadZipFile, getFileFromJSZipFile, readZipFile } from './zipUtil';
+import { downloadZipFile, getFileFromJSZipFile, readZipFile } from './zip-util';
 import JSZip from 'jszip';
 
 const zipUrl = 'http://example.com/zip-file.zip';

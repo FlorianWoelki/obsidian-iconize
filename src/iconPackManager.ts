@@ -1,6 +1,6 @@
 import { Notice, Plugin } from 'obsidian';
 import svg from './lib/util/svg';
-import { getFileFromJSZipFile, readZipFile } from './zipUtil';
+import { getFileFromJSZipFile, readZipFile } from './zip-util';
 import JSZip from 'jszip';
 import config from '@app/config';
 import IconFolderPlugin from './main';
