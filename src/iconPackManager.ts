@@ -561,7 +561,9 @@ export const getIconFromIconPack = (iconPackName: string, iconName: string) => {
     return undefined;
   }
 
-  return iconPack.icons.find((icon) => icon.name === iconName);
+  return iconPack.icons.find(
+    (icon) => getNormalizedName(icon.name) === iconName,
+  );
 };
 
 export const getSvgFromLoadedIcon = (
@@ -576,11 +578,12 @@ export const getSvgFromLoadedIcon = (
   );
   if (!foundIcon) {
     iconPacks.forEach((iconPack) => {
-      const icon = iconPack.icons.find(
-        (icon) =>
+      const icon = iconPack.icons.find((icon) => {
+        return (
           icon.prefix.toLowerCase() === iconPrefix.toLowerCase() &&
-          icon.name.toLowerCase() === iconName.toLowerCase(),
-      );
+          getNormalizedName(icon.name).toLowerCase() === iconName.toLowerCase()
+        );
+      });
       if (icon) {
         foundIcon = icon;
       }

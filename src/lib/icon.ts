@@ -5,23 +5,18 @@ import customRule from './customRule';
 import dom from './util/dom';
 import iconTabs from './iconTabs';
 import inheritance from './inheritance';
-import {
-  getFileItemInnerTitleEl,
-  getFileItemTitleEl,
-  removeIconFromIconPack,
-} from '../util';
+import { getFileItemInnerTitleEl, getFileItemTitleEl } from '../util';
 import {
   Icon,
-  createIconPackPrefix,
   extractIconToIconPack,
   getAllIconPacks,
   getIconFromIconPack,
   getIconPackNameByPrefix,
+  getNormalizedName,
   getPath,
   getSvgFromLoadedIcon,
   nextIdentifier,
 } from '../iconPackManager';
-import { CustomRule } from '../settings/data';
 import config from '@app/config';
 import { Notice } from 'obsidian';
 
@@ -114,12 +109,13 @@ const checkMissingIcons = async (
 
   // Iterates over all the missing icons with its path and adds the icon to the node.
   for (const icon of missingIcons) {
+    const normalizedName = getNormalizedName(icon.prefix + icon.name);
     const nodesWithIcon = document.querySelectorAll(
-      `[${config.ICON_ATTRIBUTE_NAME}="${icon.prefix + icon.name}"]`,
+      `[${config.ICON_ATTRIBUTE_NAME}="${normalizedName}"]`,
     );
 
     nodesWithIcon.forEach((node: HTMLElement) => {
-      dom.setIconForNode(plugin, icon.prefix + icon.name, node);
+      dom.setIconForNode(plugin, normalizedName, node);
     });
   }
 
@@ -133,6 +129,14 @@ const checkMissingIcons = async (
 
   // Remove all icon files that can not be found in the data.
   for (const iconPack of getAllIconPacks()) {
+    // Checks if the icon pack exists.
+    const doesIconPackExist = await plugin.app.vault.adapter.exists(
+      `${getPath()}/${iconPack.name}`,
+    );
+    if (!doesIconPackExist) {
+      continue;
+    }
+
     const iconFiles = await plugin.app.vault.adapter.list(
       `${getPath()}/${iconPack.name}`,
     );
