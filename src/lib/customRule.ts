@@ -37,8 +37,12 @@ const isApplicable = async (
   rule: CustomRule,
   file: TAbstractFile,
 ): Promise<boolean> => {
-  // Gets the file type based on the specified file path.
-  const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
+  const metadata = await plugin.app.vault.adapter.stat(file.path);
+  if (!metadata) {
+    return false;
+  }
+
+  const fileType = metadata.type;
   const toMatch = rule.useFilePath ? file.path : file.name;
 
   try {
