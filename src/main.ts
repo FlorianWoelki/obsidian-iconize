@@ -405,6 +405,20 @@ export default class IconFolderPlugin extends Plugin {
         }),
       );
 
+      // Register `layout-change` event for adding icons to tabs when moving a pane or
+      // enabling reading mode.
+      this.registerEvent(
+        this.app.workspace.on('layout-change', () => {
+          if (!this.getSettings().iconInTabsEnabled) {
+            return;
+          }
+
+          for (const openedFile of getAllOpenedFiles(this)) {
+            iconTabs.add(this, openedFile);
+          }
+        }),
+      );
+
       // Register active leaf change event for adding icon of file to tab.
       this.registerEvent(
         this.app.workspace.on('active-leaf-change', (leaf: WorkspaceLeaf) => {
