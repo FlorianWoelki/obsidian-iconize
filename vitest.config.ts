@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -7,5 +8,8 @@ export default defineConfig({
     coverage: {
       provider: 'istanbul',
     },
+  },
+  resolve: {
+    alias: [{ find: '@app', replacement: resolve(__dirname, './src') }],
   },
 });
