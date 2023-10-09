@@ -50,7 +50,6 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   onOpen() {
     super.onOpen();
-    console.log(getAllIconPacks());
   }
 
   onClose() {
