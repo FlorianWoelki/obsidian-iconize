@@ -84,7 +84,6 @@ const refreshIconNodes = (
           '.obsidian-icon-folder-icon',
         ) as HTMLElement | null;
         if (iconNode) {
-          console.log('refreshgin');
           iconNode.innerHTML = applyStyles(
             plugin,
             iconNode.innerHTML,
