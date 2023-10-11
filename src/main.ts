@@ -7,7 +7,7 @@ import {
   Notice,
   TFolder,
 } from 'obsidian';
-import { ExplorerLeaf, ExplorerView } from './@types/obsidian';
+import { ExplorerView, FileWithLeaf, TabHeaderLeaf } from './@types/obsidian';
 import {
   createDefaultDirectory,
   getNormalizedName,
@@ -143,7 +143,19 @@ export default class IconFolderPlugin extends Plugin {
             // Update icon in tab when setting is enabled.
             if (this.getSettings().iconInTabsEnabled) {
               modal.onSelect = (iconName: string): void => {
-                iconTabs.update(this, file, iconName);
+                const openedFiles = getAllOpenedFiles(this);
+                const openedFile = openedFiles.find(
+                  (openedFile) => openedFile.path === file.path,
+                );
+                if (openedFile) {
+                  const leaf = openedFile.leaf as TabHeaderLeaf;
+                  iconTabs.update(
+                    this,
+                    file,
+                    iconName,
+                    leaf.tabHeaderInnerIconEl,
+                  );
+                }
               };
             }
           });
@@ -157,11 +169,6 @@ export default class IconFolderPlugin extends Plugin {
             dom.removeIconInPath(file.path);
             this.notifyPlugins();
 
-            // Remove icon in tab when setting is enabled.
-            if (this.getSettings().iconInTabsEnabled) {
-              iconTabs.remove(file, { replaceWithDefaultIcon: true });
-            }
-
             // Check for possible inheritance and add the icon if an inheritance exists.
             if (inheritance.doesExistInPath(this, file.path)) {
               const folderPath = inheritance.getFolderPathByFilePath(
@@ -174,7 +181,18 @@ export default class IconFolderPlugin extends Plugin {
                 file,
                 onAdd: (file) => {
                   if (this.getSettings().iconInTabsEnabled) {
-                    iconTabs.add(this, file as TFile, { iconName });
+                    const openedFiles = getAllOpenedFiles(this);
+                    const openedFile = openedFiles.find(
+                      (openedFile) => openedFile.path === file.path,
+                    );
+
+                    if (openedFile) {
+                      const leaf = openedFile.leaf as TabHeaderLeaf;
+                      iconTabs.add(this, file as TFile, {
+                        iconName,
+                        container: leaf.tabHeaderInnerIconEl,
+                      });
+                    }
                   }
                 },
               });
@@ -231,7 +249,18 @@ export default class IconFolderPlugin extends Plugin {
                 inheritance.add(this, file.path, iconName, {
                   onAdd: (file) => {
                     if (this.getSettings().iconInTabsEnabled) {
-                      iconTabs.add(this, file as TFile, { iconName });
+                      const openedFiles = getAllOpenedFiles(this);
+                      const openedFile = openedFiles.find(
+                        (openedFile) => openedFile.path === file.path,
+                      );
+
+                      if (openedFile) {
+                        const leaf = openedFile.leaf as TabHeaderLeaf;
+                        iconTabs.add(this, file as TFile, {
+                          container: leaf.tabHeaderInnerIconEl,
+                          iconName,
+                        });
+                      }
                     }
                   },
                 });
@@ -335,7 +364,18 @@ export default class IconFolderPlugin extends Plugin {
                 file,
                 onAdd: (file) => {
                   if (this.getSettings().iconInTabsEnabled) {
-                    iconTabs.add(this, file as TFile, { iconName });
+                    const openedFiles = getAllOpenedFiles(this);
+                    const openedFile = openedFiles.find(
+                      (openedFile) => openedFile.path === file.path,
+                    );
+
+                    if (openedFile) {
+                      const leaf = openedFile.leaf as TabHeaderLeaf;
+                      iconTabs.add(this, file as TFile, {
+                        container: leaf.tabHeaderInnerIconEl,
+                        iconName,
+                      });
+                    }
                   }
                 },
               });
@@ -370,7 +410,19 @@ export default class IconFolderPlugin extends Plugin {
                 continue;
               }
 
-              iconTabs.update(this, file as TFile, rule.icon);
+              const openedFiles = getAllOpenedFiles(this);
+              const openedFile = openedFiles.find(
+                (openedFile) => openedFile.path === file.path,
+              );
+              if (openedFile) {
+                const leaf = openedFile.leaf as TabHeaderLeaf;
+                iconTabs.update(
+                  this,
+                  file as TFile,
+                  rule.icon,
+                  leaf.tabHeaderInnerIconEl,
+                );
+              }
               break;
             }
           }
@@ -394,9 +446,17 @@ export default class IconFolderPlugin extends Plugin {
                 file,
                 onAdd: (file) => {
                   if (this.getSettings().iconInTabsEnabled) {
-                    iconTabs.add(this, file as TFile, {
-                      iconName: obj.inheritanceIcon,
-                    });
+                    const openedFiles = getAllOpenedFiles(this);
+                    const openedFile = openedFiles.find(
+                      (openedFile) => openedFile.path === file.path,
+                    );
+                    if (openedFile) {
+                      const leaf = openedFile.leaf as TabHeaderLeaf;
+                      iconTabs.add(this, file as TFile, {
+                        container: leaf.tabHeaderInnerIconEl,
+                        iconName: obj.inheritanceIcon,
+                      });
+                    }
                   }
                 },
               });
@@ -414,7 +474,10 @@ export default class IconFolderPlugin extends Plugin {
           }
 
           for (const openedFile of getAllOpenedFiles(this)) {
-            iconTabs.add(this, openedFile);
+            const leaf = openedFile.leaf as TabHeaderLeaf;
+            iconTabs.add(this, openedFile, {
+              container: leaf.tabHeaderInnerIconEl,
+            });
           }
         }),
       );
@@ -431,7 +494,10 @@ export default class IconFolderPlugin extends Plugin {
           // See https://github.com/FlorianWoelki/obsidian-iconize/issues/208.
           if (leaf.view.getViewType() === 'file-explorer') {
             for (const openedFile of getAllOpenedFiles(this)) {
-              iconTabs.add(this, openedFile);
+              const leaf = openedFile.leaf as TabHeaderLeaf;
+              iconTabs.add(this, openedFile, {
+                container: leaf.tabHeaderInnerIconEl,
+              });
             }
             return;
           }
@@ -440,9 +506,11 @@ export default class IconFolderPlugin extends Plugin {
             return;
           }
 
-          const explorerLeaf = leaf as ExplorerLeaf;
-          if (explorerLeaf.view.file) {
-            iconTabs.add(this, explorerLeaf.view.file);
+          const tabHeaderLeaf = leaf as TabHeaderLeaf;
+          if (tabHeaderLeaf.view.file) {
+            iconTabs.add(this, tabHeaderLeaf.view.file, {
+              container: tabHeaderLeaf.tabHeaderInnerIconEl,
+            });
           }
         }),
       );

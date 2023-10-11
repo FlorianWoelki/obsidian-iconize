@@ -1,4 +1,4 @@
-import { ExplorerView } from '../@types/obsidian';
+import { ExplorerView, TabHeaderLeaf } from '../@types/obsidian';
 import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import customRule from './customRule';
@@ -199,7 +199,10 @@ const addAll = (
       for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
         const file = leaf.view.file;
         if (file) {
-          iconTabs.add(plugin, file);
+          const tabHeaderLeaf = leaf as TabHeaderLeaf;
+          iconTabs.add(plugin, file, {
+            container: tabHeaderLeaf.tabHeaderInnerIconEl,
+          });
         }
       }
     }

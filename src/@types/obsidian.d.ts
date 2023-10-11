@@ -65,8 +65,15 @@ declare module 'obsidian' {
   }
 }
 
+type FileWithLeaf = TFile & { leaf: ExplorerLeaf };
+
 interface ExplorerLeaf extends WorkspaceLeaf {
   view: ExplorerView;
+}
+
+interface TabHeaderLeaf extends ExplorerLeaf {
+  tabHeaderEl: HTMLElement;
+  tabHeaderInnerIconEl: HTMLElement;
 }
 
 interface DomChild {

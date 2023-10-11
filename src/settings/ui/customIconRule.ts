@@ -23,6 +23,7 @@ import iconTabs from '@lib/iconTabs';
 import dom from '../../lib/util/dom';
 import svg from '../../lib/util/svg';
 import { getNormalizedName } from '../../iconPackManager';
+import { TabHeaderLeaf } from '../../@types/obsidian';
 
 export default class CustomIconRuleSetting extends IconFolderSetting {
   private app: App;
@@ -69,7 +70,9 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         if (remove) {
           iconTabs.remove(openedFile, { replaceWithDefaultIcon: true });
         } else {
+          const leaf = openedFile.leaf as TabHeaderLeaf;
           iconTabs.add(this.plugin, openedFile, {
+            container: leaf.tabHeaderInnerIconEl,
             iconName: rule.icon,
             iconColor: rule.color,
           });

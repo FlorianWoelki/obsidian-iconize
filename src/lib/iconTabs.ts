@@ -42,6 +42,7 @@ const getIconContainers = (filename: string): HTMLElement[] => {
 interface AddOptions {
   iconName?: string;
   iconColor?: string;
+  container?: HTMLElement;
 }
 
 const add = async (
@@ -49,7 +50,9 @@ const add = async (
   file: TFile,
   options?: AddOptions,
 ): Promise<void> => {
-  const iconContainers = getIconContainers(file.basename);
+  const iconContainers = options?.container
+    ? [options.container]
+    : getIconContainers(file.basename);
   if (iconContainers.length === 0) {
     return;
   }
@@ -121,8 +124,15 @@ const add = async (
   }
 };
 
-const update = (plugin: IconFolderPlugin, file: TFile, iconName: string) => {
-  const iconContainers = getIconContainers(file.basename);
+const update = (
+  plugin: IconFolderPlugin,
+  file: TFile,
+  iconName: string,
+  container?: HTMLElement,
+) => {
+  const iconContainers = container
+    ? [container]
+    : getIconContainers(file.basename);
   if (iconContainers.length === 0) {
     return;
   }

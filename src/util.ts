@@ -6,7 +6,7 @@ import {
   nextIdentifier,
   removeIconFromIconPackDirectory,
 } from '@app/iconPackManager';
-import { FileItem } from './@types/obsidian';
+import { ExplorerLeaf, FileItem, FileWithLeaf } from './@types/obsidian';
 import IconFolderPlugin from './main';
 import { TFile } from 'obsidian';
 
@@ -36,17 +36,17 @@ export const readFileSync = async (file: File): Promise<string> => {
 
 /**
  * Gets all the currently opened files by getting the markdown leaves and then checking
- * for the `file` property in the view.
+ * for the `file` property in the view. This also returns the leaf of the file.
  * @param plugin Instance of the IconFolderPlugin.
- * @returns An array of {@link TFile} objects.
+ * @returns An array of {@link FileWithLeaf} objects.
  */
-export const getAllOpenedFiles = (plugin: IconFolderPlugin): TFile[] => {
+export const getAllOpenedFiles = (plugin: IconFolderPlugin): FileWithLeaf[] => {
   return plugin.app.workspace
     .getLeavesOfType('markdown')
-    .reduce<TFile[]>((prev, curr) => {
+    .reduce<FileWithLeaf[]>((prev, curr) => {
       const file = curr.view.file;
       if (file) {
-        prev.push(file);
+        prev.push({ ...file, leaf: curr });
       }
       return prev;
     }, []);
