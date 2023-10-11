@@ -24,12 +24,14 @@ export default class ToggleIconInTabs extends IconFolderSetting {
                   const tabHeaderLeaf = leaf as TabHeaderLeaf;
                   if (enabled) {
                     // Adds the icons to already opened files.
-                    iconTabs.add(this.plugin, file, {
-                      container: tabHeaderLeaf.tabHeaderInnerIconEl,
-                    });
+                    iconTabs.add(
+                      this.plugin,
+                      file,
+                      tabHeaderLeaf.tabHeaderInnerIconEl,
+                    );
                   } else {
                     // Removes the icons from already opened files.
-                    iconTabs.remove(file);
+                    iconTabs.remove(tabHeaderLeaf.tabHeaderInnerIconEl);
                   }
                 }
               });

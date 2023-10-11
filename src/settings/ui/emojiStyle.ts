@@ -27,7 +27,6 @@ export default class EmojiStyleSetting extends IconFolderSetting {
   }
 
   private updateDOM(): void {
-    const openFiles = getAllOpenedFiles(this.plugin);
     for (const fileExplorer of this.plugin.getRegisteredFileExplorers()) {
       const fileItems = Object.entries(fileExplorer.fileItems);
       for (const [path, fileItem] of fileItems) {
@@ -50,11 +49,17 @@ export default class EmojiStyleSetting extends IconFolderSetting {
                 file.path,
                 inheritanceData.inheritanceIcon,
               );
-              iconTabs.update(
+              const tabLeaf = iconTabs.getTabLeafOfFilePath(
                 this.plugin,
-                file as TFile,
-                inheritanceData.inheritanceIcon,
+                file.path,
               );
+              if (tabLeaf) {
+                iconTabs.update(
+                  this.plugin,
+                  inheritanceData.inheritanceIcon,
+                  tabLeaf.tabHeaderInnerIconEl,
+                );
+              }
             }
           }
         }
@@ -67,7 +72,14 @@ export default class EmojiStyleSetting extends IconFolderSetting {
 
         if (emoji.isEmoji(iconName)) {
           dom.createIconNode(this.plugin, path, iconName);
-          iconTabs.update(this.plugin, fileItem.file as TFile, iconName);
+          const tabLeaf = iconTabs.getTabLeafOfFilePath(this.plugin, path);
+          if (tabLeaf) {
+            iconTabs.update(
+              this.plugin,
+              iconName,
+              tabLeaf.tabHeaderInnerIconEl,
+            );
+          }
         }
       }
     }

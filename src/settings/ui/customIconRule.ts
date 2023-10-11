@@ -67,12 +67,13 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           continue;
         }
 
+        const leaf = openedFile.leaf as TabHeaderLeaf;
         if (remove) {
-          iconTabs.remove(openedFile, { replaceWithDefaultIcon: true });
+          iconTabs.remove(leaf.tabHeaderInnerIconEl, {
+            replaceWithDefaultIcon: true,
+          });
         } else {
-          const leaf = openedFile.leaf as TabHeaderLeaf;
-          iconTabs.add(this.plugin, openedFile, {
-            container: leaf.tabHeaderInnerIconEl,
+          iconTabs.add(this.plugin, openedFile, leaf.tabHeaderInnerIconEl, {
             iconName: rule.icon,
             iconColor: rule.color,
           });
