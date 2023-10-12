@@ -6,19 +6,22 @@ import { DEFAULT_FILE_ICON, getAllOpenedFiles } from '../util';
 import { TabHeaderLeaf } from '../@types/obsidian';
 
 /**
- * Gets the tab leaf of a specific file path by looping through all opened files and
+ * Gets the tab leaves of a specific file path by looping through all opened files and
  * checking if the file path matches.
  * @param plugin IconFolderPlugin instance.
  * @param path String of the file path to get the tab leaf of.
- * @returns TabHeaderLeaf of the file path or `undefined` if not found.
+ * @returns TabHeaderLeaf array that includes all tab leaves of the file path.
  */
-const getTabLeafOfFilePath = (
+const getTabLeavesOfFilePath = (
   plugin: IconFolderPlugin,
   path: string,
-): TabHeaderLeaf | undefined => {
+): TabHeaderLeaf[] => {
   const openedFiles = getAllOpenedFiles(plugin);
-  const openedFile = openedFiles.find((openedFile) => openedFile.path === path);
-  return openedFile?.leaf as TabHeaderLeaf | undefined;
+  const openedFile = openedFiles.filter(
+    (openedFile) => openedFile.path === path,
+  );
+  const leaves = openedFile.map((openedFile) => openedFile.leaf);
+  return leaves as TabHeaderLeaf[];
 };
 
 interface AddOptions {
@@ -157,5 +160,5 @@ export default {
   add,
   update,
   remove,
-  getTabLeafOfFilePath,
+  getTabLeavesOfFilePath,
 };

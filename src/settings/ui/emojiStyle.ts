@@ -48,11 +48,11 @@ export default class EmojiStyleSetting extends IconFolderSetting {
                 file.path,
                 inheritanceData.inheritanceIcon,
               );
-              const tabLeaf = iconTabs.getTabLeafOfFilePath(
+              const tabLeaves = iconTabs.getTabLeavesOfFilePath(
                 this.plugin,
                 file.path,
               );
-              if (tabLeaf) {
+              for (const tabLeaf of tabLeaves) {
                 iconTabs.update(
                   this.plugin,
                   inheritanceData.inheritanceIcon,
@@ -71,8 +71,8 @@ export default class EmojiStyleSetting extends IconFolderSetting {
 
         if (emoji.isEmoji(iconName)) {
           dom.createIconNode(this.plugin, path, iconName);
-          const tabLeaf = iconTabs.getTabLeafOfFilePath(this.plugin, path);
-          if (tabLeaf) {
+          const tabLeaves = iconTabs.getTabLeavesOfFilePath(this.plugin, path);
+          for (const tabLeaf of tabLeaves) {
             iconTabs.update(
               this.plugin,
               iconName,

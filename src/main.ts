@@ -143,8 +143,11 @@ export default class IconFolderPlugin extends Plugin {
             // Update icon in tab when setting is enabled.
             if (this.getSettings().iconInTabsEnabled) {
               modal.onSelect = (iconName: string): void => {
-                const tabLeaf = iconTabs.getTabLeafOfFilePath(this, file.path);
-                if (tabLeaf) {
+                const tabLeaves = iconTabs.getTabLeavesOfFilePath(
+                  this,
+                  file.path,
+                );
+                for (const tabLeaf of tabLeaves) {
                   iconTabs.update(this, iconName, tabLeaf.tabHeaderInnerIconEl);
                 }
               };
@@ -172,11 +175,11 @@ export default class IconFolderPlugin extends Plugin {
                 file,
                 onAdd: (file) => {
                   if (this.getSettings().iconInTabsEnabled) {
-                    const tabLeaf = iconTabs.getTabLeafOfFilePath(
+                    const tabLeaves = iconTabs.getTabLeavesOfFilePath(
                       this,
                       file.path,
                     );
-                    if (tabLeaf) {
+                    for (const tabLeaf of tabLeaves) {
                       iconTabs.add(
                         this,
                         file as TFile,
@@ -219,11 +222,11 @@ export default class IconFolderPlugin extends Plugin {
                 onRemove: (file) => {
                   // Removes the icons from the file tabs inside of the inheritance.
                   if (this.getSettings().iconInTabsEnabled) {
-                    const tabLeaf = iconTabs.getTabLeafOfFilePath(
+                    const tabLeaves = iconTabs.getTabLeavesOfFilePath(
                       this,
                       file.path,
                     );
-                    if (tabLeaf) {
+                    for (const tabLeaf of tabLeaves) {
                       iconTabs.remove(tabLeaf.tabHeaderInnerIconEl, {
                         replaceWithDefaultIcon: true,
                       });
@@ -248,11 +251,11 @@ export default class IconFolderPlugin extends Plugin {
                 inheritance.add(this, file.path, iconName, {
                   onAdd: (file) => {
                     if (this.getSettings().iconInTabsEnabled) {
-                      const tabLeaf = iconTabs.getTabLeafOfFilePath(
+                      const tabLeaves = iconTabs.getTabLeavesOfFilePath(
                         this,
                         file.path,
                       );
-                      if (tabLeaf) {
+                      for (const tabLeaf of tabLeaves) {
                         iconTabs.add(
                           this,
                           file as TFile,
@@ -365,12 +368,12 @@ export default class IconFolderPlugin extends Plugin {
                 file,
                 onAdd: (file) => {
                   if (this.getSettings().iconInTabsEnabled) {
-                    const tabLeaf = iconTabs.getTabLeafOfFilePath(
+                    const tabLeaves = iconTabs.getTabLeavesOfFilePath(
                       this,
                       file.path,
                     );
 
-                    if (tabLeaf) {
+                    for (const tabLeaf of tabLeaves) {
                       iconTabs.add(
                         this,
                         file as TFile,
@@ -445,11 +448,11 @@ export default class IconFolderPlugin extends Plugin {
                 file,
                 onAdd: (file) => {
                   if (this.getSettings().iconInTabsEnabled) {
-                    const tabLeaf = iconTabs.getTabLeafOfFilePath(
+                    const tabLeaves = iconTabs.getTabLeavesOfFilePath(
                       this,
                       file.path,
                     );
-                    if (tabLeaf) {
+                    for (const tabLeaf of tabLeaves) {
                       iconTabs.add(
                         this,
                         file as TFile,
