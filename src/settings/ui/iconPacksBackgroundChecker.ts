@@ -1,4 +1,4 @@
-import { Notice, Setting, TextComponent } from 'obsidian';
+import { Notice, Setting } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 
 export default class IconPacksBackgroundChecker extends IconFolderSetting {

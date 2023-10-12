@@ -6,9 +6,8 @@ import {
   nextIdentifier,
   removeIconFromIconPackDirectory,
 } from '@app/iconPackManager';
-import { ExplorerLeaf, FileItem, FileWithLeaf } from './@types/obsidian';
+import { FileItem, FileWithLeaf } from './@types/obsidian';
 import IconFolderPlugin from './main';
-import { TFile } from 'obsidian';
 
 // Default obsidian file icon.
 export const DEFAULT_FILE_ICON =

@@ -1,7 +1,6 @@
 import customRule from '@lib/customRule';
 import inheritance from '@lib/inheritance';
 import style from '@lib/util/style';
-import dom from '@lib/util/dom';
 import IconFolderPlugin from '@app/main';
 import { getFileItemTitleEl } from '../util';
 

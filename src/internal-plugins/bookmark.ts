@@ -109,7 +109,7 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
       }
     };
 
-    const { itemDoms, containerEl } = this.leaf;
+    const { itemDoms } = this.leaf;
     // Retrieves all the items of the bookmark plugin which areo objects.
     const items = this.bookmark.instance.items;
     items.forEach((item) => {

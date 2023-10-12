@@ -4,7 +4,6 @@ import IconFolderPlugin from './main';
 import emoji from './emoji';
 import {
   doesIconExists,
-  getAllIconPacks,
   getAllLoadedIconNames,
   getIconPackNameByPrefix,
   getSvgFromLoadedIcon,

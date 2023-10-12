@@ -1,10 +1,9 @@
 import { TAbstractFile } from 'obsidian';
 import emoji from '../emoji';
-import IconFolderPlugin, { FolderIconObject } from '../main';
+import IconFolderPlugin from '../main';
 import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
-import config from '../config';
 
 export type CustomRuleFileType = 'file' | 'folder';
 

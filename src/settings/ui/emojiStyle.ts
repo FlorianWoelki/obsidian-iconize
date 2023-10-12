@@ -1,4 +1,4 @@
-import { Setting, TFile } from 'obsidian';
+import { Setting } from 'obsidian';
 import emoji from '@app/emoji';
 import customRule from '@lib/customRule';
 import dom from '@lib/util/dom';
@@ -6,7 +6,6 @@ import { FolderIconObject } from '@app/main';
 import IconFolderSetting from './iconFolderSetting';
 import inheritance from '../../lib/inheritance';
 import iconTabs from '../../lib/iconTabs';
-import { getAllOpenedFiles } from '../../util';
 
 export default class EmojiStyleSetting extends IconFolderSetting {
   public display(): void {
@@ -29,7 +28,7 @@ export default class EmojiStyleSetting extends IconFolderSetting {
   private updateDOM(): void {
     for (const fileExplorer of this.plugin.getRegisteredFileExplorers()) {
       const fileItems = Object.entries(fileExplorer.fileItems);
-      for (const [path, fileItem] of fileItems) {
+      for (const [path, _] of fileItems) {
         let iconName = this.plugin.getData()[path] as string | undefined | null;
         if (!iconName) {
           continue;
