@@ -5,6 +5,13 @@ import dom from './util/dom';
 import { DEFAULT_FILE_ICON, getAllOpenedFiles } from '../util';
 import { TabHeaderLeaf } from '../@types/obsidian';
 
+/**
+ * Gets the tab leaf of a specific file path by looping through all opened files and
+ * checking if the file path matches.
+ * @param plugin IconFolderPlugin instance.
+ * @param path String of the file path to get the tab leaf of.
+ * @returns TabHeaderLeaf of the file path or `undefined` if not found.
+ */
 const getTabLeafOfFilePath = (
   plugin: IconFolderPlugin,
   path: string,
@@ -15,10 +22,26 @@ const getTabLeafOfFilePath = (
 };
 
 interface AddOptions {
+  /**
+   * Name of the icon to add to the tab.
+   * @default undefined
+   */
   iconName?: string;
+  /**
+   * Color of the icon to add to the tab.
+   * @default undefined
+   */
   iconColor?: string;
 }
 
+/**
+ * Adds an icon to the tab and its container. This function respects the inheritance,
+ * custom rules and individually icon set.
+ * @param plugin IconFolderPlugin instance.
+ * @param file TFile instance of the file to add the icon to.
+ * @param iconContainer HTMLElement where the icon will be added to.
+ * @param options AddOptions for the add function which can optionally be used.
+ */
 const add = async (
   plugin: IconFolderPlugin,
   file: TFile,
@@ -90,6 +113,13 @@ const add = async (
   iconContainer.style.margin = null;
 };
 
+/**
+ * Updates the icon in the tab and container by setting calling the `setIconForNode`
+ * function and removing the margin from the icon container.
+ * @param plugin IconFolderPlugin instance.
+ * @param iconName String of the icon name to update to.
+ * @param iconContainer HTMLElement where the icon is located and will be updated.
+ */
 const update = (
   plugin: IconFolderPlugin,
   iconName: string,
@@ -103,10 +133,17 @@ const update = (
 interface RemoveOptions {
   /**
    * Replaces the icon in the tab with the default obsidian icon.
+   * @default false
    */
   replaceWithDefaultIcon?: boolean;
 }
 
+/**
+ * Removes the icon from the tab and container by setting the `display` style property
+ * to `none`. Optionally, the icon can be replaced with the default obsidian icon.
+ * @param iconContainer HTMLElement where the icon is located and will be removed from.
+ * @param options RemoveOptions for the remove function which can optionally be used.
+ */
 const remove = (iconContainer: HTMLElement, options?: RemoveOptions) => {
   if (!options?.replaceWithDefaultIcon) {
     // Removes the display of the icon container to remove the icons from the tabs.
