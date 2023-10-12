@@ -6,13 +6,16 @@ import {
   requireApiVersion,
   Notice,
   TFolder,
+  MarkdownView,
 } from 'obsidian';
 import { ExplorerView, TabHeaderLeaf } from './@types/obsidian';
 import {
   createDefaultDirectory,
   getNormalizedName,
+  getSvgFromLoadedIcon,
   initIconPacks,
   loadUsedIcons,
+  nextIdentifier,
   setPath,
 } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
@@ -37,6 +40,7 @@ import {
   saveIconToIconPack,
 } from '@app/util';
 import config from '@app/config';
+import titleIcon from './lib/titleIcon';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -345,8 +349,32 @@ export default class IconFolderPlugin extends Plugin {
         }
       });
 
-      //const searchLeaveDom = this.getSearchLeave().dom;
-      //searchLeaveDom.changed = () => this.addIconsToSearch();
+      // Adds the title icon to the active leaf view.
+      if (this.getSettings().iconInTitleEnabled) {
+        const usedIconsWithPaths = icon.getAllWithPath(this);
+        for (const openedFile of getAllOpenedFiles(this)) {
+          const activeView = openedFile.leaf.view;
+          if (activeView instanceof MarkdownView) {
+            const filePath = activeView.file.path;
+            const iconName = usedIconsWithPaths.find(
+              (value) => value.path === filePath,
+            )?.icon;
+            if (iconName) {
+              const iconNextIdentifier = nextIdentifier(iconName);
+              const possibleIcon = getSvgFromLoadedIcon(
+                iconName.substring(0, iconNextIdentifier),
+                iconName.substring(iconNextIdentifier),
+              );
+
+              if (possibleIcon) {
+                titleIcon.add(activeView.contentEl, possibleIcon, {
+                  fontSize: this.calculateIconInTitleSize(),
+                });
+              }
+            }
+          }
+        }
+      }
 
       // Register rename event for adding icons with custom rules to the DOM and updating
       // inheritance when file was moved to another directory.
@@ -488,6 +516,23 @@ export default class IconFolderPlugin extends Plugin {
       // Register active leaf change event for adding icon of file to tab.
       this.registerEvent(
         this.app.workspace.on('active-leaf-change', (leaf: WorkspaceLeaf) => {
+          if (!this.getSettings().iconInTitleEnabled) {
+            return;
+          }
+
+          const view = leaf.view;
+          if (view instanceof MarkdownView) {
+            const foundIcon = icon.getIconByPath(this, view.file.path);
+
+            if (foundIcon) {
+              titleIcon.add(view.contentEl, foundIcon.svgElement, {
+                fontSize: this.calculateIconInTitleSize(),
+              });
+            } else {
+              titleIcon.remove(view.contentEl);
+            }
+          }
+
           if (!this.getSettings().iconInTabsEnabled) {
             return;
           }
@@ -518,6 +563,16 @@ export default class IconFolderPlugin extends Plugin {
         }),
       );
     });
+  }
+
+  calculateIconInTitleSize(): number {
+    const fontSize = parseFloat(
+      getComputedStyle(document.documentElement).fontSize,
+    );
+    const inlineTitleSize = parseFloat(
+      getComputedStyle(document.body).getPropertyValue('--inline-title-size'),
+    );
+    return fontSize * inlineTitleSize;
   }
 
   private saveInheritanceData(

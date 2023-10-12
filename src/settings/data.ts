@@ -112,6 +112,12 @@ export interface IconFolderSettings {
    */
   iconInTabsEnabled: boolean;
   /**
+   * Sets whether the plugin should show icons in the inline title of the currently open
+   * file.
+   * @default false
+   */
+  iconInTitleEnabled: boolean;
+  /**
    * Sets whether the plugin should check in the background if icons are missing.
    * @default false
    */
@@ -134,5 +140,6 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
     left: 0,
   },
   iconInTabsEnabled: false,
+  iconInTitleEnabled: false,
   iconsBackgroundCheckEnabled: false,
 };

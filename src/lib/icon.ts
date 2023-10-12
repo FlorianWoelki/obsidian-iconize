@@ -335,9 +335,28 @@ const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
   return result;
 };
 
+const getIconByPath = (plugin: IconFolderPlugin, path: string): Icon | null => {
+  const iconNameWithPrefix = getByPath(plugin, path);
+  if (!iconNameWithPrefix) {
+    return null;
+  }
+
+  const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
+  const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
+  const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
+  const iconPackName = getIconPackNameByPrefix(iconPrefix);
+  const icon = getIconFromIconPack(iconPackName, iconName);
+  if (!icon) {
+    return null;
+  }
+
+  return icon;
+};
+
 export default {
   addAll,
   getByPath,
   getAllWithPath,
+  getIconByPath,
   checkMissingIcons,
 };
