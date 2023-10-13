@@ -41,12 +41,12 @@ const remove = (contentEl: HTMLElement): void => {
     return;
   }
 
-  const titleIcon = getTitleIconContainer(contentEl.parentElement);
-  if (!titleIcon) {
+  const titleIconContainer = getTitleIconContainer(contentEl.parentElement);
+  if (!titleIconContainer) {
     return;
   }
 
-  titleIcon.style.display = 'none';
+  titleIconContainer.style.display = 'none';
 };
 
 export default {
