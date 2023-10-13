@@ -351,26 +351,21 @@ export default class IconFolderPlugin extends Plugin {
 
       // Adds the title icon to the active leaf view.
       if (this.getSettings().iconInTitleEnabled) {
-        const usedIconsWithPaths = icon.getAllWithPath(this);
+        // const usedIconsWithPaths = icon.getAllWithPath(this);
         for (const openedFile of getAllOpenedFiles(this)) {
+          const iconName = icon.getByPath(this, openedFile.path);
           const activeView = openedFile.leaf.view;
-          if (activeView instanceof MarkdownView) {
-            const filePath = activeView.file.path;
-            const iconName = usedIconsWithPaths.find(
-              (value) => value.path === filePath,
-            )?.icon;
-            if (iconName) {
-              const iconNextIdentifier = nextIdentifier(iconName);
-              const possibleIcon = getSvgFromLoadedIcon(
-                iconName.substring(0, iconNextIdentifier),
-                iconName.substring(iconNextIdentifier),
-              );
+          if (activeView instanceof MarkdownView && iconName) {
+            const iconNextIdentifier = nextIdentifier(iconName);
+            const possibleIcon = getSvgFromLoadedIcon(
+              iconName.substring(0, iconNextIdentifier),
+              iconName.substring(iconNextIdentifier),
+            );
 
-              if (possibleIcon) {
-                titleIcon.add(activeView.contentEl, possibleIcon, {
-                  fontSize: this.calculateIconInTitleSize(),
-                });
-              }
+            if (possibleIcon) {
+              titleIcon.add(activeView.contentEl, possibleIcon, {
+                fontSize: this.calculateIconInTitleSize(),
+              });
             }
           }
         }
