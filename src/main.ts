@@ -144,9 +144,9 @@ export default class IconFolderPlugin extends Plugin {
             const modal = new IconsPickerModal(this.app, this, file.path);
             modal.open();
 
-            // Update icon in tab when setting is enabled.
-            if (this.getSettings().iconInTabsEnabled) {
-              modal.onSelect = (iconName: string): void => {
+            modal.onSelect = (iconName: string): void => {
+              // Update icon in tab when setting is enabled.
+              if (this.getSettings().iconInTabsEnabled) {
                 const tabLeaves = iconTabs.getTabLeavesOfFilePath(
                   this,
                   file.path,
@@ -154,8 +154,13 @@ export default class IconFolderPlugin extends Plugin {
                 for (const tabLeaf of tabLeaves) {
                   iconTabs.update(this, iconName, tabLeaf.tabHeaderInnerIconEl);
                 }
-              };
-            }
+              }
+
+              // Update icon in title when setting is enabled.
+              if (this.getSettings().iconInTitleEnabled) {
+                this.addIconInTitle(iconName);
+              }
+            };
           });
         };
 
@@ -178,6 +183,7 @@ export default class IconFolderPlugin extends Plugin {
               inheritance.add(this, folderPath, iconName, {
                 file,
                 onAdd: (file) => {
+                  // Update icon in tab when setting is enabled.
                   if (this.getSettings().iconInTabsEnabled) {
                     const tabLeaves = iconTabs.getTabLeavesOfFilePath(
                       this,
@@ -193,6 +199,11 @@ export default class IconFolderPlugin extends Plugin {
                         },
                       );
                     }
+                  }
+
+                  // Update icon in title when setting is enabled.
+                  if (this.getSettings().iconInTitleEnabled) {
+                    this.addIconInTitle(iconName);
                   }
                 },
               });
@@ -351,7 +362,6 @@ export default class IconFolderPlugin extends Plugin {
 
       // Adds the title icon to the active leaf view.
       if (this.getSettings().iconInTitleEnabled) {
-        // const usedIconsWithPaths = icon.getAllWithPath(this);
         for (const openedFile of getAllOpenedFiles(this)) {
           const iconName = icon.getByPath(this, openedFile.path);
           const activeView = openedFile.leaf.view;
@@ -568,6 +578,21 @@ export default class IconFolderPlugin extends Plugin {
       getComputedStyle(document.body).getPropertyValue('--inline-title-size'),
     );
     return fontSize * inlineTitleSize;
+  }
+
+  addIconInTitle(iconName: string): void {
+    for (const openedFile of getAllOpenedFiles(this)) {
+      const activeView = openedFile.leaf.view;
+      if (activeView instanceof MarkdownView) {
+        const possibleIcon = icon.getIconByName(iconName);
+
+        if (possibleIcon) {
+          titleIcon.add(activeView.contentEl, possibleIcon.svgElement, {
+            fontSize: this.calculateIconInTitleSize(),
+          });
+        }
+      }
+    }
   }
 
   private saveInheritanceData(

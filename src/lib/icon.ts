@@ -335,12 +335,14 @@ const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
   return result;
 };
 
-const getIconByPath = (plugin: IconFolderPlugin, path: string): Icon | null => {
-  const iconNameWithPrefix = getByPath(plugin, path);
-  if (!iconNameWithPrefix) {
-    return null;
-  }
-
+/**
+ * Returns the {@link Icon} for the given icon name. It is important, that the icon name
+ * contains the icon pack prefix.
+ * @param iconNameWithPrefix String that contains the icon pack prefix combined with the
+ * icon name.
+ * @returns Icon if it exists, `null` otherwise.
+ */
+const getIconByName = (iconNameWithPrefix: string): Icon | null => {
   const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
   const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
   const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
@@ -353,10 +355,26 @@ const getIconByPath = (plugin: IconFolderPlugin, path: string): Icon | null => {
   return icon;
 };
 
+/**
+ * Returns the {@link Icon} for the given path.
+ * @param plugin IconFolderPlugin instance.
+ * @param path String which is the path to get the icon of.
+ * @returns Icon if it exists, `null` otherwise.
+ */
+const getIconByPath = (plugin: IconFolderPlugin, path: string): Icon | null => {
+  const iconNameWithPrefix = getByPath(plugin, path);
+  if (!iconNameWithPrefix) {
+    return null;
+  }
+
+  return getIconByName(iconNameWithPrefix);
+};
+
 export default {
   addAll,
   getByPath,
   getAllWithPath,
   getIconByPath,
+  getIconByName,
   checkMissingIcons,
 };
