@@ -1,16 +1,17 @@
-import { TAbstractFile } from 'obsidian';
+import { Plugin, TAbstractFile } from 'obsidian';
 import emoji from '../emoji';
 import IconFolderPlugin from '../main';
 import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
+import config from '../config';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
 /**
  * Checks if the file type is equal to the `for` property of the custom rule.
- * @param rule Custom rule that will be checked.
- * @param fileType File type that will be checked.
+ * @param rule CustomRule that will be checked.
+ * @param fileType CustomRuleFileType that will be checked. Can be either `file` or `folder`.
  * @returns Boolean whether the custom rule `for` matches the file type or not.
  */
 const doesMatchFileType = (
@@ -25,14 +26,14 @@ const doesMatchFileType = (
 };
 
 /**
- * Determines whether a given file matches a specified custom rule.
- * @param plugin Plugin object containing the app and other plugin data.
- * @param rule Custom rule to check against the file.
- * @param file File to check against the custom rule.
- * @returns A promise that resolves to true if the file matches the rule, false otherwise.
+ * Determines whether a given file or folder matches a specified custom rule.
+ * @param plugin Plugin instance.
+ * @param rule CustomRule to check against the file or folder.
+ * @param file TAbstractFile to check against the custom rule.
+ * @returns Promise that resolves to `true` if the file matches the rule, `false` otherwise.
  */
 const isApplicable = async (
-  plugin: IconFolderPlugin,
+  plugin: Plugin,
   rule: CustomRule,
   file: TAbstractFile,
 ): Promise<boolean> => {
@@ -44,6 +45,8 @@ const isApplicable = async (
   const fileType = metadata.type;
   const toMatch = rule.useFilePath ? file.path : file.name;
 
+  const doesMatch = doesMatchFileType(rule, fileType);
+
   try {
     // Rule is in some sort of regex.
     const regex = new RegExp(rule.rule);
@@ -51,46 +54,50 @@ const isApplicable = async (
       return false;
     }
 
-    return doesMatchFileType(rule, fileType);
+    return doesMatch;
   } catch {
     // Rule is not in some sort of regex, check for basic string match.
-    return toMatch.includes(rule.rule) && doesMatchFileType(rule, fileType);
+    return toMatch.includes(rule.rule) && doesMatch;
   }
 };
 
 /**
- * Removes the icon from the custom rule from all the files, if applicable.
- * @param plugin Instance of the IconFolderPlugin.
- * @param rule Custom rule where the nodes will be removed based on this rule.
+ * Removes the icon from the custom rule from all the files and folders, if applicable.
+ * @param plugin IconFolderPlugin instance.
+ * @param rule CustomRule where the icons will be removed based on this rule.
  */
 const removeFromAllFiles = async (
   plugin: IconFolderPlugin,
   rule: CustomRule,
 ): Promise<void> => {
-  for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
-    const files = Object.entries(fileExplorer.fileItems);
-    for (const [path, fileItem] of files) {
-      const fileType = (await plugin.app.vault.adapter.stat(path)).type;
+  const nodesWithIcon = document.querySelectorAll(
+    `[${config.ICON_ATTRIBUTE_NAME}="${rule.icon}"]`,
+  );
 
-      // Checks if the node of the file item has already an icon set which is not the
-      // custom rule icon.
-      const fileItemTitleEl = getFileItemTitleEl(fileItem);
-      const existingIcon = dom.getIconFromElement(fileItemTitleEl);
-      if (existingIcon && existingIcon !== rule.icon) {
-        continue;
-      }
+  for (let i = 0; i < nodesWithIcon.length; i++) {
+    const node = nodesWithIcon[i];
+    // Parent element is the node which contains the data path.
+    const parent = node.parentElement;
+    if (!parent) {
+      continue;
+    }
 
-      if (doesExistInPath(rule, path) && doesMatchFileType(rule, fileType)) {
-        dom.removeIconInNode(fileItemTitleEl);
-      }
+    const dataPath = parent.getAttribute('data-path');
+    if (!dataPath) {
+      continue;
+    }
+
+    const fileType = (await plugin.app.vault.adapter.stat(dataPath)).type;
+    if (doesExistInPath(rule, dataPath) && doesMatchFileType(rule, fileType)) {
+      dom.removeIconInNode(parent);
     }
   }
 };
 
 /**
- * Gets all the custom rules sorted by their rule property in ascending order.
- * @param plugin Instance of IconFolderPlugin.
- * @returns An array of sorted custom rules.
+ * Gets all the custom rules sorted by their order property in ascending order.
+ * @param plugin IconFolderPlugin instance.
+ * @returns CustomRule array sorted by their order property in ascending order.
  */
 const getSortedRules = (plugin: IconFolderPlugin): CustomRule[] => {
   return plugin.getSettings().rules.sort((a, b) => a.order - b.order);
@@ -244,6 +251,7 @@ const getFiles = (
 export default {
   getFiles,
   doesExistInPath,
+  doesMatchFileType,
   getSortedRules,
   getByPath,
   removeFromAllFiles,
