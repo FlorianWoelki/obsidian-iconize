@@ -204,3 +204,132 @@ describe('getSortedRules', () => {
     expect(sortedRules[2].order).toBe(2);
   });
 });
+
+describe('add', () => {
+  let createIconNode: SpyInstance;
+  let plugin: any;
+  let rule: CustomRule;
+  let file: any;
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    vi.restoreAllMocks();
+    createIconNode = vi.spyOn(dom, 'createIconNode');
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    createIconNode.mockImplementationOnce(() => {});
+    plugin = {
+      app: {
+        vault: {
+          adapter: {
+            stat: () => ({ type: 'file' }),
+          },
+        },
+      },
+      getIconNameFromPath: () => false,
+    };
+    rule = {
+      for: 'everything',
+      rule: 'test',
+      icon: 'test',
+      order: 0,
+    };
+    file = {
+      path: 'test',
+      name: 'test',
+    };
+  });
+
+  it('should add the icon to the node', async () => {
+    const node = document.createElement('div');
+    node.setAttribute('data-path', 'test');
+    document.body.appendChild(node);
+
+    const result = await customRule.add(plugin, rule, file);
+    expect(createIconNode).toBeCalledTimes(1);
+    expect(result).toBe(true);
+  });
+
+  it('should not add the icon to the node if the node already has an icon', async () => {
+    plugin.getIconNameFromPath = () => 'IbTest';
+    const result = await customRule.add(plugin, rule, file);
+    expect(createIconNode).toBeCalledTimes(0);
+    expect(result).toBe(false);
+  });
+
+  it('should not add the icon to the node if the node does not match the rule', async () => {
+    rule.rule = 'test1';
+    const result = await customRule.add(plugin, rule, file);
+    expect(createIconNode).toBeCalledTimes(0);
+    expect(result).toBe(false);
+  });
+});
+
+describe('doesMatchPath', () => {
+  let rule: CustomRule;
+  beforeEach(() => {
+    rule = {
+      for: 'everything',
+      rule: 'test',
+      icon: 'test',
+      order: 0,
+    };
+  });
+
+  it('should return `true` if the rule matches the path', () => {
+    expect(customRule.doesMatchPath(rule, 'test')).toBe(true);
+    rule.rule = 'test.*';
+    expect(customRule.doesMatchPath(rule, 'test')).toBe(true);
+  });
+
+  it('should return `false` if the rule does not match the path', () => {
+    rule.rule = 'test1';
+    expect(customRule.doesMatchPath(rule, 'test')).toBe(false);
+    rule.rule = '.*-test';
+    expect(customRule.doesMatchPath(rule, 'test')).toBe(false);
+  });
+});
+
+describe('getFileItems', () => {
+  it('should return the file items which are applicable to the custom rule', async () => {
+    const plugin = {
+      app: {
+        vault: {
+          adapter: {
+            stat: () => ({ type: 'file' }),
+          },
+        },
+      },
+      getRegisteredFileExplorers: () => [
+        {
+          fileItems: [
+            {
+              file: {
+                path: 'test',
+                name: 'test',
+              },
+            },
+            {
+              file: {
+                path: 'foo',
+                name: 'foo',
+              },
+            },
+            {
+              file: {
+                path: 'test1',
+                name: 'test1',
+              },
+            },
+          ],
+        },
+      ],
+    } as any;
+    const rule: CustomRule = {
+      for: 'everything',
+      rule: 'test',
+      icon: 'test',
+      order: 0,
+    };
+    const result = await customRule.getFileItems(plugin, rule);
+    expect(result.length).toBe(2);
+  });
+});

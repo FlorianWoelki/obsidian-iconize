@@ -247,7 +247,9 @@ const addAll = (
   }
 
   // Handles the custom rules.
-  customRule.addAll(plugin);
+  for (const rule of customRule.getSortedRules(plugin)) {
+    customRule.addToAllFiles(plugin, rule);
+  }
 };
 
 /**
@@ -285,7 +287,9 @@ const getByPath = (
   }
 
   // Tries to get the custom rule for the path and returns its icon if it exists.
-  const rule = customRule.getByPath(plugin, path);
+  const rule = customRule.getSortedRules(plugin).find((rule) => {
+    return customRule.doesMatchPath(rule, path);
+  });
   if (rule) {
     return rule.icon;
   }

@@ -83,6 +83,8 @@ export default class EmojiStyleSetting extends IconFolderSetting {
       }
     }
 
-    customRule.addAll(this.plugin);
+    for (const rule of customRule.getSortedRules(this.plugin)) {
+      customRule.addToAllFiles(this.plugin, rule);
+    }
   }
 }

@@ -9,7 +9,7 @@ import { getFileItemTitleEl } from '../util';
  * sort of inheritance, or in a custom rule involved.
  * @param plugin Instance of the IconFolderPlugin.
  */
-const refreshStyleOfIcons = (plugin: IconFolderPlugin): void => {
+const refreshStyleOfIcons = async (plugin: IconFolderPlugin): Promise<void> => {
   // Refreshes the icon style for all normally added icons.
   style.refreshIconNodes(plugin);
 
@@ -54,13 +54,12 @@ const refreshStyleOfIcons = (plugin: IconFolderPlugin): void => {
     // Refreshes the icon style for all custom icon rules, when the color of the rule is
     // not defined.
     for (const rule of customRule.getSortedRules(plugin)) {
-      const files = customRule.getFiles(plugin, rule);
-      for (const file of files) {
+      const fileItems = await customRule.getFileItems(plugin, rule);
+      for (const fileItem of fileItems) {
         if (rule.color) {
           continue;
         }
 
-        const fileItem = fileExplorer.view.fileItems[file.path];
         const titleEl = getFileItemTitleEl(fileItem);
         const iconNode = titleEl.querySelector(
           '.obsidian-icon-folder-icon',

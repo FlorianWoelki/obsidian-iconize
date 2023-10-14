@@ -1,10 +1,10 @@
 import { Plugin, TAbstractFile } from 'obsidian';
-import emoji from '../emoji';
 import IconFolderPlugin from '../main';
 import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
 import config from '../config';
+import { FileItem } from '../@types/obsidian';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
@@ -43,22 +43,14 @@ const isApplicable = async (
   }
 
   const fileType = metadata.type;
-  const toMatch = rule.useFilePath ? file.path : file.name;
 
   const doesMatch = doesMatchFileType(rule, fileType);
 
-  try {
-    // Rule is in some sort of regex.
-    const regex = new RegExp(rule.rule);
-    if (!toMatch.match(regex)) {
-      return false;
-    }
-
-    return doesMatch;
-  } catch {
-    // Rule is not in some sort of regex, check for basic string match.
-    return toMatch.includes(rule.rule) && doesMatch;
+  if (!doesMatch) {
+    return false;
   }
+
+  return doesMatchPath(rule, file.path);
 };
 
 /**
@@ -88,7 +80,7 @@ const removeFromAllFiles = async (
     }
 
     const fileType = (await plugin.app.vault.adapter.stat(dataPath)).type;
-    if (doesExistInPath(rule, dataPath) && doesMatchFileType(rule, fileType)) {
+    if (doesMatchPath(rule, dataPath) && doesMatchFileType(rule, fileType)) {
       dom.removeIconInNode(parent);
     }
   }
@@ -104,44 +96,31 @@ const getSortedRules = (plugin: IconFolderPlugin): CustomRule[] => {
 };
 
 /**
- * Tries to apply all custom rules to all files. This function iterates over all the saved
- * custom rules and calls {@link addToAllFiles}.
- * @param plugin Instance of the IconFolderPlugin.
- */
-const addAll = async (plugin: IconFolderPlugin): Promise<void> => {
-  for (const rule of getSortedRules(plugin)) {
-    await addToAllFiles(plugin, rule);
-  }
-};
-
-/**
- * Tries to add all specific custom rule icon to all registered files. It does that by
- * calling the {@link add} function. Furthermore, it also checks whether the file or folder
- * already has an icon. Custom rules should have the lowest priority and will get ignored
- * if an icon already exists in the file or folder.
- * @param plugin Instance of the IconFolderPlugin.
- * @param rule Custom rule that will be applied, if applicable, to all files.
+ * Tries to add all specific custom rule icons to all registered files and directories.
+ * It does that by calling the {@link add} function. Custom rules should have the lowest
+ * priority and will get ignored if an icon already exists in the file or directory.
+ * @param plugin IconFolderPlugin instance.
+ * @param rule CustomRule that will be applied, if applicable, to all files and folders.
  */
 const addToAllFiles = async (
   plugin: IconFolderPlugin,
   rule: CustomRule,
 ): Promise<void> => {
-  for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
-    const files = Object.values(fileExplorer.fileItems);
-    for (const fileItem of files) {
-      await add(plugin, rule, fileItem.file, getFileItemTitleEl(fileItem));
-    }
+  const fileItems = await getFileItems(plugin, rule);
+  for (const fileItem of fileItems) {
+    await add(plugin, rule, fileItem.file, getFileItemTitleEl(fileItem));
   }
 };
 
 /**
  * Tries to add the icon of the custom rule to a file or folder. This function also checks
  * if the file type matches the `for` property of the custom rule.
- * @param plugin Instance of the IconFolderPlugin.
- * @param rule Custom rule that will be used to check if the rule is applicable to the file.
- * @param file File or folder that will be used to possibly create the icon for.
- * @param container Optional element where the icon will be added if the custom rules matches.
- * @returns A promise that resolves to true if the icon was added, false otherwise.
+ * @param plugin IconFolderPlugin instance.
+ * @param rule CustomRule that will be used to check if the rule is applicable to the file
+ * or directory.
+ * @param file TAbstractFile that will be used to possibly create the icon for.
+ * @param container HTMLElement where the icon will be added if the custom rules matches.
+ * @returns A promise that resolves to `true` if the icon was added, `false` otherwise.
  */
 const add = async (
   plugin: IconFolderPlugin,
@@ -153,33 +132,19 @@ const add = async (
     return false;
   }
 
-  // Gets the type of the file.
-  const fileType = (await plugin.app.vault.adapter.stat(file.path)).type;
-
+  // Checks if the file or directory already has an icon.
   const hasIcon = plugin.getIconNameFromPath(file.path);
-  if (!doesMatchFileType(rule, fileType) || hasIcon) {
+  if (hasIcon) {
     return false;
   }
-  const toMatch = rule.useFilePath ? file.path : file.name;
-  try {
-    // Rule is in some sort of regex.
-    const regex = new RegExp(rule.rule);
-    if (toMatch.match(regex)) {
-      dom.createIconNode(plugin, file.path, rule.icon, {
-        color: rule.color,
-        container,
-      });
-      return true;
-    }
-  } catch {
-    // Rule is not applicable to a regex format.
-    if (toMatch.includes(rule.rule)) {
-      dom.createIconNode(plugin, file.path, rule.icon, {
-        color: rule.color,
-        container,
-      });
-      return true;
-    }
+
+  const doesMatch = await isApplicable(plugin, rule, file);
+  if (doesMatch) {
+    dom.createIconNode(plugin, file.path, rule.icon, {
+      color: rule.color,
+      container,
+    });
+    return true;
   }
 
   return false;
@@ -191,7 +156,7 @@ const add = async (
  * @param path Path to check in.
  * @returns True if the rule exists in the path, false otherwise.
  */
-const doesExistInPath = (rule: CustomRule, path: string): boolean => {
+const doesMatchPath = (rule: CustomRule, path: string): boolean => {
   const toMatch = rule.useFilePath ? path : path.split('/').pop();
   try {
     // Rule is in some sort of regex.
@@ -208,40 +173,21 @@ const doesExistInPath = (rule: CustomRule, path: string): boolean => {
 };
 
 /**
- * Gets a custom rule by its path.
- * @param plugin Instance of the plugin.
- * @param path Path to check for.
- * @returns The custom rule if it exists, undefined otherwise.
- */
-const getByPath = (
-  plugin: IconFolderPlugin,
-  path: string,
-): CustomRule | undefined => {
-  if (path === 'settings' || path === 'migrated') {
-    return undefined;
-  }
-
-  return getSortedRules(plugin).find(
-    (rule) => !emoji.isEmoji(rule.icon) && doesExistInPath(rule, path),
-  );
-};
-
-/**
- * Gets all the files and directories that can be applied to the specific custom rule.
+ * Gets all the file items that can be applied to the specific custom rule.
  * @param plugin Instance of IconFolderPlugin.
  * @param rule Custom rule that will be checked for.
- * @returns An array of files and directories that match the custom rule.
+ * @returns A promise that resolves to an array of file items that match the custom rule.
  */
-const getFiles = (
+const getFileItems = async (
   plugin: IconFolderPlugin,
   rule: CustomRule,
-): TAbstractFile[] => {
-  const result: TAbstractFile[] = [];
+): Promise<FileItem[]> => {
+  const result: FileItem[] = [];
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);
     for (const fileItem of files) {
-      if (doesExistInPath(rule, fileItem.file.path)) {
-        result.push(fileItem.file);
+      if (await isApplicable(plugin, rule, fileItem.file)) {
+        result.push(fileItem);
       }
     }
   }
@@ -249,14 +195,12 @@ const getFiles = (
 };
 
 export default {
-  getFiles,
-  doesExistInPath,
+  getFileItems,
+  doesMatchPath,
   doesMatchFileType,
   getSortedRules,
-  getByPath,
   removeFromAllFiles,
   add,
-  addAll,
   addToAllFiles,
   isApplicable,
 };

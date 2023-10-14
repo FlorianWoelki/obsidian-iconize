@@ -167,7 +167,7 @@ export default class IconFolderPlugin extends Plugin {
         const removeIconMenuItem = (item: MenuItem) => {
           item.setTitle('Remove icon');
           item.setIcon('trash');
-          item.onClick(() => {
+          item.onClick(async () => {
             this.removeFolderIcon(file.path);
             dom.removeIconInPath(file.path);
             this.notifyPlugins();
@@ -209,7 +209,33 @@ export default class IconFolderPlugin extends Plugin {
               });
             }
 
-            customRule.addAll(this);
+            // Refreshes the icon tab and title icon for custom rules.
+            for (const rule of customRule.getSortedRules(this)) {
+              const applicable = await customRule.isApplicable(
+                this,
+                rule,
+                file,
+              );
+              if (applicable) {
+                customRule.add(this, rule, file);
+                this.addIconInTitle(rule.icon);
+                const tabLeaves = iconTabs.getTabLeavesOfFilePath(
+                  this,
+                  file.path,
+                );
+                for (const tabLeaf of tabLeaves) {
+                  iconTabs.add(
+                    this,
+                    file as TFile,
+                    tabLeaf.tabHeaderInnerIconEl,
+                    {
+                      iconName: rule.icon,
+                    },
+                  );
+                }
+                break;
+              }
+            }
           });
         };
 
@@ -425,14 +451,14 @@ export default class IconFolderPlugin extends Plugin {
 
             // Removes possible icons from the renamed file.
             sortedRules.forEach((rule) => {
-              if (customRule.doesExistInPath(rule, oldPath)) {
+              if (customRule.doesMatchPath(rule, oldPath)) {
                 dom.removeIconInPath(file.path);
               }
             });
 
             // Adds possible icons to the renamed file.
             sortedRules.forEach((rule) => {
-              if (customRule.doesExistInPath(rule, oldPath)) {
+              if (customRule.doesMatchPath(rule, oldPath)) {
                 return;
               }
 
