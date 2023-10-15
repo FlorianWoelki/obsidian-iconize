@@ -51,7 +51,7 @@
     "monkey-around": "^2.3.0",
     "obsidian": "^1.4.11",
     "prettier": "^3.0.3",
-    "rollup": "^4.1.1",
+    "rollup": "^2.78.0",
     "tslib": "^2.6.2",
     "twemoji": "^14.0.2",
     "typescript": "^5.2.2",
