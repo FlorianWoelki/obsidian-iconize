@@ -3,7 +3,7 @@
 }
 .iconize-title-icon {
   z-index: 1;
-  max-width: var(--file-line-width);
+  max-width: calc(var(--file-line-width) + 16px);
   width: 100%;
   margin: var(--file-margins) auto calc(-1 * var(--file-margins)) auto;
 }
