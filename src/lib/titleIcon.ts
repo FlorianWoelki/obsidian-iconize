@@ -22,13 +22,13 @@ const add = (
   let titleIcon = titleIconContainer?.children[0];
   const hadTitleIconContainer = titleIconContainer !== null;
   if (!titleIconContainer) {
-    titleIconContainer = contentEl.createDiv();
-    titleIcon = titleIconContainer.createDiv();
+    titleIconContainer = document.createElement('div');
+    titleIcon = document.createElement('div');
   }
 
   titleIconContainer.style.display = 'block';
-  titleIconContainer.addClass(config.TITLE_ICON_CONTAINER_CLASS);
-  titleIcon.addClass(config.TITLE_ICON_CLASS);
+  titleIconContainer.classList.add(config.TITLE_ICON_CONTAINER_CLASS);
+  titleIcon.classList.add(config.TITLE_ICON_CLASS);
   titleIcon.innerHTML = svgElement;
   if (!hadTitleIconContainer) {
     titleIconContainer.appendChild(titleIcon);
@@ -36,6 +36,11 @@ const add = (
   }
 };
 
+/**
+ * Removes the title icon from the provided HTMLElement. In this context, removing means
+ * setting the `display` style to `none`.
+ * @param contentEl HTMLElement to remove the title icon from.
+ */
 const remove = (contentEl: HTMLElement): void => {
   if (!contentEl.parentElement) {
     return;
