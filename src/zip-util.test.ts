@@ -42,7 +42,7 @@ describe('readZipFile', () => {
               dir: false,
             },
           },
-        } as any),
+        }) as any,
     );
 
     const arrayBuffer = new ArrayBuffer(8);
@@ -69,7 +69,7 @@ describe('readZipFile', () => {
               dir: false,
             },
           },
-        } as any),
+        }) as any,
     );
 
     const arrayBuffer = new ArrayBuffer(8);
@@ -83,7 +83,7 @@ describe('readZipFile', () => {
       () =>
         ({
           files: {},
-        } as any),
+        }) as any,
     );
 
     const bytes = new ArrayBuffer(0);

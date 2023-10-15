@@ -35,7 +35,7 @@ describe('extract', () => {
               width: { baseVal: { value: width } },
               height: { baseVal: { value: height } },
             })),
-          } as any),
+          }) as any,
       ),
     };
   };

@@ -6,26 +6,28 @@
 import { writeFile } from 'fs';
 import { join } from 'path';
 
-const obsidianModuleDir = join(__dirname, '../node_modules/obsidian');
-const mainFilePath = join(obsidianModuleDir, 'main.js');
+(async () => {
+  const obsidianModuleDir = join(__dirname, '../node_modules/obsidian');
+  const mainFilePath = join(obsidianModuleDir, 'main.js');
 
-// Creates an empty `main.js` file.
-writeFile(mainFilePath, '', (err) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-});
+  // Creates an empty `main.js` file.
+  writeFile(mainFilePath, '', (err) => {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  });
 
-const packageJsonPath = join(obsidianModuleDir, 'package.json');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const packageJson = require(packageJsonPath);
-packageJson.main = 'main.js';
+  const packageJsonPath = join(obsidianModuleDir, 'package.json');
+  const packageJson = await import(packageJsonPath);
+  delete packageJson.main;
+  packageJson.main = 'main.js';
 
-// Modifies `package.json` file to add `main.js` as the main entry point.
-writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), (err) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-});
+  // Modifies `package.json` file to add `main.js` as the main entry point.
+  writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), (err) => {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  });
+})();
