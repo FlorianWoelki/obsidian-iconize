@@ -1,8 +1,8 @@
 import config from '../config';
 import svg from './util/svg';
 
-const getTitleIconContainer = (leaf: HTMLElement): HTMLElement | null => {
-  return leaf.querySelector(`.${config.TITLE_ICON_CONTAINER_CLASS}`);
+const getTitleIcon = (leaf: HTMLElement): HTMLElement | null => {
+  return leaf.querySelector(`.${config.TITLE_ICON_CLASS}`);
 };
 
 interface AddOptions {
@@ -10,7 +10,7 @@ interface AddOptions {
 }
 
 const add = (
-  contentEl: HTMLElement,
+  inlineTitleEl: HTMLElement,
   svgElement: string,
   options?: AddOptions,
 ): void => {
@@ -18,21 +18,17 @@ const add = (
     svgElement = svg.setFontSize(svgElement, options.fontSize);
   }
 
-  let titleIconContainer = getTitleIconContainer(contentEl.parentElement);
-  let titleIcon = titleIconContainer?.children[0];
-  const hadTitleIconContainer = titleIconContainer !== null;
-  if (!titleIconContainer) {
-    titleIconContainer = document.createElement('div');
+  let titleIcon = getTitleIcon(inlineTitleEl.parentElement);
+  const hadTitleIcon = titleIcon !== null;
+  if (!titleIcon) {
     titleIcon = document.createElement('div');
   }
 
-  titleIconContainer.style.display = 'block';
-  titleIconContainer.classList.add(config.TITLE_ICON_CONTAINER_CLASS);
+  titleIcon.style.display = 'block';
   titleIcon.classList.add(config.TITLE_ICON_CLASS);
   titleIcon.innerHTML = svgElement;
-  if (!hadTitleIconContainer) {
-    titleIconContainer.appendChild(titleIcon);
-    contentEl.prepend(titleIconContainer);
+  if (!hadTitleIcon) {
+    inlineTitleEl.parentElement.prepend(titleIcon);
   }
 };
 
@@ -41,12 +37,12 @@ const add = (
  * setting the `display` style to `none`.
  * @param contentEl HTMLElement to remove the title icon from.
  */
-const remove = (contentEl: HTMLElement): void => {
-  if (!contentEl.parentElement) {
+const remove = (inlineTitleEl: HTMLElement): void => {
+  if (!inlineTitleEl.parentElement) {
     return;
   }
 
-  const titleIconContainer = getTitleIconContainer(contentEl.parentElement);
+  const titleIconContainer = getTitleIcon(inlineTitleEl.parentElement);
   if (!titleIconContainer) {
     return;
   }

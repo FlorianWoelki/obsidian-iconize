@@ -89,6 +89,10 @@ interface ExplorerView extends View {
   dom: { children: DomChild[]; changed: () => void };
 }
 
+interface InlineTitleView extends ExplorerView {
+  inlineTitleEl: HTMLElement;
+}
+
 interface FileItem {
   /**
    * @deprecated After Obsidian 1.2.0, use `selfEl` instead.

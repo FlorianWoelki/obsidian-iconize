@@ -2,6 +2,7 @@ import { MarkdownView, Setting } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import icon from '../../lib/icon';
 import titleIcon from '../../lib/titleIcon';
+import { InlineTitleView } from '../../@types/obsidian';
 
 export default class ToggleIconInTitle extends IconFolderSetting {
   public display(): void {
@@ -19,7 +20,7 @@ export default class ToggleIconInTitle extends IconFolderSetting {
             this.plugin.app.workspace
               .getLeavesOfType('markdown')
               .forEach((leaf) => {
-                const view = leaf.view;
+                const view = leaf.view as InlineTitleView;
                 if (view instanceof MarkdownView) {
                   const foundIcon = icon.getIconByPath(
                     this.plugin,
@@ -27,7 +28,7 @@ export default class ToggleIconInTitle extends IconFolderSetting {
                   );
 
                   if (foundIcon && enabled) {
-                    titleIcon.add(view.contentEl, foundIcon.svgElement, {
+                    titleIcon.add(view.inlineTitleEl, foundIcon.svgElement, {
                       fontSize: this.plugin.calculateIconInTitleSize(),
                     });
                   } else {

@@ -1,6 +1,5 @@
 const PLUGIN_NAME = 'iconize';
 
-const TITLE_ICON_CONTAINER_CLASS = 'iconize-title-icon-container';
 const TITLE_ICON_CLASS = 'iconize-title-icon';
 
 /**
@@ -12,6 +11,5 @@ const ICON_ATTRIBUTE_NAME = 'data-icon';
 export default {
   PLUGIN_NAME,
   TITLE_ICON_CLASS,
-  TITLE_ICON_CONTAINER_CLASS,
   ICON_ATTRIBUTE_NAME,
 };

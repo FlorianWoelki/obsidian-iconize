@@ -4,45 +4,40 @@ import config from '../config';
 import svg from './util/svg';
 
 describe('add', () => {
-  it('should create a title icon container and add the title icon to it', () => {
+  it('should create a title icon', () => {
     const parentEl = document.createElement('div');
-    const contentEl = document.createElement('div');
-    parentEl.appendChild(contentEl);
+    const inlineTitleEl = document.createElement('div');
+    parentEl.appendChild(inlineTitleEl);
 
-    titleIcon.add(contentEl, '<svg></svg>');
-    expect(contentEl).toMatchInlineSnapshot(`<div>
-  <div
-    class="iconize-title-icon-container"
-    style="display: block;"
-  >
-    <div
-      class="iconize-title-icon"
-    >
-      <svg />
-    </div>
-  </div>
-</div>`);
-  });
-
-  it('should add the title icon to an existing title icon container', () => {
-    const parentEl = document.createElement('div');
-    const contentEl = document.createElement('div');
-    const titleIconContainer = document.createElement('div');
-    titleIconContainer.classList.add(config.TITLE_ICON_CONTAINER_CLASS);
-    titleIconContainer.innerHTML = '<div></div>';
-    parentEl.appendChild(contentEl);
-    parentEl.appendChild(titleIconContainer);
-
-    titleIcon.add(contentEl, '<svg></svg>');
-    expect(titleIconContainer).toMatchInlineSnapshot(`<div
-  class="iconize-title-icon-container"
-  style="display: block;"
->
+    titleIcon.add(inlineTitleEl, '<svg></svg>');
+    expect(parentEl).toMatchInlineSnapshot(`<div>
   <div
     class="iconize-title-icon"
+    style="display: block;"
   >
     <svg />
   </div>
+  <div />
+</div>`);
+  });
+
+  it('should update the title icon when the title icon already exist', () => {
+    const parentEl = document.createElement('div');
+    const inlineTitleEl = document.createElement('div');
+    const titleIconEl = document.createElement('div');
+    titleIconEl.classList.add(config.TITLE_ICON_CLASS);
+    parentEl.appendChild(titleIconEl);
+    parentEl.appendChild(inlineTitleEl);
+
+    titleIcon.add(inlineTitleEl, '<svg></svg>');
+    expect(parentEl).toMatchInlineSnapshot(`<div>
+  <div
+    class="iconize-title-icon"
+    style="display: block;"
+  >
+    <svg />
+  </div>
+  <div />
 </div>`);
   });
 
@@ -51,10 +46,10 @@ describe('add', () => {
     setFontSize.mockImplementationOnce(() => '<svg></svg>');
 
     const parentEl = document.createElement('div');
-    const contentEl = document.createElement('div');
-    parentEl.appendChild(contentEl);
+    const inlineTitleEl = document.createElement('div');
+    parentEl.appendChild(inlineTitleEl);
 
-    titleIcon.add(contentEl, '<svg></svg>', { fontSize: 10 });
+    titleIcon.add(inlineTitleEl, '<svg></svg>', { fontSize: 10 });
     expect(setFontSize).toBeCalledTimes(1);
     expect(setFontSize).toHaveBeenCalledWith('<svg></svg>', 10);
 
@@ -63,30 +58,30 @@ describe('add', () => {
 });
 
 describe('remove', () => {
-  it('should set the `display` style to `none`, if the title icon container exists', () => {
+  it('should set the `display` style to `none`, if the title icon element exists', () => {
     const parentEl = document.createElement('div');
-    const contentEl = document.createElement('div');
-    parentEl.appendChild(contentEl);
-    contentEl.innerHTML = `<div class="${config.TITLE_ICON_CONTAINER_CLASS}"></div>`;
-    titleIcon.remove(contentEl);
-    expect((contentEl.children[0] as HTMLElement).style.display).toEqual(
-      'none',
-    );
+    const titleIconEl = document.createElement('div');
+    titleIconEl.classList.add(config.TITLE_ICON_CLASS);
+    const inlineTitleEl = document.createElement('div');
+    parentEl.appendChild(titleIconEl);
+    parentEl.appendChild(inlineTitleEl);
+    titleIcon.remove(inlineTitleEl);
+    expect((parentEl.children[0] as HTMLElement).style.display).toEqual('none');
   });
 
   it('should not set the `display` style to `none`, if the title icon container does not exist', () => {
     const parentEl = document.createElement('div');
-    const contentEl = document.createElement('div');
-    parentEl.appendChild(contentEl);
-    contentEl.innerHTML = '<div></div>';
-    titleIcon.remove(contentEl);
-    expect(contentEl.innerHTML).toEqual('<div></div>');
+    const inlineTitleEl = document.createElement('div');
+    parentEl.appendChild(inlineTitleEl);
+    inlineTitleEl.innerHTML = '<div></div>';
+    titleIcon.remove(inlineTitleEl);
+    expect(inlineTitleEl.innerHTML).toEqual('<div></div>');
   });
 
   it('should not set the `display` style to `none`, if the parent container does not exist', () => {
-    const contentEl = document.createElement('div');
-    contentEl.innerHTML = '<div></div>';
-    titleIcon.remove(contentEl);
-    expect(contentEl.innerHTML).toEqual('<div></div>');
+    const inlineTitleEl = document.createElement('div');
+    inlineTitleEl.innerHTML = '<div></div>';
+    titleIcon.remove(inlineTitleEl);
+    expect(inlineTitleEl.innerHTML).toEqual('<div></div>');
   });
 });

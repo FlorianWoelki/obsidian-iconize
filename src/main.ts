@@ -8,7 +8,11 @@ import {
   TFolder,
   MarkdownView,
 } from 'obsidian';
-import { ExplorerView, TabHeaderLeaf } from './@types/obsidian';
+import {
+  ExplorerView,
+  InlineTitleView,
+  TabHeaderLeaf,
+} from './@types/obsidian';
 import {
   createDefaultDirectory,
   getNormalizedName,
@@ -390,7 +394,7 @@ export default class IconFolderPlugin extends Plugin {
       if (this.getSettings().iconInTitleEnabled) {
         for (const openedFile of getAllOpenedFiles(this)) {
           const iconName = icon.getByPath(this, openedFile.path);
-          const activeView = openedFile.leaf.view;
+          const activeView = openedFile.leaf.view as InlineTitleView;
           if (activeView instanceof MarkdownView && iconName) {
             const iconNextIdentifier = nextIdentifier(iconName);
             const possibleIcon = getSvgFromLoadedIcon(
@@ -399,7 +403,7 @@ export default class IconFolderPlugin extends Plugin {
             );
 
             if (possibleIcon) {
-              titleIcon.add(activeView.contentEl, possibleIcon, {
+              titleIcon.add(activeView.inlineTitleEl, possibleIcon, {
                 fontSize: this.calculateIconInTitleSize(),
               });
             }
@@ -547,16 +551,15 @@ export default class IconFolderPlugin extends Plugin {
       // Register active leaf change event for adding icon of file to tab.
       this.registerEvent(
         this.app.workspace.on('active-leaf-change', (leaf: WorkspaceLeaf) => {
-          if (!this.getSettings().iconInTitleEnabled) {
-            return;
-          }
-
-          const view = leaf.view;
-          if (view instanceof MarkdownView) {
+          const view = leaf.view as InlineTitleView;
+          if (
+            view instanceof MarkdownView &&
+            this.getSettings().iconInTitleEnabled
+          ) {
             const foundIcon = icon.getIconByPath(this, view.file.path);
 
             if (foundIcon) {
-              titleIcon.add(view.contentEl, foundIcon.svgElement, {
+              titleIcon.add(view.inlineTitleEl, foundIcon.svgElement, {
                 fontSize: this.calculateIconInTitleSize(),
               });
             } else {
@@ -608,12 +611,12 @@ export default class IconFolderPlugin extends Plugin {
 
   addIconInTitle(iconName: string): void {
     for (const openedFile of getAllOpenedFiles(this)) {
-      const activeView = openedFile.leaf.view;
+      const activeView = openedFile.leaf.view as InlineTitleView;
       if (activeView instanceof MarkdownView) {
         const possibleIcon = icon.getIconByName(iconName);
 
         if (possibleIcon) {
-          titleIcon.add(activeView.contentEl, possibleIcon.svgElement, {
+          titleIcon.add(activeView.inlineTitleEl, possibleIcon.svgElement, {
             fontSize: this.calculateIconInTitleSize(),
           });
         }

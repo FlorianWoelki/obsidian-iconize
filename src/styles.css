@@ -1,13 +1,3 @@
-.iconize-title-icon-container {
-  padding: 0 var(--file-margins);
-}
-.iconize-title-icon {
-  z-index: 1;
-  max-width: calc(var(--file-line-width) + 16px);
-  width: 100%;
-  margin: var(--file-margins) auto calc(-1 * var(--file-margins)) auto;
-}
-
 .obsidian-icon-folder-icon {
   border: 1px solid transparent;
   margin: 0px 4px 0px 0px;
