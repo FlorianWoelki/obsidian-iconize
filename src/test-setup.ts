@@ -3,7 +3,7 @@
  * `vitest`. It is a workaround and only adds the `main.js` file and updates the
  * `package.json` to point to it.
  */
-import { writeFile } from 'fs';
+import { writeFileSync } from 'fs';
 import { join } from 'path';
 
 (async () => {
@@ -11,23 +11,13 @@ import { join } from 'path';
   const mainFilePath = join(obsidianModuleDir, 'main.js');
 
   // Creates an empty `main.js` file.
-  writeFile(mainFilePath, '', (err) => {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
-  });
+  writeFileSync(mainFilePath, '');
 
   const packageJsonPath = join(obsidianModuleDir, 'package.json');
-  const packageJson = await import(packageJsonPath);
+  const packageJson = (await import(packageJsonPath)).default;
   delete packageJson.main;
   packageJson.main = 'main.js';
 
   // Modifies `package.json` file to add `main.js` as the main entry point.
-  writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), (err) => {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
-  });
+  writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 })();
