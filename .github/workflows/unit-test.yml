@@ -1,0 +1,31 @@
+name: 'Unit Tests'
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  cache-and-install:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install pnpm
+        uses: ./.github/actions/pnpm-install
+
+      - name: Run unit tests
+        run: pnpm test:coverage
+
+      - name: Report Coverage
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
