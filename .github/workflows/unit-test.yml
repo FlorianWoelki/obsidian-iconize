@@ -23,7 +23,7 @@ jobs:
           node-version: 16
 
       - name: Install pnpm
-        uses: ./.github/actions/pnpm-install.yml
+        uses: ./.github/workflows/pnpm-install.yml
 
       - name: Run unit tests
         run: pnpm test:coverage
