@@ -1,8 +1,10 @@
 name: 'Unit Tests'
 
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   cache-and-install:
