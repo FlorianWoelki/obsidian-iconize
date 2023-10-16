@@ -60,7 +60,7 @@ const add = (
   const addIcon = (fileItem: FileItem): void => {
     const titleEl = getFileItemTitleEl(fileItem);
     const innerTitleEl = getFileItemInnerTitleEl(fileItem);
-    const iconNode = titleEl.createDiv();
+    const iconNode = document.createElement('div');
     iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
     iconNode.classList.add('obsidian-icon-folder-icon');
     dom.setIconForNode(plugin, iconName, iconNode);

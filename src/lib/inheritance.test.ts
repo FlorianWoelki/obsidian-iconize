@@ -10,7 +10,113 @@ import {
 import inheritance from './inheritance';
 import dom from './util/dom';
 
-// describe('add', () => {});
+describe('add', () => {
+  let plugin: any;
+  let setIconForNode: SpyInstance;
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    vi.restoreAllMocks();
+    plugin = {
+      getData: () => ({
+        'folder/path': {
+          inheritanceIcon: 'IbTest',
+        },
+      }),
+      getRegisteredFileExplorers: () => [
+        {
+          fileItems: {
+            'folder/path/file': {
+              selfEl: document.createElement('div'),
+              file: {
+                path: 'folder/path/file',
+                parent: {
+                  path: 'folder/path',
+                },
+              },
+            },
+          },
+        },
+      ],
+    };
+    setIconForNode = vi.spyOn(dom, 'setIconForNode');
+    setIconForNode.mockImplementationOnce(() => {});
+  });
+
+  it('should not add the icon when the folder path does not exist in the data or is not an object', () => {
+    inheritance.add(plugin, 'test', 'IbTest');
+    expect(setIconForNode).toBeCalledTimes(0);
+  });
+
+  it('should add the icon when it is a correct file in the folder path', () => {
+    inheritance.add(plugin, 'folder/path', 'IbTest');
+    expect(setIconForNode).toBeCalledTimes(1);
+  });
+
+  it('should not add the icon when the file item does have an icon', () => {
+    plugin.getData = () => ({
+      'folder/path': {
+        inheritanceIcon: 'IbTest',
+      },
+      'folder/path/file': 'IbTest',
+    });
+    inheritance.add(plugin, 'folder/path', 'IbTest');
+    expect(setIconForNode).toBeCalledTimes(0);
+  });
+
+  it('should not add the icon when the file is not in the folder', () => {
+    inheritance.add(plugin, 'abc/path', 'IbTest');
+    expect(setIconForNode).toBeCalledTimes(0);
+  });
+
+  it('should not add the icon when the file item is a folder', () => {
+    plugin.getRegisteredFileExplorers = (): any => [
+      {
+        fileItems: {
+          'folder/path/file': {
+            selfEl: document.createElement('div'),
+            file: {
+              path: 'folder/path/file',
+              parent: {
+                path: 'folder/path',
+              },
+              children: [],
+            },
+          },
+        },
+      },
+    ];
+    inheritance.add(plugin, 'folder/path', 'IbTest');
+    expect(setIconForNode).toBeCalledTimes(0);
+  });
+
+  it('should remove the icon when the file item has an existing icon set in the container', () => {
+    const doesElementHasIconNode = vi
+      .spyOn(dom, 'doesElementHasIconNode')
+      .mockImplementationOnce(() => true);
+    const removeIconInNode = vi
+      .spyOn(dom, 'removeIconInNode')
+      .mockImplementationOnce(() => {});
+
+    inheritance.add(plugin, 'folder/path', 'IbTest');
+    expect(removeIconInNode).toBeCalledTimes(1);
+    expect(setIconForNode).toBeCalledTimes(1);
+
+    doesElementHasIconNode.mockRestore();
+    removeIconInNode.mockRestore();
+  });
+
+  it('should set an icon for `options.file` when it is specified', () => {
+    inheritance.add(plugin, 'folder/path', 'IbTest', {
+      file: {
+        path: 'folder/path/file',
+        parent: {
+          path: 'folder/path',
+        },
+      } as any,
+    });
+    expect(setIconForNode).toBeCalledTimes(1);
+  });
+});
 
 describe('remove', () => {
   let plugin: any = {
