@@ -34,7 +34,14 @@ export const setPath = (newPath: string): void => {
   path = newPath;
 };
 
-const preloadedIcons: Icon[] = [];
+let preloadedIcons: Icon[] = [];
+export const getPreloadedIcons = (): Icon[] => {
+  return preloadedIcons;
+};
+export const resetPreloadedIcons = (): void => {
+  preloadedIcons = [];
+};
+
 let iconPacks: {
   name: string;
   prefix: string;

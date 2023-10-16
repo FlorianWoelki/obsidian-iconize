@@ -16,10 +16,12 @@ import {
 import {
   createDefaultDirectory,
   getNormalizedName,
+  getPreloadedIcons,
   getSvgFromLoadedIcon,
   initIconPacks,
   loadUsedIcons,
   nextIdentifier,
+  resetPreloadedIcons,
   setPath,
 } from './iconPackManager';
 import IconsPickerModal, { Icon } from './iconsPickerModal';
@@ -380,13 +382,14 @@ export default class IconFolderPlugin extends Plugin {
     icon.addAll(this, data, this.registeredFileExplorers, () => {
       // After initialization of the icon packs, checks the vault for missing icons and
       // adds them.
-      initIconPacks(this).then(() => {
+      initIconPacks(this).then(async () => {
         if (this.getSettings().iconsBackgroundCheckEnabled) {
           const data = Object.entries(this.data) as [
             string,
             string | FolderIconObject,
           ][];
-          icon.checkMissingIcons(this, data);
+          await icon.checkMissingIcons(this, data);
+          resetPreloadedIcons();
         }
       });
 
@@ -548,25 +551,47 @@ export default class IconFolderPlugin extends Plugin {
         }),
       );
 
+      // Register `file-open` event for adding icon to title.
+      this.registerEvent(
+        this.app.workspace.on('file-open', (file) => {
+          if (!this.getSettings().iconInTitleEnabled) {
+            return;
+          }
+
+          const activeView =
+            this.app.workspace.getActiveViewOfType(MarkdownView);
+          if (!activeView) {
+            return;
+          }
+
+          const leaf = activeView.leaf.view as InlineTitleView;
+          const iconNameWithPrefix = icon.getByPath(this, file.path);
+          if (!iconNameWithPrefix) {
+            return;
+          }
+
+          let foundIcon = icon.getIconByName(iconNameWithPrefix);
+          // Check for preloaded icons if no icon was found when the start up was faster
+          // than the loading of the icons.
+          if (!foundIcon && getPreloadedIcons().length > 0) {
+            foundIcon = getPreloadedIcons().find(
+              (icon) => icon.prefix + icon.name === iconNameWithPrefix,
+            );
+          }
+
+          if (foundIcon) {
+            titleIcon.add(leaf.inlineTitleEl, foundIcon.svgElement, {
+              fontSize: this.calculateIconInTitleSize(),
+            });
+          } else {
+            titleIcon.remove(leaf.inlineTitleEl);
+          }
+        }),
+      );
+
       // Register active leaf change event for adding icon of file to tab.
       this.registerEvent(
         this.app.workspace.on('active-leaf-change', (leaf: WorkspaceLeaf) => {
-          const view = leaf.view as InlineTitleView;
-          if (
-            view instanceof MarkdownView &&
-            this.getSettings().iconInTitleEnabled
-          ) {
-            const foundIcon = icon.getIconByPath(this, view.file.path);
-
-            if (foundIcon) {
-              titleIcon.add(view.inlineTitleEl, foundIcon.svgElement, {
-                fontSize: this.calculateIconInTitleSize(),
-              });
-            } else {
-              titleIcon.remove(view.contentEl);
-            }
-          }
-
           if (!this.getSettings().iconInTabsEnabled) {
             return;
           }
