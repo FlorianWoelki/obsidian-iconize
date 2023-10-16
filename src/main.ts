@@ -34,10 +34,10 @@ import { migrateIcons } from './migration';
 import IconFolderSettingsUI from './settings/ui';
 import StarredInternalPlugin from './internal-plugins/starred';
 import InternalPluginInjector from './@types/internalPluginInjector';
-import iconTabs from './lib/iconTabs';
+import iconTabs from './lib/icon-tabs';
 import inheritance from './lib/inheritance';
 import dom from './lib/util/dom';
-import customRule from './lib/customRule';
+import customRule from './lib/custom-rule';
 import icon from './lib/icon';
 import BookmarkInternalPlugin from './internal-plugins/bookmark';
 import {
@@ -46,7 +46,7 @@ import {
   saveIconToIconPack,
 } from '@app/util';
 import config from '@app/config';
-import titleIcon from './lib/titleIcon';
+import titleIcon from './lib/icon-title';
 
 export interface FolderIconObject {
   iconName: string | null;

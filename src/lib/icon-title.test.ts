@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import titleIcon from './titleIcon';
+import titleIcon from './icon-title';
 import config from '../config';
 import svg from './util/svg';
 

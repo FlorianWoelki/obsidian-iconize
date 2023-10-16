@@ -1,9 +1,9 @@
 import { ExplorerView, TabHeaderLeaf } from '../@types/obsidian';
 import emoji from '../emoji';
 import IconFolderPlugin, { FolderIconObject } from '../main';
-import customRule from './customRule';
+import customRule from './custom-rule';
 import dom from './util/dom';
-import iconTabs from './iconTabs';
+import iconTabs from './icon-tabs';
 import inheritance from './inheritance';
 import { getFileItemInnerTitleEl, getFileItemTitleEl } from '../util';
 import {

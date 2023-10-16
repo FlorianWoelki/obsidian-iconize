@@ -18,8 +18,8 @@ import {
   saveIconToIconPack,
 } from '@app/util';
 import { CustomRule } from '../data';
-import customRule from '@lib/customRule';
-import iconTabs from '@lib/iconTabs';
+import customRule from '@lib/custom-rule';
+import iconTabs from '@lib/icon-tabs';
 import dom from '../../lib/util/dom';
 import svg from '../../lib/util/svg';
 import { getNormalizedName } from '../../iconPackManager';

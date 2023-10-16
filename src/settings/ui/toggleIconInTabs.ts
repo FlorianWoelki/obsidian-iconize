@@ -1,5 +1,5 @@
 import { Setting } from 'obsidian';
-import iconTabs from '@lib/iconTabs';
+import iconTabs from '@lib/icon-tabs';
 import IconFolderSetting from './iconFolderSetting';
 import { TabHeaderLeaf } from '../../@types/obsidian';
 

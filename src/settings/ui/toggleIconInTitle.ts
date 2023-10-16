@@ -1,7 +1,7 @@
 import { MarkdownView, Setting } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import icon from '../../lib/icon';
-import titleIcon from '../../lib/titleIcon';
+import titleIcon from '../../lib/icon-title';
 import { InlineTitleView } from '../../@types/obsidian';
 
 export default class ToggleIconInTitle extends IconFolderSetting {

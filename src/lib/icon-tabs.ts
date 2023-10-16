@@ -1,6 +1,6 @@
 import { TFile } from 'obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
-import customRule from './customRule';
+import customRule from './custom-rule';
 import dom from './util/dom';
 import { DEFAULT_FILE_ICON, getAllOpenedFiles } from '../util';
 import { TabHeaderLeaf } from '../@types/obsidian';

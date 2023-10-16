@@ -1,4 +1,4 @@
-import customRule from '@lib/customRule';
+import customRule from '@lib/custom-rule';
 import inheritance from '@lib/inheritance';
 import style from '@lib/util/style';
 import IconFolderPlugin from '@app/main';

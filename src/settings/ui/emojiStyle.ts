@@ -1,11 +1,11 @@
 import { Setting } from 'obsidian';
 import emoji from '@app/emoji';
-import customRule from '@lib/customRule';
+import customRule from '@lib/custom-rule';
 import dom from '@lib/util/dom';
 import { FolderIconObject } from '@app/main';
 import IconFolderSetting from './iconFolderSetting';
 import inheritance from '../../lib/inheritance';
-import iconTabs from '../../lib/iconTabs';
+import iconTabs from '../../lib/icon-tabs';
 
 export default class EmojiStyleSetting extends IconFolderSetting {
   public display(): void {

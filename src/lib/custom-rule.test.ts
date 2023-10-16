@@ -2,7 +2,7 @@ import { vi, it, describe, beforeEach, expect, SpyInstance } from 'vitest';
 import { Plugin, TAbstractFile } from 'obsidian';
 import dom from './util/dom';
 import { CustomRule } from '../settings/data';
-import customRule, { CustomRuleFileType } from './customRule';
+import customRule, { CustomRuleFileType } from './custom-rule';
 import config from '../config';
 
 describe('doesMatchFileType', () => {
