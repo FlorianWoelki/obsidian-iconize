@@ -159,7 +159,7 @@ const doesExistInPath = (plugin: IconFolderPlugin, path: string): boolean => {
 const getFolderPathByFilePath = (
   plugin: IconFolderPlugin,
   filePath: string,
-): string => {
+): string | undefined => {
   const folders = getFolders(plugin);
   const foundFolderIcon = Object.entries(folders).find(([folderPath]) =>
     filePath.includes(folderPath),
