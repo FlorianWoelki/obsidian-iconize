@@ -1,5 +1,9 @@
-import { beforeEach, it, expect, describe } from 'vitest';
+import { beforeEach, it, expect, describe, vi, SpyInstance } from 'vitest';
+import * as iconPackManager from '../../iconPackManager';
 import dom from './dom';
+import svg from './svg';
+import style from './style';
+import twemoji from 'twemoji';
 
 describe('removeIconInNode', () => {
   it('should remove the icon node from the provided element', () => {
@@ -78,5 +82,176 @@ describe('getIconFromElement', () => {
     el.innerHTML = '<div></div>';
     document.body.appendChild(el);
     expect(dom.getIconFromElement(el)).toBe(undefined);
+  });
+});
+
+describe('setIconForNode', () => {
+  let getSvgFromLoadedIcon: SpyInstance;
+  let plugin: any;
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    plugin = {
+      getSettings: () => ({
+        emojiStyle: 'native',
+        extraMargin: {},
+      }),
+    };
+    getSvgFromLoadedIcon = vi.spyOn(iconPackManager, 'getSvgFromLoadedIcon');
+    getSvgFromLoadedIcon.mockImplementationOnce(
+      () => '<svg test-icon="IbTest"></svg>',
+    );
+  });
+
+  it('should set the `innerHTML` with the icon for the provided node', () => {
+    const node = document.createElement('div');
+    dom.setIconForNode(plugin, 'IbTest', node);
+
+    expect(node.innerHTML).toEqual('<svg test-icon="IbTest"></svg>');
+  });
+
+  it('should call `svg.colorize` with the provided color when defined', () => {
+    const node = document.createElement('div');
+    const colorize = vi
+      .spyOn(svg, 'colorize')
+      .mockImplementationOnce((icon) => icon);
+
+    dom.setIconForNode(plugin, 'IbTest', node, 'purple');
+
+    expect(colorize).toBeCalledTimes(2); // 2 times because of `applyAll` and `colorize`.
+    colorize.mockRestore();
+  });
+
+  it('should set the `innerHTML` with the emoji for the provided node', () => {
+    getSvgFromLoadedIcon.mockRestore();
+    const applyAll = vi
+      .spyOn(style, 'applyAll')
+      .mockImplementationOnce(() => '😃');
+
+    const node = document.createElement('div');
+    dom.setIconForNode(plugin, '😃', node);
+
+    expect(node.innerHTML).toEqual('😃');
+    expect(applyAll).toBeCalledTimes(1);
+
+    applyAll.mockRestore();
+  });
+
+  it('should parse twemoji if the emoji style is `twemoji`', () => {
+    getSvgFromLoadedIcon.mockRestore();
+    const applyAll = vi
+      .spyOn(style, 'applyAll')
+      .mockImplementationOnce(() => '😃');
+    const parse = vi.spyOn(twemoji, 'parse').mockImplementationOnce(() => '😃');
+    plugin.getSettings().emojiStyle = 'twemoji';
+
+    const node = document.createElement('div');
+    dom.setIconForNode(plugin, '😃', node);
+    expect(node.innerHTML).toEqual('😃');
+
+    parse.mockRestore();
+    applyAll.mockRestore();
+  });
+});
+
+describe('createIconNode', () => {
+  let getSvgFromLoadedIcon: SpyInstance;
+  let plugin: any;
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    vi.restoreAllMocks();
+    plugin = {
+      getSettings: () => ({
+        extraMargin: {},
+      }),
+    };
+    getSvgFromLoadedIcon = vi.spyOn(iconPackManager, 'getSvgFromLoadedIcon');
+    getSvgFromLoadedIcon.mockImplementationOnce(
+      () => '<svg test-icon="IbTest"></svg>',
+    );
+  });
+
+  it('should create a new icon node with the provided icon name if an icon node does not already exist', () => {
+    const el = document.createElement('div');
+    el.setAttribute('data-path', 'test');
+    el.innerHTML = '<div class="nav-folder-title-content"></div>';
+    document.body.appendChild(el);
+    dom.createIconNode(plugin, 'test', 'IbTest');
+    expect(el).toMatchInlineSnapshot(`<div
+  data-path="test"
+>
+  <div
+    class="obsidian-icon-folder-icon"
+    data-icon="IbTest"
+    style="margin: 4px;"
+  >
+    <svg
+      test-icon="IbTest"
+    />
+  </div>
+  <div
+    class="nav-folder-title-content"
+  />
+</div>`);
+  });
+
+  it('should set the icon node with the provided icon name if an icon node already exists', () => {
+    const el = document.createElement('div');
+    el.setAttribute('data-path', 'test');
+    el.innerHTML =
+      '<div class="nav-folder-title-content"></div><div class="obsidian-icon-folder-icon"></div>';
+    document.body.appendChild(el);
+    dom.createIconNode(plugin, 'test', 'IbTest');
+    expect(el).toMatchInlineSnapshot(`<div
+  data-path="test"
+>
+  <div
+    class="nav-folder-title-content"
+  />
+  <div
+    class="obsidian-icon-folder-icon"
+    style="margin: 4px;"
+  >
+    <svg
+      test-icon="IbTest"
+    />
+  </div>
+</div>`);
+  });
+
+  it('should fallback to file title content if folder title content does not exist', () => {
+    const el = document.createElement('div');
+    el.setAttribute('data-path', 'test');
+    el.innerHTML =
+      '<div class="nav-file-title-content"></div><div class="obsidian-icon-folder-icon"></div>';
+    document.body.appendChild(el);
+    dom.createIconNode(plugin, 'test', 'IbTest');
+    expect(el).toMatchInlineSnapshot(`<div
+  data-path="test"
+>
+  <div
+    class="nav-file-title-content"
+  />
+  <div
+    class="obsidian-icon-folder-icon"
+    style="margin: 4px;"
+  >
+    <svg
+      test-icon="IbTest"
+    />
+  </div>
+</div>`);
+  });
+
+  it('should not create an icon node if the node with the `data-path` does not exist', () => {
+    dom.createIconNode(plugin, 'test', 'IbTest');
+    expect(document.body.innerHTML).toEqual('');
+  });
+
+  it('should not create an icon node if the file title content and folder title content does not exist', () => {
+    const el = document.createElement('div');
+    el.setAttribute('data-path', 'test');
+    document.body.appendChild(el);
+    dom.createIconNode(plugin, 'test', 'IbTest');
+    expect(document.body.innerHTML).toEqual('<div data-path="test"></div>');
   });
 });

@@ -88,7 +88,6 @@ const setIconForNode = (
         break;
       case 'native':
         emoji = iconName;
-      default:
         break;
     }
 
