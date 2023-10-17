@@ -41,13 +41,21 @@ export const getPreloadedIcons = (): Icon[] => {
 export const resetPreloadedIcons = (): void => {
   preloadedIcons = [];
 };
+export const setPreloadedIcons = (icons: Icon[]): void => {
+  preloadedIcons = icons;
+};
 
-let iconPacks: {
+interface IconPack {
   name: string;
   prefix: string;
   custom: boolean;
   icons: Icon[];
-}[] = [];
+}
+
+let iconPacks: IconPack[] = [];
+export const setIconPacks = (newIconPacks: IconPack[]): void => {
+  iconPacks = newIconPacks;
+};
 
 export const moveIconPackDirectories = async (
   plugin: Plugin,
