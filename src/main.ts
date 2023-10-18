@@ -567,6 +567,7 @@ export default class IconFolderPlugin extends Plugin {
           const leaf = activeView.leaf.view as InlineTitleView;
           const iconNameWithPrefix = icon.getByPath(this, file.path);
           if (!iconNameWithPrefix) {
+            titleIcon.remove(leaf.inlineTitleEl);
             return;
           }
 
