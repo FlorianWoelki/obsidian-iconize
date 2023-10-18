@@ -558,34 +558,34 @@ export default class IconFolderPlugin extends Plugin {
             return;
           }
 
-          const activeView =
-            this.app.workspace.getActiveViewOfType(MarkdownView);
-          if (!activeView) {
-            return;
-          }
+          for (const openedFile of getAllOpenedFiles(this)) {
+            if (openedFile.path !== file.path) {
+              continue;
+            }
 
-          const leaf = activeView.leaf.view as InlineTitleView;
-          const iconNameWithPrefix = icon.getByPath(this, file.path);
-          if (!iconNameWithPrefix) {
-            titleIcon.remove(leaf.inlineTitleEl);
-            return;
-          }
+            const leaf = openedFile.leaf.view as InlineTitleView;
+            const iconNameWithPrefix = icon.getByPath(this, file.path);
+            if (!iconNameWithPrefix) {
+              titleIcon.remove(leaf.inlineTitleEl);
+              return;
+            }
 
-          let foundIcon = icon.getIconByName(iconNameWithPrefix);
-          // Check for preloaded icons if no icon was found when the start up was faster
-          // than the loading of the icons.
-          if (!foundIcon && getPreloadedIcons().length > 0) {
-            foundIcon = getPreloadedIcons().find(
-              (icon) => icon.prefix + icon.name === iconNameWithPrefix,
-            );
-          }
+            let foundIcon = icon.getIconByName(iconNameWithPrefix);
+            // Check for preloaded icons if no icon was found when the start up was faster
+            // than the loading of the icons.
+            if (!foundIcon && getPreloadedIcons().length > 0) {
+              foundIcon = getPreloadedIcons().find(
+                (icon) => icon.prefix + icon.name === iconNameWithPrefix,
+              );
+            }
 
-          if (foundIcon) {
-            titleIcon.add(leaf.inlineTitleEl, foundIcon.svgElement, {
-              fontSize: this.calculateIconInTitleSize(),
-            });
-          } else {
-            titleIcon.remove(leaf.inlineTitleEl);
+            if (foundIcon) {
+              titleIcon.add(leaf.inlineTitleEl, foundIcon.svgElement, {
+                fontSize: this.calculateIconInTitleSize(),
+              });
+            } else {
+              titleIcon.remove(leaf.inlineTitleEl);
+            }
           }
         }),
       );
