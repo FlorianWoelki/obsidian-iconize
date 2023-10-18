@@ -133,7 +133,7 @@ export const deleteIconPack = async (
   }
   // Check for the icon pack zip file and delete it.
   if (await plugin.app.vault.adapter.exists(`${path}/${dir}.zip`)) {
-    await plugin.app.vault.adapter.rmdir(`${path}/${dir}.zip`, true);
+    await plugin.app.vault.adapter.remove(`${path}/${dir}.zip`);
   }
 };
 
