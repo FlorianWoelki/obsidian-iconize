@@ -21,6 +21,23 @@ describe('add', () => {
 </div>`);
   });
 
+  it('should create a title icon with a font size when the passed in element is not an svg element', () => {
+    const parentEl = document.createElement('div');
+    const inlineTitleEl = document.createElement('div');
+    parentEl.appendChild(inlineTitleEl);
+
+    titleIcon.add(inlineTitleEl, '👍', { fontSize: 10 });
+    expect(parentEl).toMatchInlineSnapshot(`<div>
+  <div
+    class="iconize-title-icon"
+    style="display: block; font-size: 10px;"
+  >
+    👍
+  </div>
+  <div />
+</div>`);
+  });
+
   it('should update the title icon when the title icon already exist', () => {
     const parentEl = document.createElement('div');
     const inlineTitleEl = document.createElement('div');

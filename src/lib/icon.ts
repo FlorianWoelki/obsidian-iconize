@@ -267,14 +267,14 @@ const getByPath = (
   }
 
   const value = plugin.getData()[path];
-  if (typeof value === 'string' && !emoji.isEmoji(value)) {
+  if (typeof value === 'string') {
     // If the value is a plain icon name, return it.
     return value;
   } else if (typeof value === 'object') {
     // Additional checks for inheritance folders.
     const v = value as FolderIconObject;
     // If the inheritance folder contains a custom icon for itself, return it.
-    if (v.iconName !== null && !emoji.isEmoji(v.iconName)) {
+    if (v.iconName !== null) {
       return v.iconName;
     }
   }
@@ -363,12 +363,19 @@ const getIconByName = (iconNameWithPrefix: string): Icon | null => {
  * Returns the {@link Icon} for the given path.
  * @param plugin IconFolderPlugin instance.
  * @param path String which is the path to get the icon of.
- * @returns Icon if it exists, `null` otherwise.
+ * @returns Icon or Emoji as string if it exists, `null` otherwise.
  */
-const getIconByPath = (plugin: IconFolderPlugin, path: string): Icon | null => {
+const getIconByPath = (
+  plugin: IconFolderPlugin,
+  path: string,
+): Icon | string | null => {
   const iconNameWithPrefix = getByPath(plugin, path);
   if (!iconNameWithPrefix) {
     return null;
+  }
+
+  if (emoji.isEmoji(iconNameWithPrefix)) {
+    return iconNameWithPrefix;
   }
 
   return getIconByName(iconNameWithPrefix);

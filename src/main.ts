@@ -447,11 +447,14 @@ export default class IconFolderPlugin extends Plugin {
           const iconName = icon.getByPath(this, openedFile.path);
           const activeView = openedFile.leaf.view as InlineTitleView;
           if (activeView instanceof MarkdownView && iconName) {
-            const iconNextIdentifier = nextIdentifier(iconName);
-            const possibleIcon = getSvgFromLoadedIcon(
-              iconName.substring(0, iconNextIdentifier),
-              iconName.substring(iconNextIdentifier),
-            );
+            let possibleIcon: string = iconName;
+            if (!emoji.isEmoji(iconName)) {
+              const iconNextIdentifier = nextIdentifier(iconName);
+              possibleIcon = getSvgFromLoadedIcon(
+                iconName.substring(0, iconNextIdentifier),
+                iconName.substring(iconNextIdentifier),
+              );
+            }
 
             if (possibleIcon) {
               titleIcon.add(activeView.inlineTitleEl, possibleIcon, {
@@ -618,17 +621,20 @@ export default class IconFolderPlugin extends Plugin {
               return;
             }
 
-            let foundIcon = icon.getIconByName(iconNameWithPrefix);
-            // Check for preloaded icons if no icon was found when the start up was faster
-            // than the loading of the icons.
-            if (!foundIcon && getPreloadedIcons().length > 0) {
-              foundIcon = getPreloadedIcons().find(
-                (icon) => icon.prefix + icon.name === iconNameWithPrefix,
-              );
+            let foundIcon: string = iconNameWithPrefix;
+            if (!emoji.isEmoji(foundIcon)) {
+              foundIcon = icon.getIconByName(iconNameWithPrefix)?.svgElement;
+              // Check for preloaded icons if no icon was found when the start up was faster
+              // than the loading of the icons.
+              if (!foundIcon && getPreloadedIcons().length > 0) {
+                foundIcon = getPreloadedIcons().find(
+                  (icon) => icon.prefix + icon.name === iconNameWithPrefix,
+                )?.svgElement;
+              }
             }
 
             if (foundIcon) {
-              titleIcon.add(leaf.inlineTitleEl, foundIcon.svgElement, {
+              titleIcon.add(leaf.inlineTitleEl, foundIcon, {
                 fontSize: this.calculateIconInTitleSize(),
               });
             } else {
@@ -687,10 +693,13 @@ export default class IconFolderPlugin extends Plugin {
     for (const openedFile of getAllOpenedFiles(this)) {
       const activeView = openedFile.leaf.view as InlineTitleView;
       if (activeView instanceof MarkdownView) {
-        const possibleIcon = icon.getIconByName(iconName);
+        let possibleIcon = iconName;
+        if (!emoji.isEmoji(iconName)) {
+          possibleIcon = icon.getIconByName(iconName)?.svgElement;
+        }
 
         if (possibleIcon) {
-          titleIcon.add(activeView.inlineTitleEl, possibleIcon.svgElement, {
+          titleIcon.add(activeView.inlineTitleEl, possibleIcon, {
             fontSize: this.calculateIconInTitleSize(),
           });
         }

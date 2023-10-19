@@ -1,4 +1,5 @@
 import config from '../config';
+import emoji from '../emoji';
 import svg from './util/svg';
 
 const getTitleIcon = (leaf: HTMLElement): HTMLElement | null => {
@@ -26,6 +27,10 @@ const add = (
 
   titleIcon.style.display = 'block';
   titleIcon.classList.add(config.TITLE_ICON_CLASS);
+  // Checks if the passed element is an emoji.
+  if (emoji.isEmoji(svgElement) && options.fontSize) {
+    titleIcon.style.fontSize = `${options.fontSize}px`;
+  }
   titleIcon.innerHTML = svgElement;
   if (!hadTitleIcon) {
     inlineTitleEl.parentElement.prepend(titleIcon);
