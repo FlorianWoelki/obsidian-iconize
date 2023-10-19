@@ -367,29 +367,30 @@ export default class IconFolderPlugin extends Plugin {
       };
 
       const iconShortcodes = Array.from(
-        element.innerHTML.matchAll(
-          /(:|<:|<a:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:|>)/g,
-        ),
+        element.innerHTML.matchAll(/(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g),
       );
 
       for (let index = 0; index < iconShortcodes.length; index++) {
         const shortcode = iconShortcodes[index][0];
         const iconName = shortcode.slice(1, shortcode.length - 1);
-        const iconObject = icon.getIconByName(iconName);
 
-        const tagName = element.firstElementChild.tagName;
-        if (iconSize.hasOwnProperty(tagName)) {
-          // Replace first element (DIV html content) with svg element
-          element.firstElementChild.innerHTML =
-            element.firstElementChild.innerHTML
-              .replace(shortcode, iconObject.svgElement)
-              .replace(/(16px)/g, iconSize[tagName]);
-        } else {
-          // Replace shortcode by svg element
-          element.innerHTML = element.innerHTML.replace(
-            shortcode,
-            iconObject.svgElement,
-          );
+        // Find icon and process it if exists
+        const iconObject = icon.getIconByName(iconName);
+        if (iconObject) {
+          const tagName = element.firstElementChild.tagName;
+          if (iconSize.hasOwnProperty(tagName)) {
+            // Replace first element (DIV html content) with svg element
+            element.firstElementChild.innerHTML =
+              element.firstElementChild.innerHTML
+                .replace(shortcode, iconObject.svgElement)
+                .replace(/(16px)/g, iconSize[tagName]);
+          } else {
+            // Replace shortcode by svg element
+            element.innerHTML = element.innerHTML.replace(
+              shortcode,
+              iconObject.svgElement,
+            );
+          }
         }
       }
     });

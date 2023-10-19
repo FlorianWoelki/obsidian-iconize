@@ -8,6 +8,7 @@ import {
 } from 'obsidian';
 import { getAllLoadedIconNames } from './iconPackManager';
 import icon from './lib/icon';
+import emoji from './emoji';
 
 export default class SuggestionIcon extends EditorSuggest<string> {
   constructor(app: App) {
@@ -58,20 +59,34 @@ export default class SuggestionIcon extends EditorSuggest<string> {
       )
       .map((iconObject) => iconObject.prefix + iconObject.name);
 
-    return iconsNameArray;
+    // Store all emojis correspoding to the current query - parsing whitespaces and colons for shortcodes compatibility
+    const emojisNameArray = Object.keys(emoji.shortNames).filter((e) =>
+      emoji.getShortcode(e).contains(queryLowerCase),
+    );
+
+    return [...iconsNameArray, ...emojisNameArray];
   }
 
   renderSuggestion(value: string, el: HTMLElement): void {
     const iconObject = icon.getIconByName(value);
-    el.innerHTML = `${iconObject.svgElement} ${value}`;
+    if (iconObject) {
+      // Suggest an icon
+      el.innerHTML = `${iconObject.svgElement} ${value}`;
+    } else {
+      // Suggest an emoji - display its shortcode version
+      el.innerHTML = `${value} ${emoji.getShortcode(value)}`;
+    }
   }
 
   selectSuggestion(value: string): void {
-    // Save current line to split it
-    const cursor = this.context.editor.getCursor();
-    const line = this.context.editor.getLine(cursor.line);
-    // Replace query with iconNameWithPrefix
-    const updatedLine = line.replace(this.context.query, `:${value}:`);
-    this.context.editor.setLine(cursor.line, updatedLine);
+    // Replace query with iconNameWithPrefix or emoji unicode directly
+    const updatedValue = emoji.isEmoji(value.replace(/_/g, ' '))
+      ? value
+      : `:${value}:`;
+    this.context.editor.replaceRange(
+      updatedValue,
+      this.context.start,
+      this.context.end,
+    );
   }
 }
