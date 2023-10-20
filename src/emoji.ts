@@ -1866,7 +1866,12 @@ const isEmoji = (str: string): boolean => {
   }
 };
 
+const getShortcode = (key: string): string => {
+  return shortNames[key].replace(/\s/g, '_').replace(/:/g, '').toLowerCase();
+};
+
 export default {
   shortNames,
   isEmoji,
+  getShortcode,
 };

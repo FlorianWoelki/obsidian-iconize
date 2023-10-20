@@ -47,7 +47,7 @@ import {
 } from '@app/util';
 import config from '@app/config';
 import titleIcon from './lib/icon-title';
-import emoji from './emoji';
+import SuggestionIcon from './iconsSuggestion';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -350,6 +350,53 @@ export default class IconFolderPlugin extends Plugin {
         this.renameFolder(file.path, oldPath);
       }),
     );
+
+    // post-processing complete :icon: shortcodes in Notes
+    this.registerMarkdownPostProcessor((element) => {
+      // ignore if codeblock
+      const codeElement = element.querySelector('pre > code');
+      if (codeElement) {
+        return;
+      }
+
+      const iconSize: { [key: string]: string } = {
+        H1: '24px',
+        H2: '20px',
+        H3: '18px',
+        H4: '16px',
+      };
+
+      const iconShortcodes = Array.from(
+        element.innerHTML.matchAll(/(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g),
+      );
+
+      for (let index = 0; index < iconShortcodes.length; index++) {
+        const shortcode = iconShortcodes[index][0];
+        const iconName = shortcode.slice(1, shortcode.length - 1);
+
+        // Find icon and process it if exists
+        const iconObject = icon.getIconByName(iconName);
+        if (iconObject) {
+          const tagName = element.firstElementChild.tagName;
+          if (iconSize.hasOwnProperty(tagName)) {
+            // Replace first element (DIV html content) with svg element
+            element.firstElementChild.innerHTML =
+              element.firstElementChild.innerHTML
+                .replace(shortcode, iconObject.svgElement)
+                .replace(/(16px)/g, iconSize[tagName]);
+          } else {
+            // Replace shortcode by svg element
+            element.innerHTML = element.innerHTML.replace(
+              shortcode,
+              iconObject.svgElement,
+            );
+          }
+        }
+      }
+    });
+
+    // shortcodes auto-completion suggestion in notes
+    this.registerEditorSuggest(new SuggestionIcon(this.app));
 
     this.addSettingTab(new IconFolderSettingsUI(this.app, this));
   }
