@@ -47,7 +47,7 @@ import {
 } from '@app/util';
 import config from '@app/config';
 import titleIcon from './lib/icon-title';
-import SuggestionIcon from './iconsSuggestion';
+import SuggestionIcon from './editor/icons-suggestion';
 import emoji from './emoji';
 
 export interface FolderIconObject {
@@ -396,7 +396,7 @@ export default class IconFolderPlugin extends Plugin {
       }
     });
 
-    // shortcodes auto-completion suggestion in notes
+    // Register shortcodes auto-completion suggestion in notes.
     this.registerEditorSuggest(new SuggestionIcon(this.app));
 
     this.addSettingTab(new IconFolderSettingsUI(this.app, this));
