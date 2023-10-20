@@ -48,6 +48,7 @@ import {
 import config from '@app/config';
 import titleIcon from './lib/icon-title';
 import SuggestionIcon from './iconsSuggestion';
+import emoji from './emoji';
 
 export interface FolderIconObject {
   iconName: string | null;
