@@ -74,7 +74,7 @@ describe('add', () => {
   });
 });
 
-describe('remove', () => {
+describe('hide', () => {
   it('should set the `display` style to `none`, if the title icon element exists', () => {
     const parentEl = document.createElement('div');
     const titleIconEl = document.createElement('div');
@@ -82,7 +82,7 @@ describe('remove', () => {
     const inlineTitleEl = document.createElement('div');
     parentEl.appendChild(titleIconEl);
     parentEl.appendChild(inlineTitleEl);
-    titleIcon.remove(inlineTitleEl);
+    titleIcon.hide(inlineTitleEl);
     expect((parentEl.children[0] as HTMLElement).style.display).toEqual('none');
   });
 
@@ -91,11 +91,40 @@ describe('remove', () => {
     const inlineTitleEl = document.createElement('div');
     parentEl.appendChild(inlineTitleEl);
     inlineTitleEl.innerHTML = '<div></div>';
-    titleIcon.remove(inlineTitleEl);
+    titleIcon.hide(inlineTitleEl);
     expect(inlineTitleEl.innerHTML).toEqual('<div></div>');
   });
 
   it('should not set the `display` style to `none`, if the parent container does not exist', () => {
+    const inlineTitleEl = document.createElement('div');
+    inlineTitleEl.innerHTML = '<div></div>';
+    titleIcon.hide(inlineTitleEl);
+    expect(inlineTitleEl.innerHTML).toEqual('<div></div>');
+  });
+});
+
+describe('remove', () => {
+  it('should remove the title icon element, if the title icon element exists', () => {
+    const parentEl = document.createElement('div');
+    const titleIconEl = document.createElement('div');
+    titleIconEl.classList.add(config.TITLE_ICON_CLASS);
+    const inlineTitleEl = document.createElement('div');
+    parentEl.appendChild(titleIconEl);
+    parentEl.appendChild(inlineTitleEl);
+    titleIcon.remove(inlineTitleEl);
+    expect(parentEl.children.length).toEqual(1);
+  });
+
+  it('should not remove the title icon element, if the title icon element does not exist', () => {
+    const parentEl = document.createElement('div');
+    const inlineTitleEl = document.createElement('div');
+    parentEl.appendChild(inlineTitleEl);
+    inlineTitleEl.innerHTML = '<div></div>';
+    titleIcon.remove(inlineTitleEl);
+    expect(inlineTitleEl.innerHTML).toEqual('<div></div>');
+  });
+
+  it('should not remove the title icon element, if the parent container does not exist', () => {
     const inlineTitleEl = document.createElement('div');
     inlineTitleEl.innerHTML = '<div></div>';
     titleIcon.remove(inlineTitleEl);

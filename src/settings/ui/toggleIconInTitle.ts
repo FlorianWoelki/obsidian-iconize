@@ -36,7 +36,7 @@ export default class ToggleIconInTitle extends IconFolderSetting {
                       fontSize: this.plugin.calculateIconInTitleSize(),
                     });
                   } else {
-                    titleIcon.remove(view.contentEl);
+                    titleIcon.hide(view.contentEl);
                   }
                 }
               });

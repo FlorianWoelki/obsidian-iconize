@@ -592,6 +592,43 @@ export default class IconFolderPlugin extends Plugin {
       // enabling reading mode.
       this.registerEvent(
         this.app.workspace.on('layout-change', () => {
+          if (this.getSettings().iconInTitleEnabled) {
+            const activeView =
+              this.app.workspace.getActiveViewOfType(MarkdownView);
+            if (activeView) {
+              console.log(activeView);
+              const file = activeView.file;
+              const view = (activeView.leaf.view as any).currentMode
+                .view as InlineTitleView;
+              const iconNameWithPrefix = icon.getByPath(this, file.path);
+              if (!iconNameWithPrefix) {
+                titleIcon.hide(view.inlineTitleEl);
+                return;
+              }
+
+              let foundIcon: string = iconNameWithPrefix;
+              if (!emoji.isEmoji(foundIcon)) {
+                foundIcon = icon.getIconByName(iconNameWithPrefix)?.svgElement;
+                // Check for preloaded icons if no icon was found when the start up was faster
+                // than the loading of the icons.
+                if (!foundIcon && getPreloadedIcons().length > 0) {
+                  foundIcon = getPreloadedIcons().find(
+                    (icon) => icon.prefix + icon.name === iconNameWithPrefix,
+                  )?.svgElement;
+                }
+              }
+
+              if (foundIcon) {
+                // Removes the node because the editor markdown content is being rerendered
+                // when the content mode changes back to editing.
+                titleIcon.remove(view.inlineTitleEl);
+                titleIcon.add(view.inlineTitleEl, foundIcon, {
+                  fontSize: this.calculateIconInTitleSize(),
+                });
+              }
+            }
+          }
+
           if (!this.getSettings().iconInTabsEnabled) {
             return;
           }
@@ -618,7 +655,7 @@ export default class IconFolderPlugin extends Plugin {
             const leaf = openedFile.leaf.view as InlineTitleView;
             const iconNameWithPrefix = icon.getByPath(this, file.path);
             if (!iconNameWithPrefix) {
-              titleIcon.remove(leaf.inlineTitleEl);
+              titleIcon.hide(leaf.inlineTitleEl);
               return;
             }
 
@@ -639,7 +676,7 @@ export default class IconFolderPlugin extends Plugin {
                 fontSize: this.calculateIconInTitleSize(),
               });
             } else {
-              titleIcon.remove(leaf.inlineTitleEl);
+              titleIcon.hide(leaf.inlineTitleEl);
             }
           }
         }),

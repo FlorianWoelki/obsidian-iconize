@@ -38,11 +38,10 @@ const add = (
 };
 
 /**
- * Removes the title icon from the provided HTMLElement. In this context, removing means
- * setting the `display` style to `none`.
- * @param contentEl HTMLElement to remove the title icon from.
+ * Hides the title icon from the provided HTMLElement.
+ * @param contentEl HTMLElement to hide the title icon from.
  */
-const remove = (inlineTitleEl: HTMLElement): void => {
+const hide = (inlineTitleEl: HTMLElement): void => {
   if (!inlineTitleEl.parentElement) {
     return;
   }
@@ -55,7 +54,21 @@ const remove = (inlineTitleEl: HTMLElement): void => {
   titleIconContainer.style.display = 'none';
 };
 
+const remove = (inlineTitleEl: HTMLElement): void => {
+  if (!inlineTitleEl.parentElement) {
+    return;
+  }
+
+  const titleIconContainer = getTitleIcon(inlineTitleEl.parentElement);
+  if (!titleIconContainer) {
+    return;
+  }
+
+  titleIconContainer.remove();
+};
+
 export default {
   add,
+  hide,
   remove,
 };
