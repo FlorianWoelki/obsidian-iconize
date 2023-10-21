@@ -75,12 +75,17 @@ export default class SuggestionIcon extends EditorSuggest<string> {
 
   renderSuggestion(value: string, el: HTMLElement): void {
     const iconObject = icon.getIconByName(value);
+    el.style.display = 'flex';
+    el.style.alignItems = 'center';
+    el.style.gap = '0.25rem';
     if (iconObject) {
       // Suggest an icon.
-      el.innerHTML = `${iconObject.svgElement} ${value}`;
+      el.innerHTML = `${iconObject.svgElement} <span>${value}</span>`;
     } else {
       // Suggest an emoji - display its shortcode version.
-      el.innerHTML = `${value} ${emoji.getShortcode(value)}`;
+      el.innerHTML = `<span>${value}</span> <span>${emoji.getShortcode(
+        value,
+      )}</span>`;
     }
   }
 

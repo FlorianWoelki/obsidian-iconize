@@ -92,7 +92,7 @@ describe('renderSuggestion', () => {
     const el = document.createElement('div');
     suggestionIcon.renderSuggestion('heart_fill', el);
 
-    expect(el.innerHTML).toBe('<svg></svg> heart_fill');
+    expect(el.innerHTML).toBe('<svg></svg> <span>heart_fill</span>');
 
     getIconByName.mockRestore();
   });
@@ -104,7 +104,9 @@ describe('renderSuggestion', () => {
     const el = document.createElement('div');
     suggestionIcon.renderSuggestion('😁', el);
 
-    expect(el.innerHTML).toBe('😁 beaming_face_with_smiling_eyes');
+    expect(el.innerHTML).toBe(
+      '<span>😁</span> <span>beaming_face_with_smiling_eyes</span>',
+    );
 
     getIconByName.mockRestore();
   });
