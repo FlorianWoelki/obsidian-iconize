@@ -23,7 +23,7 @@ export default class SuggestionIcon extends EditorSuggest<string> {
       .lastIndexOf(':');
 
     // `onTrigger` needs to return `null` as soon as possible to save processing performance.
-    if (shortcodeStart == -1) return null;
+    if (shortcodeStart === -1) return null;
 
     // Regex for checking if the shortcode is not done yet.
     const regexOngoingShortcode = editor
