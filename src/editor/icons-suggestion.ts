@@ -23,7 +23,9 @@ export default class SuggestionIcon extends EditorSuggest<string> {
       .lastIndexOf(':');
 
     // `onTrigger` needs to return `null` as soon as possible to save processing performance.
-    if (shortcodeStart === -1) return null;
+    if (shortcodeStart === -1) {
+      return null;
+    }
 
     // Regex for checking if the shortcode is not done yet.
     const regexOngoingShortcode = editor
@@ -31,7 +33,9 @@ export default class SuggestionIcon extends EditorSuggest<string> {
       .substring(shortcodeStart, cursor.ch)
       .match(/^(:)\w+$/g);
 
-    if (regexOngoingShortcode === null) return null;
+    if (regexOngoingShortcode === null) {
+      return null;
+    }
 
     const startingIndex = editor
       .getLine(cursor.line)
@@ -50,7 +54,7 @@ export default class SuggestionIcon extends EditorSuggest<string> {
     };
   }
 
-  getSuggestions(context: EditorSuggestContext): string[] | Promise<string[]> {
+  getSuggestions(context: EditorSuggestContext): string[] {
     const queryLowerCase = context.query.substring(1).toLowerCase();
 
     // Store all icons corresponding to the current query.
@@ -63,7 +67,7 @@ export default class SuggestionIcon extends EditorSuggest<string> {
     // Store all emojis correspoding to the current query - parsing whitespaces and
     // colons for shortcodes compatibility.
     const emojisNameArray = Object.keys(emoji.shortNames).filter((e) =>
-      emoji.getShortcode(e).contains(queryLowerCase),
+      emoji.getShortcode(e).includes(queryLowerCase),
     );
 
     return [...iconsNameArray, ...emojisNameArray];
