@@ -13,6 +13,9 @@ hero:
     - theme: alt
       text: Files and Folders
       link: /files-and-folders/icon-tabs
+    - theme: alt
+      text: Notes
+      link: /notes/icons-in-notes
 
 features:
   - title: Simplicity

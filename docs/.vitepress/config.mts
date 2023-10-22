@@ -37,6 +37,14 @@ export default defineConfig({
           { text: 'Custom Rules', link: '/files-and-folders/custom-rules' },
         ],
       },
+      {
+        text: 'Notes',
+        collapsed: false,
+        items: [
+          { text: 'Icons in Notes', link: '/notes/icons-in-notes' },
+          { text: 'Icon above Title', link: '/notes/title-icon' },
+        ],
+      },
     ],
 
     socialLinks: [
