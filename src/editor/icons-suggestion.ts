@@ -66,8 +66,8 @@ export default class SuggestionIcon extends EditorSuggest<string> {
 
     // Store all emojis correspoding to the current query - parsing whitespaces and
     // colons for shortcodes compatibility.
-    const emojisNameArray = Object.keys(emoji.shortNames).filter((e) =>
-      emoji.getShortcode(e).includes(queryLowerCase),
+    const emojisNameArray = Object.keys(emoji.shortNames).filter(
+      (e) => emoji.getShortcode(e)?.includes(queryLowerCase),
     );
 
     return [...iconsNameArray, ...emojisNameArray];
@@ -83,9 +83,10 @@ export default class SuggestionIcon extends EditorSuggest<string> {
       el.innerHTML = `${iconObject.svgElement} <span>${value}</span>`;
     } else {
       // Suggest an emoji - display its shortcode version.
-      el.innerHTML = `<span>${value}</span> <span>${emoji.getShortcode(
-        value,
-      )}</span>`;
+      const shortcode = emoji.getShortcode(value);
+      if (shortcode) {
+        el.innerHTML = `<span>${value}</span> <span>${shortcode}</span>`;
+      }
     }
   }
 

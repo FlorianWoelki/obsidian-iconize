@@ -1870,11 +1870,11 @@ const isEmoji = (str: string): boolean => {
  * Gets the shortcode for a given emoji by the name of the emoji. This function replaces
  * spaces with underscores and removes colons.
  * @param key String to replace with shortcode.
- * @returns String with shortcode.
+ * @returns String with shortcode, or `undefined` if no shortcode exists.
  */
-const getShortcode = (key: string): string => {
+const getShortcode = (key: string): string | undefined => {
   // Removable of colons is necessary for the flag shortcodes.
-  return shortNames[key].replace(/\s/g, '_').replace(/:/g, '').toLowerCase();
+  return shortNames[key]?.replace(/\s/g, '_').replace(/:/g, '').toLowerCase();
 };
 
 export default {

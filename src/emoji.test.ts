@@ -28,4 +28,9 @@ describe('getShortcode', () => {
     expect(emoji.getShortcode('🇺🇸')).toBe('flag_united_states');
     expect(emoji.getShortcode('🏴󠁧󠁢󠁥󠁮󠁧󠁿')).toBe('flag_england');
   });
+
+  it('should return `undefined` for invalid emojis', () => {
+    expect(emoji.getShortcode('hello')).toBe(undefined);
+    expect(emoji.getShortcode('123')).toBe(undefined);
+  });
 });
