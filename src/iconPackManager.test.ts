@@ -177,3 +177,55 @@ describe('getNormalizedName', () => {
     expect(iconPackManager.getNormalizedName(input)).toEqual(expectedOutput);
   });
 });
+
+describe('removeIconFromIconPackDirectory', () => {
+  let plugin: any;
+  beforeEach(() => {
+    plugin = {
+      app: {
+        vault: {
+          adapter: {
+            rmdir: vi.fn(),
+          },
+        },
+      },
+    };
+  });
+
+  it('should remove icon from icon pack directory', () => {
+    iconPackManager.setIconPacks([
+      {
+        prefix: 'Ib',
+        name: 'IconBrew',
+        icons: [
+          {
+            prefix: 'Ib',
+            name: 'Test',
+            svgElement: '<svg></svg>',
+          },
+        ],
+      },
+    ] as any);
+    iconPackManager.removeIconFromIconPackDirectory(plugin, 'IconBrew', 'test');
+    expect(plugin.app.vault.adapter.rmdir).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not remove icon from custom icon pack directory', () => {
+    iconPackManager.setIconPacks([
+      {
+        custom: true,
+        prefix: 'Ib',
+        name: 'IconBrew',
+        icons: [
+          {
+            prefix: 'Ib',
+            name: 'Test',
+            svgElement: '<svg></svg>',
+          },
+        ],
+      },
+    ] as any);
+    iconPackManager.removeIconFromIconPackDirectory(plugin, 'IconBrew', 'test');
+    expect(plugin.app.vault.adapter.rmdir).toHaveBeenCalledTimes(0);
+  });
+});
