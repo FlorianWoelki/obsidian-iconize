@@ -110,6 +110,18 @@ describe('renderSuggestion', () => {
 
     getIconByName.mockRestore();
   });
+
+  it('should not render emoji shortcode if the emoji has no shortcode', () => {
+    const getIconByName = vi.spyOn(icon, 'getIconByName');
+    getIconByName.mockImplementationOnce(() => null as any);
+
+    const el = document.createElement('div');
+    suggestionIcon.renderSuggestion('hehe', el);
+
+    expect(el.innerHTML).toBe('');
+
+    getIconByName.mockRestore();
+  });
 });
 
 describe('getSuggestions', () => {
