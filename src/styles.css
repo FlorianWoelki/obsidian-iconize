@@ -1,3 +1,9 @@
+.iconize-title-icon {
+  max-width: var(--max-width);
+  width: var(--line-width);
+  margin-inline: var(--content-margin) !important;
+}
+
 .obsidian-icon-folder-icon {
   border: 1px solid transparent;
   margin: 0px 4px 0px 0px;
