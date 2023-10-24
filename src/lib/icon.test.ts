@@ -1,8 +1,81 @@
-import { it, describe, beforeEach, expect, vi } from 'vitest';
+import { it, describe, beforeEach, expect, vi, SpyInstance } from 'vitest';
 import * as iconPackManager from '../iconPackManager';
 import icon from './icon';
 import inheritance from './inheritance';
 import customRule from './custom-rule';
+
+describe('getAllWithPath', () => {
+  let plugin: any;
+  let getByPath: SpyInstance;
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    plugin = {
+      getSettings: () => ({
+        rules: [
+          {
+            icon: 'IbRuleTest',
+            rule: 'folder',
+          },
+        ],
+      }),
+      getData: () => ({
+        folder: 'IbTest',
+      }),
+    };
+
+    getByPath = vi
+      .spyOn(inheritance, 'getByPath')
+      .mockImplementation(() => undefined as any);
+  });
+
+  it('should return empty array when no icons are found', () => {
+    plugin.getData = () => ({});
+    plugin.getSettings = () => ({ rules: [] }) as any;
+    const result = icon.getAllWithPath(plugin);
+    expect(result).toEqual([]);
+  });
+
+  it('should return normal without inheritance or custom rules', () => {
+    plugin.getSettings = () => ({ rules: [] }) as any;
+    const result = icon.getAllWithPath(plugin);
+    expect(result).toEqual([
+      {
+        icon: 'IbTest',
+        path: 'folder',
+      },
+    ]);
+  });
+
+  it('should return inheritance icon if icon was found in inheritance path', () => {
+    getByPath.mockImplementationOnce(() => ({
+      inheritanceIcon: 'IbTest',
+    }));
+    plugin.getSettings = () => ({ rules: [] }) as any;
+    plugin.getData = () => ({
+      folderObj: {
+        inheritanceIcon: 'IbTest',
+      },
+    });
+    const result = icon.getAllWithPath(plugin);
+    expect(result).toEqual([
+      {
+        icon: 'IbTest',
+        path: 'folderObj',
+      },
+    ]);
+  });
+
+  it('should return custom rule icon if icon was found in custom rules', () => {
+    plugin.getData = () => ({});
+    const result = icon.getAllWithPath(plugin);
+    expect(result).toEqual([
+      {
+        icon: 'IbRuleTest',
+        path: 'folder',
+      },
+    ]);
+  });
+});
 
 describe('getByPath', () => {
   let plugin: any;
