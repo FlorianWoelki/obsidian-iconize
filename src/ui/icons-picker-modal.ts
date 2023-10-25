@@ -1,15 +1,15 @@
 import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
-import IconFolderPlugin from './main';
-import emoji from './emoji';
+import IconFolderPlugin from '@app/main';
+import emoji from '@app/emoji';
 import {
   doesIconExists,
   getAllLoadedIconNames,
   getIconPackNameByPrefix,
   getSvgFromLoadedIcon,
   nextIdentifier,
-} from './iconPackManager';
-import dom from './lib/util/dom';
+} from '@app/icon-pack-manager';
+import dom from '@app/lib/util/dom';
 import { saveIconToIconPack } from '@app/util';
 
 export interface Icon {

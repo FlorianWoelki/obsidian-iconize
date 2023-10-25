@@ -4,7 +4,7 @@ import { getFileFromJSZipFile, readZipFile } from './zip-util';
 import JSZip from 'jszip';
 import config from '@app/config';
 import IconFolderPlugin from './main';
-import { getExtraPath } from './iconPacks';
+import { getExtraPath } from './icon-packs';
 
 export interface Icon {
   name: string;

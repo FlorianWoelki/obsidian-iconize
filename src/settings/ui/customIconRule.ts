@@ -9,7 +9,7 @@ import {
   ToggleComponent,
 } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import IconsPickerModal from '@app/iconsPickerModal';
+import IconsPickerModal from '@app/ui/icons-picker-modal';
 import IconFolderPlugin from '@app/main';
 import {
   getAllOpenedFiles,
@@ -22,7 +22,7 @@ import customRule from '@lib/custom-rule';
 import iconTabs from '@lib/icon-tabs';
 import dom from '../../lib/util/dom';
 import svg from '../../lib/util/svg';
-import { getNormalizedName } from '../../iconPackManager';
+import { getNormalizedName } from '../../icon-pack-manager';
 import { TabHeaderLeaf } from '../../@types/obsidian';
 
 export default class CustomIconRuleSetting extends IconFolderSetting {

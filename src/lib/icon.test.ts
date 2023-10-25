@@ -1,5 +1,5 @@
 import { it, describe, beforeEach, expect, vi, SpyInstance } from 'vitest';
-import * as iconPackManager from '../iconPackManager';
+import * as iconPackManager from '../icon-pack-manager';
 import icon from './icon';
 import inheritance from './inheritance';
 import customRule from './custom-rule';

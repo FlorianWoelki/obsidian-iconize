@@ -1,5 +1,5 @@
 import { SpyInstance, beforeEach, describe, expect, it, vi } from 'vitest';
-import * as iconPackManager from './iconPackManager';
+import * as iconPackManager from './icon-pack-manager';
 import {
   getAllOpenedFiles,
   readFileSync,

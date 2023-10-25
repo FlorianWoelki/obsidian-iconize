@@ -23,8 +23,8 @@ import {
   nextIdentifier,
   resetPreloadedIcons,
   setPath,
-} from './iconPackManager';
-import IconsPickerModal, { Icon } from './iconsPickerModal';
+} from './icon-pack-manager';
+import IconsPickerModal, { Icon } from './ui/icons-picker-modal';
 import {
   DEFAULT_SETTINGS,
   ExtraMarginSettings,
@@ -33,7 +33,7 @@ import {
 import { migrateIcons } from './migration';
 import IconFolderSettingsUI from './settings/ui';
 import StarredInternalPlugin from './internal-plugins/starred';
-import InternalPluginInjector from './@types/internalPluginInjector';
+import InternalPluginInjector from './@types/internal-plugin-injector';
 import iconTabs from './lib/icon-tabs';
 import inheritance from './lib/inheritance';
 import dom from './lib/util/dom';

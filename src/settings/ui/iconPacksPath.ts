@@ -4,7 +4,7 @@ import {
   createDefaultDirectory,
   moveIconPackDirectories,
   setPath,
-} from '@app/iconPackManager';
+} from '@app/icon-pack-manager';
 
 export default class IconPacksPathSetting extends IconFolderSetting {
   private iconPacksSettingTextComp: TextComponent;

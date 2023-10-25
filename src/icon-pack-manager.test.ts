@@ -1,5 +1,5 @@
 import { it, describe, expect, beforeEach, vi } from 'vitest';
-import * as iconPackManager from './iconPackManager';
+import * as iconPackManager from './icon-pack-manager';
 
 describe('getSvgFromLoadedIcon', () => {
   it('should return svg from loaded icon', () => {

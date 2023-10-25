@@ -4,10 +4,10 @@ import {
   createIconPackPrefix,
   createZipFile,
   getAllIconPacks,
-} from './iconPackManager';
-import iconPacks, { IconPack } from './iconPacks';
-import IconFolderPlugin from './main';
-import { downloadZipFile } from './zip-util';
+} from '@app/icon-pack-manager';
+import iconPacks, { IconPack } from '@app/icon-packs';
+import IconFolderPlugin from '@app/main';
+import { downloadZipFile } from '@app/zip-util';
 
 export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
   private plugin: IconFolderPlugin;

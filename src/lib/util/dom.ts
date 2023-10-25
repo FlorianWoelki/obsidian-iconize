@@ -1,6 +1,6 @@
 import twemoji from 'twemoji';
 import config from '@app/config';
-import { getSvgFromLoadedIcon, nextIdentifier } from '../../iconPackManager';
+import { getSvgFromLoadedIcon, nextIdentifier } from '../../icon-pack-manager';
 import IconFolderPlugin from '../../main';
 import style from './style';
 import svg from './svg';

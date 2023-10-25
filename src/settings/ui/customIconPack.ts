@@ -7,7 +7,7 @@ import {
   deleteIconPack,
   doesIconPackExist,
   getAllIconPacks,
-} from '@app/iconPackManager';
+} from '@app/icon-pack-manager';
 import IconFolderPlugin from '@app/main';
 import { readFileSync } from '@app/util';
 

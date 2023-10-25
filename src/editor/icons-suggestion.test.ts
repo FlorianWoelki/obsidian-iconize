@@ -8,7 +8,7 @@ import {
   vi,
 } from 'vitest';
 import icon from '../lib/icon';
-import * as iconPackManager from '../iconPackManager';
+import * as iconPackManager from '../icon-pack-manager';
 import SuggestionIcon from './icons-suggestion';
 
 vi.mock('obsidian', () => ({

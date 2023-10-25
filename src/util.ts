@@ -5,7 +5,7 @@ import {
   getSvgFromLoadedIcon,
   nextIdentifier,
   removeIconFromIconPackDirectory,
-} from '@app/iconPackManager';
+} from '@app/icon-pack-manager';
 import { FileItem, FileWithLeaf } from './@types/obsidian';
 import IconFolderPlugin from './main';
 

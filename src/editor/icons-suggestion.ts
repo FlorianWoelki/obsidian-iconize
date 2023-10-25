@@ -6,7 +6,7 @@ import {
   EditorSuggestContext,
   EditorSuggestTriggerInfo,
 } from 'obsidian';
-import { getAllLoadedIconNames } from '../iconPackManager';
+import { getAllLoadedIconNames } from '../icon-pack-manager';
 import icon from '../lib/icon';
 import emoji from '../emoji';
 

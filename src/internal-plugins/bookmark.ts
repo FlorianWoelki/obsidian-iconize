@@ -1,6 +1,6 @@
 import { around } from 'monkey-around';
 import { View } from 'obsidian';
-import InternalPluginInjector from '@app/@types/internalPluginInjector';
+import InternalPluginInjector from '@app/@types/internal-plugin-injector';
 import { BookmarkItem, BookmarkItemValue } from '@app/@types/obsidian';
 import dom from '@lib/util/dom';
 import icon from '@lib/icon';

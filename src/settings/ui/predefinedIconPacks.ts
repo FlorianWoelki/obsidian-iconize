@@ -1,6 +1,6 @@
 import { App, Setting } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import IconPackBrowserModal from '@app/iconPackBrowserModal';
+import IconPackBrowserModal from '@app/ui/icon-pack-browser-modal';
 import IconFolderPlugin from '@app/main';
 
 export default class PredefinedIconPacksSetting extends IconFolderSetting {

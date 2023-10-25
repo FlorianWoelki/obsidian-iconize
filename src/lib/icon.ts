@@ -16,7 +16,7 @@ import {
   getPath,
   getSvgFromLoadedIcon,
   nextIdentifier,
-} from '../iconPackManager';
+} from '../icon-pack-manager';
 import config from '@app/config';
 import { Notice } from 'obsidian';
 
