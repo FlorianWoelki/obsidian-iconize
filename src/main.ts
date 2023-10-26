@@ -4,7 +4,6 @@ import {
   TFile,
   WorkspaceLeaf,
   requireApiVersion,
-  Notice,
   TFolder,
   MarkdownView,
 } from 'obsidian';
@@ -25,12 +24,8 @@ import {
   setPath,
 } from './icon-pack-manager';
 import IconsPickerModal, { Icon } from './ui/icons-picker-modal';
-import {
-  DEFAULT_SETTINGS,
-  ExtraMarginSettings,
-  IconFolderSettings,
-} from './settings/data';
-import { migrateIcons } from './migration';
+import { DEFAULT_SETTINGS, IconFolderSettings } from '@app/settings/data';
+import { migrate } from '@app/migrations';
 import IconFolderSettingsUI from './settings/ui';
 import StarredInternalPlugin from './internal-plugins/starred';
 import InternalPluginInjector from './@types/internal-plugin-injector';
@@ -64,58 +59,6 @@ export default class IconFolderPlugin extends Plugin {
 
   private modifiedInternalPlugins: InternalPluginInjector[] = [];
 
-  private async migrate(): Promise<void> {
-    if (!this.getSettings().migrated) {
-      console.log('migrating icons...');
-      this.data = migrateIcons(this);
-      this.getSettings().migrated++;
-      console.log('...icons migrated');
-    }
-
-    // eslint-disable-next-line
-    // @ts-ignore - Required because an older version of the plugin saved the `migrated`
-    // property as a boolean instead of a number.
-    if (this.getSettings().migrated === true) {
-      this.getSettings().migrated = 1;
-    }
-
-    // Migration for new syncing mechanism.
-    if (this.getSettings().migrated === 1) {
-      new Notice(
-        'Please delete your old icon packs and redownload your icon packs to use the new syncing mechanism.',
-        20000,
-      );
-      this.getSettings().migrated++;
-    }
-
-    // Migration for new order functionality of custom rules.
-    if (this.getSettings().migrated === 2) {
-      // Sorting alphabetically was the default behavior before.
-      this.getSettings()
-        .rules.sort((a, b) => a.rule.localeCompare(b.rule))
-        .forEach((rule, i) => {
-          rule.order = i;
-        });
-      this.getSettings().migrated++;
-    }
-
-    const extraPadding = (this.getSettings() as any)
-      .extraPadding as ExtraMarginSettings;
-    if (extraPadding) {
-      if (
-        extraPadding.top !== 2 ||
-        extraPadding.bottom !== 2 ||
-        extraPadding.left !== 2 ||
-        extraPadding.right !== 2
-      ) {
-        this.getSettings().extraMargin = extraPadding;
-        delete (this.getSettings() as any)['extraPadding'];
-      }
-    }
-
-    await this.saveIconFolderData();
-  }
-
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
 
@@ -133,7 +76,7 @@ export default class IconFolderPlugin extends Plugin {
     await createDefaultDirectory(this);
     await this.checkRecentlyUsedIcons();
 
-    await this.migrate();
+    await migrate(this);
 
     const usedIconNames = icon.getAllWithPath(this).map((value) => value.icon);
     await loadUsedIcons(this, usedIconNames);
