@@ -125,7 +125,7 @@ describe('removeFromAllFiles', () => {
     node.setAttribute('data-path', 'test');
     const icon = document.createElement('div');
     icon.setAttribute(config.ICON_ATTRIBUTE_NAME, 'IbTest');
-    icon.classList.add('obsidian-icon-folder-icon');
+    icon.classList.add('iconize-icon');
     node.appendChild(icon);
     document.body.appendChild(node);
 
@@ -138,7 +138,7 @@ describe('removeFromAllFiles', () => {
     node.setAttribute('data-path', 'foo');
     const icon = document.createElement('div');
     icon.setAttribute(config.ICON_ATTRIBUTE_NAME, 'IbTest');
-    icon.classList.add('obsidian-icon-folder-icon');
+    icon.classList.add('iconize-icon');
     node.appendChild(icon);
     document.body.appendChild(node);
 
@@ -152,7 +152,7 @@ describe('removeFromAllFiles', () => {
     node.setAttribute('data-path', 'test');
     const icon = document.createElement('div');
     icon.setAttribute(config.ICON_ATTRIBUTE_NAME, 'IbTest');
-    icon.classList.add('obsidian-icon-folder-icon');
+    icon.classList.add('iconize-icon');
     node.appendChild(icon);
     document.body.appendChild(node);
 
@@ -163,7 +163,7 @@ describe('removeFromAllFiles', () => {
   it('should not call `removeIconInNode` when `data-path` attribute in parent is not found', async () => {
     const icon = document.createElement('div');
     icon.setAttribute(config.ICON_ATTRIBUTE_NAME, 'IbTest');
-    icon.classList.add('obsidian-icon-folder-icon');
+    icon.classList.add('iconize-icon');
     document.body.appendChild(icon);
 
     await customRule.removeFromAllFiles(plugin, rule);

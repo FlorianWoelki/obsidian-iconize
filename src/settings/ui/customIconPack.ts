@@ -26,7 +26,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
     super(plugin, containerEl);
     this.refreshDisplay = refreshDisplay;
     this.dragOverElement = document.createElement('div');
-    this.dragOverElement.addClass('obsidian-icon-folder-dragover-el');
+    this.dragOverElement.addClass('iconize-dragover-el');
     this.dragOverElement.style.display = 'hidden';
     this.dragOverElement.innerHTML = '<p>Drop to add icon.</p>';
   }
@@ -45,7 +45,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
 
     if (!this.dragTargetElement) {
       el.appendChild(this.dragOverElement);
-      el.classList.add('obsidian-icon-folder-dragover');
+      el.classList.add('iconize-dragover');
       this.dragTargetElement = el;
     }
   }
@@ -53,7 +53,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
   private unhighlight(target: HTMLElement, el: HTMLElement): void {
     if (this.dragTargetElement && this.dragTargetElement !== target) {
       this.dragTargetElement.removeChild(this.dragOverElement);
-      this.dragTargetElement.classList.remove('obsidian-icon-folder-dragover');
+      this.dragTargetElement.classList.remove('iconize-dragover');
       this.dragTargetElement = undefined;
     }
 
@@ -61,7 +61,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
     this.closeTimer = setTimeout(() => {
       if (this.dragTargetElement) {
         el.removeChild(this.dragOverElement);
-        el.classList.remove('obsidian-icon-folder-dragover');
+        el.classList.remove('iconize-dragover');
         this.dragTargetElement = undefined;
       }
     }, 100);

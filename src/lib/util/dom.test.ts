@@ -8,7 +8,7 @@ import twemoji from 'twemoji';
 describe('removeIconInNode', () => {
   it('should remove the icon node from the provided element', () => {
     const el = document.createElement('div');
-    el.innerHTML = '<svg class="obsidian-icon-folder-icon"></svg>';
+    el.innerHTML = '<svg class="iconize-icon"></svg>';
     dom.removeIconInNode(el);
     expect(el.innerHTML).toEqual('');
   });
@@ -29,7 +29,7 @@ describe('removeIconInPath', () => {
   it('should remove the icon node from the element with the specified path', () => {
     const el = document.createElement('div');
     el.setAttribute('data-path', 'test');
-    el.innerHTML = '<div class="obsidian-icon-folder-icon"></div>';
+    el.innerHTML = '<div class="iconize-icon"></div>';
     document.body.appendChild(el);
     dom.removeIconInPath('test');
     expect(el.innerHTML).toEqual('');
@@ -51,7 +51,7 @@ describe('doesElementHasIconNode', () => {
 
   it('should return `true` if the element has an icon node', () => {
     const el = document.createElement('div');
-    el.innerHTML = '<div class="obsidian-icon-folder-icon"></div>';
+    el.innerHTML = '<div class="iconize-icon"></div>';
     document.body.appendChild(el);
     expect(dom.doesElementHasIconNode(el)).toBe(true);
   });
@@ -71,8 +71,7 @@ describe('getIconFromElement', () => {
 
   it('should return the icon node from the element', () => {
     const el = document.createElement('div');
-    el.innerHTML =
-      '<div class="obsidian-icon-folder-icon" data-icon="IbFoo"></div>';
+    el.innerHTML = '<div class="iconize-icon" data-icon="IbFoo"></div>';
     document.body.appendChild(el);
     expect(dom.getIconFromElement(el)).toEqual('IbFoo');
   });
@@ -180,7 +179,7 @@ describe('createIconNode', () => {
   data-path="test"
 >
   <div
-    class="obsidian-icon-folder-icon"
+    class="iconize-icon"
     data-icon="IbTest"
     style="margin: 4px;"
   >
@@ -198,7 +197,7 @@ describe('createIconNode', () => {
     const el = document.createElement('div');
     el.setAttribute('data-path', 'test');
     el.innerHTML =
-      '<div class="nav-folder-title-content"></div><div class="obsidian-icon-folder-icon"></div>';
+      '<div class="nav-folder-title-content"></div><div class="iconize-icon"></div>';
     document.body.appendChild(el);
     dom.createIconNode(plugin, 'test', 'IbTest');
     expect(el).toMatchInlineSnapshot(`<div
@@ -208,7 +207,7 @@ describe('createIconNode', () => {
     class="nav-folder-title-content"
   />
   <div
-    class="obsidian-icon-folder-icon"
+    class="iconize-icon"
     style="margin: 4px;"
   >
     <svg
@@ -222,7 +221,7 @@ describe('createIconNode', () => {
     const el = document.createElement('div');
     el.setAttribute('data-path', 'test');
     el.innerHTML =
-      '<div class="nav-file-title-content"></div><div class="obsidian-icon-folder-icon"></div>';
+      '<div class="nav-file-title-content"></div><div class="iconize-icon"></div>';
     document.body.appendChild(el);
     dom.createIconNode(plugin, 'test', 'IbTest');
     expect(el).toMatchInlineSnapshot(`<div
@@ -232,7 +231,7 @@ describe('createIconNode', () => {
     class="nav-file-title-content"
   />
   <div
-    class="obsidian-icon-folder-icon"
+    class="iconize-icon"
     style="margin: 4px;"
   >
     <svg

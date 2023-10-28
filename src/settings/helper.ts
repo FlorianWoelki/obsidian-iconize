@@ -22,7 +22,7 @@ const refreshStyleOfIcons = async (plugin: IconFolderPlugin): Promise<void> => {
       if (folderItem) {
         const titleEl = getFileItemTitleEl(folderItem);
         const iconNode = titleEl.querySelector(
-          '.obsidian-icon-folder-icon',
+          '.iconize-icon',
         ) as HTMLElement | null;
         if (iconNode) {
           iconNode.innerHTML = style.applyAll(
@@ -39,7 +39,7 @@ const refreshStyleOfIcons = async (plugin: IconFolderPlugin): Promise<void> => {
         const fileItem = fileExplorer.view.fileItems[file.path];
         const titleEl = getFileItemTitleEl(fileItem);
         const iconNode = titleEl.querySelector(
-          '.obsidian-icon-folder-icon',
+          '.iconize-icon',
         ) as HTMLElement | null;
         if (iconNode) {
           iconNode.innerHTML = style.applyAll(
@@ -61,9 +61,7 @@ const refreshStyleOfIcons = async (plugin: IconFolderPlugin): Promise<void> => {
         }
 
         const titleEl = getFileItemTitleEl(fileItem);
-        const iconNode = titleEl.querySelector(
-          '.obsidian-icon-folder-icon',
-        ) as HTMLElement;
+        const iconNode = titleEl.querySelector('.iconize-icon') as HTMLElement;
         iconNode.innerHTML = style.applyAll(
           plugin,
           iconNode.innerHTML,

@@ -285,7 +285,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           // Create modal and its children elements.
           const modal = new Modal(this.plugin.app);
           modal.contentEl.style.display = 'block';
-          modal.modalEl.classList.add('obsidian-icon-folder-custom-rule-modal');
+          modal.modalEl.classList.add('iconize-custom-rule-modal');
           modal.titleEl.createEl('h3', { text: 'Edit custom rule' });
 
           // Create the input for the rule.

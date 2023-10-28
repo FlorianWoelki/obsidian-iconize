@@ -6,11 +6,11 @@ import style from './style';
 import svg from './svg';
 
 /**
- * Removes the `obsidian-icon-folder-icon` icon node from the provided HTMLElement.
+ * Removes the `iconize-icon` icon node from the provided HTMLElement.
  * @param el HTMLElement from which the icon node will be removed.
  */
 const removeIconInNode = (el: HTMLElement): void => {
-  const iconNode = el.querySelector('.obsidian-icon-folder-icon');
+  const iconNode = el.querySelector('.iconize-icon');
   if (!iconNode) {
     return;
   }
@@ -27,7 +27,7 @@ interface RemoveOptions {
 }
 
 /**
- * Removes the 'obsidian-icon-folder-icon' icon node from the HTMLElement corresponding
+ * Removes the 'iconize-icon' icon node from the HTMLElement corresponding
  * to the specified file path.
  * @param path File path for which the icon node will be removed.
  */
@@ -140,9 +140,7 @@ const createIconNode = (
     }
   }
 
-  let iconNode: HTMLDivElement = node.querySelector(
-    '.obsidian-icon-folder-icon',
-  );
+  let iconNode: HTMLDivElement = node.querySelector('.iconize-icon');
   // If the icon is already set in the path, we do not need to create a new div element.
   if (iconNode) {
     setIconForNode(plugin, iconName, iconNode, options?.color);
@@ -150,7 +148,7 @@ const createIconNode = (
     // Creates a new icon node and inserts it to the DOM.
     iconNode = document.createElement('div');
     iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
-    iconNode.classList.add('obsidian-icon-folder-icon');
+    iconNode.classList.add('iconize-icon');
 
     setIconForNode(plugin, iconName, iconNode, options?.color);
 
@@ -160,12 +158,12 @@ const createIconNode = (
 
 /**
  * Checks if the element has an icon node by checking if the element has a child with the
- * class `obsidian-icon-folder-icon`.
+ * class `iconize-icon`.
  * @param element HTMLElement which will be checked if it has an icon.
  * @returns Boolean whether the element has an icon node or not.
  */
 const doesElementHasIconNode = (element: HTMLElement): boolean => {
-  return element.querySelector('.obsidian-icon-folder-icon') !== null;
+  return element.querySelector('.iconize-icon') !== null;
 };
 
 /**
@@ -174,7 +172,7 @@ const doesElementHasIconNode = (element: HTMLElement): boolean => {
  * @returns String with the icon name if the element has an icon, `undefined` otherwise.
  */
 const getIconFromElement = (element: HTMLElement): string | undefined => {
-  const iconNode = element.querySelector('.obsidian-icon-folder-icon');
+  const iconNode = element.querySelector('.iconize-icon');
   const existingIcon = iconNode?.getAttribute(config.ICON_ATTRIBUTE_NAME);
   return existingIcon;
 };

@@ -217,9 +217,7 @@ const addAll = (
           const iconName = typeof value === 'string' ? value : value.iconName;
           if (iconName) {
             // Removes a possible existing icon.
-            const existingIcon = titleEl.querySelector(
-              '.obsidian-icon-folder-icon',
-            );
+            const existingIcon = titleEl.querySelector('.iconize-icon');
             if (existingIcon) {
               existingIcon.remove();
             }
@@ -227,7 +225,7 @@ const addAll = (
             // Creates the new node with the icon inside.
             const iconNode = titleEl.createDiv();
             iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
-            iconNode.classList.add('obsidian-icon-folder-icon');
+            iconNode.classList.add('iconize-icon');
 
             dom.setIconForNode(plugin, iconName, iconNode);
 

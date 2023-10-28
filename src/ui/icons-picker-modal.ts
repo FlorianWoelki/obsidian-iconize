@@ -44,7 +44,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       }),
     );
 
-    this.resultContainerEl.classList.add('obsidian-icon-folder-modal');
+    this.resultContainerEl.classList.add('iconize-modal');
   }
 
   onOpen() {
@@ -143,12 +143,12 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     if (this.recentlyUsedItems.size !== 0 && this.inputEl.value.length === 0) {
       if (this.renderIndex === 0) {
         const subheadline = this.resultContainerEl.createDiv();
-        subheadline.classList.add('obsidian-icon-folder-subheadline');
+        subheadline.classList.add('iconize-subheadline');
         subheadline.innerText = 'Recently used Icons:';
         this.resultContainerEl.prepend(subheadline);
       } else if (this.renderIndex === this.recentlyUsedItems.size - 1) {
         const subheadline = this.resultContainerEl.createDiv();
-        subheadline.classList.add('obsidian-icon-folder-subheadline');
+        subheadline.classList.add('iconize-subheadline');
         subheadline.innerText = 'All Icons:';
         this.resultContainerEl.append(subheadline);
       }
@@ -169,11 +169,11 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
           default:
             break;
         }
-        el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${displayName}</div>`;
+        el.innerHTML = `<div>${el.innerHTML}</div><div class="iconize-icon-preview">${displayName}</div>`;
       } else {
         el.innerHTML = `<div>${
           el.innerHTML
-        }</div><div class="obsidian-icon-folder-icon-preview">${getSvgFromLoadedIcon(
+        }</div><div class="iconize-icon-preview">${getSvgFromLoadedIcon(
           item.item.prefix,
           item.item.name,
         )}</div>`;

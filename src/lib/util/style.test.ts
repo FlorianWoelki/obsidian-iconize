@@ -114,7 +114,7 @@ describe('refreshIconNodes', () => {
   });
 
   it('should refresh icon nodes', () => {
-    iconNode.classList.add('obsidian-icon-folder-icon');
+    iconNode.classList.add('iconize-icon');
 
     getFileItemTitleElSpy.mockReturnValue(titleEl);
 

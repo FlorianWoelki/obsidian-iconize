@@ -62,7 +62,7 @@ const add = (
     const innerTitleEl = getFileItemInnerTitleEl(fileItem);
     const iconNode = document.createElement('div');
     iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
-    iconNode.classList.add('obsidian-icon-folder-icon');
+    iconNode.classList.add('iconize-icon');
     dom.setIconForNode(plugin, iconName, iconNode);
     titleEl.insertBefore(iconNode, innerTitleEl);
 

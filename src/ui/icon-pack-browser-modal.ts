@@ -16,7 +16,7 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
     super(app);
     this.plugin = plugin;
 
-    this.resultContainerEl.classList.add('obsidian-icon-folder-browse-modal');
+    this.resultContainerEl.classList.add('iconize-browse-modal');
     this.inputEl.placeholder = 'Select to download icon pack';
   }
 

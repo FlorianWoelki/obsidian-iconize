@@ -64,7 +64,7 @@ const applyAll = (
 };
 
 /**
- * Refreshes all the styles of all the applied icons where a `.obsidian-icon-folder-icon`
+ * Refreshes all the styles of all the applied icons where a `.iconize-icon`
  * class is defined. This function only modifies the styling of the node.
  * @param plugin Instance of the IconFolderPlugin.
  * @param applyStyles Function that is getting called when the icon node is found and
@@ -81,7 +81,7 @@ const refreshIconNodes = (
       if (fileItem) {
         const titleEl = getFileItemTitleEl(fileItem);
         const iconNode = titleEl.querySelector(
-          '.obsidian-icon-folder-icon',
+          '.iconize-icon',
         ) as HTMLElement | null;
         if (iconNode) {
           iconNode.innerHTML = applyStyles(

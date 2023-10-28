@@ -372,7 +372,7 @@ export const loadIcon = async (
   const fullPath = path + '/' + iconPack + '/' + name + '.svg';
   if (!(await plugin.app.vault.adapter.exists(fullPath))) {
     console.warn(
-      `[obsidian-icon-folder] icon with name "${name}" was not found (full path: ${fullPath}).`,
+      `[iconize] icon with name "${name}" was not found (full path: ${fullPath}).`,
     );
     return;
   }
@@ -485,7 +485,7 @@ export const addIconToIconPack = (
   const icon = generateIcon(iconPackName, iconName, iconContent);
   if (!icon) {
     console.warn(
-      `[obsidian-icon-folder] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`,
+      `[iconize] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`,
     );
     return undefined;
   }
@@ -493,7 +493,7 @@ export const addIconToIconPack = (
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   if (!iconPack) {
     console.warn(
-      `[obsidian-icon-folder] iconpack with name "${iconPackName}" was not found.`,
+      `[iconize] iconpack with name "${iconPackName}" was not found.`,
     );
     return undefined;
   }
