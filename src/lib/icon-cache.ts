@@ -1,4 +1,4 @@
-type CacheResult = any;
+type CacheResult = string;
 
 export class IconCache {
   private static instance: IconCache = new IconCache();

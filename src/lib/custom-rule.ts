@@ -5,6 +5,7 @@ import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
 import config from '../config';
 import { FileItem } from '../@types/obsidian';
+import { IconCache } from './icon-cache';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
@@ -82,6 +83,7 @@ const removeFromAllFiles = async (
     const fileType = (await plugin.app.vault.adapter.stat(dataPath)).type;
     if (doesMatchPath(rule, dataPath) && doesMatchFileType(rule, fileType)) {
       dom.removeIconInNode(parent);
+      IconCache.getInstance().invalidate(dataPath);
     }
   }
 };
@@ -140,6 +142,7 @@ const add = async (
 
   const doesMatch = await isApplicable(plugin, rule, file);
   if (doesMatch) {
+    IconCache.getInstance().set(file.path, rule.icon);
     dom.createIconNode(plugin, file.path, rule.icon, {
       color: rule.color,
       container,
