@@ -12,6 +12,7 @@ import PredefinedIconPacksSetting from './predefinedIconPacks';
 import RecentlyUsedIconsSetting from './recentlyUsedIcons';
 import ToggleIconInTabs from './toggleIconInTabs';
 import ToggleIconInTitle from './toggleIconInTitle';
+import ToggleFrontmatterIcon from './toggleFrontmatterIcon';
 
 export default class IconFolderSettings extends PluginSettingTab {
   private plugin: IconFolderPlugin;
@@ -33,6 +34,7 @@ export default class IconFolderSettings extends PluginSettingTab {
     new EmojiStyleSetting(plugin, containerEl).display();
     new ToggleIconInTabs(plugin, containerEl).display();
     new ToggleIconInTitle(plugin, containerEl).display();
+    new ToggleFrontmatterIcon(plugin, containerEl).display();
 
     containerEl.createEl('h3', { text: 'Icon Packs' });
     new PredefinedIconPacksSetting(plugin, containerEl, app, () =>
