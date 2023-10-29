@@ -97,7 +97,9 @@ export default class IconFolderPlugin extends Plugin {
             modal.open();
 
             modal.onSelect = (iconName: string): void => {
-              IconCache.getInstance().set(file.path, iconName);
+              IconCache.getInstance().set(file.path, {
+                iconNameWithPrefix: iconName,
+              });
 
               // Update icon in tab when setting is enabled.
               if (this.getSettings().iconInTabsEnabled) {
@@ -622,13 +624,46 @@ export default class IconFolderPlugin extends Plugin {
             }
 
             const cachedIcon = IconCache.getInstance().get(file.path);
-            if (newIconName === cachedIcon) {
+            if (newIconName === cachedIcon.iconNameWithPrefix) {
               return;
             }
 
             dom.createIconNode(this, file.path, newIconName);
             this.addFolderIcon(file.path, newIconName);
-            IconCache.getInstance().set(file.path, newIconName);
+            IconCache.getInstance().set(file.path, {
+              iconNameWithPrefix: newIconName,
+            });
+            // Update icon in tab when setting is enabled.
+            if (this.getSettings().iconInTabsEnabled) {
+              const tabLeaves = iconTabs.getTabLeavesOfFilePath(
+                this,
+                file.path,
+              );
+              for (const tabLeaf of tabLeaves) {
+                iconTabs.update(
+                  this,
+                  newIconName,
+                  tabLeaf.tabHeaderInnerIconEl,
+                );
+              }
+            }
+
+            // Update icon in title when setting is enabled.
+            if (this.getSettings().iconInTitleEnabled) {
+              this.addIconInTitle(newIconName);
+            }
+          } else {
+            // Remove single icon if frontmatter is not defined anymore and is not in inheritance or custom rule.
+            const cachedIcon = IconCache.getInstance().get(file.path);
+            if (
+              !cachedIcon ||
+              cachedIcon.inInheritance ||
+              cachedIcon.inCustomRule
+            ) {
+              return;
+            }
+
+            await this.removeSingleIcon(file);
           }
         }),
       );

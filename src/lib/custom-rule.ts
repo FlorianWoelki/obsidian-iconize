@@ -142,7 +142,10 @@ const add = async (
 
   const doesMatch = await isApplicable(plugin, rule, file);
   if (doesMatch) {
-    IconCache.getInstance().set(file.path, rule.icon);
+    IconCache.getInstance().set(file.path, {
+      iconNameWithPrefix: rule.icon,
+      inCustomRule: true,
+    });
     dom.createIconNode(plugin, file.path, rule.icon, {
       color: rule.color,
       container,

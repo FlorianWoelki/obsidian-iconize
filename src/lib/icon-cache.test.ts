@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 describe('set', () => {
   it('should add a record', () => {
     const path = 'path';
-    const record = 'data';
+    const record = { iconNameWithPrefix: 'IbTest' };
 
     IconCache.getInstance().set(path, record);
     const result = IconCache.getInstance().get(path);
@@ -21,7 +21,7 @@ describe('get', () => {
 
   it('should return a record that was added', () => {
     const path = 'path';
-    const record = 'data';
+    const record = { iconNameWithPrefix: 'IbTest' };
 
     IconCache.getInstance().set(path, record);
     const result = IconCache.getInstance().get(path);
@@ -38,7 +38,7 @@ describe('doesRecordExist', () => {
 
   it('should return `true` for a record that was added', () => {
     const path = 'path';
-    const record = 'data';
+    const record = { iconNameWithPrefix: 'IbTest' };
 
     IconCache.getInstance().set(path, record);
     const result = IconCache.getInstance().doesRecordExist(path);
@@ -49,7 +49,7 @@ describe('doesRecordExist', () => {
 describe('invalidate', () => {
   it('should invalidate a record', () => {
     const path = 'path';
-    const record = 'data';
+    const record = { iconNameWithPrefix: 'IbTest' };
 
     IconCache.getInstance().set(path, record);
     IconCache.getInstance().invalidate(path);
@@ -61,7 +61,7 @@ describe('invalidate', () => {
 describe('clear', () => {
   it('should clear all records', () => {
     const path = 'path';
-    const record = 'data';
+    const record = { iconNameWithPrefix: 'IbTest' };
 
     IconCache.getInstance().set(path, record);
     IconCache.getInstance().clear();

@@ -228,7 +228,9 @@ const addAll = (
             iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
             iconNode.classList.add('iconize-icon');
 
-            IconCache.getInstance().set(dataPath, iconName);
+            IconCache.getInstance().set(dataPath, {
+              iconNameWithPrefix: iconName,
+            });
             dom.setIconForNode(plugin, iconName, iconNode);
 
             titleEl.insertBefore(iconNode, titleInnerEl);

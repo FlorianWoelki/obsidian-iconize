@@ -87,7 +87,10 @@ const add = (
       }
 
       addIcon(fileItem);
-      IconCache.getInstance().set(options.file.path, iconName);
+      IconCache.getInstance().set(options.file.path, {
+        iconNameWithPrefix: iconName,
+        inInheritance: true,
+      });
     } else {
       // Handles the addition of a completely new inheritance for a folder.
       for (const [path, fileItem] of Object.entries(fileExplorer.fileItems)) {
@@ -110,7 +113,10 @@ const add = (
         }
 
         addIcon(fileItem);
-        IconCache.getInstance().set(path, iconName);
+        IconCache.getInstance().set(path, {
+          iconNameWithPrefix: iconName,
+          inInheritance: true,
+        });
       }
     }
   }

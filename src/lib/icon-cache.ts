@@ -1,4 +1,8 @@
-type CacheResult = string;
+interface CacheResult {
+  iconNameWithPrefix: string;
+  inCustomRule?: boolean;
+  inInheritance?: boolean;
+}
 
 export class IconCache {
   private static instance: IconCache = new IconCache();
