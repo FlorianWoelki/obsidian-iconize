@@ -6,6 +6,7 @@ import {
   requireApiVersion,
   TFolder,
   MarkdownView,
+  Notice,
 } from 'obsidian';
 import {
   ExplorerView,
@@ -632,11 +633,20 @@ export default class IconFolderPlugin extends Plugin {
               return;
             }
 
+            try {
+              saveIconToIconPack(this, newIconName);
+            } catch (e) {
+              console.error(e);
+              new Notice(e.message);
+              return;
+            }
+
             dom.createIconNode(this, file.path, newIconName);
             this.addFolderIcon(file.path, newIconName);
             IconCache.getInstance().set(file.path, {
               iconNameWithPrefix: newIconName,
             });
+
             // Update icon in tab when setting is enabled.
             if (this.getSettings().iconInTabsEnabled) {
               const tabLeaves = iconTabs.getTabLeavesOfFilePath(
@@ -667,6 +677,7 @@ export default class IconFolderPlugin extends Plugin {
               return;
             }
 
+            removeIconFromIconPack(this, cachedIcon.iconNameWithPrefix);
             await this.removeSingleIcon(file);
           }
         }),
