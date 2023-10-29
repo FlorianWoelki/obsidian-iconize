@@ -97,6 +97,8 @@ export default class IconFolderPlugin extends Plugin {
             modal.open();
 
             modal.onSelect = (iconName: string): void => {
+              IconCache.getInstance().set(file.path, iconName);
+
               // Update icon in tab when setting is enabled.
               if (this.getSettings().iconInTabsEnabled) {
                 const tabLeaves = iconTabs.getTabLeavesOfFilePath(
@@ -294,6 +296,7 @@ export default class IconFolderPlugin extends Plugin {
   private async removeSingleIcon(file: TFile): Promise<void> {
     this.removeFolderIcon(file.path);
     dom.removeIconInPath(file.path);
+    IconCache.getInstance().invalidate(file.path);
     this.notifyPlugins();
 
     // Check for possible inheritance and add the icon if an inheritance exists.
