@@ -59,7 +59,12 @@ describe('saveIconToIconPack', () => {
   });
 
   it('should not save icon to icon pack when svg was not found', () => {
-    saveIconToIconPack({} as any, 'IbTest');
+    expect.assertions(2);
+    try {
+      saveIconToIconPack({} as any, 'IbTest');
+    } catch (e) {
+      expect(e).not.toBeNull();
+    }
     expect(extractIconToIconPack).toBeCalledTimes(0);
   });
 
