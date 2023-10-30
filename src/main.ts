@@ -302,11 +302,14 @@ export default class IconFolderPlugin extends Plugin {
     IconCache.getInstance().invalidate(file.path);
     this.notifyPlugins();
 
+    let didUpdate = false;
+
     // Check for possible inheritance and add the icon if an inheritance exists.
     if (inheritance.doesExistInPath(this, file.path)) {
       const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
       const folderInheritance = inheritance.getByPath(this, file.path);
       const iconName = folderInheritance.inheritanceIcon;
+      didUpdate = true;
       inheritance.add(this, folderPath, iconName, {
         file,
         onAdd: (file) => {
@@ -340,7 +343,26 @@ export default class IconFolderPlugin extends Plugin {
             iconName: rule.icon,
           });
         }
+        didUpdate = true;
         break;
+      }
+    }
+
+    // Only remove icon above titles and icon in tabs if no inheritance or custom rule was found.
+    if (!didUpdate) {
+      // Refreshes icons above title and icons in tabs.
+      for (const openedFile of getAllOpenedFiles(this)) {
+        if (this.getSettings().iconInTitleEnabled) {
+          titleIcon.remove(
+            (openedFile.leaf.view as InlineTitleView).inlineTitleEl,
+          );
+        }
+        if (this.getSettings().iconInTabsEnabled) {
+          const leaf = openedFile.leaf as TabHeaderLeaf;
+          iconTabs.remove(leaf.tabHeaderInnerIconEl, {
+            replaceWithDefaultIcon: true,
+          });
+        }
       }
     }
   }
@@ -629,7 +651,7 @@ export default class IconFolderPlugin extends Plugin {
             }
 
             const cachedIcon = IconCache.getInstance().get(file.path);
-            if (newIconName === cachedIcon.iconNameWithPrefix) {
+            if (newIconName === cachedIcon?.iconNameWithPrefix) {
               return;
             }
 
@@ -666,19 +688,6 @@ export default class IconFolderPlugin extends Plugin {
             if (this.getSettings().iconInTitleEnabled) {
               this.addIconInTitle(newIconName);
             }
-          } else {
-            // Remove single icon if frontmatter is not defined anymore and is not in inheritance or custom rule.
-            const cachedIcon = IconCache.getInstance().get(file.path);
-            if (
-              !cachedIcon ||
-              cachedIcon.inInheritance ||
-              cachedIcon.inCustomRule
-            ) {
-              return;
-            }
-
-            removeIconFromIconPack(this, cachedIcon.iconNameWithPrefix);
-            await this.removeSingleIcon(file);
           }
         }),
       );
