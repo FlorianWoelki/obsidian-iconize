@@ -10,9 +10,9 @@ export default class ToggleFrontmatterIcon extends IconFolderSetting {
       )
       .addToggle((toggle) => {
         toggle
-          .setValue(this.plugin.getSettings().iconsInFrontmatter)
+          .setValue(this.plugin.getSettings().iconInFrontmatterEnabled)
           .onChange(async (enabled) => {
-            this.plugin.getSettings().iconsInFrontmatter = enabled;
+            this.plugin.getSettings().iconInFrontmatterEnabled = enabled;
             await this.plugin.saveIconFolderData();
           });
       });

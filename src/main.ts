@@ -637,7 +637,7 @@ export default class IconFolderPlugin extends Plugin {
       // Register event for frontmatter icon registration.
       this.registerEvent(
         this.app.metadataCache.on('resolve', async (file) => {
-          if (!this.getSettings().iconsInFrontmatter) {
+          if (!this.getSettings().iconInFrontmatterEnabled) {
             return;
           }
 
