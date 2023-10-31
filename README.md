@@ -1,7 +1,7 @@
 > [!IMPORTANT]
 > Obsidian Icon Folder becomes Obsidian Iconize! Read [this discussion](https://github.com/FlorianWoelki/obsidian-iconize/discussions/232) for more information.
 > 
-> **NEWEST UPDATE (22/10/23)** Adds icons and emojis to your notes
+> **NEWEST UPDATE (31/10/23)** Add icons based on frontmatter property `icon`
 
 Refer to the official documentation for more information:
 [https://florianwoelki.github.io/obsidian-iconize/](https://florianwoelki.github.io/obsidian-iconize/) about the plugin and its functionalities.
