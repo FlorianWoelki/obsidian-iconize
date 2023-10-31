@@ -84,8 +84,7 @@ export const saveIconToIconPack = (
   const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
   const possibleIcon = getSvgFromLoadedIcon(iconPrefix, iconName);
   if (!possibleIcon) {
-    console.error(`Icon ${iconNameWithPrefix} could not be found.`);
-    return;
+    throw new Error(`Icon ${iconNameWithPrefix} could not be found.`);
   }
 
   const iconPackName = getIconPackNameByPrefix(iconPrefix);

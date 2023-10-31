@@ -122,6 +122,11 @@ export interface IconFolderSettings {
    * @default false
    */
   iconsBackgroundCheckEnabled: boolean;
+  /**
+   * Sets whether the plugin should add icons based on the `icon` frontmatter attribute.
+   * @default false
+   */
+  iconInFrontmatterEnabled: boolean;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -141,5 +146,6 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   },
   iconInTabsEnabled: false,
   iconInTitleEnabled: false,
+  iconInFrontmatterEnabled: false,
   iconsBackgroundCheckEnabled: false,
 };

@@ -6,6 +6,7 @@ import {
   requireApiVersion,
   TFolder,
   MarkdownView,
+  Notice,
 } from 'obsidian';
 import {
   ExplorerView,
@@ -44,6 +45,7 @@ import config from '@app/config';
 import titleIcon from './lib/icon-title';
 import SuggestionIcon from './editor/icons-suggestion';
 import emoji from './emoji';
+import { IconCache } from './lib/icon-cache';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -96,6 +98,10 @@ export default class IconFolderPlugin extends Plugin {
             modal.open();
 
             modal.onSelect = (iconName: string): void => {
+              IconCache.getInstance().set(file.path, {
+                iconNameWithPrefix: iconName,
+              });
+
               // Update icon in tab when setting is enabled.
               if (this.getSettings().iconInTabsEnabled) {
                 const tabLeaves = iconTabs.getTabLeavesOfFilePath(
@@ -119,74 +125,7 @@ export default class IconFolderPlugin extends Plugin {
           item.setTitle('Remove icon');
           item.setIcon('trash');
           item.onClick(async () => {
-            this.removeFolderIcon(file.path);
-            dom.removeIconInPath(file.path);
-            this.notifyPlugins();
-
-            // Check for possible inheritance and add the icon if an inheritance exists.
-            if (inheritance.doesExistInPath(this, file.path)) {
-              const folderPath = inheritance.getFolderPathByFilePath(
-                this,
-                file.path,
-              );
-              const folderInheritance = inheritance.getByPath(this, file.path);
-              const iconName = folderInheritance.inheritanceIcon;
-              inheritance.add(this, folderPath, iconName, {
-                file,
-                onAdd: (file) => {
-                  // Update icon in tab when setting is enabled.
-                  if (this.getSettings().iconInTabsEnabled) {
-                    const tabLeaves = iconTabs.getTabLeavesOfFilePath(
-                      this,
-                      file.path,
-                    );
-                    for (const tabLeaf of tabLeaves) {
-                      iconTabs.add(
-                        this,
-                        file as TFile,
-                        tabLeaf.tabHeaderInnerIconEl,
-                        {
-                          iconName,
-                        },
-                      );
-                    }
-                  }
-
-                  // Update icon in title when setting is enabled.
-                  if (this.getSettings().iconInTitleEnabled) {
-                    this.addIconInTitle(iconName);
-                  }
-                },
-              });
-            }
-
-            // Refreshes the icon tab and title icon for custom rules.
-            for (const rule of customRule.getSortedRules(this)) {
-              const applicable = await customRule.isApplicable(
-                this,
-                rule,
-                file,
-              );
-              if (applicable) {
-                customRule.add(this, rule, file);
-                this.addIconInTitle(rule.icon);
-                const tabLeaves = iconTabs.getTabLeavesOfFilePath(
-                  this,
-                  file.path,
-                );
-                for (const tabLeaf of tabLeaves) {
-                  iconTabs.add(
-                    this,
-                    file as TFile,
-                    tabLeaf.tabHeaderInnerIconEl,
-                    {
-                      iconName: rule.icon,
-                    },
-                  );
-                }
-                break;
-              }
-            }
+            await this.removeSingleIcon(file);
           });
         };
 
@@ -355,6 +294,77 @@ export default class IconFolderPlugin extends Plugin {
         internalPlugin.onMount();
       }
     });
+  }
+
+  private async removeSingleIcon(file: TFile): Promise<void> {
+    this.removeFolderIcon(file.path);
+    dom.removeIconInPath(file.path);
+    IconCache.getInstance().invalidate(file.path);
+    this.notifyPlugins();
+
+    let didUpdate = false;
+
+    // Check for possible inheritance and add the icon if an inheritance exists.
+    if (inheritance.doesExistInPath(this, file.path)) {
+      const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
+      const folderInheritance = inheritance.getByPath(this, file.path);
+      const iconName = folderInheritance.inheritanceIcon;
+      didUpdate = true;
+      inheritance.add(this, folderPath, iconName, {
+        file,
+        onAdd: (file) => {
+          // Update icon in tab when setting is enabled.
+          if (this.getSettings().iconInTabsEnabled) {
+            const tabLeaves = iconTabs.getTabLeavesOfFilePath(this, file.path);
+            for (const tabLeaf of tabLeaves) {
+              iconTabs.add(this, file as TFile, tabLeaf.tabHeaderInnerIconEl, {
+                iconName,
+              });
+            }
+          }
+
+          // Update icon in title when setting is enabled.
+          if (this.getSettings().iconInTitleEnabled) {
+            this.addIconInTitle(iconName);
+          }
+        },
+      });
+    }
+
+    // Refreshes the icon tab and title icon for custom rules.
+    for (const rule of customRule.getSortedRules(this)) {
+      const applicable = await customRule.isApplicable(this, rule, file);
+      if (applicable) {
+        customRule.add(this, rule, file);
+        this.addIconInTitle(rule.icon);
+        const tabLeaves = iconTabs.getTabLeavesOfFilePath(this, file.path);
+        for (const tabLeaf of tabLeaves) {
+          iconTabs.add(this, file as TFile, tabLeaf.tabHeaderInnerIconEl, {
+            iconName: rule.icon,
+          });
+        }
+        didUpdate = true;
+        break;
+      }
+    }
+
+    // Only remove icon above titles and icon in tabs if no inheritance or custom rule was found.
+    if (!didUpdate) {
+      // Refreshes icons above title and icons in tabs.
+      for (const openedFile of getAllOpenedFiles(this)) {
+        if (this.getSettings().iconInTitleEnabled) {
+          titleIcon.remove(
+            (openedFile.leaf.view as InlineTitleView).inlineTitleEl,
+          );
+        }
+        if (this.getSettings().iconInTabsEnabled) {
+          const leaf = openedFile.leaf as TabHeaderLeaf;
+          iconTabs.remove(leaf.tabHeaderInnerIconEl, {
+            replaceWithDefaultIcon: true,
+          });
+        }
+      }
+    }
   }
 
   private handleChangeLayout(): void {
@@ -539,7 +549,6 @@ export default class IconFolderPlugin extends Plugin {
             const activeView =
               this.app.workspace.getActiveViewOfType(MarkdownView);
             if (activeView) {
-              console.log(activeView);
               const file = activeView.file;
               const view = (activeView.leaf.view as any).currentMode
                 .view as InlineTitleView;
@@ -620,6 +629,64 @@ export default class IconFolderPlugin extends Plugin {
               });
             } else {
               titleIcon.hide(leaf.inlineTitleEl);
+            }
+          }
+        }),
+      );
+
+      // Register event for frontmatter icon registration.
+      this.registerEvent(
+        this.app.metadataCache.on('resolve', async (file) => {
+          if (!this.getSettings().iconInFrontmatterEnabled) {
+            return;
+          }
+
+          const fileCache = this.app.metadataCache.getFileCache(file);
+          if (fileCache?.frontmatter) {
+            const { icon: newIconName } = fileCache.frontmatter;
+            // If `icon` property is empty, we will remove it from the data and remove the icon.
+            if (!newIconName) {
+              await this.removeSingleIcon(file);
+              return;
+            }
+
+            const cachedIcon = IconCache.getInstance().get(file.path);
+            if (newIconName === cachedIcon?.iconNameWithPrefix) {
+              return;
+            }
+
+            try {
+              saveIconToIconPack(this, newIconName);
+            } catch (e) {
+              console.error(e);
+              new Notice(e.message);
+              return;
+            }
+
+            dom.createIconNode(this, file.path, newIconName);
+            this.addFolderIcon(file.path, newIconName);
+            IconCache.getInstance().set(file.path, {
+              iconNameWithPrefix: newIconName,
+            });
+
+            // Update icon in tab when setting is enabled.
+            if (this.getSettings().iconInTabsEnabled) {
+              const tabLeaves = iconTabs.getTabLeavesOfFilePath(
+                this,
+                file.path,
+              );
+              for (const tabLeaf of tabLeaves) {
+                iconTabs.update(
+                  this,
+                  newIconName,
+                  tabLeaf.tabHeaderInnerIconEl,
+                );
+              }
+            }
+
+            // Update icon in title when setting is enabled.
+            if (this.getSettings().iconInTitleEnabled) {
+              this.addIconInTitle(newIconName);
             }
           }
         }),

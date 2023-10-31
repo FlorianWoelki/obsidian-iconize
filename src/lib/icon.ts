@@ -19,6 +19,7 @@ import {
 } from '../icon-pack-manager';
 import config from '@app/config';
 import { Notice } from 'obsidian';
+import { IconCache } from './icon-cache';
 
 const checkMissingIcons = async (
   plugin: IconFolderPlugin,
@@ -227,6 +228,9 @@ const addAll = (
             iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
             iconNode.classList.add('iconize-icon');
 
+            IconCache.getInstance().set(dataPath, {
+              iconNameWithPrefix: iconName,
+            });
             dom.setIconForNode(plugin, iconName, iconNode);
 
             titleEl.insertBefore(iconNode, titleInnerEl);
