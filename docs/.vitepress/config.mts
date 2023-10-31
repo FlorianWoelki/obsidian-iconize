@@ -35,6 +35,7 @@ export default defineConfig({
           { text: 'Icon in Tabs', link: '/files-and-folders/icon-tabs' },
           { text: 'Inheritance', link: '/files-and-folders/inheritance' },
           { text: 'Custom Rules', link: '/files-and-folders/custom-rules' },
+          { text: 'Use Frontmatter', link: '/files-and-folders/use-frontmatter' },
         ],
       },
       {
