@@ -656,7 +656,9 @@ export default class IconFolderPlugin extends Plugin {
             }
 
             try {
-              saveIconToIconPack(this, newIconName);
+              if (!emoji.isEmoji(newIconName)) {
+                saveIconToIconPack(this, newIconName);
+              }
             } catch (e) {
               console.error(e);
               new Notice(e.message);
@@ -850,7 +852,10 @@ export default class IconFolderPlugin extends Plugin {
       } else {
         iconNameWithPrefix = iconData as string;
       }
-      removeIconFromIconPack(this, iconNameWithPrefix);
+
+      if (!emoji.isEmoji(iconNameWithPrefix)) {
+        removeIconFromIconPack(this, iconNameWithPrefix);
+      }
     }
 
     //this.addIconsToSearch();
