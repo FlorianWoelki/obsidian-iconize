@@ -83,11 +83,18 @@ describe('extract', () => {
 });
 
 describe('setFontSize', () => {
-  it('should set width and height according to the defined font size', () => {
+  it('should set width and height according to the defined integer font size', () => {
     const input = `<svg width="100" height="100"><circle cx="50" cy="50" r="10" /></svg>`;
     const output = svg.setFontSize(input, 50);
     expect(output).toMatch(/width="50px"/);
     expect(output).toMatch(/height="50px"/);
+  });
+
+  it('should set width and height according to the defined floating point number font size', () => {
+    const input = `<svg width="32.5" height="32.55"><circle cx="50" cy="50" r="10" /></svg>`;
+    const output = svg.setFontSize(input, 95.5);
+    expect(output).toMatch(/width="95.5px"/);
+    expect(output).toMatch(/height="95.5px"/);
   });
 });
 
