@@ -650,6 +650,13 @@ export default class IconFolderPlugin extends Plugin {
               return;
             }
 
+            if (typeof newIconName !== 'string') {
+              new Notice(
+                `[${config.PLUGIN_NAME}] Frontmatter property type \`icon\` has to be of type \`text\`.`,
+              );
+              return;
+            }
+
             const cachedIcon = IconCache.getInstance().get(file.path);
             if (newIconName === cachedIcon?.iconNameWithPrefix) {
               return;
