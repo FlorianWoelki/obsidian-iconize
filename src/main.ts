@@ -726,13 +726,32 @@ export default class IconFolderPlugin extends Plugin {
           }
         }),
       );
+
+      this.registerEvent(
+        this.app.workspace.on('css-change', () => {
+          for (const openedFile of getAllOpenedFiles(this)) {
+            const activeView = openedFile.leaf.view as InlineTitleView;
+            if (activeView instanceof MarkdownView) {
+              titleIcon.updateStyle(activeView.inlineTitleEl, {
+                fontSize: this.calculateIconInTitleSize(),
+              });
+            }
+          }
+        }),
+      );
     });
   }
 
   calculateIconInTitleSize(): number {
-    const fontSize = parseFloat(
-      getComputedStyle(document.documentElement).fontSize,
+    let fontSize = parseFloat(
+      getComputedStyle(document.body).getPropertyValue('--font-text-size') ??
+        '0',
     );
+    if (!fontSize) {
+      fontSize = parseFloat(
+        getComputedStyle(document.documentElement).fontSize,
+      );
+    }
     const inlineTitleSize = parseFloat(
       getComputedStyle(document.body).getPropertyValue('--inline-title-size'),
     );

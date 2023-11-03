@@ -6,14 +6,14 @@ const getTitleIcon = (leaf: HTMLElement): HTMLElement | null => {
   return leaf.querySelector(`.${config.TITLE_ICON_CLASS}`);
 };
 
-interface AddOptions {
+interface Options {
   fontSize?: number;
 }
 
 const add = (
   inlineTitleEl: HTMLElement,
   svgElement: string,
-  options?: AddOptions,
+  options?: Options,
 ): void => {
   if (options?.fontSize) {
     svgElement = svg.setFontSize(svgElement, options.fontSize);
@@ -34,6 +34,24 @@ const add = (
   titleIcon.innerHTML = svgElement;
   if (!hadTitleIcon) {
     inlineTitleEl.parentElement.prepend(titleIcon);
+  }
+};
+
+const updateStyle = (inlineTitleEl: HTMLElement, options: Options): void => {
+  const titleIcon = getTitleIcon(inlineTitleEl.parentElement);
+  if (!titleIcon) {
+    return;
+  }
+
+  if (options.fontSize) {
+    if (!emoji.isEmoji(titleIcon.innerHTML)) {
+      titleIcon.innerHTML = svg.setFontSize(
+        titleIcon.innerHTML,
+        options.fontSize,
+      );
+    } else {
+      titleIcon.style.fontSize = `${options.fontSize}px`;
+    }
   }
 };
 
@@ -69,6 +87,7 @@ const remove = (inlineTitleEl: HTMLElement): void => {
 
 export default {
   add,
+  updateStyle,
   hide,
   remove,
 };
