@@ -32,5 +32,7 @@ describe('getShortcode', () => {
   it('should return `undefined` for invalid emojis', () => {
     expect(emoji.getShortcode('hello')).toBe(undefined);
     expect(emoji.getShortcode('123')).toBe(undefined);
+    expect(emoji.getShortcode('🤗 hello')).toBe(undefined);
+    expect(emoji.getShortcode('hello 🤗')).toBe(undefined);
   });
 });
