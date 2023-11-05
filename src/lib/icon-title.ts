@@ -15,6 +15,10 @@ const add = (
   svgElement: string,
   options?: Options,
 ): void => {
+  if (!inlineTitleEl.parentElement) {
+    return;
+  }
+
   if (options?.fontSize) {
     svgElement = svg.setFontSize(svgElement, options.fontSize);
   }
@@ -38,6 +42,10 @@ const add = (
 };
 
 const updateStyle = (inlineTitleEl: HTMLElement, options: Options): void => {
+  if (!inlineTitleEl.parentElement) {
+    return;
+  }
+
   const titleIcon = getTitleIcon(inlineTitleEl.parentElement);
   if (!titleIcon) {
     return;
