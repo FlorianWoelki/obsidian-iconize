@@ -24,6 +24,7 @@ import dom from '../../lib/util/dom';
 import svg from '../../lib/util/svg';
 import { getNormalizedName } from '../../icon-pack-manager';
 import { TabHeaderLeaf } from '../../@types/obsidian';
+import emoji from '@app/emoji';
 
 export default class CustomIconRuleSetting extends IconFolderSetting {
   private app: App;
@@ -383,13 +384,17 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           button.buttonEl.style.float = 'right';
           button.setButtonText('Save Changes');
           button.onClick(async () => {
-            // Tries to remove the previously used icon from the icon pack.
-            removeIconFromIconPack(this.plugin, oldRule.icon);
+            if (!emoji.isEmoji(oldRule.icon)) {
+              // Tries to remove the previously used icon from the icon pack.
+              removeIconFromIconPack(this.plugin, oldRule.icon);
+            }
 
-            // Tries to add the newly used icon to the icon pack.
-            saveIconToIconPack(this.plugin, rule.icon);
+            if (!emoji.isEmoji(rule.icon)) {
+              // Tries to add the newly used icon to the icon pack.
+              saveIconToIconPack(this.plugin, rule.icon);
+              rule.icon = getNormalizedName(rule.icon);
+            }
 
-            rule.icon = getNormalizedName(rule.icon);
             this.refreshDisplay();
             new Notice('Custom rule updated.');
 
