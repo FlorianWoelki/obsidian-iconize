@@ -1,6 +1,6 @@
 import {
-  addIconToIconPack,
   extractIconToIconPack,
+  getIconFromIconPack,
   getIconPackNameByPrefix,
   getSvgFromLoadedIcon,
   nextIdentifier,
@@ -88,7 +88,7 @@ export const saveIconToIconPack = (
   }
 
   const iconPackName = getIconPackNameByPrefix(iconPrefix);
-  const icon = addIconToIconPack(iconPackName, `${iconName}.svg`, possibleIcon);
+  const icon = getIconFromIconPack(iconPackName, iconName);
   extractIconToIconPack(plugin, icon, possibleIcon);
 };
 
