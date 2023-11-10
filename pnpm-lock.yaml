@@ -13,6 +13,15 @@ dependencies:
     version: 3.10.1
 
 devDependencies:
+  '@codemirror/language':
+    specifier: ^0.20.2
+    version: 0.20.2
+  '@codemirror/state':
+    specifier: ^0.20.1
+    version: 0.20.1
+  '@codemirror/view':
+    specifier: ^0.20.7
+    version: 0.20.7
   '@commitlint/cli':
     specifier: ^17.8.0
     version: 17.8.0
@@ -72,7 +81,7 @@ devDependencies:
     version: 2.3.0
   obsidian:
     specifier: ^1.4.11
-    version: 1.4.11(@codemirror/state@6.3.0)(@codemirror/view@6.21.3)
+    version: 1.4.11(@codemirror/state@0.20.1)(@codemirror/view@0.20.7)
   prettier:
     specifier: ^3.0.3
     version: 3.0.3
@@ -413,14 +422,25 @@ packages:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
 
-  /@codemirror/state@6.3.0:
-    resolution: {integrity: sha512-5fIS19U46PEqczbBL6gBAtju9MFDT9TjIC/q2MYblHCEKiU8jhV3cRFhvQu5tQvbtxc5KLWxSnzMNh3ZqeaXVg==}
+  /@codemirror/language@0.20.2:
+    resolution: {integrity: sha512-WB3Bnuusw0xhVvhBocieYKwJm04SOk5bPoOEYksVHKHcGHFOaYaw+eZVxR4gIqMMcGzOIUil0FsCmFk8yrhHpw==}
+    dependencies:
+      '@codemirror/state': 0.20.1
+      '@codemirror/view': 0.20.7
+      '@lezer/common': 0.16.1
+      '@lezer/highlight': 0.16.0
+      '@lezer/lr': 0.16.3
+      style-mod: 4.1.0
     dev: true
 
-  /@codemirror/view@6.21.3:
-    resolution: {integrity: sha512-8l1aSQ6MygzL4Nx7GVYhucSXvW4jQd0F6Zm3v9Dg+6nZEfwzJVqi4C2zHfDljID+73gsQrWp9TgHc81xU15O4A==}
+  /@codemirror/state@0.20.1:
+    resolution: {integrity: sha512-ms0tlV5A02OK0pFvTtSUGMLkoarzh1F8mr6jy1cD7ucSC2X/VLHtQCxfhdSEGqTYlQF2hoZtmLv+amqhdgbwjQ==}
+    dev: true
+
+  /@codemirror/view@0.20.7:
+    resolution: {integrity: sha512-pqEPCb9QFTOtHgAH5XU/oVy9UR/Anj6r+tG5CRmkNVcqSKEPmBU05WtN/jxJCFZBXf6HumzWC9ydE4qstO3TxQ==}
     dependencies:
-      '@codemirror/state': 6.3.0
+      '@codemirror/state': 0.20.1
       style-mod: 4.1.0
       w3c-keyname: 2.2.8
     dev: true
@@ -940,6 +960,22 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
+    dev: true
+
+  /@lezer/common@0.16.1:
+    resolution: {integrity: sha512-qPmG7YTZ6lATyTOAWf8vXE+iRrt1NJd4cm2nJHK+v7X9TsOF6+HtuU/ctaZy2RCrluxDb89hI6KWQ5LfQGQWuA==}
+    dev: true
+
+  /@lezer/highlight@0.16.0:
+    resolution: {integrity: sha512-iE5f4flHlJ1g1clOStvXNLbORJoiW4Kytso6ubfYzHnaNo/eo5SKhxs4wv/rtvwZQeZrK3we8S9SyA7OGOoRKQ==}
+    dependencies:
+      '@lezer/common': 0.16.1
+    dev: true
+
+  /@lezer/lr@0.16.3:
+    resolution: {integrity: sha512-pau7um4eAw94BEuuShUIeQDTf3k4Wt6oIUOYxMmkZgDHdqtIcxWND4LRxi8nI9KuT4I1bXQv67BCapkxt7Ywqw==}
+    dependencies:
+      '@lezer/common': 0.16.1
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:
@@ -3207,14 +3243,14 @@ packages:
       path-key: 4.0.0
     dev: true
 
-  /obsidian@1.4.11(@codemirror/state@6.3.0)(@codemirror/view@6.21.3):
+  /obsidian@1.4.11(@codemirror/state@0.20.1)(@codemirror/view@0.20.7):
     resolution: {integrity: sha512-BCVYTvaXxElJMl6MMbDdY/CGK+aq18SdtDY/7vH8v6BxCBQ6KF4kKxL0vG9UZ0o5qh139KpUoJHNm+6O5dllKA==}
     peerDependencies:
       '@codemirror/state': ^6.0.0
       '@codemirror/view': ^6.0.0
     dependencies:
-      '@codemirror/state': 6.3.0
-      '@codemirror/view': 6.21.3
+      '@codemirror/state': 0.20.1
+      '@codemirror/view': 0.20.7
       '@types/codemirror': 5.60.8
       moment: 2.29.4
     dev: true

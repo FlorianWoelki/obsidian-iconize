@@ -46,6 +46,7 @@ import titleIcon from './lib/icon-title';
 import SuggestionIcon from './editor/icons-suggestion';
 import emoji from './emoji';
 import { IconCache } from './lib/icon-cache';
+import { buildIconPlugin } from './editor/live-preview';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -280,6 +281,8 @@ export default class IconFolderPlugin extends Plugin {
 
     // Register shortcodes auto-completion suggestion in notes.
     this.registerEditorSuggest(new SuggestionIcon(this.app));
+
+    this.registerEditorExtension(buildIconPlugin(this));
 
     this.addSettingTab(new IconFolderSettingsUI(this.app, this));
   }
