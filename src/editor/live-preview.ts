@@ -170,21 +170,7 @@ class IconWidget extends WidgetType {
     const _icon = icon.getIconByName(this.id);
 
     if (_icon) {
-      const svg = createSvg('svg', {
-        attr: {
-          width: '16px',
-          height: '16px',
-          viewBox: '0 0 24 24',
-          fill: 'none',
-          stroke: 'currentColor',
-          'stroke-width': '2',
-          'stroke-linecap': 'round',
-          'stroke-linejoin': 'round',
-          'aria-hidden': true,
-        },
-      });
-      svg.innerHTML = _icon.svgContent;
-      wrap.replaceChildren(svg);
+      wrap.innerHTML = _icon.svgElement;
     } else {
       wrap.append(`:${this.id}:`);
     }
