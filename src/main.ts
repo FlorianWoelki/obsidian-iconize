@@ -46,7 +46,11 @@ import titleIcon from './lib/icon-title';
 import SuggestionIcon from './editor/icons-suggestion';
 import emoji from './emoji';
 import { IconCache } from './lib/icon-cache';
-import { buildIconPlugin } from './editor/live-preview';
+import {
+  PositionField,
+  buildIconPlugin,
+  getField,
+} from './editor/live-preview';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -61,6 +65,8 @@ export default class IconFolderPlugin extends Plugin {
   private registeredFileExplorers = new Set<ExplorerView>();
 
   private modifiedInternalPlugins: InternalPluginInjector[] = [];
+
+  public positionField: PositionField = getField();
 
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
@@ -282,7 +288,7 @@ export default class IconFolderPlugin extends Plugin {
     // Register shortcodes auto-completion suggestion in notes.
     this.registerEditorSuggest(new SuggestionIcon(this.app));
 
-    this.registerEditorExtension(buildIconPlugin(this));
+    this.registerEditorExtension([this.positionField, buildIconPlugin(this)]);
 
     this.addSettingTab(new IconFolderSettingsUI(this.app, this));
   }

@@ -1,7 +1,14 @@
-import { syntaxTree } from '@codemirror/language';
+import {
+  EditorState,
+  Range,
+  RangeSet,
+  RangeSetBuilder,
+  RangeValue,
+  StateField,
+} from '@codemirror/state';
 import {
   ViewPlugin,
-  type EditorView,
+  EditorView,
   ViewUpdate,
   Decoration,
   DecorationSet,
@@ -11,31 +18,168 @@ import { editorLivePreviewField } from 'obsidian';
 import IconFolderPlugin from '../main';
 import icon from '@app/lib/icon';
 
+export type PositionField = StateField<RangeSet<IconPosition>>;
+
+class IconPosition extends RangeValue {
+  constructor(public text: string) {
+    super();
+  }
+
+  get iconId(): string {
+    return this.text;
+  }
+
+  eq(other: RangeValue): boolean {
+    return other instanceof IconPosition && other.text === this.text;
+  }
+}
+
+export const getField = () => {
+  const getRanges = (
+    state: EditorState,
+    excludeFrom: number,
+    excludeTo: number,
+    updateRange: (
+      from: number,
+      to: number,
+      value: IconPosition,
+      remove: boolean,
+    ) => void,
+  ) => {
+    const saveRange = (from: number, to: number): void => {
+      const t = state.doc.sliceString(0, state.doc.length);
+      for (const { 0: rawCode, index: offset } of t.matchAll(
+        /:\+1:|:-1:|:[\w-]+:/g,
+      )) {
+        const code = rawCode.substring(1, rawCode.length - 1);
+        if (!icon.getIconByName(code)) {
+          continue;
+        }
+
+        if (offset < from || offset > to) {
+          updateRange(
+            offset!,
+            offset! + rawCode.length,
+            new IconPosition(code),
+            false,
+          );
+          continue;
+        }
+
+        updateRange(
+          offset!,
+          offset! + rawCode.length,
+          new IconPosition(code),
+          true,
+        );
+      }
+    };
+
+    saveRange(excludeFrom, excludeTo);
+  };
+
+  return StateField.define<RangeSet<IconPosition>>({
+    create: (state) => {
+      const rangeSet = new RangeSetBuilder<IconPosition>();
+      getRanges(state, 0, state.doc.length, rangeSet.add.bind(rangeSet));
+      return rangeSet.finish();
+    },
+    update: (rangeSet, transaction) => {
+      const newRanges: Range<IconPosition>[] = [];
+      if (!transaction.docChanged) {
+        if (transaction.selection) {
+          const from = transaction.selection.ranges[0].from;
+          const to = transaction.selection.ranges[0].to;
+          const lineEnd = transaction.state.doc.lineAt(to).length;
+          const lineStart = transaction.state.doc.lineAt(from).from;
+          getRanges(
+            transaction.state,
+            lineStart,
+            lineStart + lineEnd,
+            (from, to, value, removed) => {
+              rangeSet = rangeSet.update({
+                filterFrom: from,
+                filterTo: to,
+                filter: () => false,
+              });
+              if (!removed) {
+                newRanges.push(value.range(from, to));
+              }
+            },
+          );
+        }
+
+        rangeSet = rangeSet.update({ add: newRanges });
+        return rangeSet;
+      }
+
+      rangeSet = rangeSet.map(transaction.changes);
+
+      const changedLines: [lineStart: number, lineEnd: number][] = [];
+      transaction.changes.iterChangedRanges((_f, _t, from, to) => {
+        changedLines.push([
+          transaction.state.doc.lineAt(from).number,
+          transaction.state.doc.lineAt(to).number,
+        ]);
+      });
+
+      for (const [_, end] of changedLines) {
+        const lineEnd = transaction.state.doc.line(end).length;
+        const lineStart = transaction.state.doc.line(end).from;
+
+        getRanges(
+          transaction.state,
+          lineStart,
+          lineStart + lineEnd,
+          (from, to, value, removed) => {
+            rangeSet = rangeSet.update({
+              filterFrom: from,
+              filterTo: to,
+              filter: () => false,
+            });
+            if (!removed) {
+              newRanges.push(value.range(from, to));
+            }
+          },
+        );
+      }
+      rangeSet = rangeSet.update({ add: newRanges });
+      return rangeSet;
+    },
+  });
+};
+
 class IconWidget extends WidgetType {
   constructor(
-    public id: string,
     public plugin: IconFolderPlugin,
+    public id: string,
   ) {
     super();
   }
 
   eq(other: IconWidget) {
-    return other.id === this.id;
+    return other instanceof IconWidget && other.id === this.id;
   }
 
   toDOM() {
-    const _icon = icon.getIconByName(this.id);
     const wrap = createSpan({
+      cls: 'cm-iconize-icon',
       attr: { 'aria-label': this.id },
     });
+
+    const _icon = icon.getIconByName(this.id);
 
     if (_icon) {
       const svg = createSvg('svg', {
         attr: {
-          width: '24',
-          height: '24',
-          viewBox: _icon.svgViewbox,
-          fill: 'currentColor',
+          width: '16px',
+          height: '16px',
+          viewBox: '0 0 24 24',
+          fill: 'none',
+          stroke: 'currentColor',
+          'stroke-width': '2',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
           'aria-hidden': true,
         },
       });
@@ -49,59 +193,34 @@ class IconWidget extends WidgetType {
   }
 
   ignoreEvent(): boolean {
-    return true;
+    return false;
   }
 }
 
 const icons = (view: EditorView, plugin: IconFolderPlugin) => {
-  const ranges: [code: string, from: number, to: number][] = [];
-
-  const getRange = (from: number, to: number): void => {
-    const text = view.state.doc.sliceString(from, to);
-    if (!text.trim()) return;
-
-    for (const match of text.matchAll(/:\+1:|:-1:|:[\w-]+:/g)) {
-      const code = match[0].substring(1, match[0].length - 1);
-      if (icon.getIconByName(code)) {
-        ranges.push([
-          code,
-          from + match.index!,
-          from + match.index! + match[0].length,
-        ]);
-      }
-    }
-  };
-
+  const ranges: [iconId: string, from: number, to: number][] = [];
+  const iconInfo = view.state.field(plugin.positionField);
   for (const { from, to } of view.visibleRanges) {
-    let prevTo = from;
-    syntaxTree(view.state).iterate({
-      from,
-      to,
-      enter: (node) => {
-        if (node.from !== prevTo) {
-          getRange(prevTo, node.from);
-        }
-        prevTo = node.to;
-        getRange(from, to);
-      },
+    iconInfo.between(from - 1, to + 1, (from, to, { iconId }) => {
+      ranges.push([iconId, from, to]);
     });
-    if (prevTo !== to) getRange(prevTo, from);
   }
-
   return Decoration.set(
     ranges.map(([code, from, to]) => {
+      const widget = new IconWidget(plugin, code);
       if (view.state.field(editorLivePreviewField)) {
         return Decoration.replace({
-          widget: new IconWidget(code, plugin),
-          side: 1,
+          widget,
+          side: -1,
         }).range(from, to);
       }
 
       return Decoration.widget({
-        widget: new IconWidget(code, plugin),
-        side: 1,
+        widget,
+        side: -1,
       }).range(to);
     }),
+    true,
   );
 };
 
@@ -117,19 +236,16 @@ export const buildIconPlugin = (plugin: IconFolderPlugin) => {
       }
 
       update(update: ViewUpdate) {
-        const previousMode = update.startState.field(editorLivePreviewField);
-        const currentMode = update.state.field(editorLivePreviewField);
-        if (
-          update.docChanged ||
-          update.viewportChanged ||
-          previousMode !== currentMode
-        ) {
-          this.decorations = icons(update.view, this.plugin);
-        }
+        this.decorations = icons(update.view, this.plugin);
       }
     },
     {
       decorations: (v) => v.decorations,
+      provide: (plugin) =>
+        EditorView.atomicRanges.of((view) => {
+          const value = view.plugin(plugin);
+          return value ? value.decorations : Decoration.none;
+        }),
     },
   );
 };
