@@ -55,7 +55,7 @@ export const getField = () => {
     const saveRange = (from: number, to: number): void => {
       const t = state.doc.sliceString(0, state.doc.length);
       for (const { 0: rawCode, index: offset } of t.matchAll(
-        /:\+1:|:-1:|:[\w-]+:/g,
+        /(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g,
       )) {
         const code = rawCode.substring(1, rawCode.length - 1);
         if (!icon.getIconByName(code)) {
@@ -178,12 +178,15 @@ class IconWidget extends WidgetType {
   toDOM(view: EditorView) {
     const wrap = createSpan({
       cls: 'cm-iconize-icon',
-      attr: { 'aria-label': this.id },
+      attr: {
+        'aria-label': this.id,
+        'aria-hidden': 'true',
+      },
     });
 
-    const _icon = icon.getIconByName(this.id);
+    const foundIcon = icon.getIconByName(this.id);
 
-    if (_icon) {
+    if (foundIcon) {
       const parent = view.domAtPos(this.start)?.node?.parentElement;
       let fontSize = calculateFontTextSize();
 
@@ -205,7 +208,7 @@ class IconWidget extends WidgetType {
         });
       }
 
-      const svgElement = svg.setFontSize(_icon.svgElement, fontSize);
+      const svgElement = svg.setFontSize(foundIcon.svgElement, fontSize);
       wrap.innerHTML = svgElement;
     } else {
       wrap.append(`:${this.id}:`);

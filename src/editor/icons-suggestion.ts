@@ -59,9 +59,11 @@ export default class SuggestionIcon extends EditorSuggest<string> {
 
     // Store all icons corresponding to the current query.
     const iconsNameArray = getAllLoadedIconNames()
-      .filter((iconObject) =>
-        iconObject.name.toLowerCase().includes(queryLowerCase),
-      )
+      .filter((iconObject) => {
+        const name =
+          iconObject.prefix.toLowerCase() + iconObject.name.toLowerCase();
+        return name.toLowerCase().includes(queryLowerCase);
+      })
       .map((iconObject) => iconObject.prefix + iconObject.name);
 
     // Store all emojis correspoding to the current query - parsing whitespaces and
