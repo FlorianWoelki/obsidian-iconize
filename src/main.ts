@@ -51,6 +51,14 @@ import {
   buildIconPlugin,
   getField,
 } from './editor/live-preview';
+import {
+  Header,
+  calculateFontTextSize,
+  calculateHeaderSize,
+  calculateInlineTitleSize,
+  isHeader,
+} from './lib/util/text';
+import svg from './lib/util/svg';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -249,13 +257,6 @@ export default class IconFolderPlugin extends Plugin {
         return;
       }
 
-      const iconSize: { [key: string]: string } = {
-        H1: '24px',
-        H2: '20px',
-        H3: '18px',
-        H4: '16px',
-      };
-
       const iconShortcodes = Array.from(
         element.innerHTML.matchAll(/(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g),
       );
@@ -267,18 +268,25 @@ export default class IconFolderPlugin extends Plugin {
         // Find icon and process it if exists
         const iconObject = icon.getIconByName(iconName);
         if (iconObject) {
-          const tagName = element.firstElementChild.tagName;
-          if (iconSize.hasOwnProperty(tagName)) {
+          const tagName = element.firstElementChild.tagName.toLowerCase();
+          let fontSize = calculateFontTextSize();
+
+          if (isHeader(tagName)) {
+            fontSize = calculateHeaderSize(tagName as Header);
+            const svgElement = svg.setFontSize(iconObject.svgElement, fontSize);
+
             // Replace first element (DIV html content) with svg element
             element.firstElementChild.innerHTML =
-              element.firstElementChild.innerHTML
-                .replace(shortcode, iconObject.svgElement)
-                .replace(/(16px)/g, iconSize[tagName]);
+              element.firstElementChild.innerHTML.replace(
+                shortcode,
+                svgElement,
+              );
           } else {
+            const svgElement = svg.setFontSize(iconObject.svgElement, fontSize);
             // Replace shortcode by svg element
             element.innerHTML = element.innerHTML.replace(
               shortcode,
-              iconObject.svgElement,
+              svgElement,
             );
           }
         }
@@ -421,7 +429,7 @@ export default class IconFolderPlugin extends Plugin {
 
             if (possibleIcon) {
               titleIcon.add(activeView.inlineTitleEl, possibleIcon, {
-                fontSize: this.calculateIconInTitleSize(),
+                fontSize: calculateInlineTitleSize(),
               });
             }
           }
@@ -584,7 +592,7 @@ export default class IconFolderPlugin extends Plugin {
                 // when the content mode changes back to editing.
                 titleIcon.remove(view.inlineTitleEl);
                 titleIcon.add(view.inlineTitleEl, foundIcon, {
-                  fontSize: this.calculateIconInTitleSize(),
+                  fontSize: calculateInlineTitleSize(),
                 });
               }
             }
@@ -634,7 +642,7 @@ export default class IconFolderPlugin extends Plugin {
 
             if (foundIcon) {
               titleIcon.add(leaf.inlineTitleEl, foundIcon, {
-                fontSize: this.calculateIconInTitleSize(),
+                fontSize: calculateInlineTitleSize(),
               });
             } else {
               titleIcon.hide(leaf.inlineTitleEl);
@@ -749,29 +757,13 @@ export default class IconFolderPlugin extends Plugin {
             const activeView = openedFile.leaf.view as InlineTitleView;
             if (activeView instanceof MarkdownView) {
               titleIcon.updateStyle(activeView.inlineTitleEl, {
-                fontSize: this.calculateIconInTitleSize(),
+                fontSize: calculateInlineTitleSize(),
               });
             }
           }
         }),
       );
     });
-  }
-
-  calculateIconInTitleSize(): number {
-    let fontSize = parseFloat(
-      getComputedStyle(document.body).getPropertyValue('--font-text-size') ??
-        '0',
-    );
-    if (!fontSize) {
-      fontSize = parseFloat(
-        getComputedStyle(document.documentElement).fontSize,
-      );
-    }
-    const inlineTitleSize = parseFloat(
-      getComputedStyle(document.body).getPropertyValue('--inline-title-size'),
-    );
-    return fontSize * inlineTitleSize;
   }
 
   addIconInTitle(iconName: string): void {
@@ -785,7 +777,7 @@ export default class IconFolderPlugin extends Plugin {
 
         if (possibleIcon) {
           titleIcon.add(activeView.inlineTitleEl, possibleIcon, {
-            fontSize: this.calculateIconInTitleSize(),
+            fontSize: calculateInlineTitleSize(),
           });
         }
       }
