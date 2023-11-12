@@ -90,7 +90,11 @@ describe('getIconFromIconPack', () => {
         ],
       },
     ] as any);
-    const icon = iconPackManager.getIconFromIconPack('IconBrew', 'HelloWorld');
+    const icon = iconPackManager.getIconFromIconPack(
+      'IconBrew',
+      'Ib',
+      'HelloWorld',
+    );
     expect(icon).toEqual({
       prefix: 'Ib',
       name: 'Hello-World',
@@ -101,7 +105,7 @@ describe('getIconFromIconPack', () => {
   it('should return `undefined` when icon pack is not found', () => {
     iconPackManager.setIconPacks([]);
     expect(
-      iconPackManager.getIconFromIconPack('IconBrew', 'Test'),
+      iconPackManager.getIconFromIconPack('IconBrew', 'Ib', 'Test'),
     ).toBeUndefined();
   });
 });

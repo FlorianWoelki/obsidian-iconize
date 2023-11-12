@@ -52,42 +52,38 @@ export const getField = () => {
       remove: boolean,
     ) => void,
   ) => {
-    const saveRange = (from: number, to: number): void => {
-      const t = state.doc.sliceString(0, state.doc.length);
-      for (const { 0: rawCode, index: offset } of t.matchAll(
-        /(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g,
-      )) {
-        const code = rawCode.substring(1, rawCode.length - 1);
-        if (!icon.getIconByName(code)) {
-          continue;
-        }
+    const t = state.doc.sliceString(0, state.doc.length);
+    for (const { 0: rawCode, index: offset } of t.matchAll(
+      /(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g,
+    )) {
+      const code = rawCode.substring(1, rawCode.length - 1);
+      if (!icon.getIconByName(code)) {
+        continue;
+      }
 
-        if (offset < from || offset > to) {
-          updateRange(
-            offset!,
-            offset! + rawCode.length,
-            new IconPosition(code),
-            false,
-          );
-          continue;
-        }
-
+      if (offset < excludeFrom || offset > excludeTo) {
         updateRange(
           offset!,
           offset! + rawCode.length,
           new IconPosition(code),
-          true,
+          false,
         );
+        continue;
       }
-    };
 
-    saveRange(excludeFrom, excludeTo);
+      updateRange(
+        offset!,
+        offset! + rawCode.length,
+        new IconPosition(code),
+        true,
+      );
+    }
   };
 
   return StateField.define<RangeSet<IconPosition>>({
     create: (state) => {
       const rangeSet = new RangeSetBuilder<IconPosition>();
-      getRanges(state, 0, state.doc.length, rangeSet.add.bind(rangeSet));
+      getRanges(state, -1, -1, rangeSet.add.bind(rangeSet));
       return rangeSet.finish();
     },
     update: (rangeSet, transaction) => {
@@ -187,25 +183,22 @@ class IconWidget extends WidgetType {
     const foundIcon = icon.getIconByName(this.id);
 
     if (foundIcon) {
-      const parent = view.domAtPos(this.start)?.node?.parentElement;
       let fontSize = calculateFontTextSize();
 
-      if (parent) {
+      const line = view.state.doc.lineAt(this.end);
+      const headerMatch = line.text.match(/^#{1,6}\s/);
+      if (headerMatch && headerMatch[0].trim()) {
         const mapping: Record<string, Header> = {
-          'cm-header-1': 'h1',
-          'cm-header-2': 'h2',
-          'cm-header-3': 'h3',
-          'cm-header-4': 'h4',
-          'cm-header-5': 'h5',
-          'cm-header-6': 'h6',
+          '#': 'h1',
+          '##': 'h2',
+          '###': 'h3',
+          '####': 'h4',
+          '#####': 'h5',
+          '######': 'h6',
         };
-        const classes = parent.classList;
-        classes.forEach((className) => {
-          const header = mapping[className];
-          if (header) {
-            fontSize = calculateHeaderSize(header);
-          }
-        });
+
+        const header = mapping[headerMatch[0].trim()];
+        fontSize = calculateHeaderSize(header);
       }
 
       const svgElement = svg.setFontSize(foundIcon.svgElement, fontSize);
