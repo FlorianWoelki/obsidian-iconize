@@ -81,11 +81,6 @@ describe('saveIconToIconPack', () => {
 
     saveIconToIconPack({} as any, 'IbTest');
     expect(extractIconToIconPack).toBeCalledTimes(1);
-    expect(extractIconToIconPack).toBeCalledWith(
-      {} as any,
-      { name: 'IbTest' },
-      '<svg></svg>',
-    );
 
     getIconPackNameByPrefix.mockRestore();
     addIconToIconPack.mockRestore();

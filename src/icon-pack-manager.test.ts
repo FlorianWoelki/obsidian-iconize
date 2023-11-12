@@ -68,7 +68,7 @@ describe('getIconFromIconPack', () => {
         ],
       },
     ] as any);
-    const icon = iconPackManager.getIconFromIconPack('IconBrew', 'Test');
+    const icon = iconPackManager.getIconFromIconPack('IconBrew', 'Ib', 'Test');
     expect(icon).toEqual({
       prefix: 'Ib',
       name: 'Test',
