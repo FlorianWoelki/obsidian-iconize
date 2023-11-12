@@ -51,14 +51,8 @@ import {
   buildIconPlugin,
   getField,
 } from './editor/live-preview';
-import {
-  Header,
-  calculateFontTextSize,
-  calculateHeaderSize,
-  calculateInlineTitleSize,
-  isHeader,
-} from './lib/util/text';
-import svg from './lib/util/svg';
+import { calculateInlineTitleSize } from './lib/util/text';
+import { processMarkdown } from './editor/markdown-processor';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -249,53 +243,8 @@ export default class IconFolderPlugin extends Plugin {
       }),
     );
 
-    // post-processing complete :icon: shortcodes in Notes
-    this.registerMarkdownPostProcessor((element) => {
-      // ignore if codeblock
-      const codeElement = element.querySelector('pre > code');
-      if (codeElement) {
-        return;
-      }
-
-      const iconShortcodes = Array.from(
-        element.innerHTML.matchAll(/(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g),
-      );
-
-      for (let index = 0; index < iconShortcodes.length; index++) {
-        const shortcode = iconShortcodes[index][0];
-        const iconName = shortcode.slice(1, shortcode.length - 1);
-
-        // Find icon and process it if exists
-        const iconObject = icon.getIconByName(iconName);
-        if (iconObject) {
-          const tagName = element.firstElementChild.tagName.toLowerCase();
-          let fontSize = calculateFontTextSize();
-
-          if (isHeader(tagName)) {
-            fontSize = calculateHeaderSize(tagName as Header);
-            const svgElement = svg.setFontSize(iconObject.svgElement, fontSize);
-
-            // Replace first element (DIV html content) with svg element
-            element.firstElementChild.innerHTML =
-              element.firstElementChild.innerHTML.replace(
-                shortcode,
-                svgElement,
-              );
-          } else {
-            const svgElement = svg.setFontSize(iconObject.svgElement, fontSize);
-            // Replace shortcode by svg element
-            element.innerHTML = element.innerHTML.replace(
-              shortcode,
-              svgElement,
-            );
-          }
-        }
-      }
-    });
-
-    // Register shortcodes auto-completion suggestion in notes.
-    this.registerEditorSuggest(new SuggestionIcon(this.app));
-
+    this.registerMarkdownPostProcessor(processMarkdown);
+    this.registerEditorSuggest(new SuggestionIcon(this.app, this));
     this.registerEditorExtension([this.positionField, buildIconPlugin(this)]);
 
     this.addSettingTab(new IconFolderSettingsUI(this.app, this));

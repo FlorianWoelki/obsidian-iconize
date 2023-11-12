@@ -9,6 +9,7 @@ import {
 } from 'vitest';
 import icon from '../lib/icon';
 import * as iconPackManager from '../icon-pack-manager';
+import * as util from '../util';
 import SuggestionIcon from './icons-suggestion';
 
 vi.mock('obsidian', () => ({
@@ -21,12 +22,15 @@ vi.mock('obsidian', () => ({
 }));
 
 let app: any;
+let plugin: any;
 let suggestionIcon: SuggestionIcon;
 let replaceRangeMock: Mock;
 
 beforeEach(() => {
+  vi.restoreAllMocks();
   app = {};
-  suggestionIcon = new SuggestionIcon(app);
+  plugin = {};
+  suggestionIcon = new SuggestionIcon(app, plugin);
   replaceRangeMock = vi.fn();
   suggestionIcon.context = {
     start: {
@@ -41,6 +45,7 @@ beforeEach(() => {
       replaceRange: replaceRangeMock,
     },
   } as any;
+  vi.spyOn(util, 'saveIconToIconPack').mockImplementation(() => {});
 });
 
 describe('selectSuggestion', () => {

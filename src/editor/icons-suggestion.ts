@@ -9,9 +9,14 @@ import {
 import { getAllLoadedIconNames } from '../icon-pack-manager';
 import icon from '../lib/icon';
 import emoji from '../emoji';
+import { saveIconToIconPack } from '@app/util';
+import IconFolderPlugin from '@app/main';
 
 export default class SuggestionIcon extends EditorSuggest<string> {
-  constructor(app: App) {
+  constructor(
+    app: App,
+    public plugin: IconFolderPlugin,
+  ) {
     super(app);
   }
 
@@ -93,10 +98,13 @@ export default class SuggestionIcon extends EditorSuggest<string> {
   }
 
   selectSuggestion(value: string): void {
+    const isEmoji = emoji.isEmoji(value.replace(/_/g, ' '));
+    if (!isEmoji) {
+      saveIconToIconPack(this.plugin, value);
+    }
+
     // Replace query with iconNameWithPrefix or emoji unicode directly.
-    const updatedValue = emoji.isEmoji(value.replace(/_/g, ' '))
-      ? value
-      : `:${value}:`;
+    const updatedValue = isEmoji ? value : `:${value}:`;
     this.context.editor.replaceRange(
       updatedValue,
       this.context.start,
