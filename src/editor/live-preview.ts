@@ -17,6 +17,12 @@ import {
 import { editorLivePreviewField } from 'obsidian';
 import IconFolderPlugin from '../main';
 import icon from '@app/lib/icon';
+import svg from '@app/lib/util/svg';
+import {
+  Header,
+  calculateFontTextSize,
+  calculateHeaderSize,
+} from '@app/lib/util/text';
 
 export type PositionField = StateField<RangeSet<IconPosition>>;
 
@@ -150,6 +156,9 @@ export const getField = () => {
 };
 
 class IconWidget extends WidgetType {
+  private start = -1;
+  private end = -1;
+
   constructor(
     public plugin: IconFolderPlugin,
     public id: string,
@@ -157,11 +166,16 @@ class IconWidget extends WidgetType {
     super();
   }
 
+  setPosition(start: number, end: number): void {
+    this.start = start;
+    this.end = end;
+  }
+
   eq(other: IconWidget) {
     return other instanceof IconWidget && other.id === this.id;
   }
 
-  toDOM() {
+  toDOM(view: EditorView) {
     const wrap = createSpan({
       cls: 'cm-iconize-icon',
       attr: { 'aria-label': this.id },
@@ -170,7 +184,29 @@ class IconWidget extends WidgetType {
     const _icon = icon.getIconByName(this.id);
 
     if (_icon) {
-      wrap.innerHTML = _icon.svgElement;
+      const parent = view.domAtPos(this.start)?.node?.parentElement;
+      let fontSize = calculateFontTextSize();
+
+      if (parent) {
+        const mapping: Record<string, Header> = {
+          'cm-header-1': 'h1',
+          'cm-header-2': 'h2',
+          'cm-header-3': 'h3',
+          'cm-header-4': 'h4',
+          'cm-header-5': 'h5',
+          'cm-header-6': 'h6',
+        };
+        const classes = parent.classList;
+        classes.forEach((className) => {
+          const header = mapping[className];
+          if (header) {
+            fontSize = calculateHeaderSize(header);
+          }
+        });
+      }
+
+      const svgElement = svg.setFontSize(_icon.svgElement, fontSize);
+      wrap.innerHTML = svgElement;
     } else {
       wrap.append(`:${this.id}:`);
     }
@@ -194,6 +230,7 @@ const icons = (view: EditorView, plugin: IconFolderPlugin) => {
   return Decoration.set(
     ranges.map(([code, from, to]) => {
       const widget = new IconWidget(plugin, code);
+      widget.setPosition(from, to);
       if (view.state.field(editorLivePreviewField)) {
         return Decoration.replace({
           widget,
