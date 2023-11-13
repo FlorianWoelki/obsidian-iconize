@@ -46,11 +46,8 @@ import titleIcon from './lib/icon-title';
 import SuggestionIcon from './editor/icons-suggestion';
 import emoji from './emoji';
 import { IconCache } from './lib/icon-cache';
-import {
-  PositionField,
-  buildIconPlugin,
-  getField,
-} from './editor/live-preview';
+import { buildIconPlugin } from './editor/live-preview';
+import { PositionField, buildPositionField } from './editor/live-preview/state';
 import { calculateInlineTitleSize } from './lib/util/text';
 import { processMarkdown } from './editor/markdown-processor';
 
@@ -68,7 +65,7 @@ export default class IconFolderPlugin extends Plugin {
 
   private modifiedInternalPlugins: InternalPluginInjector[] = [];
 
-  public positionField: PositionField = getField();
+  public positionField: PositionField = buildPositionField();
 
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
