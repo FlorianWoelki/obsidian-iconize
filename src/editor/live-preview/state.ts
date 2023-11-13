@@ -24,8 +24,21 @@ class IconPosition extends RangeValue {
   }
 }
 
+/**
+ * Builds a position field for the editor state. This field will track the
+ * positions of the icons in the document.
+ **/
 export const buildPositionField = () => {
-  const getRanges = (
+  /**
+   * Checks the ranges of the icons in the document. If the range is not
+   * excluded, the range is added to the range set. If the range is excluded,
+   * the range is removed from the range set.
+   * @param state EditorState to get the ranges from.
+   * @param excludeFrom Number to exclude from the ranges.
+   * @param excludeTo Number to exclude to the ranges.
+   * @param updateRange Function callback to update the range.
+   */
+  const checkRanges = (
     state: EditorState,
     excludeFrom: number,
     excludeTo: number,
@@ -35,13 +48,13 @@ export const buildPositionField = () => {
       value: IconPosition,
       remove: boolean,
     ) => void,
-  ) => {
+  ): void => {
     const t = state.doc.sliceString(0, state.doc.length);
     for (const { 0: rawCode, index: offset } of t.matchAll(
       /(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g,
     )) {
-      const code = rawCode.substring(1, rawCode.length - 1);
-      if (!icon.getIconByName(code)) {
+      const iconName = rawCode.substring(1, rawCode.length - 1);
+      if (!icon.getIconByName(iconName)) {
         continue;
       }
 
@@ -49,7 +62,7 @@ export const buildPositionField = () => {
         updateRange(
           offset!,
           offset! + rawCode.length,
-          new IconPosition(code),
+          new IconPosition(iconName),
           false,
         );
         continue;
@@ -58,7 +71,7 @@ export const buildPositionField = () => {
       updateRange(
         offset!,
         offset! + rawCode.length,
-        new IconPosition(code),
+        new IconPosition(iconName),
         true,
       );
     }
@@ -67,7 +80,9 @@ export const buildPositionField = () => {
   return StateField.define<RangeSet<IconPosition>>({
     create: (state) => {
       const rangeSet = new RangeSetBuilder<IconPosition>();
-      getRanges(state, -1, -1, rangeSet.add.bind(rangeSet));
+      // Check all the ranges of the icons in the entire document. There is no
+      // exclusion going on here.
+      checkRanges(state, -1, -1, rangeSet.add.bind(rangeSet));
       return rangeSet.finish();
     },
     update: (rangeSet, transaction) => {
@@ -78,7 +93,9 @@ export const buildPositionField = () => {
           const to = transaction.selection.ranges[0].to;
           const lineEnd = transaction.state.doc.lineAt(to).length;
           const lineStart = transaction.state.doc.lineAt(from).from;
-          getRanges(
+          // Checks the ranges of the icons in the document except for the
+          // excluded line start and end.
+          checkRanges(
             transaction.state,
             lineStart,
             lineStart + lineEnd,
@@ -113,7 +130,9 @@ export const buildPositionField = () => {
         const lineEnd = transaction.state.doc.line(end).length;
         const lineStart = transaction.state.doc.line(end).from;
 
-        getRanges(
+        // Checks the ranges of the icons in the document except for the excluded
+        // line start and end.
+        checkRanges(
           transaction.state,
           lineStart,
           lineStart + lineEnd,
