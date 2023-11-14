@@ -36,7 +36,7 @@ const checkMissingIcons = async (
     const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
     const iconPackName = getIconPackNameByPrefix(iconPrefix);
 
-    const icon = getIconFromIconPack(iconPackName, iconName);
+    const icon = getIconFromIconPack(iconPackName, iconPrefix, iconName);
     if (!icon) {
       console.error(`Icon file ${iconNameWithPrefix} could not be found.`);
       return null;
@@ -353,7 +353,7 @@ const getIconByName = (iconNameWithPrefix: string): Icon | null => {
   const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
   const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
   const iconPackName = getIconPackNameByPrefix(iconPrefix);
-  const icon = getIconFromIconPack(iconPackName, iconName);
+  const icon = getIconFromIconPack(iconPackName, iconPrefix, iconName);
   if (!icon) {
     return null;
   }

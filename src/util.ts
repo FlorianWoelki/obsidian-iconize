@@ -88,7 +88,7 @@ export const saveIconToIconPack = (
   }
 
   const iconPackName = getIconPackNameByPrefix(iconPrefix);
-  const icon = getIconFromIconPack(iconPackName, iconName);
+  const icon = getIconFromIconPack(iconPackName, iconPrefix, iconName);
   extractIconToIconPack(plugin, icon, possibleIcon);
 };
 

@@ -30,6 +30,9 @@
     ]
   },
   "devDependencies": {
+    "@codemirror/language": "https://github.com/lishid/cm-language",
+    "@codemirror/state": "^6.0.0",
+    "@codemirror/view": "^6.0.0",
     "@commitlint/cli": "^17.8.0",
     "@commitlint/config-conventional": "^17.8.0",
     "@rollup/plugin-alias": "^5.0.1",

@@ -1,4 +1,5 @@
 import { MarkdownView, Setting } from 'obsidian';
+import { calculateInlineTitleSize } from '@app/lib/util/text';
 import IconFolderSetting from './iconFolderSetting';
 import icon from '../../lib/icon';
 import titleIcon from '../../lib/icon-title';
@@ -33,7 +34,7 @@ export default class ToggleIconInTitle extends IconFolderSetting {
                         ? foundIcon
                         : foundIcon.svgElement;
                     titleIcon.add(view.inlineTitleEl, content, {
-                      fontSize: this.plugin.calculateIconInTitleSize(),
+                      fontSize: calculateInlineTitleSize(),
                     });
                   } else {
                     titleIcon.hide(view.contentEl);

@@ -570,7 +570,20 @@ export const doesIconExists = (iconName: string): boolean => {
   );
 };
 
-export const getIconFromIconPack = (iconPackName: string, iconName: string) => {
+export const getIconFromIconPack = (
+  iconPackName: string,
+  iconPrefix: string,
+  iconName: string,
+) => {
+  const foundIcon = preloadedIcons.find(
+    (icon) =>
+      icon.prefix.toLowerCase() === iconPrefix.toLowerCase() &&
+      icon.name.toLowerCase() === iconName.toLowerCase(),
+  );
+  if (foundIcon) {
+    return foundIcon;
+  }
+
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   if (!iconPack) {
     return undefined;
