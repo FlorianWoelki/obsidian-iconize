@@ -240,9 +240,11 @@ export default class IconFolderPlugin extends Plugin {
       }),
     );
 
-    this.registerMarkdownPostProcessor(processMarkdown);
-    this.registerEditorSuggest(new SuggestionIcon(this.app, this));
-    this.registerEditorExtension([this.positionField, buildIconPlugin(this)]);
+    if (this.getSettings().iconsInNotesEnabled) {
+      this.registerMarkdownPostProcessor(processMarkdown);
+      this.registerEditorSuggest(new SuggestionIcon(this.app, this));
+      this.registerEditorExtension([this.positionField, buildIconPlugin(this)]);
+    }
 
     this.addSettingTab(new IconFolderSettingsUI(this.app, this));
   }
@@ -880,7 +882,7 @@ export default class IconFolderPlugin extends Plugin {
     const data = await this.loadData();
     if (data) {
       Object.entries(DEFAULT_SETTINGS).forEach(([k, v]) => {
-        if (!data.settings[k]) {
+        if (data.settings[k] === undefined) {
           data.settings[k] = v;
         }
       });

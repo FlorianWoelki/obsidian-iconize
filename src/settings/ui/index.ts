@@ -13,6 +13,7 @@ import RecentlyUsedIconsSetting from './recentlyUsedIcons';
 import ToggleIconInTabs from './toggleIconInTabs';
 import ToggleIconInTitle from './toggleIconInTitle';
 import ToggleFrontmatterIcon from './toggleFrontmatterIcon';
+import ToggleIconsInNotes from './toggleIconsInNotes';
 
 export default class IconFolderSettings extends PluginSettingTab {
   private plugin: IconFolderPlugin;
@@ -35,6 +36,7 @@ export default class IconFolderSettings extends PluginSettingTab {
     new ToggleIconInTabs(plugin, containerEl).display();
     new ToggleIconInTitle(plugin, containerEl).display();
     new ToggleFrontmatterIcon(plugin, containerEl).display();
+    new ToggleIconsInNotes(plugin, containerEl).display();
 
     containerEl.createEl('h3', { text: 'Icon Packs' });
     new PredefinedIconPacksSetting(plugin, containerEl, app, () =>

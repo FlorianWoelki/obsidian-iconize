@@ -127,6 +127,12 @@ export interface IconFolderSettings {
    * @default false
    */
   iconInFrontmatterEnabled: boolean;
+  /**
+   * Sets whether the plugin should be able to show icons in the editor while
+   * editing notes.
+   * @default true
+   */
+  iconsInNotesEnabled: boolean;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -148,4 +154,5 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   iconInTitleEnabled: false,
   iconInFrontmatterEnabled: false,
   iconsBackgroundCheckEnabled: false,
+  iconsInNotesEnabled: true,
 };
