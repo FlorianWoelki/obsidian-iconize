@@ -14,3 +14,8 @@ preview when you edit your notes:
 
 ![Icons in notes](../assets/icons-in-notes.png)
 
+Furthermore, if you would like to completely disable icons in notes, you can do
+so in the options by toggling the following setting:
+
+![Icons in notes setting](../assets/icons-in-notes-setting.png)
+
