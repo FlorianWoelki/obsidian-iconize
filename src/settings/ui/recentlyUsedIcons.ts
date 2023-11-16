@@ -11,7 +11,7 @@ export default class RecentlyUsedIconsSetting extends IconFolderSetting {
       )
       .addSlider((slider) => {
         slider
-          .setLimits(1, 15, 1)
+          .setLimits(1, 25, 1)
           .setDynamicTooltip()
           .setValue(
             this.plugin.getSettings().recentlyUsedIconsSize ??
