@@ -1,3 +1,4 @@
+import { syntaxTree, tokenClassNodeProp } from '@codemirror/language';
 import icon from '@app/lib/icon';
 import {
   EditorState,
@@ -9,6 +10,13 @@ import {
 } from '@codemirror/state';
 
 export type PositionField = StateField<RangeSet<IconPosition>>;
+
+type UpdateRangeFunc = (
+  from: number,
+  to: number,
+  value: IconPosition,
+  remove: boolean,
+) => void;
 
 class IconPosition extends RangeValue {
   constructor(public text: string) {
@@ -42,15 +50,10 @@ export const buildPositionField = () => {
     state: EditorState,
     excludeFrom: number,
     excludeTo: number,
-    updateRange: (
-      from: number,
-      to: number,
-      value: IconPosition,
-      remove: boolean,
-    ) => void,
+    updateRange: UpdateRangeFunc,
   ): void => {
-    const t = state.doc.sliceString(0, state.doc.length);
-    for (const { 0: rawCode, index: offset } of t.matchAll(
+    const text = state.doc.sliceString(0, state.doc.length);
+    for (const { 0: rawCode, index: offset } of text.matchAll(
       /(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g,
     )) {
       const iconName = rawCode.substring(1, rawCode.length - 1);
@@ -58,23 +61,68 @@ export const buildPositionField = () => {
         continue;
       }
 
-      if (offset < excludeFrom || offset > excludeTo) {
-        updateRange(
-          offset!,
-          offset! + rawCode.length,
-          new IconPosition(iconName),
-          false,
-        );
+      const from = offset;
+      const to = offset + rawCode.length;
+
+      if (!isNodeInRangeAccepted(state, from, to)) {
         continue;
       }
 
-      updateRange(
-        offset!,
-        offset! + rawCode.length,
-        new IconPosition(iconName),
-        true,
-      );
+      if (offset < excludeFrom || offset > excludeTo) {
+        updateRange(from, to, new IconPosition(iconName), false);
+        continue;
+      }
+
+      updateRange(from, to, new IconPosition(iconName), true);
     }
+  };
+
+  const isNodeInRangeAccepted = (
+    state: EditorState,
+    from: number,
+    to: number,
+  ) => {
+    let isRangeAccepted = true;
+    syntaxTree(state).iterate({
+      from,
+      to,
+      enter: ({ type }) => {
+        if (type.name === 'Document') {
+          return;
+        }
+
+        const allowedNodeTypes: string[] = [
+          'header',
+          'strong',
+          'em',
+          'quote',
+          'link',
+          'list-1',
+          'list-2',
+          'list-3',
+          'highlight',
+          'footref',
+          'comment',
+          'link-alias',
+        ];
+        const excludedNodeTypes: string[] = [
+          'formatting',
+          'hmd-codeblock',
+          'inline-code',
+          'hr',
+        ];
+        const nodeProps: string = type.prop(tokenClassNodeProp) ?? '';
+        const s = new Set(nodeProps.split(' '));
+
+        if (
+          excludedNodeTypes.some((t) => s.has(t)) &&
+          allowedNodeTypes.every((t) => !s.has(t))
+        ) {
+          isRangeAccepted = false;
+        }
+      },
+    });
+    return isRangeAccepted;
   };
 
   return StateField.define<RangeSet<IconPosition>>({
@@ -93,6 +141,7 @@ export const buildPositionField = () => {
           const to = transaction.selection.ranges[0].to;
           const lineEnd = transaction.state.doc.lineAt(to).length;
           const lineStart = transaction.state.doc.lineAt(from).from;
+
           // Checks the ranges of the icons in the document except for the
           // excluded line start and end.
           checkRanges(
