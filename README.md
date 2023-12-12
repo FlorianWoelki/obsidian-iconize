@@ -35,6 +35,7 @@ Right now, the following icon packs are supported by default and can be download
 * [LucideIcons](https://lucide.dev/)
 * [BoxIcons](https://boxicons.com/)
 * [RPG Awesome](http://nagoshiashumari.github.io/Rpg-Awesome/)
+* [coolicons](https://coolicons.cool/)
 
 However, feel free to add your custom icon packs or submit a new one by creating a Pull Request where you update the [iconPacks.ts](https://github.com/FlorianWoelki/obsidian-iconize/blob/main/src/iconPacks.ts) file and upload a zip file with the icons to [this directory](https://github.com/FlorianWoelki/obsidian-iconize/tree/main/iconPacks).
 
@@ -117,7 +118,7 @@ After the installation, you need to create a `env.js` file in the root directory
 
 ```js
 export const obsidianExportPath =
-  '<path-to-obsidian-vault>/.obsidian/plugins/obsidian-iconize/';
+  '<path-to-obsidian-vault>/.obsidian/plugins/obsidian-icon-folder/';
 ```
 
 Make sure you create the directory specified in that variable if it does not exist yet.
