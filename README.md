@@ -118,7 +118,7 @@ After the installation, you need to create a `env.js` file in the root directory
 
 ```js
 export const obsidianExportPath =
-  '<path-to-obsidian-vault>/.obsidian/plugins/obsidian-icon-folder/';
+  '<path-to-obsidian-vault>/.obsidian/plugins/obsidian-iconize/';
 ```
 
 Make sure you create the directory specified in that variable if it does not exist yet.
