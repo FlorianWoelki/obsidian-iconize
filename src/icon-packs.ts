@@ -83,9 +83,9 @@ const iconPacks = {
   coolicons: {
     name: 'coolicons',
     displayName: 'Coolicons',
-    path: '',
+    path: 'cooliocns SVG',
     downloadLink:
-      'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/coolicons.zip',
+      'https://github.com/krystonschwarze/coolicons/releases/download/v4.1/coolicons.v4.1.zip',
   },
 } as { [key: string]: IconPack };
 
