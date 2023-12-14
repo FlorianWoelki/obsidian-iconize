@@ -35,6 +35,7 @@ Right now, the following icon packs are supported by default and can be download
 * [LucideIcons](https://lucide.dev/)
 * [BoxIcons](https://boxicons.com/)
 * [RPG Awesome](http://nagoshiashumari.github.io/Rpg-Awesome/)
+* [coolicons](https://coolicons.cool/)
 
 However, feel free to add your custom icon packs or submit a new one by creating a Pull Request where you update the [iconPacks.ts](https://github.com/FlorianWoelki/obsidian-iconize/blob/main/src/iconPacks.ts) file and upload a zip file with the icons to [this directory](https://github.com/FlorianWoelki/obsidian-iconize/tree/main/iconPacks).
 

@@ -79,6 +79,14 @@ const iconPacks = {
     downloadLink:
       'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/rpg-awesome.zip',
   },
+  /** @source https://coolicons.cool/ */
+  coolicons: {
+    name: 'coolicons',
+    displayName: 'Coolicons',
+    path: 'cooliocns SVG',
+    downloadLink:
+      'https://github.com/krystonschwarze/coolicons/releases/download/v4.1/coolicons.v4.1.zip',
+  },
 } as { [key: string]: IconPack };
 
 /**
