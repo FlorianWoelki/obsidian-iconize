@@ -87,6 +87,13 @@ const iconPacks = {
     downloadLink:
       'https://github.com/krystonschwarze/coolicons/releases/download/v4.1/coolicons.v4.1.zip',
   },
+  /**@source https://feathericons.com/ */
+  feathericons: {
+    name: 'feathericons',
+    displayName: 'FeatherIcons',
+    path: 'svg',
+    downloadLink: 'https://github.com/y2kshukla/obsidian-iconize/raw/main/iconPacks/feather.zip',
+  }
 } as { [key: string]: IconPack };
 
 /**
