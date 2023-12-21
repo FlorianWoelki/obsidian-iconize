@@ -3,6 +3,7 @@ import inheritance from '@lib/inheritance';
 import style from '@lib/util/style';
 import IconFolderPlugin from '@app/main';
 import { getFileItemTitleEl } from '../util';
+import svg from '@app/lib/util/svg';
 
 /**
  * Helper function that refreshes the style of all the icons that are defined, in some
@@ -56,17 +57,18 @@ const refreshStyleOfIcons = async (plugin: IconFolderPlugin): Promise<void> => {
     for (const rule of customRule.getSortedRules(plugin)) {
       const fileItems = await customRule.getFileItems(plugin, rule);
       for (const fileItem of fileItems) {
-        if (rule.color) {
-          continue;
-        }
-
         const titleEl = getFileItemTitleEl(fileItem);
         const iconNode = titleEl.querySelector('.iconize-icon') as HTMLElement;
-        iconNode.innerHTML = style.applyAll(
-          plugin,
-          iconNode.innerHTML,
-          iconNode,
-        );
+        let iconContent = iconNode.innerHTML;
+
+        iconContent = style.applyAll(plugin, iconContent, iconNode);
+
+        if (rule.color) {
+          iconContent = svg.colorize(iconContent, rule.color);
+          iconNode.style.color = rule.color;
+        }
+
+        iconNode.innerHTML = iconContent;
       }
     }
   }

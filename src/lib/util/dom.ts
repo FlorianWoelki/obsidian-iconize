@@ -68,7 +68,7 @@ const setIconForNode = (
     let iconContent = style.applyAll(plugin, possibleIcon, node);
     if (color) {
       node.style.color = color;
-      iconContent = svg.colorize(possibleIcon, color);
+      iconContent = svg.colorize(iconContent, color);
     }
     node.innerHTML = iconContent;
   } else {
