@@ -124,7 +124,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     this.onSelect?.(iconNameWithPrefix);
     this.plugin.addFolderIcon(this.path, item);
     // Extracts the icon file to the icon pack.
-    if (typeof item === 'object') {
+    if (typeof item === 'object' && !emoji.isEmoji(iconNameWithPrefix)) {
       saveIconToIconPack(this.plugin, iconNameWithPrefix);
     }
     this.plugin.notifyPlugins();

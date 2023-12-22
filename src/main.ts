@@ -172,7 +172,9 @@ export default class IconFolderPlugin extends Plugin {
                 },
               });
               this.saveInheritanceData(file.path, null);
-              removeIconFromIconPack(this, iconData.inheritanceIcon);
+              if (!emoji.isEmoji(iconData.inheritanceIcon)) {
+                removeIconFromIconPack(this, iconData.inheritanceIcon);
+              }
             });
           } else {
             item.setTitle('Inherit icon');
@@ -184,7 +186,11 @@ export default class IconFolderPlugin extends Plugin {
                 this.saveInheritanceData(file.path, icon);
                 const iconName =
                   typeof icon === 'string' ? icon : icon.displayName;
-                saveIconToIconPack(this, iconName);
+
+                if (!emoji.isEmoji(iconName)) {
+                  saveIconToIconPack(this, iconName);
+                }
+
                 inheritance.add(this, file.path, iconName, {
                   onAdd: (file) => {
                     if (this.getSettings().iconInTabsEnabled) {
