@@ -33,6 +33,7 @@ export class IconWidget extends WidgetType {
       cls: 'cm-iconize-icon',
       attr: {
         'aria-label': this.id,
+        'data-icon': this.id,
         'aria-hidden': 'true',
       },
     });
