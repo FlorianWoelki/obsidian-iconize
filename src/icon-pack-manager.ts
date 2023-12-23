@@ -65,11 +65,13 @@ export const moveIconPackDirectories = async (
   // Tries to move all icon packs to the new folder.
   for (let i = 0; i < iconPacks.length; i++) {
     const iconPack = iconPacks[i];
-    // Tries to create a new directory in the new path.
-    const doesDirExist = await createDirectory(plugin, iconPack.name);
-    if (doesDirExist) {
-      new Notice(`Directory with name ${iconPack.name} already exists.`);
-      continue;
+    if (await plugin.app.vault.adapter.exists(`${from}/${iconPack.name}`)) {
+      // Tries to create a new directory in the new path.
+      const doesDirExist = await createDirectory(plugin, iconPack.name);
+      if (doesDirExist) {
+        new Notice(`Directory with name ${iconPack.name} already exists.`);
+        continue;
+      }
     }
 
     new Notice(`Moving ${iconPack.name}...`);
@@ -241,6 +243,10 @@ export const getFilesInDirectory = async (
   plugin: Plugin,
   dir: string,
 ): Promise<string[]> => {
+  if (!(await plugin.app.vault.adapter.exists(dir))) {
+    return [];
+  }
+
   return (await plugin.app.vault.adapter.list(dir)).files;
 };
 
