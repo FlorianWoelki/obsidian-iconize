@@ -24,8 +24,9 @@ export const processMarkdown = (element: HTMLElement) => {
 
     // Find icon and process it if exists
     const iconObject = icon.getIconByName(iconName);
+    const firstElementChild = element.firstElementChild ?? element;
     if (iconObject) {
-      const tagName = element.firstElementChild.tagName.toLowerCase();
+      const tagName = firstElementChild.tagName.toLowerCase();
       let fontSize = calculateFontTextSize();
 
       if (isHeader(tagName)) {
@@ -33,8 +34,10 @@ export const processMarkdown = (element: HTMLElement) => {
         const svgElement = svg.setFontSize(iconObject.svgElement, fontSize);
 
         // Replace first element (DIV html content) with svg element
-        element.firstElementChild.innerHTML =
-          element.firstElementChild.innerHTML.replace(shortcode, svgElement);
+        firstElementChild.innerHTML = firstElementChild.innerHTML.replace(
+          shortcode,
+          svgElement,
+        );
       } else {
         const svgElement = svg.setFontSize(iconObject.svgElement, fontSize);
         // Replace shortcode by svg element
