@@ -94,7 +94,9 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
       .setName('Add icon rule')
-      .setDesc('Will add the icon based on the specific string.')
+      .setDesc(
+        'Will add the icon based on the defined rule (as a plain string or in regex format).',
+      )
       .addText((text) => {
         text.onChange((value) => {
           this.chooseIconBtn.setDisabled(value.length === 0);

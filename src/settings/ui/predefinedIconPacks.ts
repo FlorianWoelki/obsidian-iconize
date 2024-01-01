@@ -21,7 +21,7 @@ export default class PredefinedIconPacksSetting extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
       .setName('Add predefined icon pack')
-      .setDesc('Add an icon pack like FontAwesome or Remixicons')
+      .setDesc('Add a predefined icon pack that is officially supported.')
       .addButton((btn) => {
         btn.setButtonText('Browse icon packs');
         btn.onClick(() => {

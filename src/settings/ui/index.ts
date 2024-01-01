@@ -28,17 +28,25 @@ export default class IconFolderSettings extends PluginSettingTab {
     const { plugin, containerEl, app } = this;
     containerEl.empty();
 
-    containerEl.createEl('h2', { text: 'Icon Folder Settings' });
+    containerEl.createEl('h1', { text: 'General' });
     new RecentlyUsedIconsSetting(plugin, containerEl).display();
     new IconPacksPathSetting(plugin, containerEl).display();
     new IconPacksBackgroundChecker(plugin, containerEl).display();
     new EmojiStyleSetting(plugin, containerEl).display();
+    containerEl.createEl('h3', { text: 'Visibility of icons' });
     new ToggleIconInTabs(plugin, containerEl).display();
     new ToggleIconInTitle(plugin, containerEl).display();
     new ToggleFrontmatterIcon(plugin, containerEl).display();
     new ToggleIconsInNotes(plugin, containerEl).display();
 
-    containerEl.createEl('h3', { text: 'Icon Packs' });
+    containerEl.createEl('h1', {
+      text: 'Icon customization for files/folders',
+    });
+    new IconFontSizeSetting(plugin, containerEl).display();
+    new IconColorSetting(plugin, containerEl).display();
+    new ExtraMarginSetting(plugin, containerEl).display();
+
+    containerEl.createEl('h1', { text: 'Icon packs' });
     new PredefinedIconPacksSetting(plugin, containerEl, app, () =>
       this.display(),
     ).display();
@@ -46,12 +54,7 @@ export default class IconFolderSettings extends PluginSettingTab {
       this.display(),
     ).display();
 
-    containerEl.createEl('h3', { text: 'Icon Customization' });
-    new IconFontSizeSetting(plugin, containerEl).display();
-    new IconColorSetting(plugin, containerEl).display();
-    new ExtraMarginSetting(plugin, containerEl).display();
-
-    containerEl.createEl('h3', { text: 'Custom Icon Rules' });
+    containerEl.createEl('h1', { text: 'Custom icon rules' });
     new CustomIconRuleSetting(plugin, containerEl, app, () =>
       this.display(),
     ).display();

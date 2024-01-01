@@ -10,7 +10,7 @@ import iconTabs from '../../lib/icon-tabs';
 export default class EmojiStyleSetting extends IconFolderSetting {
   public display(): void {
     const emojiStyle = new Setting(this.containerEl)
-      .setName('Emoji Style')
+      .setName('Emoji style')
       .setDesc('Change the style of your emojis.');
     emojiStyle.addDropdown((dropdown) => {
       dropdown.addOption('none', 'None');

@@ -8,8 +8,8 @@ import { InlineTitleView } from '../../@types/obsidian';
 export default class ToggleIconInTitle extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Toggle Icon in Title')
-      .setDesc('Toggles the visibility of an icon for a file above the title.')
+      .setName('Toggle icon in title')
+      .setDesc('Toggles the visibility of an icon above the title of a file.')
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.getSettings().iconInTitleEnabled)

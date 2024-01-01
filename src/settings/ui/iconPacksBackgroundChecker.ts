@@ -4,7 +4,7 @@ import IconFolderSetting from './iconFolderSetting';
 export default class IconPacksBackgroundChecker extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Icons Background Check')
+      .setName('Icons background check')
       .setDesc(
         'Check in the background on every load of Obsidian, if icons are missing and it will try to add them to the specific icon pack.',
       )

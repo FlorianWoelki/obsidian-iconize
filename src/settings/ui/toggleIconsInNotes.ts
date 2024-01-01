@@ -5,7 +5,7 @@ import config from '@app/config';
 export default class ToggleIconsInEditor extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Toggle Icons while editing notes')
+      .setName('Toggle icons while editing notes')
       .setDesc(
         'Toggles whether you are able to add and see icons in your notes and editor (e.g., ability to have :LiSofa: as an icon in your notes).',
       )

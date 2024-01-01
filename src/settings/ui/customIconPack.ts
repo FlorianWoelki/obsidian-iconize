@@ -70,7 +70,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
       .setName('Add custom icon pack')
-      .setDesc('Add a custom icon pack')
+      .setDesc('Add a custom icon pack.')
       .addText((text) => {
         text.setPlaceholder('Your icon pack name');
         this.textComponent = text;

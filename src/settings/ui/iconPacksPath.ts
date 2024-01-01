@@ -11,8 +11,8 @@ export default class IconPacksPathSetting extends IconFolderSetting {
 
   public display(): void {
     const iconPacksPathSetting = new Setting(this.containerEl)
-      .setName('Icon Packs folder path')
-      .setDesc('Change the default icon packs folder path');
+      .setName('Icon packs folder path')
+      .setDesc('Change the default icon packs folder path.');
 
     iconPacksPathSetting.addText((text) => {
       this.iconPacksSettingTextComp = text;
