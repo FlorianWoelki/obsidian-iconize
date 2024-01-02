@@ -15,6 +15,7 @@ If you like this plugin, feel free to support the development by buying a coffee
 
 ## Available Features
 
+[Icons before file/folder name](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/icon-before-file-or-folder.html),
 [Icons in notes](https://florianwoelki.github.io/obsidian-iconize/notes/icons-in-notes.html),
 [Icon above title](https://florianwoelki.github.io/obsidian-iconize/notes/title-icon.html),
 [Predefined icon packs](https://florianwoelki.github.io/obsidian-iconize/guide/icon-packs.html),

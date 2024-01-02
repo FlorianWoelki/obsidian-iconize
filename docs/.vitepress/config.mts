@@ -32,6 +32,7 @@ export default defineConfig({
         text: 'Files and Folders',
         collapsed: false,
         items: [
+          { text: 'Icon before file/folder name', link: '/files-and-folders/icon-before-file-or-folder' },
           { text: 'Icon in Tabs', link: '/files-and-folders/icon-tabs' },
           { text: 'Inheritance', link: '/files-and-folders/inheritance' },
           { text: 'Custom Rules', link: '/files-and-folders/custom-rules' },
