@@ -45,7 +45,7 @@
     "@types/node": "^20.8.6",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "@typescript-eslint/parser": "^6.7.5",
-    "@vitest/coverage-istanbul": "^0.34.6",
+    "@vitest/coverage-istanbul": "^1.1.1",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
@@ -60,8 +60,8 @@
     "tslib": "^2.6.2",
     "twemoji": "^14.0.2",
     "typescript": "^5.2.2",
-    "vitepress": "1.0.0-rc.22",
-    "vitest": "^0.34.6"
+    "vitepress": "1.0.0-rc.34",
+    "vitest": "^1.1.1"
   },
   "dependencies": {
     "@rollup/plugin-babel": "^6.0.4",
