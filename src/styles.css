@@ -17,10 +17,6 @@
   align-items: center;
 }
 
-.iconize-setting .setting-item-control .dropdown {
-  margin-right: 12px;
-}
-
 .iconize-setting input[type='color'] {
   margin: 0 6px;
 }

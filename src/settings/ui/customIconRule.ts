@@ -111,9 +111,6 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
       .addButton((btn) => {
         btn.setDisabled(true);
         btn.setButtonText('Choose icon');
-        btn.buttonEl.style.marginLeft = '12px';
-        btn.buttonEl.style.cursor = 'not-allowed';
-        btn.buttonEl.style.opacity = '50%';
         btn.onClick(async () => {
           if (this.textComponent.getValue().length === 0) {
             return;

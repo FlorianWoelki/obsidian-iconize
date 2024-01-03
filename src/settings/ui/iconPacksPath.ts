@@ -21,7 +21,6 @@ export default class IconPacksPathSetting extends IconFolderSetting {
 
     iconPacksPathSetting.addButton((btn) => {
       btn.setButtonText('Save');
-      btn.buttonEl.style.marginLeft = '12px';
       btn.onClick(async () => {
         const newPath = this.iconPacksSettingTextComp.getValue();
         const oldPath = this.plugin.getSettings().iconPacksPath;
