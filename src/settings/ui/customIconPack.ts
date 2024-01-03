@@ -102,7 +102,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
 
     getAllIconPacks().forEach((iconPack) => {
       const iconPackSetting = new Setting(this.containerEl)
-        .setName(iconPack.name)
+        .setName(`${iconPack.name} (${iconPack.prefix})`)
         .setDesc(`Total icons: ${iconPack.icons.length}`);
       // iconPackSetting.addButton((btn) => {
       //   btn.setIcon('broken-link');
