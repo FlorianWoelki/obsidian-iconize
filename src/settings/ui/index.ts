@@ -46,16 +46,16 @@ export default class IconFolderSettings extends PluginSettingTab {
     new IconColorSetting(plugin, containerEl).display();
     new ExtraMarginSetting(plugin, containerEl).display();
 
+    containerEl.createEl('h1', { text: 'Custom icon rules' });
+    new CustomIconRuleSetting(plugin, containerEl, app, () =>
+      this.display(),
+    ).display();
+
     containerEl.createEl('h1', { text: 'Icon packs' });
     new PredefinedIconPacksSetting(plugin, containerEl, app, () =>
       this.display(),
     ).display();
     new CustomIconPackSetting(plugin, containerEl, () =>
-      this.display(),
-    ).display();
-
-    containerEl.createEl('h1', { text: 'Custom icon rules' });
-    new CustomIconRuleSetting(plugin, containerEl, app, () =>
       this.display(),
     ).display();
   }

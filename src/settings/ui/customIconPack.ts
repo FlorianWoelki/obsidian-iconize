@@ -14,7 +14,7 @@ import { readFileSync } from '@app/util';
 export default class CustomIconPackSetting extends IconFolderSetting {
   private textComponent: TextComponent;
   private dragOverElement: HTMLElement;
-  private closeTimer: any;
+  private closeTimer: NodeJS.Timeout;
   private dragTargetElement: HTMLElement;
   private refreshDisplay: () => void;
 
