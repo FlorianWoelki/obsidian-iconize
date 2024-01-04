@@ -1,3 +1,6 @@
+import twemoji from 'twemoji';
+import { EmojiStyle } from './settings/data';
+
 const shortNames: Record<string, string> = {
   '😀': 'grinning face',
   '😃': 'grinning face with big eyes',
@@ -1863,6 +1866,29 @@ const isEmoji = (str: string): boolean => {
   return !/\d/.test(str) && emojiString === str;
 };
 
+const parseEmoji = (
+  style: EmojiStyle,
+  str: string,
+  size = 16,
+): string | null => {
+  switch (style) {
+    case 'twemoji':
+      return twemoji.parse(str, {
+        base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
+        folder: 'svg',
+        ext: '.svg',
+        attributes: () => ({
+          width: `${size}px`,
+          height: `${size}px`,
+        }),
+      });
+    case 'native':
+      return str;
+    default:
+      return null;
+  }
+};
+
 /**
  * Gets the shortcode for a given emoji by the name of the emoji. This function replaces
  * spaces with underscores and removes colons.
@@ -1878,4 +1904,5 @@ export default {
   shortNames,
   isEmoji,
   getShortcode,
+  parseEmoji,
 };

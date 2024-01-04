@@ -1,9 +1,9 @@
-import twemoji from 'twemoji';
 import config from '@app/config';
 import { getSvgFromLoadedIcon, nextIdentifier } from '../../icon-pack-manager';
 import IconFolderPlugin from '../../main';
 import style from './style';
 import svg from './svg';
+import emoji from '@app/emoji';
 
 /**
  * Removes the `iconize-icon` icon node from the provided HTMLElement.
@@ -72,26 +72,9 @@ const setIconForNode = (
     }
     node.innerHTML = iconContent;
   } else {
-    // The icon is an emoji.
-    let emoji = '';
-    switch (plugin.getSettings().emojiStyle) {
-      case 'twemoji':
-        emoji = twemoji.parse(iconName, {
-          base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
-          folder: 'svg',
-          ext: '.svg',
-          attributes: () => ({
-            width: '16px',
-            height: '16px',
-          }),
-        }) as any;
-        break;
-      case 'native':
-        emoji = iconName;
-        break;
-    }
-
-    node.innerHTML = style.applyAll(plugin, emoji, node);
+    const parsedEmoji =
+      emoji.parseEmoji(plugin.getSettings().emojiStyle, iconName) ?? iconName;
+    node.innerHTML = style.applyAll(plugin, parsedEmoji, node);
   }
 };
 

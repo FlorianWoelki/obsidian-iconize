@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import titleIcon from './icon-title';
-import config from '../config';
+import config from '@app/config';
 import svg from './util/svg';
 
 describe('add', () => {
@@ -9,7 +9,7 @@ describe('add', () => {
     const inlineTitleEl = document.createElement('div');
     parentEl.appendChild(inlineTitleEl);
 
-    titleIcon.add(inlineTitleEl, '<svg></svg>');
+    titleIcon.add({} as any, inlineTitleEl, '<svg></svg>');
     expect(parentEl).toMatchInlineSnapshot(`<div>
   <div
     class="iconize-title-icon"
@@ -26,7 +26,12 @@ describe('add', () => {
     const inlineTitleEl = document.createElement('div');
     parentEl.appendChild(inlineTitleEl);
 
-    titleIcon.add(inlineTitleEl, '👍', { fontSize: 10 });
+    titleIcon.add(
+      { getSettings: () => ({ emojiStyle: 'native' }) } as any,
+      inlineTitleEl,
+      '👍',
+      { fontSize: 10 },
+    );
     expect(parentEl).toMatchInlineSnapshot(`<div>
   <div
     class="iconize-title-icon"
@@ -46,7 +51,7 @@ describe('add', () => {
     parentEl.appendChild(titleIconEl);
     parentEl.appendChild(inlineTitleEl);
 
-    titleIcon.add(inlineTitleEl, '<svg></svg>');
+    titleIcon.add({} as any, inlineTitleEl, '<svg></svg>');
     expect(parentEl).toMatchInlineSnapshot(`<div>
   <div
     class="iconize-title-icon"
@@ -66,7 +71,7 @@ describe('add', () => {
     const inlineTitleEl = document.createElement('div');
     parentEl.appendChild(inlineTitleEl);
 
-    titleIcon.add(inlineTitleEl, '<svg></svg>', { fontSize: 10 });
+    titleIcon.add({} as any, inlineTitleEl, '<svg></svg>', { fontSize: 10 });
     expect(setFontSize).toBeCalledTimes(1);
     expect(setFontSize).toHaveBeenCalledWith('<svg></svg>', 10);
 

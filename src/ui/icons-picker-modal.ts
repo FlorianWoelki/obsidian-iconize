@@ -1,4 +1,3 @@
-import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
 import IconFolderPlugin from '@app/main';
 import emoji from '@app/emoji';
@@ -156,19 +155,14 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
     if (item.item.name !== 'default') {
       if (item.item.prefix === 'Emoji') {
-        let displayName = '';
-        switch (this.plugin.getSettings().emojiStyle) {
-          case 'twemoji':
-            displayName = twemoji.parse(item.item.displayName, {
-              base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
-            });
-            break;
-          case 'native':
-            displayName = item.item.displayName;
-            break;
-          default:
-            break;
+        const displayName = emoji.parseEmoji(
+          this.plugin.getSettings().emojiStyle,
+          item.item.displayName,
+        );
+        if (!displayName) {
+          return;
         }
+
         el.innerHTML = `<div>${el.innerHTML}</div><div class="iconize-icon-preview">${displayName}</div>`;
       } else {
         el.innerHTML = `<div>${

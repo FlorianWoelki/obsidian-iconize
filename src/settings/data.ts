@@ -1,3 +1,5 @@
+export type EmojiStyle = 'none' | 'native' | 'twemoji';
+
 export interface ExtraMarginSettings {
   /**
    * Controls the extra margin on the top of the icon.
@@ -75,7 +77,7 @@ export interface IconFolderSettings {
    * Sets the style of the emoji. The option `none` means that no emojis will be used.
    * @default 'none'
    */
-  emojiStyle: 'none' | 'native' | 'twemoji';
+  emojiStyle: EmojiStyle;
   /**
    * Sets the overall color of all the icons. Setting this option to `null` will use the
    * default color of the theme.

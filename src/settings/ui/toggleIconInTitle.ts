@@ -33,7 +33,7 @@ export default class ToggleIconInTitle extends IconFolderSetting {
                       typeof foundIcon === 'string'
                         ? foundIcon
                         : foundIcon.svgElement;
-                    titleIcon.add(view.inlineTitleEl, content, {
+                    titleIcon.add(this.plugin, view.inlineTitleEl, content, {
                       fontSize: calculateInlineTitleSize(),
                     });
                   } else {

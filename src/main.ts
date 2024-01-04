@@ -382,7 +382,7 @@ export default class IconFolderPlugin extends Plugin {
             }
 
             if (possibleIcon) {
-              titleIcon.add(activeView.inlineTitleEl, possibleIcon, {
+              titleIcon.add(this, activeView.inlineTitleEl, possibleIcon, {
                 fontSize: calculateInlineTitleSize(),
               });
             }
@@ -545,7 +545,7 @@ export default class IconFolderPlugin extends Plugin {
                 // Removes the node because the editor markdown content is being rerendered
                 // when the content mode changes back to editing.
                 titleIcon.remove(view.inlineTitleEl);
-                titleIcon.add(view.inlineTitleEl, foundIcon, {
+                titleIcon.add(this, view.inlineTitleEl, foundIcon, {
                   fontSize: calculateInlineTitleSize(),
                 });
               }
@@ -595,7 +595,7 @@ export default class IconFolderPlugin extends Plugin {
             }
 
             if (foundIcon) {
-              titleIcon.add(leaf.inlineTitleEl, foundIcon, {
+              titleIcon.add(this, leaf.inlineTitleEl, foundIcon, {
                 fontSize: calculateInlineTitleSize(),
               });
             } else {
@@ -730,7 +730,7 @@ export default class IconFolderPlugin extends Plugin {
         }
 
         if (possibleIcon) {
-          titleIcon.add(activeView.inlineTitleEl, possibleIcon, {
+          titleIcon.add(this, activeView.inlineTitleEl, possibleIcon, {
             fontSize: calculateInlineTitleSize(),
           });
         }
