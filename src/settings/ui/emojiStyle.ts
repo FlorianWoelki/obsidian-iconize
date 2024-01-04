@@ -79,6 +79,8 @@ export default class EmojiStyleSetting extends IconFolderSetting {
               tabLeaf.tabHeaderInnerIconEl,
             );
           }
+
+          this.plugin.addIconInTitle(iconName);
         }
       }
     }
