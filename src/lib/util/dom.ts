@@ -76,6 +76,8 @@ const setIconForNode = (
       emoji.parseEmoji(plugin.getSettings().emojiStyle, iconName) ?? iconName;
     node.innerHTML = style.applyAll(plugin, parsedEmoji, node);
   }
+
+  node.setAttribute('title', iconName);
 };
 
 interface CreateOptions {
