@@ -1,12 +1,14 @@
 import {
   Plugin,
   MenuItem,
+  Menu,
   TFile,
   WorkspaceLeaf,
   requireApiVersion,
   TFolder,
   MarkdownView,
   Notice,
+  Platform,
 } from 'obsidian';
 import {
   ExplorerView,
@@ -126,30 +128,6 @@ export default class IconFolderPlugin extends Plugin {
             };
           });
         };
-
-        const removeIconMenuItem = (item: MenuItem) => {
-          item.setTitle('Remove icon');
-          item.setIcon('trash');
-          item.onClick(async () => {
-            await this.removeSingleIcon(file);
-          });
-        };
-
-        menu.addItem(addIconMenuItem);
-
-        const filePathData = this.getData()[file.path];
-        const inheritanceFolderHasIcon =
-          typeof filePathData === 'object' &&
-          (filePathData as FolderIconObject).iconName !== null;
-        // Only add remove icon menu item when the file path exists in the data.
-        // We do not want to show this menu item for e.g. inheritance or custom rules.
-        if (
-          filePathData &&
-          (typeof filePathData === 'string' || inheritanceFolderHasIcon)
-        ) {
-          menu.addItem(removeIconMenuItem);
-        }
-
         const inheritIcon = (item: MenuItem) => {
           const iconData = this.data[file.path] as FolderIconObject | string;
           if (typeof iconData === 'object') {
@@ -217,7 +195,38 @@ export default class IconFolderPlugin extends Plugin {
           item.setIcon('vertical-three-dots');
         };
 
-        menu.addItem(inheritIcon);
+        const removeIconMenuItem = (item: MenuItem) => {
+          item.setTitle('Remove icon');
+          item.setIcon('trash');
+          item.onClick(async () => {
+            await this.removeSingleIcon(file);
+          });
+        };
+        menu.addItem((item: MenuItem) => {
+          if (Platform.isDesktop) item.setTitle('Iconize').setIcon('tag')
+          else {
+            menu.addSeparator();
+            item.setIsLabel(true);
+          }
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          const subMenu = Platform.isDesktop ? (item.setSubmenu() as Menu) : menu;
+          subMenu.addItem(addIconMenuItem);
+          const filePathData = this.getData()[file.path];
+          const inheritanceFolderHasIcon =
+            typeof filePathData === 'object' &&
+            (filePathData as FolderIconObject).iconName !== null;
+          // Only add remove icon menu item when the file path exists in the data.
+          // We do not want to show this menu item for e.g. inheritance or custom rules.
+          if (
+            filePathData &&
+            (typeof filePathData === 'string' || inheritanceFolderHasIcon)
+          ) {
+            subMenu.addItem(removeIconMenuItem);
+          }
+          subMenu.addItem(inheritIcon);
+          if (!Platform.isDesktop) menu.addSeparator()
+        })
       }),
     );
 
