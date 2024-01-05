@@ -87,6 +87,14 @@ const iconPacks = {
     downloadLink:
       'https://github.com/krystonschwarze/coolicons/releases/download/v4.1/coolicons.v4.1.zip',
   },
+  /** @source https://feathericons.com/ */
+  feathericons: {
+    name: 'feather-icons',
+    displayName: 'Feather Icons',
+    path: 'feather-4.29.1/icons/',
+    downloadLink:
+      'https://github.com/feathericons/feather/archive/refs/tags/v4.29.1.zip',
+  },
 } as { [key: string]: IconPack };
 
 /**
