@@ -41,7 +41,7 @@ const iconPacks = {
     downloadLink:
       'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/icon-brew.zip',
   },
-  /* https://simpleicons.org/ */
+  /** @source https://simpleicons.org/ */
   simpleIcons: {
     name: 'simple-icons',
     displayName: 'Simple Icons',
@@ -62,6 +62,38 @@ const iconPacks = {
     path: 'svg',
     downloadLink:
       'https://github.com/tabler/tabler-icons/releases/download/v2.34.0/tabler-icons-2.34.0.zip',
+  },
+  /** @source https://boxicons.com/ */
+  boxicons: {
+    name: 'boxicons',
+    displayName: 'Boxicons',
+    path: 'svg',
+    downloadLink:
+      'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/boxicons.zip',
+  },
+  /** @source http://nagoshiashumari.github.io/Rpg-Awesome/ */
+  rpgAwesome: {
+    name: 'rpg-awesome',
+    displayName: 'RPG Awesome',
+    path: '',
+    downloadLink:
+      'https://github.com/FlorianWoelki/obsidian-iconize/raw/main/iconPacks/rpg-awesome.zip',
+  },
+  /** @source https://coolicons.cool/ */
+  coolicons: {
+    name: 'coolicons',
+    displayName: 'Coolicons',
+    path: 'cooliocns SVG',
+    downloadLink:
+      'https://github.com/krystonschwarze/coolicons/releases/download/v4.1/coolicons.v4.1.zip',
+  },
+  /** @source https://feathericons.com/ */
+  feathericons: {
+    name: 'feather-icons',
+    displayName: 'Feather Icons',
+    path: 'feather-4.29.1/icons/',
+    downloadLink:
+      'https://github.com/feathericons/feather/archive/refs/tags/v4.29.1.zip',
   },
 } as { [key: string]: IconPack };
 

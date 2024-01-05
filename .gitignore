@@ -25,3 +25,6 @@ env.js
 # Vitepress
 docs/.vitepress/dist
 docs/.vitepress/cache
+
+# Vitest
+coverage

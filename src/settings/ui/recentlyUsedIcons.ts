@@ -5,13 +5,13 @@ import { DEFAULT_SETTINGS } from '../data';
 export default class RecentlyUsedIconsSetting extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Recently used Icons limit')
+      .setName('Recently used icons limit')
       .setDesc(
-        'Change the limit for the recently used icons displayed in the icon modal.',
+        'Change the limit for the recently used icons displayed in the icon selection modal.',
       )
       .addSlider((slider) => {
         slider
-          .setLimits(1, 15, 1)
+          .setLimits(1, 25, 1)
           .setDynamicTooltip()
           .setValue(
             this.plugin.getSettings().recentlyUsedIconsSize ??

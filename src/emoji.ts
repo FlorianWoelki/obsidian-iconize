@@ -1,3 +1,6 @@
+import twemoji from 'twemoji';
+import { EmojiStyle } from './settings/data';
+
 const shortNames: Record<string, string> = {
   '😀': 'grinning face',
   '😃': 'grinning face with big eyes',
@@ -1855,18 +1858,51 @@ const shortNames: Record<string, string> = {
 };
 
 const isEmoji = (str: string): boolean => {
-  const ranges = [
-    '(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])', // U+1F680 to U+1F6FF
-  ];
+  const emojiRegex =
+    /(\p{Emoji}|\p{Emoji_Presentation}|\p{Emoji_Modifier}|\p{Emoji_Modifier_Base}|\p{Emoji_Component}|\p{Extended_Pictographic})/gu;
+  const emojiMatches = str.match(emojiRegex);
+  const emojiString = emojiMatches ? emojiMatches.join('') : '';
 
-  if (str.match(ranges.join('|'))) {
-    return true;
-  } else {
-    return false;
+  return !/\d/.test(str) && emojiString === str;
+};
+
+const parseEmoji = (
+  style: EmojiStyle,
+  str: string,
+  size = 16,
+): string | null => {
+  switch (style) {
+    case 'twemoji':
+      return twemoji.parse(str, {
+        base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
+        folder: 'svg',
+        ext: '.svg',
+        attributes: () => ({
+          width: `${size}px`,
+          height: `${size}px`,
+        }),
+      });
+    case 'native':
+      return str;
+    default:
+      return null;
   }
+};
+
+/**
+ * Gets the shortcode for a given emoji by the name of the emoji. This function replaces
+ * spaces with underscores and removes colons.
+ * @param key String to replace with shortcode.
+ * @returns String with shortcode, or `undefined` if no shortcode exists.
+ */
+const getShortcode = (key: string): string | undefined => {
+  // Removable of colons is necessary for the flag shortcodes.
+  return shortNames[key]?.replace(/\s/g, '_').replace(/:/g, '').toLowerCase();
 };
 
 export default {
   shortNames,
   isEmoji,
+  getShortcode,
+  parseEmoji,
 };

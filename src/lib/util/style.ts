@@ -64,11 +64,16 @@ const applyAll = (
 };
 
 /**
- * Refreshes all the styles of all the applied icons where a `.obsidian-icon-folder-icon`
+ * Refreshes all the styles of all the applied icons where a `.iconize-icon`
  * class is defined. This function only modifies the styling of the node.
  * @param plugin Instance of the IconFolderPlugin.
+ * @param applyStyles Function that is getting called when the icon node is found and
+ * typically applies all the styles to the icon.
  */
-const refreshIconNodes = (plugin: IconFolderPlugin): void => {
+const refreshIconNodes = (
+  plugin: IconFolderPlugin,
+  applyStyles = applyAll,
+): void => {
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
   for (const fileExplorer of fileExplorers) {
     Object.keys(plugin.getData()).forEach((path) => {
@@ -76,10 +81,14 @@ const refreshIconNodes = (plugin: IconFolderPlugin): void => {
       if (fileItem) {
         const titleEl = getFileItemTitleEl(fileItem);
         const iconNode = titleEl.querySelector(
-          '.obsidian-icon-folder-icon',
+          '.iconize-icon',
         ) as HTMLElement | null;
         if (iconNode) {
-          iconNode.innerHTML = applyAll(plugin, iconNode.innerHTML, iconNode);
+          iconNode.innerHTML = applyStyles(
+            plugin,
+            iconNode.innerHTML,
+            iconNode,
+          );
         }
       }
     });

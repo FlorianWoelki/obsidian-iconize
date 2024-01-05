@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { getExtraPath } from './iconPacks';
+import { getExtraPath } from './icon-packs';
 
 it('should return the correct extra path for an icon pack', () => {
   const iconPackName = 'simple-icons';

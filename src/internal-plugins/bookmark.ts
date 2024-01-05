@@ -1,11 +1,11 @@
 import { around } from 'monkey-around';
 import { View } from 'obsidian';
-import InternalPluginInjector from '@app/@types/internalPluginInjector';
+import InternalPluginInjector from '@app/@types/internal-plugin-injector';
 import { BookmarkItem, BookmarkItemValue } from '@app/@types/obsidian';
 import dom from '@lib/util/dom';
 import icon from '@lib/icon';
 import IconFolderPlugin from '@app/main';
-import MetaData from '@app/MetaData';
+import config from '@app/config';
 import { DEFAULT_FILE_ICON, DEFAULT_FOLDER_ICON } from '../util';
 
 interface BookmarksView extends View {
@@ -109,7 +109,7 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
       }
     };
 
-    const { itemDoms, containerEl } = this.leaf;
+    const { itemDoms } = this.leaf;
     // Retrieves all the items of the bookmark plugin which areo objects.
     const items = this.bookmark.instance.items;
     items.forEach((item) => {
@@ -133,14 +133,14 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
       !this.plugin.app.internalPlugins.getPluginById('file-explorer').enabled
     ) {
       console.info(
-        `[${MetaData.pluginName}/Bookmarks] Skipping bookmark internal plugin registration because file-explorer is not enabled.`,
+        `[${config.PLUGIN_NAME}/Bookmarks] Skipping bookmark internal plugin registration because file-explorer is not enabled.`,
       );
       return;
     }
 
     if (!this.enabled) {
       console.info(
-        `[${MetaData.pluginName}/Bookmarks] Skipping bookmark internal plugin registration because it's not enabled.`,
+        `[${config.PLUGIN_NAME}/Bookmarks] Skipping bookmark internal plugin registration because it's not enabled.`,
       );
       return;
     }

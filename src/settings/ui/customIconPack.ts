@@ -7,14 +7,14 @@ import {
   deleteIconPack,
   doesIconPackExist,
   getAllIconPacks,
-} from '@app/iconPackManager';
+} from '@app/icon-pack-manager';
 import IconFolderPlugin from '@app/main';
 import { readFileSync } from '@app/util';
 
 export default class CustomIconPackSetting extends IconFolderSetting {
   private textComponent: TextComponent;
   private dragOverElement: HTMLElement;
-  private closeTimer: any;
+  private closeTimer: NodeJS.Timeout;
   private dragTargetElement: HTMLElement;
   private refreshDisplay: () => void;
 
@@ -26,7 +26,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
     super(plugin, containerEl);
     this.refreshDisplay = refreshDisplay;
     this.dragOverElement = document.createElement('div');
-    this.dragOverElement.addClass('obsidian-icon-folder-dragover-el');
+    this.dragOverElement.addClass('iconize-dragover-el');
     this.dragOverElement.style.display = 'hidden';
     this.dragOverElement.innerHTML = '<p>Drop to add icon.</p>';
   }
@@ -45,7 +45,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
 
     if (!this.dragTargetElement) {
       el.appendChild(this.dragOverElement);
-      el.classList.add('obsidian-icon-folder-dragover');
+      el.classList.add('iconize-dragover');
       this.dragTargetElement = el;
     }
   }
@@ -53,7 +53,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
   private unhighlight(target: HTMLElement, el: HTMLElement): void {
     if (this.dragTargetElement && this.dragTargetElement !== target) {
       this.dragTargetElement.removeChild(this.dragOverElement);
-      this.dragTargetElement.classList.remove('obsidian-icon-folder-dragover');
+      this.dragTargetElement.classList.remove('iconize-dragover');
       this.dragTargetElement = undefined;
     }
 
@@ -61,7 +61,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
     this.closeTimer = setTimeout(() => {
       if (this.dragTargetElement) {
         el.removeChild(this.dragOverElement);
-        el.classList.remove('obsidian-icon-folder-dragover');
+        el.classList.remove('iconize-dragover');
         this.dragTargetElement = undefined;
       }
     }, 100);
@@ -70,14 +70,13 @@ export default class CustomIconPackSetting extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
       .setName('Add custom icon pack')
-      .setDesc('Add a custom icon pack')
+      .setDesc('Add a custom icon pack.')
       .addText((text) => {
         text.setPlaceholder('Your icon pack name');
         this.textComponent = text;
       })
       .addButton((btn) => {
         btn.setButtonText('Add icon pack');
-        btn.buttonEl.style.marginLeft = '12px';
         btn.onClick(async () => {
           const name = this.textComponent.getValue();
           if (name.length === 0) {
@@ -102,7 +101,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
 
     getAllIconPacks().forEach((iconPack) => {
       const iconPackSetting = new Setting(this.containerEl)
-        .setName(iconPack.name)
+        .setName(`${iconPack.name} (${iconPack.prefix})`)
         .setDesc(`Total icons: ${iconPack.icons.length}`);
       // iconPackSetting.addButton((btn) => {
       //   btn.setIcon('broken-link');
@@ -203,7 +202,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
           for (let i = 0; i < files.length; i++) {
             const file = files[i];
             if (file.type !== 'image/svg+xml') {
-              new Notice(`File ${file.name} is not a XML file.`);
+              new Notice(`File ${file.name} is not a SVG file.`);
               continue;
             }
 

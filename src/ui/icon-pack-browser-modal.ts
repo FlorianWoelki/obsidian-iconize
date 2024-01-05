@@ -4,10 +4,10 @@ import {
   createIconPackPrefix,
   createZipFile,
   getAllIconPacks,
-} from './iconPackManager';
-import iconPacks, { IconPack } from './iconPacks';
-import IconFolderPlugin from './main';
-import { downloadZipFile } from './zipUtil';
+} from '@app/icon-pack-manager';
+import iconPacks, { IconPack } from '@app/icon-packs';
+import IconFolderPlugin from '@app/main';
+import { downloadZipFile } from '@app/zip-util';
 
 export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
   private plugin: IconFolderPlugin;
@@ -16,7 +16,7 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
     super(app);
     this.plugin = plugin;
 
-    this.resultContainerEl.classList.add('obsidian-icon-folder-browse-modal');
+    this.resultContainerEl.classList.add('iconize-browse-modal');
     this.inputEl.placeholder = 'Select to download icon pack';
   }
 

@@ -1,8 +1,10 @@
 import { TAbstractFile, TFolder } from 'obsidian';
+import config from '@app/config';
 import { FileItem } from '../@types/obsidian';
 import IconFolderPlugin, { FolderIconObject } from '../main';
 import dom from './util/dom';
 import { getFileItemInnerTitleEl, getFileItemTitleEl } from '../util';
+import { IconCache } from './icon-cache';
 
 interface AddOptions {
   file?: TAbstractFile;
@@ -59,8 +61,9 @@ const add = (
   const addIcon = (fileItem: FileItem): void => {
     const titleEl = getFileItemTitleEl(fileItem);
     const innerTitleEl = getFileItemInnerTitleEl(fileItem);
-    const iconNode = titleEl.createDiv();
-    iconNode.classList.add('obsidian-icon-folder-icon');
+    const iconNode = document.createElement('div');
+    iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
+    iconNode.classList.add('iconize-icon');
     dom.setIconForNode(plugin, iconName, iconNode);
     titleEl.insertBefore(iconNode, innerTitleEl);
 
@@ -84,6 +87,10 @@ const add = (
       }
 
       addIcon(fileItem);
+      IconCache.getInstance().set(options.file.path, {
+        iconNameWithPrefix: iconName,
+        inInheritance: true,
+      });
     } else {
       // Handles the addition of a completely new inheritance for a folder.
       for (const [path, fileItem] of Object.entries(fileExplorer.fileItems)) {
@@ -106,6 +113,10 @@ const add = (
         }
 
         addIcon(fileItem);
+        IconCache.getInstance().set(path, {
+          iconNameWithPrefix: iconName,
+          inInheritance: true,
+        });
       }
     }
   }
@@ -133,6 +144,7 @@ const remove = (
     // When the file path is not registered in the data it should remove the icon.
     if (!plugin.getData()[file.path]) {
       dom.removeIconInPath(file.path);
+      IconCache.getInstance().invalidate(file.path);
       options?.onRemove?.(file);
     }
   }
@@ -157,7 +169,7 @@ const doesExistInPath = (plugin: IconFolderPlugin, path: string): boolean => {
 const getFolderPathByFilePath = (
   plugin: IconFolderPlugin,
   filePath: string,
-): string => {
+): string | undefined => {
   const folders = getFolders(plugin);
   const foundFolderIcon = Object.entries(folders).find(([folderPath]) =>
     filePath.includes(folderPath),

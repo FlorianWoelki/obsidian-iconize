@@ -1,10 +1,10 @@
 import { Notice, Plugin } from 'obsidian';
-import MetaData from './MetaData';
 import svg from './lib/util/svg';
-import { getFileFromJSZipFile, readZipFile } from './zipUtil';
+import { getFileFromJSZipFile, readZipFile } from './zip-util';
 import JSZip from 'jszip';
+import config from '@app/config';
 import IconFolderPlugin from './main';
-import { getExtraPath } from './iconPacks';
+import { getExtraPath } from './icon-packs';
 
 export interface Icon {
   name: string;
@@ -26,7 +26,7 @@ export const setPath = (newPath: string): void => {
   if (newPath === 'plugins/obsidian-icon-folder/icons') {
     newPath = '.obsidian/plugins/obsidian-icon-folder/icons';
     new Notice(
-      `[${MetaData.pluginName}] Due to a change in version v1.2.2, the icon pack folder changed. Please change it in the settings to not be directly in /plugins.`,
+      `[${config.PLUGIN_NAME}] Due to a change in version v1.2.2, the icon pack folder changed. Please change it in the settings to not be directly in /plugins.`,
       8000,
     );
   }
@@ -34,13 +34,28 @@ export const setPath = (newPath: string): void => {
   path = newPath;
 };
 
-const preloadedIcons: Icon[] = [];
-let iconPacks: {
+let preloadedIcons: Icon[] = [];
+export const getPreloadedIcons = (): Icon[] => {
+  return preloadedIcons;
+};
+export const resetPreloadedIcons = (): void => {
+  preloadedIcons = [];
+};
+export const setPreloadedIcons = (icons: Icon[]): void => {
+  preloadedIcons = icons;
+};
+
+interface IconPack {
   name: string;
   prefix: string;
   custom: boolean;
   icons: Icon[];
-}[] = [];
+}
+
+let iconPacks: IconPack[] = [];
+export const setIconPacks = (newIconPacks: IconPack[]): void => {
+  iconPacks = newIconPacks;
+};
 
 export const moveIconPackDirectories = async (
   plugin: Plugin,
@@ -50,11 +65,13 @@ export const moveIconPackDirectories = async (
   // Tries to move all icon packs to the new folder.
   for (let i = 0; i < iconPacks.length; i++) {
     const iconPack = iconPacks[i];
-    // Tries to create a new directory in the new path.
-    const doesDirExist = await createDirectory(plugin, iconPack.name);
-    if (doesDirExist) {
-      new Notice(`Directory with name ${iconPack.name} already exists.`);
-      continue;
+    if (await plugin.app.vault.adapter.exists(`${from}/${iconPack.name}`)) {
+      // Tries to create a new directory in the new path.
+      const doesDirExist = await createDirectory(plugin, iconPack.name);
+      if (doesDirExist) {
+        new Notice(`Directory with name ${iconPack.name} already exists.`);
+        continue;
+      }
     }
 
     new Notice(`Moving ${iconPack.name}...`);
@@ -118,7 +135,7 @@ export const deleteIconPack = async (
   }
   // Check for the icon pack zip file and delete it.
   if (await plugin.app.vault.adapter.exists(`${path}/${dir}.zip`)) {
-    await plugin.app.vault.adapter.rmdir(`${path}/${dir}.zip`, true);
+    await plugin.app.vault.adapter.remove(`${path}/${dir}.zip`);
   }
 };
 
@@ -187,18 +204,18 @@ export const createFile = async (
         content,
       );
       console.info(
-        `[${MetaData.pluginName}] Renamed old file ${normalizedFilename} to ${newFilename} because of duplication.`,
+        `[${config.PLUGIN_NAME}] Renamed old file ${normalizedFilename} to ${newFilename} because of duplication.`,
       );
       new Notice(
-        `[${MetaData.pluginName}] Renamed ${normalizedFilename} to ${newFilename} to avoid duplication.`,
+        `[${config.PLUGIN_NAME}] Renamed ${normalizedFilename} to ${newFilename} to avoid duplication.`,
         8000,
       );
     } else {
       console.warn(
-        `[${MetaData.pluginName}] Could not create icons with duplicated file names (${normalizedFilename}).`,
+        `[${config.PLUGIN_NAME}] Could not create icons with duplicated file names (${normalizedFilename}).`,
       );
       new Notice(
-        `[${MetaData.pluginName}] Could not create duplicated icon name (${normalizedFilename})`,
+        `[${config.PLUGIN_NAME}] Could not create duplicated icon name (${normalizedFilename})`,
         8000,
       );
     }
@@ -226,6 +243,10 @@ export const getFilesInDirectory = async (
   plugin: Plugin,
   dir: string,
 ): Promise<string[]> => {
+  if (!(await plugin.app.vault.adapter.exists(dir))) {
+    return [];
+  }
+
   return (await plugin.app.vault.adapter.list(dir)).files;
 };
 
@@ -298,7 +319,10 @@ export const createIconPackPrefix = (iconPackName: string): string => {
   );
 };
 
-export const loadUsedIcons = async (plugin: Plugin, icons: string[]) => {
+export const loadUsedIcons = async (
+  plugin: IconFolderPlugin,
+  icons: string[],
+) => {
   const iconPacks = (await listPath(plugin)).folders.map((iconPack) =>
     iconPack.split('/').pop(),
   );
@@ -326,7 +350,7 @@ export const nextIdentifier = (iconName: string) => {
 };
 
 export const loadIcon = async (
-  plugin: Plugin,
+  plugin: IconFolderPlugin,
   iconPacks: string[],
   iconName: string,
 ): Promise<void> => {
@@ -340,17 +364,21 @@ export const loadIcon = async (
   });
 
   if (!iconPack) {
-    new Notice(
-      `Seems like you do not have an icon pack installed. (${iconName})`,
-      5000,
-    );
+    // Ignore because background check automatically adds the icons and icon pack
+    // directories.
+    if (!plugin.getSettings().iconsBackgroundCheckEnabled) {
+      new Notice(
+        `Seems like you do not have an icon pack installed. (${iconName})`,
+        5000,
+      );
+    }
     return;
   }
 
   const fullPath = path + '/' + iconPack + '/' + name + '.svg';
   if (!(await plugin.app.vault.adapter.exists(fullPath))) {
     console.warn(
-      `[obsidian-icon-folder] icon with name "${name}" was not found (full path: ${fullPath}).`,
+      `[iconize] icon with name "${name}" was not found (full path: ${fullPath}).`,
     );
     return;
   }
@@ -395,7 +423,7 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
       const iconNameRegex = files[j].match(
         new RegExp(path + '/' + folderName + '/(.*)'),
       );
-      const iconName = iconNameRegex[1];
+      const iconName = getNormalizedName(iconNameRegex[1]);
       const iconContent = await plugin.app.vault.adapter.read(files[j]);
       const icon = generateIcon(folderName, iconName, iconContent);
       if (icon) {
@@ -444,7 +472,7 @@ const getLoadedIconsFromZipFile = async (
 
     const file = await getFileFromJSZipFile(files[j]);
     const iconContent = await file.text();
-    const iconName = file.name;
+    const iconName = getNormalizedName(file.name);
     const icon = generateIcon(iconPackName, iconName, iconContent);
     if (icon) {
       loadedIcons.push(icon);
@@ -463,7 +491,7 @@ export const addIconToIconPack = (
   const icon = generateIcon(iconPackName, iconName, iconContent);
   if (!icon) {
     console.warn(
-      `[obsidian-icon-folder] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`,
+      `[iconize] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`,
     );
     return undefined;
   }
@@ -471,7 +499,7 @@ export const addIconToIconPack = (
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   if (!iconPack) {
     console.warn(
-      `[obsidian-icon-folder] iconpack with name "${iconPackName}" was not found.`,
+      `[iconize] iconpack with name "${iconPackName}" was not found.`,
     );
     return undefined;
   }
@@ -548,6 +576,30 @@ export const doesIconExists = (iconName: string): boolean => {
   );
 };
 
+export const getIconFromIconPack = (
+  iconPackName: string,
+  iconPrefix: string,
+  iconName: string,
+) => {
+  const foundIcon = preloadedIcons.find(
+    (icon) =>
+      icon.prefix.toLowerCase() === iconPrefix.toLowerCase() &&
+      icon.name.toLowerCase() === iconName.toLowerCase(),
+  );
+  if (foundIcon) {
+    return foundIcon;
+  }
+
+  const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
+  if (!iconPack) {
+    return undefined;
+  }
+
+  return iconPack.icons.find(
+    (icon) => getNormalizedName(icon.name) === iconName,
+  );
+};
+
 export const getSvgFromLoadedIcon = (
   iconPrefix: string,
   iconName: string,
@@ -560,11 +612,12 @@ export const getSvgFromLoadedIcon = (
   );
   if (!foundIcon) {
     iconPacks.forEach((iconPack) => {
-      const icon = iconPack.icons.find(
-        (icon) =>
+      const icon = iconPack.icons.find((icon) => {
+        return (
           icon.prefix.toLowerCase() === iconPrefix.toLowerCase() &&
-          icon.name.toLowerCase() === iconName.toLowerCase(),
-      );
+          getNormalizedName(icon.name).toLowerCase() === iconName.toLowerCase()
+        );
+      });
       if (icon) {
         foundIcon = icon;
       }

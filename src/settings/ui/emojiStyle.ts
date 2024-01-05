@@ -1,17 +1,16 @@
-import { Setting, TFile } from 'obsidian';
+import { Setting } from 'obsidian';
 import emoji from '@app/emoji';
-import customRule from '@lib/customRule';
+import customRule from '@lib/custom-rule';
 import dom from '@lib/util/dom';
 import { FolderIconObject } from '@app/main';
 import IconFolderSetting from './iconFolderSetting';
 import inheritance from '../../lib/inheritance';
-import iconTabs from '../../lib/iconTabs';
-import { getAllOpenedFiles } from '../../util';
+import iconTabs from '../../lib/icon-tabs';
 
 export default class EmojiStyleSetting extends IconFolderSetting {
   public display(): void {
     const emojiStyle = new Setting(this.containerEl)
-      .setName('Emoji Style')
+      .setName('Emoji style')
       .setDesc('Change the style of your emojis.');
     emojiStyle.addDropdown((dropdown) => {
       dropdown.addOption('none', 'None');
@@ -27,10 +26,9 @@ export default class EmojiStyleSetting extends IconFolderSetting {
   }
 
   private updateDOM(): void {
-    const openFiles = getAllOpenedFiles(this.plugin);
     for (const fileExplorer of this.plugin.getRegisteredFileExplorers()) {
       const fileItems = Object.entries(fileExplorer.fileItems);
-      for (const [path, fileItem] of fileItems) {
+      for (const [path, _] of fileItems) {
         let iconName = this.plugin.getData()[path] as string | undefined | null;
         if (!iconName) {
           continue;
@@ -50,11 +48,17 @@ export default class EmojiStyleSetting extends IconFolderSetting {
                 file.path,
                 inheritanceData.inheritanceIcon,
               );
-              iconTabs.update(
+              const tabLeaves = iconTabs.getTabLeavesOfFilePath(
                 this.plugin,
-                file as TFile,
-                inheritanceData.inheritanceIcon,
+                file.path,
               );
+              for (const tabLeaf of tabLeaves) {
+                iconTabs.update(
+                  this.plugin,
+                  inheritanceData.inheritanceIcon,
+                  tabLeaf.tabHeaderInnerIconEl,
+                );
+              }
             }
           }
         }
@@ -67,11 +71,22 @@ export default class EmojiStyleSetting extends IconFolderSetting {
 
         if (emoji.isEmoji(iconName)) {
           dom.createIconNode(this.plugin, path, iconName);
-          iconTabs.update(this.plugin, fileItem.file as TFile, iconName);
+          const tabLeaves = iconTabs.getTabLeavesOfFilePath(this.plugin, path);
+          for (const tabLeaf of tabLeaves) {
+            iconTabs.update(
+              this.plugin,
+              iconName,
+              tabLeaf.tabHeaderInnerIconEl,
+            );
+          }
+
+          this.plugin.addIconInTitle(iconName);
         }
       }
     }
 
-    customRule.addAll(this.plugin);
+    for (const rule of customRule.getSortedRules(this.plugin)) {
+      customRule.addToAllFiles(this.plugin, rule);
+    }
   }
 }

@@ -1,11 +1,11 @@
 import { around } from 'monkey-around';
 import { View } from 'obsidian';
-import InternalPluginInjector from '@app/@types/internalPluginInjector';
+import InternalPluginInjector from '@app/@types/internal-plugin-injector';
 import { StarredFile } from '@app/@types/obsidian';
 import dom from '@lib/util/dom';
 import icon from '@lib/icon';
+import config from '@app/config';
 import IconFolderPlugin from '@app/main';
-import MetaData from '@app/MetaData';
 
 interface StarredView extends View {
   itemLookup: WeakMap<Element, StarredFile>;
@@ -81,14 +81,14 @@ export default class StarredInternalPlugin extends InternalPluginInjector {
       !this.plugin.app.internalPlugins.getPluginById('file-explorer').enabled
     ) {
       console.info(
-        `[${MetaData.pluginName}/Starred] Skipping starred internal plugin registration because file-explorer is not enabled.`,
+        `[${config.PLUGIN_NAME}/Starred] Skipping starred internal plugin registration because file-explorer is not enabled.`,
       );
       return;
     }
 
     if (!this.enabled) {
       console.info(
-        `[${MetaData.pluginName}/Starred] Skipping starred internal plugin registration because it's not enabled.`,
+        `[${config.PLUGIN_NAME}/Starred] Skipping starred internal plugin registration because it's not enabled.`,
       );
       return;
     }

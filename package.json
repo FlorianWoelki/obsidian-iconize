@@ -1,8 +1,9 @@
 {
-  "name": "obsidian-iconize",
-  "version": "2.3.1",
-  "description": "Add icons to anything you desire in Obsidian, including files, folders, and text.",
-  "main": "main.js",
+  "name": "@florianwoelki/obsidian-iconize",
+  "version": "2.8.2",
+  "description": "API for adding icons to obsidian.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "prepare": "husky install",
     "dev": "rollup --config rollup.config.js -w",
@@ -10,8 +11,10 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
+    "build:lib": "tsc --project tsconfig.lib.json",
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
     "test": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "prettify": "prettier --write '*/**/*.{js,ts,tsx}'"
   },
@@ -20,7 +23,7 @@
     "type": "git",
     "url": "git+https://github.com/FlorianWoelki/obsidian-iconize.git"
   },
-  "author": "Florian Woelki",
+  "author": "FlorianWoelki",
   "license": "MIT",
   "lint-staged": {
     "*.{json,js,ts,jsx,tsx,html}": [
@@ -29,34 +32,39 @@
     ]
   },
   "devDependencies": {
-    "@commitlint/cli": "^13.2.1",
-    "@commitlint/config-conventional": "^13.2.0",
-    "@rollup/plugin-alias": "^4.0.4",
-    "@rollup/plugin-commonjs": "^18.1.0",
-    "@rollup/plugin-node-resolve": "^11.2.1",
-    "@rollup/plugin-typescript": "^8.5.0",
-    "@types/mkdirp": "^1.0.2",
-    "@types/node": "^14.18.54",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
-    "eslint": "^8.47.0",
+    "@codemirror/language": "https://github.com/lishid/cm-language",
+    "@codemirror/state": "^6.0.0",
+    "@codemirror/view": "^6.0.0",
+    "@commitlint/cli": "^17.8.0",
+    "@commitlint/config-conventional": "^17.8.0",
+    "@rollup/plugin-alias": "^5.0.1",
+    "@rollup/plugin-commonjs": "^25.0.5",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "@types/mkdirp": "^2.0.0",
+    "@types/node": "^20.8.6",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "@vitest/coverage-istanbul": "^1.1.1",
+    "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "happy-dom": "^12.9.1",
     "husky": "^8.0.3",
-    "lint-staged": "^14.0.1",
-    "mkdirp": "^1.0.4",
+    "lint-staged": "^15.0.1",
+    "mkdirp": "^3.0.1",
     "monkey-around": "^2.3.0",
     "obsidian": "^1.4.11",
-    "prettier": "^2.8.8",
-    "rollup": "^2.79.1",
+    "prettier": "^3.0.3",
+    "rollup": "^2.78.0",
     "tslib": "^2.6.2",
     "twemoji": "^14.0.2",
-    "typescript": "^4.9.5",
-    "vitepress": "1.0.0-rc.20",
-    "vitest": "^0.34.6"
+    "typescript": "^5.2.2",
+    "vitepress": "1.0.0-rc.34",
+    "vitest": "^1.1.1"
   },
   "dependencies": {
-    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-babel": "^6.0.4",
     "jszip": "^3.10.1"
   }
 }
