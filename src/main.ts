@@ -174,6 +174,7 @@ export default class IconFolderPlugin extends Plugin {
               this.saveInheritanceData(file.path, null);
               if (!emoji.isEmoji(iconData.inheritanceIcon)) {
                 removeIconFromIconPack(this, iconData.inheritanceIcon);
+                this.cleanUpDataSettings();
               }
             });
           } else {
@@ -212,6 +213,7 @@ export default class IconFolderPlugin extends Plugin {
                   },
                 });
               };
+              this.cleanUpDataSettings();
             });
           }
           item.setIcon('vertical-three-dots');
@@ -814,15 +816,7 @@ export default class IconFolderPlugin extends Plugin {
     // Saves the icon name with prefix to remove it from the icon pack directory later.
     const iconData = this.data[path];
 
-    if (typeof this.data[path] === 'object') {
-      const currentValue = this.data[path] as FolderIconObject;
-      this.data[path] = {
-        ...currentValue,
-        iconName: null,
-      };
-    } else {
-      delete this.data[path];
-    }
+    delete this.data[path];
 
     // Removes the icon from the icon pack directory if it is not used as an icon somewhere
     // else.
@@ -830,6 +824,9 @@ export default class IconFolderPlugin extends Plugin {
       let iconNameWithPrefix = iconData as string | FolderIconObject;
       if (typeof iconData === 'object') {
         iconNameWithPrefix = (iconData as FolderIconObject).iconName;
+        const inheritancePrefix = (iconData as FolderIconObject)
+          .inheritanceIcon;
+        if (inheritancePrefix) removeIconFromIconPack(this, inheritancePrefix);
       } else {
         iconNameWithPrefix = iconData as string;
       }
@@ -960,5 +957,17 @@ export default class IconFolderPlugin extends Plugin {
         }
       }
     }) as unknown as string;
+  }
+
+  /**
+   * Clean up the settings object by removing all filepath that do not exist anymore.
+   */
+  cleanUpDataSettings(): void {
+    for (const [path] of Object.entries(this.data)) {
+      if (path === 'settings') continue;
+      if (!this.app.vault.getAbstractFileByPath(path)) {
+        this.removeFolderIcon(path);
+      }
+    }
   }
 }
