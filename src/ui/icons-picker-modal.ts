@@ -1,15 +1,14 @@
-import twemoji from 'twemoji';
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
-import IconFolderPlugin from './main';
-import emoji from './emoji';
+import IconFolderPlugin from '@app/main';
+import emoji from '@app/emoji';
 import {
   doesIconExists,
   getAllLoadedIconNames,
   getIconPackNameByPrefix,
   getSvgFromLoadedIcon,
   nextIdentifier,
-} from './iconPackManager';
-import dom from './lib/util/dom';
+} from '@app/icon-pack-manager';
+import dom from '@app/lib/util/dom';
 import { saveIconToIconPack } from '@app/util';
 
 export interface Icon {
@@ -44,7 +43,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       }),
     );
 
-    this.resultContainerEl.classList.add('obsidian-icon-folder-modal');
+    this.resultContainerEl.classList.add('iconize-modal');
   }
 
   onOpen() {
@@ -124,7 +123,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     this.onSelect?.(iconNameWithPrefix);
     this.plugin.addFolderIcon(this.path, item);
     // Extracts the icon file to the icon pack.
-    if (typeof item === 'object') {
+    if (typeof item === 'object' && !emoji.isEmoji(iconNameWithPrefix)) {
       saveIconToIconPack(this.plugin, iconNameWithPrefix);
     }
     this.plugin.notifyPlugins();
@@ -143,12 +142,12 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     if (this.recentlyUsedItems.size !== 0 && this.inputEl.value.length === 0) {
       if (this.renderIndex === 0) {
         const subheadline = this.resultContainerEl.createDiv();
-        subheadline.classList.add('obsidian-icon-folder-subheadline');
+        subheadline.classList.add('iconize-subheadline');
         subheadline.innerText = 'Recently used Icons:';
         this.resultContainerEl.prepend(subheadline);
       } else if (this.renderIndex === this.recentlyUsedItems.size - 1) {
         const subheadline = this.resultContainerEl.createDiv();
-        subheadline.classList.add('obsidian-icon-folder-subheadline');
+        subheadline.classList.add('iconize-subheadline');
         subheadline.innerText = 'All Icons:';
         this.resultContainerEl.append(subheadline);
       }
@@ -156,24 +155,19 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
     if (item.item.name !== 'default') {
       if (item.item.prefix === 'Emoji') {
-        let displayName = '';
-        switch (this.plugin.getSettings().emojiStyle) {
-          case 'twemoji':
-            displayName = twemoji.parse(item.item.displayName, {
-              base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
-            });
-            break;
-          case 'native':
-            displayName = item.item.displayName;
-            break;
-          default:
-            break;
+        const displayName = emoji.parseEmoji(
+          this.plugin.getSettings().emojiStyle,
+          item.item.displayName,
+        );
+        if (!displayName) {
+          return;
         }
-        el.innerHTML = `<div>${el.innerHTML}</div><div class="obsidian-icon-folder-icon-preview">${displayName}</div>`;
+
+        el.innerHTML = `<div>${el.innerHTML}</div><div class="iconize-icon-preview">${displayName}</div>`;
       } else {
         el.innerHTML = `<div>${
           el.innerHTML
-        }</div><div class="obsidian-icon-folder-icon-preview">${getSvgFromLoadedIcon(
+        }</div><div class="iconize-icon-preview">${getSvgFromLoadedIcon(
           item.item.prefix,
           item.item.name,
         )}</div>`;

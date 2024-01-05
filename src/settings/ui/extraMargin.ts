@@ -8,7 +8,7 @@ export default class ExtraMarginSetting extends IconFolderSetting {
     const extraMarginSetting = new Setting(this.containerEl)
       .setName('Extra margin (in pixels)')
       .setDesc('Change the margin of the icons.')
-      .setClass('obsidian-icon-folder-setting');
+      .setClass('iconize-setting');
 
     const extraMarginDropdown = new DropdownComponent(
       extraMarginSetting.controlEl,

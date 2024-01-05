@@ -9,7 +9,7 @@ import {
   ToggleComponent,
 } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import IconsPickerModal from '@app/iconsPickerModal';
+import IconsPickerModal from '@app/ui/icons-picker-modal';
 import IconFolderPlugin from '@app/main';
 import {
   getAllOpenedFiles,
@@ -18,11 +18,13 @@ import {
   saveIconToIconPack,
 } from '@app/util';
 import { CustomRule } from '../data';
-import customRule from '@lib/customRule';
-import iconTabs from '@lib/iconTabs';
+import customRule from '@lib/custom-rule';
+import iconTabs from '@lib/icon-tabs';
 import dom from '../../lib/util/dom';
 import svg from '../../lib/util/svg';
-import { getNormalizedName } from '../../iconPackManager';
+import { getNormalizedName } from '../../icon-pack-manager';
+import { TabHeaderLeaf } from '../../@types/obsidian';
+import emoji from '@app/emoji';
 
 export default class CustomIconRuleSetting extends IconFolderSetting {
   private app: App;
@@ -66,10 +68,13 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           continue;
         }
 
+        const leaf = openedFile.leaf as TabHeaderLeaf;
         if (remove) {
-          iconTabs.remove(openedFile, { replaceWithDefaultIcon: true });
+          iconTabs.remove(leaf.tabHeaderInnerIconEl, {
+            replaceWithDefaultIcon: true,
+          });
         } else {
-          iconTabs.add(this.plugin, openedFile, {
+          iconTabs.add(this.plugin, openedFile, leaf.tabHeaderInnerIconEl, {
             iconName: rule.icon,
             iconColor: rule.color,
           });
@@ -89,7 +94,9 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
       .setName('Add icon rule')
-      .setDesc('Will add the icon based on the specific string.')
+      .setDesc(
+        'Will add the icon based on the defined rule (as a plain string or in regex format).',
+      )
       .addText((text) => {
         text.onChange((value) => {
           this.chooseIconBtn.setDisabled(value.length === 0);
@@ -104,9 +111,6 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
       .addButton((btn) => {
         btn.setDisabled(true);
         btn.setButtonText('Choose icon');
-        btn.buttonEl.style.marginLeft = '12px';
-        btn.buttonEl.style.cursor = 'not-allowed';
-        btn.buttonEl.style.opacity = '50%';
         btn.onClick(async () => {
           if (this.textComponent.getValue().length === 0) {
             return;
@@ -281,7 +285,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           // Create modal and its children elements.
           const modal = new Modal(this.plugin.app);
           modal.contentEl.style.display = 'block';
-          modal.modalEl.classList.add('obsidian-icon-folder-custom-rule-modal');
+          modal.modalEl.classList.add('iconize-custom-rule-modal');
           modal.titleEl.createEl('h3', { text: 'Edit custom rule' });
 
           // Create the input for the rule.
@@ -379,13 +383,17 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           button.buttonEl.style.float = 'right';
           button.setButtonText('Save Changes');
           button.onClick(async () => {
-            // Tries to remove the previously used icon from the icon pack.
-            removeIconFromIconPack(this.plugin, oldRule.icon);
+            if (!emoji.isEmoji(oldRule.icon)) {
+              // Tries to remove the previously used icon from the icon pack.
+              removeIconFromIconPack(this.plugin, oldRule.icon);
+            }
 
-            // Tries to add the newly used icon to the icon pack.
-            saveIconToIconPack(this.plugin, rule.icon);
+            if (!emoji.isEmoji(rule.icon)) {
+              // Tries to add the newly used icon to the icon pack.
+              saveIconToIconPack(this.plugin, rule.icon);
+              rule.icon = getNormalizedName(rule.icon);
+            }
 
-            rule.icon = getNormalizedName(rule.icon);
             this.refreshDisplay();
             new Notice('Custom rule updated.');
 

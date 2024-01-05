@@ -65,8 +65,15 @@ declare module 'obsidian' {
   }
 }
 
+type FileWithLeaf = TFile & { leaf: ExplorerLeaf };
+
 interface ExplorerLeaf extends WorkspaceLeaf {
   view: ExplorerView;
+}
+
+interface TabHeaderLeaf extends ExplorerLeaf {
+  tabHeaderEl: HTMLElement;
+  tabHeaderInnerIconEl: HTMLElement;
 }
 
 interface DomChild {
@@ -80,6 +87,10 @@ interface ExplorerView extends View {
   ready: boolean; // true if fileItems is populated
   file?: TFile;
   dom: { children: DomChild[]; changed: () => void };
+}
+
+interface InlineTitleView extends ExplorerView {
+  inlineTitleEl: HTMLElement;
 }
 
 interface FileItem {

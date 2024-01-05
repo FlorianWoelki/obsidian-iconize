@@ -1,11 +1,12 @@
 import { Setting } from 'obsidian';
-import iconTabs from '@lib/iconTabs';
+import iconTabs from '@lib/icon-tabs';
 import IconFolderSetting from './iconFolderSetting';
+import { TabHeaderLeaf } from '../../@types/obsidian';
 
 export default class ToggleIconInTabs extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Toggle Icon in Tabs')
+      .setName('Toggle icon in tabs')
       .setDesc('Toggles the visibility of an icon for a file in the tab bar.')
       .addToggle((toggle) => {
         toggle
@@ -20,12 +21,17 @@ export default class ToggleIconInTabs extends IconFolderSetting {
               .forEach((leaf) => {
                 const file = leaf.view.file;
                 if (file) {
+                  const tabHeaderLeaf = leaf as TabHeaderLeaf;
                   if (enabled) {
                     // Adds the icons to already opened files.
-                    iconTabs.add(this.plugin, file);
+                    iconTabs.add(
+                      this.plugin,
+                      file,
+                      tabHeaderLeaf.tabHeaderInnerIconEl,
+                    );
                   } else {
                     // Removes the icons from already opened files.
-                    iconTabs.remove(file);
+                    iconTabs.remove(tabHeaderLeaf.tabHeaderInnerIconEl);
                   }
                 }
               });

@@ -1,6 +1,6 @@
 import { App, Setting } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import IconPackBrowserModal from '@app/iconPackBrowserModal';
+import IconPackBrowserModal from '@app/ui/icon-pack-browser-modal';
 import IconFolderPlugin from '@app/main';
 
 export default class PredefinedIconPacksSetting extends IconFolderSetting {
@@ -21,7 +21,7 @@ export default class PredefinedIconPacksSetting extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
       .setName('Add predefined icon pack')
-      .setDesc('Add an icon pack like FontAwesome or Remixicons')
+      .setDesc('Add a predefined icon pack that is officially supported.')
       .addButton((btn) => {
         btn.setButtonText('Browse icon packs');
         btn.onClick(() => {

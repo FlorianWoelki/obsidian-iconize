@@ -1,6 +1,6 @@
 import { around } from 'monkey-around';
 import { View } from 'obsidian';
-import InternalPluginInjector from '@app/@types/internalPluginInjector';
+import InternalPluginInjector from '@app/@types/internal-plugin-injector';
 import { BookmarkItem, BookmarkItemValue } from '@app/@types/obsidian';
 import dom from '@lib/util/dom';
 import icon from '@lib/icon';
@@ -109,7 +109,7 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
       }
     };
 
-    const { itemDoms, containerEl } = this.leaf;
+    const { itemDoms } = this.leaf;
     // Retrieves all the items of the bookmark plugin which areo objects.
     const items = this.bookmark.instance.items;
     items.forEach((item) => {

@@ -50,8 +50,8 @@ const extract = (svgString: string): string => {
  * @returns Modified SVG string.
  */
 const setFontSize = (svgString: string, fontSize: number): string => {
-  const widthRe = new RegExp(/width="\d+(px)?"/);
-  const heightRe = new RegExp(/height="\d+(px)?"/);
+  const widthRe = new RegExp(/width="[\d.]+(px)?"/);
+  const heightRe = new RegExp(/height="[\d.]+(px)?"/);
   if (svgString.match(widthRe)) {
     svgString = svgString.replace(widthRe, `width="${fontSize}px"`);
   }

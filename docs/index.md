@@ -12,7 +12,10 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: Files and Folders
-      link: /files-and-folders/icon-tabs
+      link: /files-and-folders/icon-before-file-or-folder
+    - theme: alt
+      text: Notes
+      link: /notes/icons-in-notes
 
 features:
   - title: Simplicity

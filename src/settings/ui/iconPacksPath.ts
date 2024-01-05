@@ -4,15 +4,15 @@ import {
   createDefaultDirectory,
   moveIconPackDirectories,
   setPath,
-} from '@app/iconPackManager';
+} from '@app/icon-pack-manager';
 
 export default class IconPacksPathSetting extends IconFolderSetting {
   private iconPacksSettingTextComp: TextComponent;
 
   public display(): void {
     const iconPacksPathSetting = new Setting(this.containerEl)
-      .setName('Icon Packs folder path')
-      .setDesc('Change the default icon packs folder path');
+      .setName('Icon packs folder path')
+      .setDesc('Change the default icon packs folder path.');
 
     iconPacksPathSetting.addText((text) => {
       this.iconPacksSettingTextComp = text;
@@ -21,7 +21,6 @@ export default class IconPacksPathSetting extends IconFolderSetting {
 
     iconPacksPathSetting.addButton((btn) => {
       btn.setButtonText('Save');
-      btn.buttonEl.style.marginLeft = '12px';
       btn.onClick(async () => {
         const newPath = this.iconPacksSettingTextComp.getValue();
         const oldPath = this.plugin.getSettings().iconPacksPath;
