@@ -18,25 +18,17 @@ const refreshStyleOfIcons = async (plugin: IconFolderPlugin): Promise<void> => {
   for (const fileExplorer of fileExplorers) {
     // Refreshes the icon style for all inheritance folders.
     for (const folderPath of Object.keys(inheritance.getFolders(plugin))) {
-      // Apply style for the icon node itself.
-      const folderItem = fileExplorer.view.fileItems[folderPath];
-      if (folderItem) {
-        const titleEl = getFileItemTitleEl(folderItem);
-        const iconNode = titleEl.querySelector(
-          '.iconize-icon',
-        ) as HTMLElement | null;
-        if (iconNode) {
-          iconNode.innerHTML = style.applyAll(
-            plugin,
-            iconNode.innerHTML,
-            iconNode,
-          );
-        }
-      }
-
       // Apply style for all files in this inheritance.
       const files = inheritance.getFiles(plugin, folderPath);
       for (const file of files) {
+        const filePathValue = plugin.getData()[file.path];
+        if (
+          filePathValue ||
+          (typeof filePathValue === 'object' && filePathValue.iconColor)
+        ) {
+          continue;
+        }
+
         const fileItem = fileExplorer.view.fileItems[file.path];
         const titleEl = getFileItemTitleEl(fileItem);
         const iconNode = titleEl.querySelector(
