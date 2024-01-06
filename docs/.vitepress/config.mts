@@ -47,6 +47,13 @@ export default defineConfig({
           { text: 'Icon above Title', link: '/notes/title-icon' },
         ],
       },
+      {
+        text: 'Good to know',
+        collapsed: true,
+        items: [
+          { text: 'See icon name', link: '/good-to-know/see-icon-name' },
+        ],
+      },
     ],
 
     socialLinks: [
