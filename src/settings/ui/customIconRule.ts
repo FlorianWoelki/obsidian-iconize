@@ -286,7 +286,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           const modal = new Modal(this.plugin.app);
           modal.contentEl.style.display = 'block';
           modal.modalEl.classList.add('iconize-custom-rule-modal');
-          modal.titleEl.createEl('h3', { text: 'Edit custom rule' });
+          modal.titleEl.setText('Edit custom rule');
 
           // Create the input for the rule.
           this.createDescriptionEl(modal.contentEl, 'Regex or simple string');
