@@ -216,6 +216,8 @@ const addAll = (
         if (titleEl.children.length === 2 || titleEl.children.length === 1) {
           // Gets the icon name directly or from the inheritance folder.
           const iconName = typeof value === 'string' ? value : value.iconName;
+          const iconColor =
+            typeof value === 'string' ? undefined : value.iconColor;
           if (iconName) {
             // Removes a possible existing icon.
             const existingIcon = titleEl.querySelector('.iconize-icon');
@@ -231,7 +233,7 @@ const addAll = (
             IconCache.getInstance().set(dataPath, {
               iconNameWithPrefix: iconName,
             });
-            dom.setIconForNode(plugin, iconName, iconNode);
+            dom.setIconForNode(plugin, iconName, iconNode, iconColor);
 
             titleEl.insertBefore(iconNode, titleInnerEl);
           }

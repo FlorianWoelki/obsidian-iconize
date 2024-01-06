@@ -50,10 +50,12 @@ import { buildIconPlugin } from './editor/live-preview';
 import { PositionField, buildPositionField } from './editor/live-preview/state';
 import { calculateInlineTitleSize } from './lib/util/text';
 import { processMarkdown } from './editor/markdown-processor';
+import ChangeColorModal from './ui/change-color-modal';
 
 export interface FolderIconObject {
   iconName: string | null;
-  inheritanceIcon: string;
+  inheritanceIcon?: string;
+  iconColor?: string;
 }
 
 export default class IconFolderPlugin extends Plugin {
@@ -135,6 +137,15 @@ export default class IconFolderPlugin extends Plugin {
           });
         };
 
+        const changeColorOfIcon = (item: MenuItem) => {
+          item.setTitle('Change color of icon');
+          item.setIcon('palette');
+          item.onClick(() => {
+            const modal = new ChangeColorModal(this.app, this, file.path);
+            modal.open();
+          });
+        };
+
         menu.addItem(addIconMenuItem);
 
         const filePathData = this.getData()[file.path];
@@ -147,12 +158,20 @@ export default class IconFolderPlugin extends Plugin {
           filePathData &&
           (typeof filePathData === 'string' || inheritanceFolderHasIcon)
         ) {
+          const icon =
+            typeof filePathData === 'string'
+              ? filePathData
+              : (filePathData as FolderIconObject).iconName;
+          if (!emoji.isEmoji(icon)) {
+            menu.addItem(changeColorOfIcon);
+          }
+
           menu.addItem(removeIconMenuItem);
         }
 
         const inheritIcon = (item: MenuItem) => {
           const iconData = this.data[file.path] as FolderIconObject | string;
-          if (typeof iconData === 'object') {
+          if (typeof iconData === 'object' && iconData.inheritanceIcon) {
             item.setTitle('Remove inherit icon');
             item.onClick(() => {
               inheritance.remove(this, file.path, {
@@ -280,6 +299,9 @@ export default class IconFolderPlugin extends Plugin {
       const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
       const folderInheritance = inheritance.getByPath(this, file.path);
       const iconName = folderInheritance.inheritanceIcon;
+      if (!iconName) {
+        return;
+      }
       didUpdate = true;
       inheritance.add(this, folderPath, iconName, {
         file,
@@ -406,6 +428,11 @@ export default class IconFolderPlugin extends Plugin {
               const folderInheritance = inheritance.getByPath(this, file.path);
               const iconName = folderInheritance.inheritanceIcon;
               dom.removeIconInPath(file.path);
+
+              if (!iconName) {
+                return;
+              }
+
               inheritance.add(this, folderPath, iconName, {
                 file,
                 onAdd: (file) => {
@@ -486,6 +513,10 @@ export default class IconFolderPlugin extends Plugin {
 
           inheritanceFolders.forEach(
             ([path, obj]: [string, FolderIconObject]) => {
+              if (!obj.inheritanceIcon) {
+                return;
+              }
+
               inheritance.add(this, path, obj.inheritanceIcon, {
                 file,
                 onAdd: (file) => {
@@ -747,8 +778,10 @@ export default class IconFolderPlugin extends Plugin {
     if (icon === null && currentValue && typeof currentValue === 'object') {
       const folderObject = currentValue as FolderIconObject;
 
-      if (folderObject.iconName) {
+      if (folderObject.iconName && !folderObject.iconColor) {
         this.data[folderPath] = getNormalizedName(folderObject.iconName);
+      } else if (folderObject.iconName) {
+        (currentValue as FolderIconObject).inheritanceIcon = null;
       } else {
         delete this.data[folderPath];
       }
@@ -806,6 +839,48 @@ export default class IconFolderPlugin extends Plugin {
     this.saveIconFolderData();
   }
 
+  addIconColor(path: string, iconColor: string): void {
+    const pathData = this.getData()[path];
+
+    if (typeof pathData === 'string') {
+      this.getData()[path] = {
+        iconName: pathData,
+        iconColor,
+      };
+    } else {
+      (pathData as FolderIconObject).iconColor = iconColor;
+    }
+
+    this.saveIconFolderData();
+  }
+
+  getIconColor(path: string): string | undefined {
+    const pathData = this.getData()[path];
+
+    if (typeof pathData === 'string') {
+      return undefined;
+    }
+
+    return (pathData as FolderIconObject).iconColor;
+  }
+
+  removeIconColor(path: string): void {
+    const pathData = this.getData()[path];
+
+    if (typeof pathData === 'string') {
+      return;
+    }
+
+    const currentValue = pathData as FolderIconObject;
+    if (!currentValue.inheritanceIcon) {
+      this.data[path] = currentValue.iconName;
+    } else {
+      delete currentValue.iconColor;
+    }
+
+    this.saveIconFolderData();
+  }
+
   removeFolderIcon(path: string): void {
     if (!this.data[path]) {
       return;
@@ -816,10 +891,15 @@ export default class IconFolderPlugin extends Plugin {
 
     if (typeof this.data[path] === 'object') {
       const currentValue = this.data[path] as FolderIconObject;
-      this.data[path] = {
-        ...currentValue,
-        iconName: null,
-      };
+      if (!currentValue.inheritanceIcon) {
+        delete this.data[path];
+      } else {
+        delete currentValue.iconColor;
+        this.data[path] = {
+          ...currentValue,
+          iconName: null,
+        };
+      }
     } else {
       delete this.data[path];
     }

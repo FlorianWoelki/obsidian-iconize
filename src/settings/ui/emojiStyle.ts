@@ -38,6 +38,10 @@ export default class EmojiStyleSetting extends IconFolderSetting {
           const inheritanceData = this.plugin.getData()[
             path
           ] as FolderIconObject;
+          if (!inheritanceData.inheritanceIcon) {
+            continue;
+          }
+
           iconName = inheritanceData.iconName;
 
           // Handle updating the emoji style for the inheritance icon.

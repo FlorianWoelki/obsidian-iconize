@@ -26,7 +26,12 @@ const getFolders = (
   plugin: IconFolderPlugin,
 ): Record<string, FolderIconObject> => {
   return Object.entries(plugin.getData())
-    .filter(([k, v]) => k !== 'settings' && typeof v === 'object')
+    .filter(
+      ([k, v]) =>
+        k !== 'settings' &&
+        typeof v === 'object' &&
+        (v as FolderIconObject).inheritanceIcon,
+    )
     .reduce<Record<string, FolderIconObject>>((prev, [path, value]) => {
       prev[path] = value as FolderIconObject;
       return prev;
@@ -54,6 +59,10 @@ const add = (
   const folder = plugin.getData()[folderPath];
   // Checks if data exists and if the data is some kind of object type.
   if (!folder || typeof folder !== 'object') {
+    return;
+  }
+
+  if (!(folder as FolderIconObject).inheritanceIcon) {
     return;
   }
 
@@ -130,6 +139,10 @@ const remove = (
   const folder = plugin.getData()[folderPath];
   // Checks if data exists and if the data is some kind of object type.
   if (!folder || typeof folder !== 'object') {
+    return;
+  }
+
+  if (!(folder as FolderIconObject).inheritanceIcon) {
     return;
   }
 
