@@ -37,6 +37,7 @@ export default defineConfig({
           { text: 'Inheritance', link: '/files-and-folders/inheritance' },
           { text: 'Custom Rules', link: '/files-and-folders/custom-rules' },
           { text: 'Use Frontmatter', link: '/files-and-folders/use-frontmatter' },
+          { text: 'Change individual icon color', link: '/files-and-folders/individual-icon-color' },
         ],
       },
       {
