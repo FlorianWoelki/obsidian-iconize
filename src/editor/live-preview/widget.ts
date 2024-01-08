@@ -60,6 +60,8 @@ export class IconWidget extends WidgetType {
       }
 
       const svgElement = svg.setFontSize(foundIcon.svgElement, fontSize);
+      wrap.style.display = 'inline-flex';
+      wrap.style.transform = 'translateY(13%)';
       wrap.innerHTML = svgElement;
     } else {
       wrap.append(`:${this.id}:`);
