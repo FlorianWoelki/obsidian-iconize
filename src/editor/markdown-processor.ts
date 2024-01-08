@@ -26,22 +26,39 @@ export const processMarkdown = (element: HTMLElement) => {
     const iconObject = icon.getIconByName(iconName);
     const firstElementChild = element.firstElementChild ?? element;
     if (iconObject) {
+      const rootSpan = createSpan({
+        cls: 'cm-iconize-icon',
+        attr: {
+          'aria-label': iconName,
+          'data-icon': iconName,
+          'aria-hidden': 'true',
+        },
+      });
+      rootSpan.style.display = 'inline-flex';
+      rootSpan.style.transform = 'translateY(13%)';
+
       const tagName = firstElementChild.tagName.toLowerCase();
       let fontSize = calculateFontTextSize();
 
       if (isHeader(tagName)) {
         fontSize = calculateHeaderSize(tagName as Header);
         const svgElement = svg.setFontSize(iconObject.svgElement, fontSize);
+        rootSpan.innerHTML = svgElement;
 
         // Replace first element (DIV html content) with svg element
         firstElementChild.innerHTML = firstElementChild.innerHTML.replace(
           shortcode,
-          svgElement,
+          rootSpan.outerHTML,
         );
       } else {
         const svgElement = svg.setFontSize(iconObject.svgElement, fontSize);
+        rootSpan.innerHTML = svgElement;
+
         // Replace shortcode by svg element
-        element.innerHTML = element.innerHTML.replace(shortcode, svgElement);
+        firstElementChild.innerHTML = firstElementChild.innerHTML.replace(
+          shortcode,
+          rootSpan.outerHTML,
+        );
       }
     }
   }
