@@ -161,6 +161,7 @@ export const buildPositionField = () => {
           );
         }
 
+        newRanges.sort((a, b) => a.from - b.from);
         rangeSet = rangeSet.update({ add: newRanges });
         return rangeSet;
       }
@@ -197,6 +198,7 @@ export const buildPositionField = () => {
           },
         );
       }
+      newRanges.sort((a, b) => a.from - b.from);
       rangeSet = rangeSet.update({ add: newRanges });
       return rangeSet;
     },
