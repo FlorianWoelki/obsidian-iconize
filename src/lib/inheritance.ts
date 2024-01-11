@@ -19,6 +19,7 @@ interface RemoveOptions {
  * Gets all the inheritance folder from the data as an object which consists of the path
  * as a key and the value as the object. It does that by including all objects (except
  * the settings).
+ * @deprecated Use custom rules instead.
  * @param plugin IconFolderPlugin that will be used to get the data from.
  * @returns An object where the keys are the paths and the values are the objects.
  */
@@ -40,6 +41,7 @@ const getFolders = (
 
 /**
  * Gets all the files where that file path includes the specified folder path.
+ * @deprecated Use custom rules instead.
  * @param plugin Instance of IconFolderPlugin.
  * @param folderPath Folder path that will be used to check if the file includes this.
  * @returns An array of files that include the folder path.
@@ -50,6 +52,9 @@ const getFiles = (plugin: IconFolderPlugin, folderPath: string) => {
     .filter((file) => file.path.includes(folderPath));
 };
 
+/**
+ * @deprecated Use custom rules instead.
+ */
 const add = (
   plugin: IconFolderPlugin,
   folderPath: string,
@@ -131,6 +136,9 @@ const add = (
   }
 };
 
+/**
+ * @deprecated Use custom rules instead.
+ */
 const remove = (
   plugin: IconFolderPlugin,
   folderPath: string,
@@ -163,6 +171,9 @@ const remove = (
   }
 };
 
+/**
+ * @deprecated Use custom rules instead.
+ */
 const getByPath = (
   plugin: IconFolderPlugin,
   path: string,
@@ -174,11 +185,17 @@ const getByPath = (
   return foundFolderIcon?.[1]; // Returns the folder icon when defined.
 };
 
+/**
+ * @deprecated Use custom rules instead.
+ */
 const doesExistInPath = (plugin: IconFolderPlugin, path: string): boolean => {
   const folders = getFolders(plugin);
   return Object.keys(folders).some((folderPath) => path.includes(folderPath));
 };
 
+/**
+ * @deprecated Use custom rules instead.
+ */
 const getFolderPathByFilePath = (
   plugin: IconFolderPlugin,
   filePath: string,
