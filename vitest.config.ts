@@ -6,6 +6,7 @@ export default defineConfig({
     setupFiles: ['./src/test-setup.ts'],
     environment: 'happy-dom',
     coverage: {
+      all: false,
       reporter: ['text', 'json-summary', 'json'],
       provider: 'istanbul',
       thresholds: {
