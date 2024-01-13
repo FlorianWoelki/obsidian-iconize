@@ -21,7 +21,6 @@ If you like this plugin, feel free to support the development by buying a coffee
 [Predefined icon packs](https://florianwoelki.github.io/obsidian-iconize/guide/icon-packs.html),
 [Icons in tabs](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/icon-tabs.html),
 [Customizable settings](https://florianwoelki.github.io/obsidian-iconize/guide/settings.html),
-[Inheritance](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/inheritance.html),
 [Custom rules](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/custom-rules.html),
 [Frontmatter integration](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/use-frontmatter.html),
 [Change color of an individual icon](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/individual-icon-color.html),
