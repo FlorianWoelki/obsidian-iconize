@@ -1,7 +1,6 @@
 interface CacheResult {
   iconNameWithPrefix: string;
   inCustomRule?: boolean;
-  inInheritance?: boolean;
 }
 
 export class IconCache {

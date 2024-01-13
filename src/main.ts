@@ -4,7 +4,6 @@ import {
   TFile,
   WorkspaceLeaf,
   requireApiVersion,
-  TFolder,
   MarkdownView,
   Notice,
 } from 'obsidian';
@@ -31,7 +30,6 @@ import IconFolderSettingsUI from './settings/ui';
 import StarredInternalPlugin from './internal-plugins/starred';
 import InternalPluginInjector from './@types/internal-plugin-injector';
 import iconTabs from './lib/icon-tabs';
-import inheritance from './lib/inheritance';
 import dom from './lib/util/dom';
 import customRule from './lib/custom-rule';
 import icon from './lib/icon';
@@ -54,7 +52,6 @@ import ChangeColorModal from './ui/change-color-modal';
 
 export interface FolderIconObject {
   iconName: string | null;
-  inheritanceIcon?: string;
   iconColor?: string;
 }
 
@@ -149,14 +146,14 @@ export default class IconFolderPlugin extends Plugin {
         menu.addItem(addIconMenuItem);
 
         const filePathData = this.getData()[file.path];
-        const inheritanceFolderHasIcon =
+        const hasNestedIcon =
           typeof filePathData === 'object' &&
           (filePathData as FolderIconObject).iconName !== null;
         // Only add remove icon menu item when the file path exists in the data.
-        // We do not want to show this menu item for e.g. inheritance or custom rules.
+        // We do not want to show this menu item for e.g. custom rules.
         if (
           filePathData &&
-          (typeof filePathData === 'string' || inheritanceFolderHasIcon)
+          (typeof filePathData === 'string' || hasNestedIcon)
         ) {
           const icon =
             typeof filePathData === 'string'
@@ -168,75 +165,6 @@ export default class IconFolderPlugin extends Plugin {
 
           menu.addItem(removeIconMenuItem);
         }
-
-        const inheritIcon = (item: MenuItem) => {
-          const iconData = this.data[file.path] as FolderIconObject | string;
-          if (typeof iconData === 'object' && iconData.inheritanceIcon) {
-            item.setTitle('Remove inherit icon');
-            item.onClick(() => {
-              inheritance.remove(this, file.path, {
-                onRemove: (file) => {
-                  // Removes the icons from the file tabs inside of the inheritance.
-                  if (this.getSettings().iconInTabsEnabled) {
-                    const tabLeaves = iconTabs.getTabLeavesOfFilePath(
-                      this,
-                      file.path,
-                    );
-                    for (const tabLeaf of tabLeaves) {
-                      iconTabs.remove(tabLeaf.tabHeaderInnerIconEl, {
-                        replaceWithDefaultIcon: true,
-                      });
-                    }
-                  }
-                },
-              });
-              this.saveInheritanceData(file.path, null);
-              if (!emoji.isEmoji(iconData.inheritanceIcon)) {
-                removeIconFromIconPack(this, iconData.inheritanceIcon);
-              }
-            });
-          } else {
-            item.setTitle('Inherit icon');
-            item.onClick(() => {
-              const modal = new IconsPickerModal(this.app, this, file.path);
-              modal.open();
-              // manipulate `onChooseItem` method to get custom functionality for inheriting icons
-              modal.onChooseItem = (icon: Icon | string) => {
-                this.saveInheritanceData(file.path, icon);
-                const iconName =
-                  typeof icon === 'string' ? icon : icon.displayName;
-
-                if (!emoji.isEmoji(iconName)) {
-                  saveIconToIconPack(this, iconName);
-                }
-
-                inheritance.add(this, file.path, iconName, {
-                  onAdd: (file) => {
-                    if (this.getSettings().iconInTabsEnabled) {
-                      const tabLeaves = iconTabs.getTabLeavesOfFilePath(
-                        this,
-                        file.path,
-                      );
-                      for (const tabLeaf of tabLeaves) {
-                        iconTabs.add(
-                          this,
-                          file as TFile,
-                          tabLeaf.tabHeaderInnerIconEl,
-                          {
-                            iconName,
-                          },
-                        );
-                      }
-                    }
-                  },
-                });
-              };
-            });
-          }
-          item.setIcon('vertical-three-dots');
-        };
-
-        menu.addItem(inheritIcon);
       }),
     );
 
@@ -294,36 +222,6 @@ export default class IconFolderPlugin extends Plugin {
 
     let didUpdate = false;
 
-    // Check for possible inheritance and add the icon if an inheritance exists.
-    if (inheritance.doesExistInPath(this, file.path)) {
-      const folderPath = inheritance.getFolderPathByFilePath(this, file.path);
-      const folderInheritance = inheritance.getByPath(this, file.path);
-      const iconName = folderInheritance.inheritanceIcon;
-      if (!iconName) {
-        return;
-      }
-      didUpdate = true;
-      inheritance.add(this, folderPath, iconName, {
-        file,
-        onAdd: (file) => {
-          // Update icon in tab when setting is enabled.
-          if (this.getSettings().iconInTabsEnabled) {
-            const tabLeaves = iconTabs.getTabLeavesOfFilePath(this, file.path);
-            for (const tabLeaf of tabLeaves) {
-              iconTabs.add(this, file as TFile, tabLeaf.tabHeaderInnerIconEl, {
-                iconName,
-              });
-            }
-          }
-
-          // Update icon in title when setting is enabled.
-          if (this.getSettings().iconInTitleEnabled) {
-            this.addIconInTitle(iconName);
-          }
-        },
-      });
-    }
-
     // Refreshes the icon tab and title icon for custom rules.
     for (const rule of customRule.getSortedRules(this)) {
       const applicable = await customRule.isApplicable(this, rule, file);
@@ -341,7 +239,7 @@ export default class IconFolderPlugin extends Plugin {
       }
     }
 
-    // Only remove icon above titles and icon in tabs if no inheritance or custom rule was found.
+    // Only remove icon above titles and icon in tabs if no custom rule was found.
     if (!didUpdate) {
       // Refreshes icons above title and icons in tabs.
       for (const openedFile of getAllOpenedFiles(this)) {
@@ -412,134 +310,45 @@ export default class IconFolderPlugin extends Plugin {
         }
       }
 
-      // Register rename event for adding icons with custom rules to the DOM and updating
-      // inheritance when file was moved to another directory.
+      // Register rename event for adding icons with custom rules to the DOM
+      // when file was moved to another directory.
       this.registerEvent(
         this.app.vault.on('rename', async (file, oldPath) => {
-          const inheritanceExists = inheritance.doesExistInPath(this, oldPath);
-          if (inheritanceExists) {
-            // Apply inheritance to the renamed file.
-            const isFolder = (file as TFolder).children !== undefined;
-            if (!isFolder) {
-              const folderPath = inheritance.getFolderPathByFilePath(
-                this,
-                file.path,
-              );
-              const folderInheritance = inheritance.getByPath(this, file.path);
-              const iconName = folderInheritance.inheritanceIcon;
+          const sortedRules = customRule.getSortedRules(this);
+
+          // Removes possible icons from the renamed file.
+          sortedRules.forEach((rule) => {
+            if (customRule.doesMatchPath(rule, oldPath)) {
               dom.removeIconInPath(file.path);
-
-              if (!iconName) {
-                return;
-              }
-
-              inheritance.add(this, folderPath, iconName, {
-                file,
-                onAdd: (file) => {
-                  if (this.getSettings().iconInTabsEnabled) {
-                    const tabLeaves = iconTabs.getTabLeavesOfFilePath(
-                      this,
-                      file.path,
-                    );
-
-                    for (const tabLeaf of tabLeaves) {
-                      iconTabs.add(
-                        this,
-                        file as TFile,
-                        tabLeaf.tabHeaderInnerIconEl,
-                        {
-                          iconName,
-                        },
-                      );
-                    }
-                  }
-                },
-              });
             }
-          } else {
-            const sortedRules = customRule.getSortedRules(this);
+          });
 
-            // Removes possible icons from the renamed file.
-            sortedRules.forEach((rule) => {
-              if (customRule.doesMatchPath(rule, oldPath)) {
-                dom.removeIconInPath(file.path);
-              }
-            });
-
-            // Adds possible icons to the renamed file.
-            sortedRules.forEach((rule) => {
-              if (customRule.doesMatchPath(rule, oldPath)) {
-                return;
-              }
-
-              customRule.add(this, rule, file, undefined);
-            });
-
-            // Updates icon tabs for the renamed file.
-            for (const rule of customRule.getSortedRules(this)) {
-              const applicable = await customRule.isApplicable(
-                this,
-                rule,
-                file,
-              );
-              if (!applicable) {
-                continue;
-              }
-
-              const openedFiles = getAllOpenedFiles(this);
-              const openedFile = openedFiles.find(
-                (openedFile) => openedFile.path === file.path,
-              );
-              if (openedFile) {
-                const leaf = openedFile.leaf as TabHeaderLeaf;
-                iconTabs.update(this, rule.icon, leaf.tabHeaderInnerIconEl);
-              }
-              break;
+          // Adds possible icons to the renamed file.
+          sortedRules.forEach((rule) => {
+            if (customRule.doesMatchPath(rule, oldPath)) {
+              return;
             }
+
+            customRule.add(this, rule, file, undefined);
+          });
+
+          // Updates icon tabs for the renamed file.
+          for (const rule of customRule.getSortedRules(this)) {
+            const applicable = await customRule.isApplicable(this, rule, file);
+            if (!applicable) {
+              continue;
+            }
+
+            const openedFiles = getAllOpenedFiles(this);
+            const openedFile = openedFiles.find(
+              (openedFile) => openedFile.path === file.path,
+            );
+            if (openedFile) {
+              const leaf = openedFile.leaf as TabHeaderLeaf;
+              iconTabs.update(this, rule.icon, leaf.tabHeaderInnerIconEl);
+            }
+            break;
           }
-        }),
-      );
-
-      // Register create event for checking inheritance functionality.
-      this.registerEvent(
-        this.app.vault.on('create', (file) => {
-          const inheritanceFolders = Object.entries(this.data).filter(
-            ([k, v]) => k !== 'settings' && typeof v === 'object',
-          );
-
-          const isFolder = (file as TFolder).children !== undefined;
-
-          if (!file.parent || file.parent.path === '/' || isFolder) return;
-
-          inheritanceFolders.forEach(
-            ([path, obj]: [string, FolderIconObject]) => {
-              if (!obj.inheritanceIcon) {
-                return;
-              }
-
-              inheritance.add(this, path, obj.inheritanceIcon, {
-                file,
-                onAdd: (file) => {
-                  if (this.getSettings().iconInTabsEnabled) {
-                    const tabLeaves = iconTabs.getTabLeavesOfFilePath(
-                      this,
-                      file.path,
-                    );
-                    for (const tabLeaf of tabLeaves) {
-                      iconTabs.add(
-                        this,
-                        file as TFile,
-                        tabLeaf.tabHeaderInnerIconEl,
-                        {
-                          iconName: obj.inheritanceIcon,
-                        },
-                      );
-                    }
-                  }
-                },
-              });
-            },
-          );
         }),
       );
 
@@ -769,58 +578,6 @@ export default class IconFolderPlugin extends Plugin {
     }
   }
 
-  private saveInheritanceData(
-    folderPath: string,
-    icon: Icon | string | null,
-  ): void {
-    const currentValue = this.data[folderPath];
-    // if icon is null, it will remove the inheritance icon from the data
-    if (icon === null && currentValue && typeof currentValue === 'object') {
-      const folderObject = currentValue as FolderIconObject;
-
-      if (folderObject.iconName && !folderObject.iconColor) {
-        this.data[folderPath] = getNormalizedName(folderObject.iconName);
-      } else if (folderObject.iconName) {
-        (currentValue as FolderIconObject).inheritanceIcon = null;
-      } else {
-        delete this.data[folderPath];
-      }
-    }
-    // icon is not null, so it will add inheritance data
-    else {
-      // check if data already exists
-      if (currentValue) {
-        // check if current value is already an icon name
-        if (typeof currentValue === 'string') {
-          this.data[folderPath] = {
-            iconName: currentValue as string,
-            inheritanceIcon: getNormalizedName(
-              typeof icon === 'object' ? icon.displayName : icon,
-            ),
-          };
-        }
-        // check if it has already a inheritance icon
-        else if (folderPath !== 'settings') {
-          this.data[folderPath] = {
-            ...(currentValue as FolderIconObject),
-            inheritanceIcon: getNormalizedName(
-              typeof icon === 'object' ? icon.displayName : icon,
-            ),
-          };
-        }
-      } else {
-        this.data[folderPath] = {
-          iconName: null,
-          inheritanceIcon: getNormalizedName(
-            typeof icon === 'object' ? icon.displayName : icon,
-          ),
-        };
-      }
-    }
-
-    this.saveIconFolderData();
-  }
-
   onunload() {
     console.log('unloading obsidian-icon-folder');
   }
@@ -872,11 +629,7 @@ export default class IconFolderPlugin extends Plugin {
     }
 
     const currentValue = pathData as FolderIconObject;
-    if (!currentValue.inheritanceIcon) {
-      this.data[path] = currentValue.iconName;
-    } else {
-      delete currentValue.iconColor;
-    }
+    this.getData()[path] = currentValue.iconName;
 
     this.saveIconFolderData();
   }
@@ -889,20 +642,7 @@ export default class IconFolderPlugin extends Plugin {
     // Saves the icon name with prefix to remove it from the icon pack directory later.
     const iconData = this.data[path];
 
-    if (typeof this.data[path] === 'object') {
-      const currentValue = this.data[path] as FolderIconObject;
-      if (!currentValue.inheritanceIcon) {
-        delete this.data[path];
-      } else {
-        delete currentValue.iconColor;
-        this.data[path] = {
-          ...currentValue,
-          iconName: null,
-        };
-      }
-    } else {
-      delete this.data[path];
-    }
+    delete this.data[path];
 
     // Removes the icon from the icon pack directory if it is not used as an icon somewhere
     // else.
@@ -928,16 +668,7 @@ export default class IconFolderPlugin extends Plugin {
       typeof icon === 'object' ? icon.displayName : icon,
     );
 
-    // Check if inheritance is active for this path.
-    if (typeof this.data[path] === 'object') {
-      const currentValue = this.data[path] as FolderIconObject;
-      this.data[path] = {
-        ...currentValue,
-        iconName,
-      };
-    } else {
-      this.data[path] = iconName;
-    }
+    this.data[path] = iconName;
 
     // Update recently used icons.
     if (!this.getSettings().recentlyUsedIcons.includes(iconName)) {
@@ -1014,8 +745,8 @@ export default class IconFolderPlugin extends Plugin {
   }
 
   /**
-   * Returns a possible data path by the given value. This function checks for direct icon,
-   * inheritance icon and custom rules.
+   * Returns a possible data path by the given value. This function checks for
+   * direct icon and custom rules.
    * @param value String that will be used to find the data path.
    * @returns String that is the data path or `undefined` if no data path was found.
    */
@@ -1033,9 +764,8 @@ export default class IconFolderPlugin extends Plugin {
           return rules.find((rule) => rule.icon === value);
         }
 
-        // Check for inheritance icons.
         v = v as FolderIconObject;
-        if (value === v.iconName || value === v.inheritanceIcon) {
+        if (value === v.iconName) {
           return k;
         }
       }
