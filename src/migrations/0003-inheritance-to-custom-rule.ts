@@ -1,10 +1,13 @@
+import config from '@app/config';
 import customRule from '@app/lib/custom-rule';
 import IconFolderPlugin, { FolderIconObject } from '@app/main';
 import { CustomRule } from '@app/settings/data';
+import { Notice } from 'obsidian';
 
 export default async function migrate(plugin: IconFolderPlugin): Promise<void> {
   // Migration for inheritance to custom rule.
   if (plugin.getSettings().migrated === 3) {
+    let hasRemovedInheritance = false;
     for (const [key, value] of Object.entries(plugin.getData())) {
       if (key === 'settings' || typeof value !== 'object') {
         continue;
@@ -46,6 +49,13 @@ export default async function migrate(plugin: IconFolderPlugin): Promise<void> {
 
       // Apply the custom rule.
       await customRule.addToAllFiles(plugin, newRule);
+      hasRemovedInheritance = true;
+    }
+
+    if (hasRemovedInheritance) {
+      new Notice(
+        `[${config.PLUGIN_NAME}] Inheritance has been removed and replaced with custom rules.`,
+      );
     }
 
     plugin.getSettings().migrated++;
