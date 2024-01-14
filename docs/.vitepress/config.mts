@@ -34,9 +34,9 @@ export default defineConfig({
         items: [
           { text: 'Icon before file/folder name', link: '/files-and-folders/icon-before-file-or-folder' },
           { text: 'Icon in Tabs', link: '/files-and-folders/icon-tabs' },
-          { text: 'Inheritance', link: '/files-and-folders/inheritance' },
           { text: 'Custom Rules', link: '/files-and-folders/custom-rules' },
           { text: 'Use Frontmatter', link: '/files-and-folders/use-frontmatter' },
+          { text: 'Change individual icon color', link: '/files-and-folders/individual-icon-color' },
         ],
       },
       {
@@ -45,6 +45,20 @@ export default defineConfig({
         items: [
           { text: 'Icons in Notes', link: '/notes/icons-in-notes' },
           { text: 'Icon above Title', link: '/notes/title-icon' },
+        ],
+      },
+      {
+        text: 'Good to know',
+        collapsed: true,
+        items: [
+          { text: 'See icon name', link: '/good-to-know/see-icon-name' },
+        ],
+      },
+      {
+        text: 'Deprecated',
+        collapsed: true,
+        items: [
+          { text: 'Inheritance', link: '/deprecated/inheritance' },
         ],
       },
     ],

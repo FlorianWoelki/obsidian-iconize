@@ -1,5 +1,5 @@
 import { App, PluginSettingTab } from 'obsidian';
-import IconFolderPlugin from '../../main';
+import IconFolderPlugin from '@app/main';
 import CustomIconPackSetting from './customIconPack';
 import CustomIconRuleSetting from './customIconRule';
 import EmojiStyleSetting from './emojiStyle';
@@ -14,6 +14,7 @@ import ToggleIconInTabs from './toggleIconInTabs';
 import ToggleIconInTitle from './toggleIconInTitle';
 import ToggleFrontmatterIcon from './toggleFrontmatterIcon';
 import ToggleIconsInNotes from './toggleIconsInNotes';
+import IconIdentifierSetting from './iconIdentifier';
 
 export default class IconFolderSettings extends PluginSettingTab {
   private plugin: IconFolderPlugin;
@@ -33,6 +34,8 @@ export default class IconFolderSettings extends PluginSettingTab {
     new IconPacksPathSetting(plugin, containerEl).display();
     new IconPacksBackgroundChecker(plugin, containerEl).display();
     new EmojiStyleSetting(plugin, containerEl).display();
+    new IconIdentifierSetting(plugin, containerEl).display();
+
     containerEl.createEl('h3', { text: 'Visibility of icons' });
     new ToggleIconInTabs(plugin, containerEl).display();
     new ToggleIconInTitle(plugin, containerEl).display();

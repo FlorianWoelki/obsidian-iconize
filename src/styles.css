@@ -98,17 +98,13 @@
 }
 
 /* Custom rule modal. */
-.iconize-custom-rule-modal .modal-title h3 {
-  margin: 0;
-}
-
-.iconize-custom-rule-modal .modal-content {
+.iconize-custom-modal .modal-content {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.iconize-custom-rule-modal .modal-content input {
+.iconize-custom-modal .modal-content input {
   width: 100%;
   margin-right: 0.5rem;
 }

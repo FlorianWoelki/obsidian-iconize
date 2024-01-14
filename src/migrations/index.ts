@@ -1,6 +1,7 @@
-import IconFolderPlugin from '../main';
+import IconFolderPlugin from '@app/main';
 import migrate0001 from './0001-change-migrated-true-to-1';
 import migrate0002 from './0002-order-custom-rules';
+import migrate0003 from './0003-inheritance-to-custom-rule';
 
 export const migrate = async (plugin: IconFolderPlugin): Promise<void> => {
   // eslint-disable-next-line
@@ -10,8 +11,9 @@ export const migrate = async (plugin: IconFolderPlugin): Promise<void> => {
     plugin.getSettings().migrated = 1;
   }
 
-  migrate0001(plugin);
-  migrate0002(plugin);
+  await migrate0001(plugin);
+  await migrate0002(plugin);
+  await migrate0003(plugin);
 
   await plugin.saveIconFolderData();
 };

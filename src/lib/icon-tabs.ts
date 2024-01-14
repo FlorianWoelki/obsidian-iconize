@@ -1,9 +1,9 @@
 import { TFile } from 'obsidian';
-import IconFolderPlugin, { FolderIconObject } from '../main';
+import IconFolderPlugin from '@app/main';
+import { DEFAULT_FILE_ICON, getAllOpenedFiles } from '@app/util';
+import { TabHeaderLeaf } from '@app/@types/obsidian';
 import customRule from './custom-rule';
 import dom from './util/dom';
-import { DEFAULT_FILE_ICON, getAllOpenedFiles } from '../util';
-import { TabHeaderLeaf } from '../@types/obsidian';
 
 /**
  * Gets the tab leaves of a specific file path by looping through all opened files and
@@ -38,7 +38,7 @@ interface AddOptions {
 }
 
 /**
- * Adds an icon to the tab and its container. This function respects the inheritance,
+ * Adds an icon to the tab and its container. This function respects the
  * custom rules and individually icon set.
  * @param plugin IconFolderPlugin instance.
  * @param file TFile instance of the file to add the icon to.
@@ -63,34 +63,6 @@ const add = async (
     // TODO: Refactor to include option to `insertIconToNode` function.
     iconContainer.style.margin = null;
     return;
-  }
-
-  // Files can also have custom icons inside of inheritance folders.
-  const hasIcon = plugin.getData()[file.path];
-  if (!hasIcon) {
-    // Add icons to tabs if there is some sort of inheritance going on.
-    const inheritanceData = data.filter(
-      ([key, value]) => typeof value === 'object' && key !== 'settings',
-    ) as [string, FolderIconObject][];
-    for (const [inheritancePath, inheritance] of inheritanceData) {
-      if (!inheritance.inheritanceIcon) {
-        continue;
-      }
-
-      if (!file.path.includes(inheritancePath)) {
-        continue;
-      }
-
-      dom.setIconForNode(
-        plugin,
-        inheritance.inheritanceIcon,
-        iconContainer,
-        iconColor,
-      );
-      // TODO: Refactor to include option to `insertIconToNode` function.
-      iconContainer.style.margin = null;
-      break;
-    }
   }
 
   // Add icons to tabs if a custom rule is applicable.

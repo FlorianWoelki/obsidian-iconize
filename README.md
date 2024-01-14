@@ -13,7 +13,7 @@ If you like this plugin, feel free to support the development by buying a coffee
 
 <a href="https://www.buymeacoffee.com/florianwoelki" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-## Available Features
+## Key Highlights
 
 [Icons before file/folder name](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/icon-before-file-or-folder.html),
 [Icons in notes](https://florianwoelki.github.io/obsidian-iconize/notes/icons-in-notes.html),
@@ -21,9 +21,9 @@ If you like this plugin, feel free to support the development by buying a coffee
 [Predefined icon packs](https://florianwoelki.github.io/obsidian-iconize/guide/icon-packs.html),
 [Icons in tabs](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/icon-tabs.html),
 [Customizable settings](https://florianwoelki.github.io/obsidian-iconize/guide/settings.html),
-[Inheritance](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/inheritance.html),
 [Custom rules](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/custom-rules.html),
 [Frontmatter integration](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/use-frontmatter.html),
+[Change color of an individual icon](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/individual-icon-color.html),
 
 ## Development
 

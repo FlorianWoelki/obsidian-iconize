@@ -29,7 +29,11 @@ let replaceRangeMock: Mock;
 beforeEach(() => {
   vi.restoreAllMocks();
   app = {};
-  plugin = {};
+  plugin = {
+    getSettings: () => ({
+      iconIdentifier: ':',
+    }),
+  };
   suggestionIcon = new SuggestionIcon(app, plugin);
   replaceRangeMock = vi.fn();
   suggestionIcon.context = {

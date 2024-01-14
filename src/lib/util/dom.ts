@@ -162,11 +162,18 @@ const getIconFromElement = (element: HTMLElement): string | undefined => {
   return existingIcon;
 };
 
+const getIconNodeFromPath = (path: string): HTMLElement | undefined => {
+  return document
+    .querySelector(`[data-path="${path}"]`)
+    ?.querySelector('[data-icon]');
+};
+
 export default {
   setIconForNode,
   createIconNode,
   doesElementHasIconNode,
   getIconFromElement,
+  getIconNodeFromPath,
   removeIconInNode,
   removeIconInPath,
 };

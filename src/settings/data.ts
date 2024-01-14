@@ -135,6 +135,11 @@ export interface IconFolderSettings {
    * @default true
    */
   iconsInNotesEnabled: boolean;
+  /**
+   * Sets the icon identifier used in notes.
+   * @default ':'
+   */
+  iconIdentifier: string;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -157,4 +162,5 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   iconInFrontmatterEnabled: false,
   iconsBackgroundCheckEnabled: false,
   iconsInNotesEnabled: true,
+  iconIdentifier: ':',
 };

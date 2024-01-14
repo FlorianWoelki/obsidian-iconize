@@ -1,6 +1,6 @@
-import IconFolderPlugin from '../main';
+import IconFolderPlugin from '@app/main';
 
-export default function migrate(plugin: IconFolderPlugin): void {
+export default async function migrate(plugin: IconFolderPlugin): Promise<void> {
   // Migration for new order functionality of custom rules.
   if (plugin.getSettings().migrated === 2) {
     // Sorting alphabetically was the default behavior before.
