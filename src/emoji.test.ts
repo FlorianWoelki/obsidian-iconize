@@ -1,5 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { Mock, describe, expect, it, vi } from 'vitest';
+import twemoji from 'twemoji';
 import emoji from './emoji';
+
+vi.mock('twemoji');
 
 describe('isEmoji', () => {
   it('should return `true` for valid emojis', () => {
@@ -34,5 +37,19 @@ describe('getShortcode', () => {
     expect(emoji.getShortcode('123')).toBe(undefined);
     expect(emoji.getShortcode('🤗 hello')).toBe(undefined);
     expect(emoji.getShortcode('hello 🤗')).toBe(undefined);
+  });
+});
+
+describe('parseEmoji', () => {
+  it('should return emoji when emojiStyle is `native`', () => {
+    expect(emoji.parseEmoji('native', '👍')).toBe('👍');
+    expect(emoji.parseEmoji('native', '🤔')).toBe('🤔');
+    expect(emoji.parseEmoji('native', '😂')).toBe('😂');
+  });
+
+  it('should call twemoji.parse when emojiStyle is `twemoji`', () => {
+    (twemoji.parse as Mock).mockImplementation(() => '👍');
+    emoji.parseEmoji('twemoji', '👍');
+    expect(twemoji.parse).toHaveBeenCalledTimes(1);
   });
 });
