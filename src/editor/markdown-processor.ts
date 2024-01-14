@@ -6,21 +6,35 @@ import {
   calculateHeaderSize,
   isHeader,
 } from '@app/lib/util/text';
+import IconFolderPlugin from '@app/main';
 
-export const processMarkdown = (element: HTMLElement) => {
+export const processMarkdown = (
+  plugin: IconFolderPlugin,
+  element: HTMLElement,
+) => {
   // Ignore if codeblock
   const codeElement = element.querySelector('pre > code');
   if (codeElement) {
     return;
   }
 
-  const iconShortcodes = Array.from(
-    element.innerHTML.matchAll(/(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g),
+  const regex = new RegExp(
+    `(${
+      plugin.getSettings().iconIdentifier
+    })((\\w{1,64}:\\d{17,18})|(\\w{1,64}))(${
+      plugin.getSettings().iconIdentifier
+    })`,
+    'g',
   );
+  const iconShortcodes = Array.from(element.innerHTML.matchAll(regex));
+  const iconIdentifierLength = plugin.getSettings().iconIdentifier.length;
 
   for (let index = 0; index < iconShortcodes.length; index++) {
     const shortcode = iconShortcodes[index][0];
-    const iconName = shortcode.slice(1, shortcode.length - 1);
+    const iconName = shortcode.slice(
+      iconIdentifierLength,
+      shortcode.length - iconIdentifierLength,
+    );
 
     // Find icon and process it if exists
     const iconObject = icon.getIconByName(iconName);

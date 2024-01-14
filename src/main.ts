@@ -64,7 +64,7 @@ export default class IconFolderPlugin extends Plugin {
 
   private modifiedInternalPlugins: InternalPluginInjector[] = [];
 
-  public positionField: PositionField = buildPositionField();
+  public positionField: PositionField = buildPositionField(this);
 
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
@@ -194,7 +194,7 @@ export default class IconFolderPlugin extends Plugin {
     );
 
     if (this.getSettings().iconsInNotesEnabled) {
-      this.registerMarkdownPostProcessor(processMarkdown);
+      this.registerMarkdownPostProcessor((el) => processMarkdown(this, el));
       this.registerEditorSuggest(new SuggestionIcon(this.app, this));
       this.registerEditorExtension([this.positionField, buildIconPlugin(this)]);
     }

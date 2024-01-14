@@ -8,6 +8,7 @@ import {
   RangeValue,
   StateField,
 } from '@codemirror/state';
+import IconFolderPlugin from '@app/main';
 
 export type PositionField = StateField<RangeSet<IconPosition>>;
 
@@ -36,7 +37,7 @@ class IconPosition extends RangeValue {
  * Builds a position field for the editor state. This field will track the
  * positions of the icons in the document.
  **/
-export const buildPositionField = () => {
+export const buildPositionField = (plugin: IconFolderPlugin) => {
   /**
    * Checks the ranges of the icons in the document. If the range is not
    * excluded, the range is added to the range set. If the range is excluded,
@@ -53,10 +54,16 @@ export const buildPositionField = () => {
     updateRange: UpdateRangeFunc,
   ): void => {
     const text = state.doc.sliceString(0, state.doc.length);
-    for (const { 0: rawCode, index: offset } of text.matchAll(
-      /(:)((\w{1,64}:\d{17,18})|(\w{1,64}))(:)/g,
-    )) {
-      const iconName = rawCode.substring(1, rawCode.length - 1);
+    const identifier = plugin.getSettings().iconIdentifier;
+    const regex = new RegExp(
+      `(${identifier})((\\w{1,64}:\\d{17,18})|(\\w{1,64}))(${identifier})`,
+      'g',
+    );
+    for (const { 0: rawCode, index: offset } of text.matchAll(regex)) {
+      const iconName = rawCode.substring(
+        identifier.length,
+        rawCode.length - identifier.length,
+      );
       if (!icon.getIconByName(iconName)) {
         continue;
       }

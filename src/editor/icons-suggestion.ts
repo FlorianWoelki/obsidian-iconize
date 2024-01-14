@@ -25,7 +25,7 @@ export default class SuggestionIcon extends EditorSuggest<string> {
     const shortcodeStart = editor
       .getLine(cursor.line)
       .substring(0, cursor.ch)
-      .lastIndexOf(':');
+      .lastIndexOf(this.plugin.getSettings().iconIdentifier);
 
     // `onTrigger` needs to return `null` as soon as possible to save processing performance.
     if (shortcodeStart === -1) {
@@ -33,10 +33,14 @@ export default class SuggestionIcon extends EditorSuggest<string> {
     }
 
     // Regex for checking if the shortcode is not done yet.
+    const regex = new RegExp(
+      `^(${this.plugin.getSettings().iconIdentifier})\\w+$`,
+      'g',
+    );
     const regexOngoingShortcode = editor
       .getLine(cursor.line)
       .substring(shortcodeStart, cursor.ch)
-      .match(/^(:)\w+$/g);
+      .match(regex);
 
     if (regexOngoingShortcode === null) {
       return null;
@@ -60,7 +64,9 @@ export default class SuggestionIcon extends EditorSuggest<string> {
   }
 
   getSuggestions(context: EditorSuggestContext): string[] {
-    const queryLowerCase = context.query.substring(1).toLowerCase();
+    const queryLowerCase = context.query
+      .substring(this.plugin.getSettings().iconIdentifier.length)
+      .toLowerCase();
 
     // Store all icons corresponding to the current query.
     const iconsNameArray = getAllLoadedIconNames()
@@ -104,7 +110,11 @@ export default class SuggestionIcon extends EditorSuggest<string> {
     }
 
     // Replace query with iconNameWithPrefix or emoji unicode directly.
-    const updatedValue = isEmoji ? value : `:${value}:`;
+    const updatedValue = isEmoji
+      ? value
+      : `${this.plugin.getSettings().iconIdentifier}${value}${
+          this.plugin.getSettings().iconIdentifier
+        }`;
     this.context.editor.replaceRange(
       updatedValue,
       this.context.start,
