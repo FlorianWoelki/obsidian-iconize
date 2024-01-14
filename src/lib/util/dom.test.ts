@@ -182,6 +182,7 @@ describe('createIconNode', () => {
     class="iconize-icon"
     data-icon="IbTest"
     style="margin: 4px;"
+    title="IbTest"
   >
     <svg
       test-icon="IbTest"
@@ -209,6 +210,7 @@ describe('createIconNode', () => {
   <div
     class="iconize-icon"
     style="margin: 4px;"
+    title="IbTest"
   >
     <svg
       test-icon="IbTest"
@@ -233,6 +235,7 @@ describe('createIconNode', () => {
   <div
     class="iconize-icon"
     style="margin: 4px;"
+    title="IbTest"
   >
     <svg
       test-icon="IbTest"

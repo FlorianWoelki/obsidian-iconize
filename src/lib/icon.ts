@@ -1,11 +1,10 @@
-import { ExplorerView, TabHeaderLeaf } from '../@types/obsidian';
-import emoji from '../emoji';
-import IconFolderPlugin, { FolderIconObject } from '../main';
+import { ExplorerView, TabHeaderLeaf } from '@app/@types/obsidian';
+import emoji from '@app/emoji';
+import IconFolderPlugin, { FolderIconObject } from '@app/main';
 import customRule from './custom-rule';
 import dom from './util/dom';
 import iconTabs from './icon-tabs';
-import inheritance from './inheritance';
-import { getFileItemInnerTitleEl, getFileItemTitleEl } from '../util';
+import { getFileItemInnerTitleEl, getFileItemTitleEl } from '@app/util';
 import {
   Icon,
   extractIconToIconPack,
@@ -16,7 +15,7 @@ import {
   getPath,
   getSvgFromLoadedIcon,
   nextIdentifier,
-} from '../icon-pack-manager';
+} from '@app/icon-pack-manager';
 import config from '@app/config';
 import { Notice } from 'obsidian';
 import { IconCache } from './icon-cache';
@@ -82,18 +81,6 @@ const checkMissingIcons = async (
       allIcons.set(iconNameWithPrefix, true);
 
       const icon = await getMissingIcon(iconNameWithPrefix);
-      if (icon) {
-        missingIcons.add(icon);
-      }
-    }
-
-    // Check for missing inheritance icons.
-    const hasInheritanceIcon =
-      typeof value === 'object' && value.inheritanceIcon;
-    if (hasInheritanceIcon && !emoji.isEmoji(value.inheritanceIcon)) {
-      allIcons.set(value.inheritanceIcon, true);
-
-      const icon = await getMissingIcon(value.inheritanceIcon);
       if (icon) {
         missingIcons.add(icon);
       }
@@ -170,9 +157,9 @@ const checkMissingIcons = async (
 };
 
 /**
- * This function adds all the possible icons to the corresponding nodes. It adds the icons,
- * that are defined in the data as a basic string to the nodes, the inheritance folder
- * icons, and also the custom rule icons.
+ * This function adds all the possible icons to the corresponding nodes. It
+ * adds the icons, that are defined in the data as a basic string to the nodes
+ * and the custom rule icons.
  * @param plugin Instance of IconFolderPlugin.
  * @param data Data that will be used to add all the icons to the nodes.
  * @param registeredFileExplorers A WeakSet of file explorers that are being used as a
@@ -214,8 +201,9 @@ const addAll = (
 
         // Need to check this because refreshing the plugin will duplicate all the icons.
         if (titleEl.children.length === 2 || titleEl.children.length === 1) {
-          // Gets the icon name directly or from the inheritance folder.
           const iconName = typeof value === 'string' ? value : value.iconName;
+          const iconColor =
+            typeof value === 'string' ? undefined : value.iconColor;
           if (iconName) {
             // Removes a possible existing icon.
             const existingIcon = titleEl.querySelector('.iconize-icon');
@@ -231,14 +219,9 @@ const addAll = (
             IconCache.getInstance().set(dataPath, {
               iconNameWithPrefix: iconName,
             });
-            dom.setIconForNode(plugin, iconName, iconNode);
+            dom.setIconForNode(plugin, iconName, iconNode, iconColor);
 
             titleEl.insertBefore(iconNode, titleInnerEl);
-          }
-
-          // Handle possible inheritance for the folder.
-          if (typeof value === 'object' && value.inheritanceIcon) {
-            inheritance.add(plugin, dataPath, value.inheritanceIcon);
           }
         }
       }
@@ -273,19 +256,10 @@ const getByPath = (
     // If the value is a plain icon name, return it.
     return value;
   } else if (typeof value === 'object') {
-    // Additional checks for inheritance folders.
     const v = value as FolderIconObject;
-    // If the inheritance folder contains a custom icon for itself, return it.
     if (v.iconName !== null) {
       return v.iconName;
     }
-  }
-
-  // Tries to get the inheritance icon for the path and returns its inheritance icon if
-  // it exists.
-  const inheritanceIcon = inheritance.getByPath(plugin, path);
-  if (inheritanceIcon) {
-    return inheritanceIcon.inheritanceIcon;
   }
 
   // Tries to get the custom rule for the path and returns its icon if it exists.
@@ -307,7 +281,7 @@ interface IconWithPath {
 /**
  * Gets all the icons with their paths as an object.
  * @param plugin Instance of the IconFolderPlugin.
- * @returns An object that consists of the path and the icon name for the data, inheritance,
+ * @returns An object that consists of the path and the icon name for the data
  * or custom rule.
  */
 const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
@@ -320,15 +294,6 @@ const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
     const icon = getByPath(plugin, path);
     if (icon && !emoji.isEmoji(icon)) {
       result.push({ path, icon });
-    }
-
-    // Check for inheritance folder and insert the inheritance icon.
-    const inheritanceFolder = inheritance.getByPath(plugin, path);
-    if (
-      inheritanceFolder &&
-      !emoji.isEmoji(inheritanceFolder.inheritanceIcon)
-    ) {
-      result.push({ path, icon: inheritanceFolder.inheritanceIcon });
     }
   });
 

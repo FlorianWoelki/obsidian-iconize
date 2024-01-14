@@ -79,6 +79,32 @@ describe('add', () => {
   });
 });
 
+describe('updateStyle', () => {
+  it('should update width and height of the title icon element', () => {
+    const setFontSize = vi.spyOn(svg, 'setFontSize');
+    const parentEl = document.createElement('div');
+    const inlineTitleEl = document.createElement('div');
+    inlineTitleEl.innerHTML = '<svg></svg>';
+    inlineTitleEl.classList.add(config.TITLE_ICON_CLASS);
+    parentEl.appendChild(inlineTitleEl);
+
+    titleIcon.updateStyle(inlineTitleEl, { fontSize: 10 });
+    expect(setFontSize).toBeCalledTimes(1);
+    expect(setFontSize).toHaveBeenCalledWith('<svg></svg>', 10);
+  });
+
+  it('should update font size of the title icon element when it is an emoji', () => {
+    const parentEl = document.createElement('div');
+    const inlineTitleEl = document.createElement('div');
+    inlineTitleEl.innerHTML = '👍';
+    inlineTitleEl.classList.add(config.TITLE_ICON_CLASS);
+    parentEl.appendChild(inlineTitleEl);
+
+    titleIcon.updateStyle(inlineTitleEl, { fontSize: 10 });
+    expect(inlineTitleEl.style.fontSize).toEqual('10px');
+  });
+});
+
 describe('hide', () => {
   it('should set the `display` style to `none`, if the title icon element exists', () => {
     const parentEl = document.createElement('div');

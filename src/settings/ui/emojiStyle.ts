@@ -3,9 +3,8 @@ import emoji from '@app/emoji';
 import customRule from '@lib/custom-rule';
 import dom from '@lib/util/dom';
 import { FolderIconObject } from '@app/main';
+import iconTabs from '@app/lib/icon-tabs';
 import IconFolderSetting from './iconFolderSetting';
-import inheritance from '../../lib/inheritance';
-import iconTabs from '../../lib/icon-tabs';
 
 export default class EmojiStyleSetting extends IconFolderSetting {
   public display(): void {
@@ -34,39 +33,13 @@ export default class EmojiStyleSetting extends IconFolderSetting {
           continue;
         }
 
-        if (typeof this.plugin.getData()[path] === 'object') {
-          const inheritanceData = this.plugin.getData()[
-            path
-          ] as FolderIconObject;
-          iconName = inheritanceData.iconName;
+        const data = this.plugin.getData()[path];
+        if (typeof data === 'object') {
+          const data = this.plugin.getData()[path] as FolderIconObject;
 
-          // Handle updating the emoji style for the inheritance icon.
-          if (emoji.isEmoji(inheritanceData.inheritanceIcon)) {
-            for (const file of inheritance.getFiles(this.plugin, path)) {
-              dom.createIconNode(
-                this.plugin,
-                file.path,
-                inheritanceData.inheritanceIcon,
-              );
-              const tabLeaves = iconTabs.getTabLeavesOfFilePath(
-                this.plugin,
-                file.path,
-              );
-              for (const tabLeaf of tabLeaves) {
-                iconTabs.update(
-                  this.plugin,
-                  inheritanceData.inheritanceIcon,
-                  tabLeaf.tabHeaderInnerIconEl,
-                );
-              }
-            }
+          if (data.iconName) {
+            iconName = data.iconName;
           }
-        }
-
-        // `iconName` is `null` indicates that for the inheritance object the icon name
-        // on the node itself does not exist.
-        if (!iconName) {
-          continue;
         }
 
         if (emoji.isEmoji(iconName)) {

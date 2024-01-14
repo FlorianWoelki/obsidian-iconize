@@ -1,12 +1,10 @@
-import { it, describe, beforeEach, expect, vi, SpyInstance } from 'vitest';
-import * as iconPackManager from '../icon-pack-manager';
+import { it, describe, beforeEach, expect, vi } from 'vitest';
+import * as iconPackManager from '@app/icon-pack-manager';
 import icon from './icon';
-import inheritance from './inheritance';
 import customRule from './custom-rule';
 
 describe('getAllWithPath', () => {
   let plugin: any;
-  let getByPath: SpyInstance;
   beforeEach(() => {
     vi.restoreAllMocks();
     plugin = {
@@ -22,10 +20,6 @@ describe('getAllWithPath', () => {
         folder: 'IbTest',
       }),
     };
-
-    getByPath = vi
-      .spyOn(inheritance, 'getByPath')
-      .mockImplementation(() => undefined as any);
   });
 
   it('should return empty array when no icons are found', () => {
@@ -35,32 +29,13 @@ describe('getAllWithPath', () => {
     expect(result).toEqual([]);
   });
 
-  it('should return normal without inheritance or custom rules', () => {
+  it('should return normal without custom rules', () => {
     plugin.getSettings = () => ({ rules: [] }) as any;
     const result = icon.getAllWithPath(plugin);
     expect(result).toEqual([
       {
         icon: 'IbTest',
         path: 'folder',
-      },
-    ]);
-  });
-
-  it('should return inheritance icon if icon was found in inheritance path', () => {
-    getByPath.mockImplementationOnce(() => ({
-      inheritanceIcon: 'IbTest',
-    }));
-    plugin.getSettings = () => ({ rules: [] }) as any;
-    plugin.getData = () => ({
-      folderObj: {
-        inheritanceIcon: 'IbTest',
-      },
-    });
-    const result = icon.getAllWithPath(plugin);
-    expect(result).toEqual([
-      {
-        icon: 'IbTest',
-        path: 'folderObj',
       },
     ]);
   });
@@ -89,9 +64,6 @@ describe('getByPath', () => {
         },
       }),
     };
-    vi.spyOn(inheritance, 'getByPath').mockImplementationOnce(
-      () => undefined as any,
-    );
     vi.spyOn(customRule, 'getSortedRules').mockImplementationOnce(
       () => [] as any,
     );
@@ -109,18 +81,6 @@ describe('getByPath', () => {
 
   it('should return the `iconName` property if value in data of path is an object', () => {
     const result = icon.getByPath(plugin, 'folderObj');
-    expect(result).toBe('IbTest');
-  });
-
-  it('should return inheritance icon if icon was found in inheritance path', () => {
-    vi.spyOn(inheritance, 'getByPath').mockImplementationOnce(
-      () =>
-        ({
-          inheritanceIcon: 'IbTest',
-        }) as any,
-    );
-
-    const result = icon.getByPath(plugin, 'foo');
     expect(result).toBe('IbTest');
   });
 

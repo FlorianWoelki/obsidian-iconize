@@ -1,6 +1,6 @@
 import { it, describe, beforeEach, expect, vi, SpyInstance } from 'vitest';
+import { DEFAULT_FILE_ICON } from '@app/util';
 import iconTabs from './icon-tabs';
-import { DEFAULT_FILE_ICON } from '../util';
 import dom from './util/dom';
 import customRule from './custom-rule';
 
@@ -109,27 +109,6 @@ describe('add', () => {
       'IbTest',
       iconContainer,
       'blue',
-    );
-  });
-
-  it('should call `dom.setIconForNode` when icon is found in inheritance', async () => {
-    file.path = 'parent/test';
-    plugin.getData = () => {
-      return {
-        parent: {
-          inheritanceIcon: 'IbTest',
-        },
-      };
-    };
-    const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, file, iconContainer);
-    expect(iconContainer.style.margin).toBe('');
-    expect(setIconForNode).toBeCalledTimes(1);
-    expect(setIconForNode).toHaveBeenCalledWith(
-      plugin,
-      'IbTest',
-      iconContainer,
-      'purple',
     );
   });
 

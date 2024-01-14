@@ -84,6 +84,13 @@ const refreshIconNodes = (
           '.iconize-icon',
         ) as HTMLElement | null;
         if (iconNode) {
+          const pathValue = plugin.getData()[path];
+          const hasIndividualColor =
+            typeof pathValue === 'object' && pathValue.iconColor;
+          if (hasIndividualColor) {
+            return;
+          }
+
           iconNode.innerHTML = applyStyles(
             plugin,
             iconNode.innerHTML,
