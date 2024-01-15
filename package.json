@@ -3,6 +3,7 @@
   "version": "2.10.0",
   "description": "API for adding icons to obsidian.",
   "main": "lib/index.js",
+  "type": "module",
   "types": "lib/index.d.ts",
   "scripts": {
     "prepare": "husky install",
