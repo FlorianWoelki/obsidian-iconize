@@ -321,7 +321,6 @@ export default class IconFolderPlugin extends Plugin {
         (this.app.metadataCache as any).on(
           'dataview:metadata-change',
           async (_event: string, file: TFile) => {
-            console.log('dataview:metadata-change', file);
             dom.maybeRemoveIconInPath(file.path);
             this.updateFileIcons(file);
           },
