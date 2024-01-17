@@ -56,6 +56,7 @@
     "mkdirp": "^3.0.1",
     "monkey-around": "^2.3.0",
     "obsidian": "^1.4.11",
+    "obsidian-dataview": "^0.5.64",
     "prettier": "^3.0.3",
     "rollup": "^2.78.0",
     "tslib": "^2.6.2",

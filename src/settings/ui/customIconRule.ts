@@ -296,6 +296,9 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             rule.rule = value;
           });
 
+          // TODO Add a checkbox to activate Dataview expression mode?
+          //   - Can check whether Dataview is enabled first.
+
           const useFilePathContainer = modal.contentEl.createDiv();
           useFilePathContainer.style.display = 'flex';
           useFilePathContainer.style.alignItems = 'center';

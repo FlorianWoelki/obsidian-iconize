@@ -262,12 +262,17 @@ const getByPath = (
     }
   }
 
-  // Tries to get the custom rule for the path and returns its icon if it exists.
-  const rule = customRule.getSortedRules(plugin).find((rule) => {
-    return customRule.doesMatchPath(rule, path);
-  });
-  if (rule) {
-    return rule.icon;
+  // Tries to get the custom rule for the file and returns its icon if it exists.
+  const file = plugin.app.vault.getAbstractFileByPath(path);
+  if (file == null) {
+    console.error('no file found at path', path);
+  } else {
+    const rule = customRule.getSortedRules(plugin).find((rule) => {
+      return customRule.doesMatchFile(rule, file);
+    });
+    if (rule) {
+      return rule.icon;
+    }
   }
 
   return undefined;

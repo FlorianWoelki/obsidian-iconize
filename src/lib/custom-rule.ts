@@ -1,11 +1,11 @@
-import { Plugin, TAbstractFile } from 'obsidian';
+import { Plugin, TAbstractFile, TFile } from 'obsidian';
 import IconFolderPlugin from '../main';
 import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
-import config from '../config';
 import { FileItem } from '../@types/obsidian';
 import { IconCache } from './icon-cache';
+import { getAPI } from 'obsidian-dataview';
 
 export type CustomRuleFileType = 'file' | 'folder';
 
@@ -51,7 +51,7 @@ const isApplicable = async (
     return false;
   }
 
-  return doesMatchPath(rule, file.path);
+  return doesMatchFile(rule, file);
 };
 
 /**
@@ -63,28 +63,9 @@ const removeFromAllFiles = async (
   plugin: IconFolderPlugin,
   rule: CustomRule,
 ): Promise<void> => {
-  const nodesWithIcon = document.querySelectorAll(
-    `[${config.ICON_ATTRIBUTE_NAME}="${rule.icon}"]`,
-  );
-
-  for (let i = 0; i < nodesWithIcon.length; i++) {
-    const node = nodesWithIcon[i];
-    // Parent element is the node which contains the data path.
-    const parent = node.parentElement;
-    if (!parent) {
-      continue;
-    }
-
-    const dataPath = parent.getAttribute('data-path');
-    if (!dataPath) {
-      continue;
-    }
-
-    const fileType = (await plugin.app.vault.adapter.stat(dataPath)).type;
-    if (doesMatchPath(rule, dataPath) && doesMatchFileType(rule, fileType)) {
-      dom.removeIconInNode(parent);
-      IconCache.getInstance().invalidate(dataPath);
-    }
+  const fileItems = await getFileItems(plugin, rule);
+  for (const fileItem of fileItems) {
+    dom.removeIconInNode(getFileItemTitleEl(fileItem));
   }
 };
 
@@ -156,26 +137,19 @@ const add = async (
   return false;
 };
 
-/**
- * Determines whether a given rule exists in a given path.
- * @param rule Rule to check for.
- * @param path Path to check in.
- * @returns True if the rule exists in the path, false otherwise.
- */
-const doesMatchPath = (rule: CustomRule, path: string): boolean => {
-  const toMatch = rule.useFilePath ? path : path.split('/').pop();
-  try {
-    // Rule is in some sort of regex.
-    const regex = new RegExp(rule.rule);
-    if (toMatch.match(regex)) {
-      return true;
-    }
-  } catch {
-    // Rule is not in some sort of regex, check for basic string match.
-    return toMatch.includes(rule.rule);
+const doesMatchFile = (rule: CustomRule, file: TAbstractFile): boolean => {
+  let context: { this: any };
+  if (file instanceof TFile && file.extension === 'md') {
+    const dvPage = getAPI().page(file.path);
+    context = { this: dvPage };
+  } else {
+    context = { this: { file: file } };
   }
 
-  return false;
+  const evaluation = getAPI().evaluate(rule.rule, context);
+  const match = evaluation.successful && evaluation.value;
+  if (!evaluation.successful) console.error(evaluation.error);
+  return match;
 };
 
 /**
@@ -202,7 +176,7 @@ const getFileItems = async (
 
 export default {
   getFileItems,
-  doesMatchPath,
+  doesMatchFile,
   doesMatchFileType,
   getSortedRules,
   removeFromAllFiles,

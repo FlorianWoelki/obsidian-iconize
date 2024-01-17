@@ -6,6 +6,7 @@ import {
   requireApiVersion,
   MarkdownView,
   Notice,
+  TAbstractFile,
 } from 'obsidian';
 import {
   ExplorerView,
@@ -310,44 +311,31 @@ export default class IconFolderPlugin extends Plugin {
         }
       }
 
+      // QUESTION Why are these events being registered when the layout changes?
+      //   Couldn't this happen once when the plugin is loaded instead?
+
+      // Register metadata-change event for adding icons with custom rules to the DOM
+      // when the metadata has changed.
+      // Note: this event is only triggered for Markdown files.
+      this.registerEvent(
+        (this.app.metadataCache as any).on(
+          'dataview:metadata-change',
+          async (_event: string, file: TFile) => {
+            console.log('dataview:metadata-change', file);
+            dom.maybeRemoveIconInPath(file.path);
+            this.updateFileIcons(file);
+          },
+        ),
+      );
+
       // Register rename event for adding icons with custom rules to the DOM
-      // when file was moved to another directory.
+      // when a non-Markdown file is moved to another directory.
+      // For Markdown files the dataview:metadata-change already accounts for renames.
       this.registerEvent(
         this.app.vault.on('rename', async (file, oldPath) => {
-          const sortedRules = customRule.getSortedRules(this);
-
-          // Removes possible icons from the renamed file.
-          sortedRules.forEach((rule) => {
-            if (customRule.doesMatchPath(rule, oldPath)) {
-              dom.removeIconInPath(file.path);
-            }
-          });
-
-          // Adds possible icons to the renamed file.
-          sortedRules.forEach((rule) => {
-            if (customRule.doesMatchPath(rule, oldPath)) {
-              return;
-            }
-
-            customRule.add(this, rule, file, undefined);
-          });
-
-          // Updates icon tabs for the renamed file.
-          for (const rule of customRule.getSortedRules(this)) {
-            const applicable = await customRule.isApplicable(this, rule, file);
-            if (!applicable) {
-              continue;
-            }
-
-            const openedFiles = getAllOpenedFiles(this);
-            const openedFile = openedFiles.find(
-              (openedFile) => openedFile.path === file.path,
-            );
-            if (openedFile) {
-              const leaf = openedFile.leaf as TabHeaderLeaf;
-              iconTabs.update(this, rule.icon, leaf.tabHeaderInnerIconEl);
-            }
-            break;
+          if (file instanceof TFile && file.extension !== 'md') {
+            dom.maybeRemoveIconInPath(oldPath);
+            this.updateFileIcons(file);
           }
         }),
       );
@@ -770,5 +758,38 @@ export default class IconFolderPlugin extends Plugin {
         }
       }
     }) as unknown as string;
+  }
+
+  async updateFileIcons(file: TAbstractFile) {
+    const sortedRules = customRule.getSortedRules(this);
+
+    // Adds possible icons to the renamed file.
+    sortedRules.forEach((rule) => {
+      // QUESTION Originally this returned early if the rule _did_ match. Was
+      //   an error?
+      if (!customRule.doesMatchFile(rule, file)) {
+        return;
+      }
+
+      customRule.add(this, rule, file, undefined);
+    });
+
+    // Updates icon tabs for the renamed file.
+    for (const rule of customRule.getSortedRules(this)) {
+      const applicable = await customRule.isApplicable(this, rule, file);
+      if (!applicable) {
+        continue;
+      }
+
+      const openedFiles = getAllOpenedFiles(this);
+      const openedFile = openedFiles.find(
+        (openedFile) => openedFile.path === file.path,
+      );
+      if (openedFile) {
+        const leaf = openedFile.leaf as TabHeaderLeaf;
+        iconTabs.update(this, rule.icon, leaf.tabHeaderInnerIconEl);
+      }
+      break;
+    }
   }
 }
