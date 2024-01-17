@@ -123,7 +123,8 @@ const createIconNode = (
   const node =
     options?.container ?? document.querySelector(`[data-path="${path}"]`);
   if (!node) {
-    console.error('element with data path not found', path);
+    // TODO Investigate why this is going off like crazy on launch.
+    // console.error('element with data path not found', path);
     return;
   }
 
