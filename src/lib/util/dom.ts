@@ -43,6 +43,19 @@ const removeIconInPath = (path: string, options?: RemoveOptions): void => {
 };
 
 /**
+ * Removes the 'iconize-icon' icon node from the HTMLElement corresponding
+ * to the specified file path if there is one.
+ * @param path File path for which the icon node will be removed.
+ */
+const maybeRemoveIconInPath = (path: string, options?: RemoveOptions): void => {
+  const node =
+    options?.container ?? document.querySelector(`[data-path="${path}"]`);
+  if (!node) return;
+
+  removeIconInNode(node);
+};
+
+/**
  * Sets an icon or emoji for an HTMLElement based on the specified icon name and color.
  * The function manipulates the specified node inline.
  * @param plugin Instance of the IconFolderPlugin.
@@ -110,7 +123,8 @@ const createIconNode = (
   const node =
     options?.container ?? document.querySelector(`[data-path="${path}"]`);
   if (!node) {
-    console.error('element with data path not found', path);
+    // TODO Investigate why this is going off like crazy on launch.
+    // console.error('element with data path not found', path);
     return;
   }
 
@@ -176,4 +190,5 @@ export default {
   getIconNodeFromPath,
   removeIconInNode,
   removeIconInPath,
+  maybeRemoveIconInPath,
 };
