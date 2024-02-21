@@ -95,6 +95,14 @@ const iconPacks = {
     downloadLink:
       'https://github.com/feathericons/feather/archive/refs/tags/v4.29.1.zip',
   },
+  /** @source https://github.com/primer/octicons */
+  octicons: {
+    name: 'octicons',
+    displayName: 'Octicons',
+    path: 'octicons-19.8.0/icons/',
+    downloadLink:
+      'https://github.com/primer/octicons/archive/refs/tags/v19.8.0.zip',
+  },
 } as { [key: string]: IconPack };
 
 /**
