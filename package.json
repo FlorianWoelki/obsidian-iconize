@@ -1,6 +1,6 @@
 {
   "name": "@florianwoelki/obsidian-iconize",
-  "version": "2.10.0",
+  "version": "2.10.1",
   "description": "API for adding icons to obsidian.",
   "main": "lib/index.js",
   "type": "module",
