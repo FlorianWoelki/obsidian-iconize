@@ -1,6 +1,6 @@
 # Obsidian Iconize
 
-![Preview Image](https://raw.githubusercontent.com/FlorianWoelki/obsidian-iconize/main/docs/preview-image.png)
+![Preview Image](./docs/preview-image.png)
 
 ## What is it?
 

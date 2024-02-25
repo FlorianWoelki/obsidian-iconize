@@ -26,6 +26,7 @@ Currently, Iconize supports the following predefined icon packs:
 - [BoxIcons](https://boxicons.com/)
 - [RPG Awesome](http://nagoshiashumari.github.io/Rpg-Awesome/)
 - [coolicons](https://coolicons.cool/)
+- [Feather Icons](https://feathericons.com/)
 
 If you want to add a predefined icon pack or you would like to update an existing one,
 feel free to open a pull request on

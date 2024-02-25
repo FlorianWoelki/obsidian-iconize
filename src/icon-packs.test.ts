@@ -3,7 +3,7 @@ import { getExtraPath } from './icon-packs';
 
 it('should return the correct extra path for an icon pack', () => {
   const iconPackName = 'simple-icons';
-  const expectedPath = 'simple-icons-9.14.0/icons';
+  const expectedPath = 'simple-icons-11.2.0/icons';
 
   const path = getExtraPath(iconPackName);
 
