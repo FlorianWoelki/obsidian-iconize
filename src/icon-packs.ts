@@ -54,7 +54,7 @@ const iconPacks = {
     displayName: 'Lucide',
     path: '',
     downloadLink:
-      'https://github.com/lucide-icons/lucide/releases/download/0.314.0/lucide-icons-0.314.0.zip',
+      'https://github.com/lucide-icons/lucide/releases/download/0.343.0/lucide-icons-0.343.0.zip',
   },
   tablerIcons: {
     name: 'tabler-icons',
