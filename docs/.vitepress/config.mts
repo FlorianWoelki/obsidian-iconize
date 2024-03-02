@@ -52,6 +52,7 @@ export default defineConfig({
         collapsed: true,
         items: [
           { text: 'See icon name', link: '/good-to-know/see-icon-name' },
+          { text: 'Use png in icon pack', link: '/good-to-know/transform-png-to-svg' },
         ],
       },
       {
