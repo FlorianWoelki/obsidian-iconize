@@ -23,7 +23,7 @@ but the most important one is to add icons to your files or folders.
 
 First of all, you need an icon pack. You can either use one of the predefined icon packs or
 add your own. For adding your own, please read the documentation about
-<a href="/guide/icon-packs#custom-icon-packs">custom icon packs</a>.
+<a href="icon-packs#custom-icon-packs">custom icon packs</a>.
 
 For adding a predefined icon pack, you can go to the settings of the plugin and select
 `Browse icon packs` and then select the icon pack you want to use.
