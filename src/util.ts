@@ -111,3 +111,14 @@ export const removeIconFromIconPack = (
     removeIconFromIconPackDirectory(plugin, iconPackName, iconName);
   }
 };
+
+export const stringToHex = (str: string): string => {
+  const validHex = str.replace(/[^0-9a-fA-F]/g, '');
+  const hex = validHex.padStart(6, '0').substring(0, 6);
+  return `#${hex}`;
+};
+
+export const isHexadecimal = (str: string, includeHash = false): boolean => {
+  const regex = new RegExp(`^${includeHash ? '#' : ''}[0-9A-Fa-f]{1,6}$`);
+  return regex.test(str);
+};

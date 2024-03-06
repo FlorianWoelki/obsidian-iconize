@@ -36,8 +36,10 @@ import icon from './lib/icon';
 import BookmarkInternalPlugin from './internal-plugins/bookmark';
 import {
   getAllOpenedFiles,
+  isHexadecimal,
   removeIconFromIconPack,
   saveIconToIconPack,
+  stringToHex,
 } from '@app/util';
 import config from '@app/config';
 import titleIcon from './lib/icon-title';
@@ -454,7 +456,8 @@ export default class IconFolderPlugin extends Plugin {
 
           const fileCache = this.app.metadataCache.getFileCache(file);
           if (fileCache?.frontmatter) {
-            const { icon: newIconName } = fileCache.frontmatter;
+            const { icon: newIconName, iconColor: newIconColor } =
+              fileCache.frontmatter;
             // If `icon` property is empty, we will remove it from the data and remove the icon.
             if (!newIconName) {
               await this.removeSingleIcon(file);
@@ -468,8 +471,23 @@ export default class IconFolderPlugin extends Plugin {
               return;
             }
 
+            if (newIconColor && typeof newIconColor !== 'string') {
+              new Notice(
+                `[${config.PLUGIN_NAME}] Frontmatter property type \`iconColor\` has to be of type \`text\`.`,
+              );
+              return;
+            }
+
+            let iconColor = newIconColor;
+            if (isHexadecimal(iconColor)) {
+              iconColor = stringToHex(iconColor);
+            }
+
             const cachedIcon = IconCache.getInstance().get(file.path);
-            if (newIconName === cachedIcon?.iconNameWithPrefix) {
+            if (
+              newIconName === cachedIcon?.iconNameWithPrefix &&
+              iconColor === cachedIcon?.iconColor
+            ) {
               return;
             }
 
@@ -483,10 +501,14 @@ export default class IconFolderPlugin extends Plugin {
               return;
             }
 
-            dom.createIconNode(this, file.path, newIconName);
+            dom.createIconNode(this, file.path, newIconName, {
+              color: iconColor,
+            });
             this.addFolderIcon(file.path, newIconName);
+            this.addIconColor(file.path, iconColor);
             IconCache.getInstance().set(file.path, {
               iconNameWithPrefix: newIconName,
+              iconColor,
             });
 
             // Update icon in tab when setting is enabled.

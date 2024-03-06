@@ -2,9 +2,11 @@ import { SpyInstance, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as iconPackManager from './icon-pack-manager';
 import {
   getAllOpenedFiles,
+  isHexadecimal,
   readFileSync,
   removeIconFromIconPack,
   saveIconToIconPack,
+  stringToHex,
 } from './util';
 
 describe('readFileSync', () => {
@@ -121,5 +123,46 @@ describe('removeIconFromIconPack', () => {
     );
 
     getIconPackNameByPrefix.mockRestore();
+  });
+});
+
+describe('stringToHex', () => {
+  it('should handle strings with leading zeros', () => {
+    expect(stringToHex('000000')).toBe('#000000');
+    expect(stringToHex('00f')).toBe('#00000f');
+  });
+
+  it('should handle strings without leading zeros', () => {
+    expect(stringToHex('11c0a1')).toBe('#11c0a1');
+    expect(stringToHex('f0f0f0')).toBe('#f0f0f0');
+  });
+
+  it('should handle mixed-case hexadecimal strings', () => {
+    expect(stringToHex('aBc123')).toBe('#aBc123');
+    expect(stringToHex('AbCdEf')).toBe('#AbCdEf');
+  });
+
+  it('should return original string if it already starts with #', () => {
+    expect(stringToHex('#123456')).toBe('#123456');
+  });
+
+  it('should handle empty strings', () => {
+    expect(stringToHex('')).toBe('#000000');
+  });
+});
+
+describe('isHexadecimal', () => {
+  it('should return true for valid hexadecimal strings', () => {
+    expect(isHexadecimal('000000')).toBe(true);
+    expect(isHexadecimal('#000000', true)).toBe(true);
+    expect(isHexadecimal('00f')).toBe(true);
+    expect(isHexadecimal('#00f', true)).toBe(true);
+  });
+
+  it('should return false for invalid hexadecimal strings', () => {
+    expect(isHexadecimal('0000000')).toBe(false);
+    expect(isHexadecimal('#0000000', true)).toBe(false);
+    expect(isHexadecimal('00g')).toBe(false);
+    expect(isHexadecimal('#00g', true)).toBe(false);
   });
 });
