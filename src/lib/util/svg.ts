@@ -36,6 +36,11 @@ const extract = (svgString: string): string => {
     svg.setAttribute('fill', 'currentColor');
   }
 
+  const possibleTitle = svg.querySelector('title');
+  if (possibleTitle) {
+    possibleTitle.remove();
+  }
+
   svg.setAttribute('width', '16px');
   svg.setAttribute('height', '16px');
 

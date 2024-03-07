@@ -1,6 +1,6 @@
 import config from '@app/config';
-import { getSvgFromLoadedIcon, nextIdentifier } from '../../icon-pack-manager';
-import IconFolderPlugin from '../../main';
+import IconFolderPlugin from '@app/main';
+import { getSvgFromLoadedIcon, nextIdentifier } from '@app/icon-pack-manager';
 import style from './style';
 import svg from './svg';
 import emoji from '@app/emoji';
