@@ -28,6 +28,7 @@ describe('extract', () => {
         () =>
           ({
             querySelector: vi.fn(() => ({
+              querySelector: vi.fn(),
               hasAttribute: vi.fn(() => true),
               setAttribute: vi.fn(),
               style: { width: '', height: '' },
@@ -35,7 +36,7 @@ describe('extract', () => {
               width: { baseVal: { value: width } },
               height: { baseVal: { value: height } },
             })),
-          }) as any,
+          }) as unknown as Document,
       ),
     };
   };
