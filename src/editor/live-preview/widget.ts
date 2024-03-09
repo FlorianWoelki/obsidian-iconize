@@ -1,3 +1,4 @@
+import { Icon } from '@app/icon-pack-manager';
 import icon from '@app/lib/icon';
 import svg from '@app/lib/util/svg';
 import {
@@ -7,6 +8,27 @@ import {
 } from '@app/lib/util/text';
 import IconFolderPlugin from '@app/main';
 import { EditorView, WidgetType } from '@codemirror/view';
+
+export class IconInLinkWidget extends WidgetType {
+  constructor(
+    public plugin: IconFolderPlugin,
+    public iconData: Icon,
+  ) {
+    super();
+  }
+
+  toDOM() {
+    const iconNode = document.createElement('span');
+    iconNode.setAttribute('title', this.iconData.prefix + this.iconData.name);
+    iconNode.classList.add('iconize-icon-in-link');
+    iconNode.innerHTML = this.iconData.svgElement;
+    return iconNode;
+  }
+
+  ignoreEvent(): boolean {
+    return true;
+  }
+}
 
 export class IconWidget extends WidgetType {
   private start = -1;

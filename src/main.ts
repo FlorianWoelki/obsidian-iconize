@@ -46,7 +46,7 @@ import titleIcon from './lib/icon-title';
 import SuggestionIcon from './editor/icons-suggestion';
 import emoji from './emoji';
 import { IconCache } from './lib/icon-cache';
-import { buildIconPlugin } from './editor/live-preview';
+import { buildIconInLinksPlugin, buildIconPlugin } from './editor/live-preview';
 import { PositionField, buildPositionField } from './editor/live-preview/state';
 import { calculateInlineTitleSize } from './lib/util/text';
 import { processMarkdown } from './editor/markdown-processor';
@@ -199,6 +199,10 @@ export default class IconFolderPlugin extends Plugin {
       this.registerMarkdownPostProcessor((el) => processMarkdown(this, el));
       this.registerEditorSuggest(new SuggestionIcon(this.app, this));
       this.registerEditorExtension([this.positionField, buildIconPlugin(this)]);
+      this.registerEditorExtension([
+        this.positionField,
+        buildIconInLinksPlugin(this),
+      ]);
     }
 
     this.addSettingTab(new IconFolderSettingsUI(this.app, this));

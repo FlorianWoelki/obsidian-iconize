@@ -6,7 +6,32 @@ import {
   ViewPlugin,
   ViewUpdate,
 } from '@codemirror/view';
-import { buildDecorations } from './decorations';
+import { buildDecorations, buildLinkDecorations } from './decorations';
+
+export const buildIconInLinksPlugin = (plugin: IconFolderPlugin) => {
+  return ViewPlugin.fromClass(
+    class {
+      decorations: DecorationSet;
+      plugin: IconFolderPlugin;
+
+      constructor(view: EditorView) {
+        this.plugin = plugin;
+        this.decorations = buildLinkDecorations(view, plugin);
+      }
+
+      destroy() {}
+
+      update(update: ViewUpdate) {
+        if (update.docChanged || update.viewportChanged) {
+          this.decorations = buildLinkDecorations(update.view, this.plugin);
+        }
+      }
+    },
+    {
+      decorations: (v) => v.decorations,
+    },
+  );
+};
 
 export const buildIconPlugin = (plugin: IconFolderPlugin) => {
   return ViewPlugin.fromClass(

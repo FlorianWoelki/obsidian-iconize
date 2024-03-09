@@ -4,6 +4,12 @@
   margin-inline: var(--content-margin) !important;
 }
 
+.iconize-icon-in-link {
+  margin-right: var(--size-2-1);
+  display: inline-flex;
+  transform: translateY(13%);
+}
+
 .iconize-icon {
   border: 1px solid transparent;
   margin: 0px 4px 0px 0px;
@@ -61,8 +67,7 @@
   line-height: 1.3;
 }
 
-.iconize-modal.prompt-results
-  .suggestion-item.suggestion-item__center {
+.iconize-modal.prompt-results .suggestion-item.suggestion-item__center {
   justify-content: center;
 }
 
