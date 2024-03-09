@@ -9,7 +9,6 @@ import { RangeSetBuilder } from '@codemirror/state';
 import { syntaxTree, tokenClassNodeProp } from '@codemirror/language';
 import icon from '@lib/icon';
 import { IconInLinkWidget, IconWidget } from './widget';
-import { Icon } from '@app/icon-pack-manager';
 
 export const buildLinkDecorations = (
   view: EditorView,
@@ -41,7 +40,7 @@ export const buildLinkDecorations = (
 
               if (possibleIcon) {
                 const iconDecoration = Decoration.widget({
-                  widget: new IconInLinkWidget(plugin, possibleIcon as Icon),
+                  widget: new IconInLinkWidget(plugin, possibleIcon),
                 });
 
                 builder.add(node.from, node.from, iconDecoration);
