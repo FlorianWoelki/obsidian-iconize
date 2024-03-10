@@ -46,7 +46,10 @@ import titleIcon from './lib/icon-title';
 import SuggestionIcon from './editor/icons-suggestion';
 import emoji from './emoji';
 import { IconCache } from './lib/icon-cache';
-import { buildIconInLinksPlugin, buildIconPlugin } from './editor/live-preview';
+import {
+  buildIconInLinksPlugin,
+  buildIconInTextPlugin,
+} from './editor/live-preview';
 import { PositionField, buildPositionField } from './editor/live-preview/state';
 import { calculateInlineTitleSize } from './lib/util/text';
 import { processMarkdown } from './editor/markdown-processor';
@@ -198,7 +201,10 @@ export default class IconFolderPlugin extends Plugin {
     if (this.getSettings().iconsInNotesEnabled) {
       this.registerMarkdownPostProcessor((el) => processMarkdown(this, el));
       this.registerEditorSuggest(new SuggestionIcon(this.app, this));
-      this.registerEditorExtension([this.positionField, buildIconPlugin(this)]);
+      this.registerEditorExtension([
+        this.positionField,
+        buildIconInTextPlugin(this),
+      ]);
       this.registerEditorExtension([
         this.positionField,
         buildIconInLinksPlugin(this),

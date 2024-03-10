@@ -1,4 +1,3 @@
-import { Icon } from '@app/icon-pack-manager';
 import icon from '@app/lib/icon';
 import svg from '@app/lib/util/svg';
 import {
@@ -9,40 +8,7 @@ import {
 import IconFolderPlugin from '@app/main';
 import { EditorView, WidgetType } from '@codemirror/view';
 
-export class IconInLinkWidget extends WidgetType {
-  constructor(
-    public plugin: IconFolderPlugin,
-    public iconData: Icon | string,
-  ) {
-    super();
-  }
-
-  toDOM() {
-    const iconNode = document.createElement('span');
-    const iconName =
-      typeof this.iconData === 'string'
-        ? this.iconData
-        : this.iconData.prefix + this.iconData.name;
-    iconNode.setAttribute('title', iconName);
-    iconNode.classList.add('iconize-icon-in-link');
-
-    if (typeof this.iconData === 'string') {
-      iconNode.style.transform = 'translateY(0)';
-    }
-
-    iconNode.innerHTML =
-      typeof this.iconData === 'string'
-        ? this.iconData
-        : this.iconData.svgElement;
-    return iconNode;
-  }
-
-  ignoreEvent(): boolean {
-    return true;
-  }
-}
-
-export class IconWidget extends WidgetType {
+export class IconInTextWidget extends WidgetType {
   private start = -1;
   private end = -1;
 
@@ -58,8 +24,8 @@ export class IconWidget extends WidgetType {
     this.end = end;
   }
 
-  eq(other: IconWidget) {
-    return other instanceof IconWidget && other.id === this.id;
+  eq(other: IconInTextWidget) {
+    return other instanceof IconInTextWidget && other.id === this.id;
   }
 
   toDOM(view: EditorView) {
