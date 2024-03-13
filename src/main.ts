@@ -71,6 +71,8 @@ export default class IconFolderPlugin extends Plugin {
 
   public positionField: PositionField = buildPositionField(this);
 
+  private frontmatterCache = new Set<string>();
+
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
 
@@ -298,6 +300,11 @@ export default class IconFolderPlugin extends Plugin {
         }
       });
 
+      if (this.getSettings().iconInFrontmatterEnabled) {
+        const activeFile = this.app.workspace.getActiveFile();
+        this.frontmatterCache.add(activeFile.path);
+      }
+
       // Adds the title icon to the active leaf view.
       if (this.getSettings().iconInTitleEnabled) {
         for (const openedFile of getAllOpenedFiles(this)) {
@@ -470,7 +477,10 @@ export default class IconFolderPlugin extends Plugin {
               fileCache.frontmatter;
             // If `icon` property is empty, we will remove it from the data and remove the icon.
             if (!newIconName) {
-              await this.removeSingleIcon(file);
+              if (this.frontmatterCache.has(file.path)) {
+                await this.removeSingleIcon(file);
+                this.frontmatterCache.delete(file.path);
+              }
               return;
             }
 
@@ -501,6 +511,7 @@ export default class IconFolderPlugin extends Plugin {
               return;
             }
 
+            this.frontmatterCache.add(file.path);
             try {
               if (!emoji.isEmoji(newIconName)) {
                 saveIconToIconPack(this, newIconName);
