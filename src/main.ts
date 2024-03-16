@@ -96,6 +96,41 @@ export default class IconFolderPlugin extends Plugin {
     await loadUsedIcons(this, usedIconNames);
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
+
+    this.registerEvent(
+      // Registering file menu event for listening to file pinning and unpinning.
+      this.app.workspace.on('file-menu', (menu, file) => {
+        // I've researched other ways of doing this. However, there is no other way to listen to file pinning and unpinning.
+        menu.onHide(() => {
+          const path = file.path;
+          if (this.getSettings().iconInTabsEnabled) {
+            for (const openedFile of getAllOpenedFiles(this)) {
+              if (openedFile.path === path) {
+                const possibleIcon = IconCache.getInstance().get(path);
+                if (!possibleIcon) {
+                  return;
+                }
+                const tabLeaves = iconTabs.getTabLeavesOfFilePath(
+                  this,
+                  file.path,
+                );
+                for (const tabLeaf of tabLeaves) {
+                  // Add timeout to ensure that the default icon is already set.
+                  setTimeout(() => {
+                    iconTabs.add(
+                      this,
+                      file as TFile,
+                      tabLeaf.tabHeaderInnerIconEl,
+                    );
+                  }, 5);
+                }
+              }
+            }
+          }
+        });
+      }),
+    );
+
     this.registerEvent(
       this.app.workspace.on('layout-change', () => this.handleChangeLayout()),
     );

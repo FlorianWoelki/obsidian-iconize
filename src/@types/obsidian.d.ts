@@ -65,7 +65,7 @@ declare module 'obsidian' {
   }
 }
 
-type FileWithLeaf = TFile & { leaf: ExplorerLeaf };
+type FileWithLeaf = TFile & { leaf: ExplorerLeaf; pinned: boolean };
 
 interface ExplorerLeaf extends WorkspaceLeaf {
   view: ExplorerView;
