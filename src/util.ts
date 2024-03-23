@@ -45,7 +45,7 @@ export const getAllOpenedFiles = (plugin: IconFolderPlugin): FileWithLeaf[] => {
     .reduce<FileWithLeaf[]>((prev, curr) => {
       const file = curr.view.file;
       if (file) {
-        prev.push({ ...file, leaf: curr });
+        prev.push({ ...file, leaf: curr, pinned: false });
       }
       return prev;
     }, []);
