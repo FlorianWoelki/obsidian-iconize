@@ -40,6 +40,7 @@ describe('getAllOpenedFiles', () => {
     expect(openedFiles).toHaveLength(1);
     expect(openedFiles[0]).toEqual({
       path: 'file/path',
+      pinned: false,
       leaf: {
         view: {
           file: {
