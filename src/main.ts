@@ -242,6 +242,9 @@ export default class IconFolderPlugin extends Plugin {
         this.positionField,
         buildIconInTextPlugin(this),
       ]);
+    }
+
+    if (this.getSettings().iconsInLinksEnabled) {
       this.registerEditorExtension([
         this.positionField,
         buildIconInLinksPlugin(this),

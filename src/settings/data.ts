@@ -136,6 +136,11 @@ export interface IconFolderSettings {
    */
   iconsInNotesEnabled: boolean;
   /**
+   * Sets whether the plugin should be able to show icons in the links.
+   * @default true
+   */
+  iconsInLinksEnabled: boolean;
+  /**
    * Sets the icon identifier used in notes.
    * @default ':'
    */
@@ -162,5 +167,6 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   iconInFrontmatterEnabled: false,
   iconsBackgroundCheckEnabled: false,
   iconsInNotesEnabled: true,
+  iconsInLinksEnabled: true,
   iconIdentifier: ':',
 };
