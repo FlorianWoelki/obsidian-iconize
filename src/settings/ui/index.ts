@@ -14,6 +14,7 @@ import ToggleIconInTabs from './toggleIconInTabs';
 import ToggleIconInTitle from './toggleIconInTitle';
 import ToggleFrontmatterIcon from './toggleFrontmatterIcon';
 import ToggleIconsInNotes from './toggleIconsInNotes';
+import ToggleIconsInLinks from './toggleIconsInLinks';
 import IconIdentifierSetting from './iconIdentifier';
 
 export default class IconFolderSettings extends PluginSettingTab {
@@ -41,6 +42,7 @@ export default class IconFolderSettings extends PluginSettingTab {
     new ToggleIconInTitle(plugin, containerEl).display();
     new ToggleFrontmatterIcon(plugin, containerEl).display();
     new ToggleIconsInNotes(plugin, containerEl).display();
+    new ToggleIconsInLinks(plugin, containerEl).display();
 
     containerEl.createEl('h1', {
       text: 'Icon customization for files/folders',
