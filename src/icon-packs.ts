@@ -32,7 +32,7 @@ const iconPacks = {
     displayName: 'Remix Icons',
     path: '',
     downloadLink:
-      'https://github.com/Remix-Design/RemixIcon/releases/download/v4.1.0/RemixIcon_Svg_v4.1.0.zip',
+      'https://github.com/Remix-Design/RemixIcon/releases/download/v4.2.0/RemixIcon_Svg_v4.2.0.zip',
   },
   iconBrew: {
     name: 'icon-brew',
@@ -47,21 +47,21 @@ const iconPacks = {
     displayName: 'Simple Icons',
     path: 'simple-icons-11.2.0/icons',
     downloadLink:
-      'https://github.com/simple-icons/simple-icons/archive/refs/tags/11.2.0.zip',
+      'https://github.com/simple-icons/simple-icons/archive/refs/tags/11.10.0.zip',
   },
   lucide: {
     name: 'lucide-icons',
     displayName: 'Lucide',
     path: '',
     downloadLink:
-      'https://github.com/lucide-icons/lucide/releases/download/0.343.0/lucide-icons-0.343.0.zip',
+      'https://github.com/lucide-icons/lucide/releases/download/0.363.0/lucide-icons-0.363.0.zip',
   },
   tablerIcons: {
     name: 'tabler-icons',
     displayName: 'Tabler Icons',
     path: 'svg',
     downloadLink:
-      'https://github.com/tabler/tabler-icons/releases/download/v2.46.0/tabler-icons-2.46.0.zip',
+      'https://github.com/tabler/tabler-icons/releases/download/v3.1.0/tabler-icons-3.1.0.zip',
   },
   /** @source https://boxicons.com/ */
   boxicons: {
