@@ -306,16 +306,16 @@ const generateIcon = (
 export const createIconPackPrefix = (iconPackName: string): string => {
   if (iconPackName.includes('-')) {
     const splitted = iconPackName.split('-');
-    let result = splitted[0].charAt(0).toUpperCase();
+    let result = splitted[0].charAt(0);
     for (let i = 1; i < splitted.length; i++) {
-      result += splitted[i].charAt(0).toLowerCase();
+      result += splitted[i].charAt(0);
     }
 
     return result;
   }
 
   return (
-    iconPackName.charAt(0).toUpperCase() + iconPackName.charAt(1).toLowerCase()
+    iconPackName.charAt(0) + iconPackName.charAt(1)
   );
 };
 
