@@ -340,7 +340,9 @@ export default class IconFolderPlugin extends Plugin {
 
       if (this.getSettings().iconInFrontmatterEnabled) {
         const activeFile = this.app.workspace.getActiveFile();
-        this.frontmatterCache.add(activeFile.path);
+        if (activeFile) {
+          this.frontmatterCache.add(activeFile.path);
+        }
       }
 
       // Adds the title icon to the active leaf view.
