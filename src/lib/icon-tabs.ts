@@ -78,6 +78,10 @@ const add = async (
 
   // Add icons to tabs if there is an icon set.
   const iconName = icon.getByPath(plugin, file.path);
+  if (!iconName) {
+    return;
+  }
+
   dom.setIconForNode(plugin, iconName, iconContainer, iconColor);
   // TODO: Refactor to include option to `insertIconToNode` function.
   iconContainer.style.margin = null;
