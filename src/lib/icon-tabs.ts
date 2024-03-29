@@ -1,9 +1,8 @@
 import { TFile } from 'obsidian';
-import IconFolderPlugin from '@app/main';
+import IconFolderPlugin, { FolderIconObject } from '@app/main';
 import { DEFAULT_FILE_ICON, getAllOpenedFiles } from '@app/util';
 import { TabHeaderLeaf } from '@app/@types/obsidian';
 import customRule from './custom-rule';
-import icon from './icon';
 import dom from './util/dom';
 
 /**
@@ -53,6 +52,7 @@ const add = async (
   options?: AddOptions,
 ): Promise<void> => {
   const iconColor = options?.iconColor ?? plugin.getSettings().iconColor;
+  const data = Object.entries(plugin.getData());
 
   // Removes the `display: none` from the obsidian styling.
   iconContainer.style.display = 'flex';
@@ -77,9 +77,25 @@ const add = async (
   }
 
   // Add icons to tabs if there is an icon set.
-  const iconName = icon.getByPath(plugin, file.path);
-  if (!iconName) {
+  const iconData = data.find(([dataPath]) => dataPath === file.path);
+  if (!iconData) {
     return;
+  }
+
+  const value = iconData[1];
+  if (typeof value !== 'string' && typeof value !== 'object') {
+    return;
+  }
+
+  let iconName;
+  if (typeof value === 'object') {
+    const v = value as FolderIconObject;
+    if (v.iconName === null) {
+      return;
+    }
+    iconName = v.iconName;
+  } else {
+    iconName = value;
   }
 
   dom.setIconForNode(plugin, iconName, iconContainer, iconColor);
