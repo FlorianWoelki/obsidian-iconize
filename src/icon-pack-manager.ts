@@ -432,6 +432,7 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
     }
 
     const prefix = createIconPackPrefix(folderName);
+    console.log(folderName, loadedIcons);
     iconPacks.push({
       name: folderName,
       icons: loadedIcons,
