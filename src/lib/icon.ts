@@ -188,7 +188,10 @@ const addAll = (
         const file = leaf.view.file;
         if (file) {
           const tabHeaderLeaf = leaf as TabHeaderLeaf;
-          iconTabs.add(plugin, file, tabHeaderLeaf.tabHeaderInnerIconEl);
+          const iconColor = plugin.getIconColor(file.path);
+          iconTabs.add(plugin, file, tabHeaderLeaf.tabHeaderInnerIconEl, {
+            iconColor,
+          });
         }
       }
     }

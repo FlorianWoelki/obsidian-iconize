@@ -455,7 +455,10 @@ export default class IconFolderPlugin extends Plugin {
 
           for (const openedFile of getAllOpenedFiles(this)) {
             const leaf = openedFile.leaf as TabHeaderLeaf;
-            iconTabs.add(this, openedFile, leaf.tabHeaderInnerIconEl);
+            const iconColor = this.getIconColor(leaf.view.file.path);
+            iconTabs.add(this, openedFile, leaf.tabHeaderInnerIconEl, {
+              iconColor,
+            });
           }
         }),
       );
@@ -606,7 +609,10 @@ export default class IconFolderPlugin extends Plugin {
           if (leaf.view.getViewType() === 'file-explorer') {
             for (const openedFile of getAllOpenedFiles(this)) {
               const leaf = openedFile.leaf as TabHeaderLeaf;
-              iconTabs.add(this, openedFile, leaf.tabHeaderInnerIconEl);
+              const iconColor = this.getIconColor(leaf.view.file.path);
+              iconTabs.add(this, openedFile, leaf.tabHeaderInnerIconEl, {
+                iconColor,
+              });
             }
             return;
           }
@@ -617,10 +623,14 @@ export default class IconFolderPlugin extends Plugin {
 
           const tabHeaderLeaf = leaf as TabHeaderLeaf;
           if (tabHeaderLeaf.view.file) {
+            const iconColor = this.getIconColor(tabHeaderLeaf.view.file.path);
             iconTabs.add(
               this,
               tabHeaderLeaf.view.file,
               tabHeaderLeaf.tabHeaderInnerIconEl,
+              {
+                iconColor,
+              },
             );
           }
         }),
