@@ -8,7 +8,7 @@ import {
 } from '@app/lib/util/text';
 import IconFolderPlugin from '@app/main';
 
-export const processMarkdown = (
+export const processIconInTextMarkdown = (
   plugin: IconFolderPlugin,
   element: HTMLElement,
 ) => {

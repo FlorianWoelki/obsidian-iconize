@@ -52,7 +52,10 @@ import {
 } from './editor/live-preview';
 import { PositionField, buildPositionField } from './editor/live-preview/state';
 import { calculateInlineTitleSize } from './lib/util/text';
-import { processMarkdown } from './editor/markdown-processor';
+import {
+  processIconInTextMarkdown,
+  processIconInLinkMarkdown,
+} from './editor/markdown-processors';
 import ChangeColorModal from './ui/change-color-modal';
 
 export interface FolderIconObject {
@@ -236,7 +239,9 @@ export default class IconFolderPlugin extends Plugin {
     );
 
     if (this.getSettings().iconsInNotesEnabled) {
-      this.registerMarkdownPostProcessor((el) => processMarkdown(this, el));
+      this.registerMarkdownPostProcessor((el) =>
+        processIconInTextMarkdown(this, el),
+      );
       this.registerEditorSuggest(new SuggestionIcon(this.app, this));
       this.registerEditorExtension([
         this.positionField,
@@ -245,6 +250,9 @@ export default class IconFolderPlugin extends Plugin {
     }
 
     if (this.getSettings().iconsInLinksEnabled) {
+      this.registerMarkdownPostProcessor((el, ctx) =>
+        processIconInLinkMarkdown(this, el, ctx),
+      );
       this.registerEditorExtension([
         this.positionField,
         buildIconInLinksPlugin(this),
