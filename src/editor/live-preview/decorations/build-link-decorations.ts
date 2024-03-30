@@ -36,7 +36,7 @@ export const buildLinkDecorations = (
 
               if (possibleIcon) {
                 const iconDecoration = Decoration.widget({
-                  widget: new IconInLinkWidget(plugin, possibleIcon),
+                  widget: new IconInLinkWidget(plugin, possibleIcon, file.path),
                 });
 
                 builder.add(node.from, node.from, iconDecoration);

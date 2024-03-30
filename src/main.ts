@@ -715,6 +715,10 @@ export default class IconFolderPlugin extends Plugin {
   getIconColor(path: string): string | undefined {
     const pathData = this.getData()[path];
 
+    if (!pathData) {
+      return undefined;
+    }
+
     if (typeof pathData === 'string') {
       return undefined;
     }

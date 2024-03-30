@@ -6,6 +6,7 @@ export class IconInLinkWidget extends WidgetType {
   constructor(
     public plugin: IconFolderPlugin,
     public iconData: Icon | string,
+    public path: string,
   ) {
     super();
   }
@@ -16,6 +17,9 @@ export class IconInLinkWidget extends WidgetType {
       typeof this.iconData === 'string'
         ? this.iconData
         : this.iconData.prefix + this.iconData.name;
+    iconNode.style.color =
+      this.plugin.getIconColor(this.path) ??
+      this.plugin.getSettings().iconColor;
     iconNode.setAttribute('title', iconName);
     iconNode.classList.add('iconize-icon-in-link');
 
