@@ -25,7 +25,7 @@ describe('ConsoleLogger', () => {
   });
 
   it('should log a basic message', () => {
-    const logger = new ConsoleLogger('TestPrefix');
+    const logger = new ConsoleLogger('TestPrefix', true);
     logger.log('Test message');
 
     expect(mockConsole.log).toHaveBeenCalledWith(
@@ -34,7 +34,7 @@ describe('ConsoleLogger', () => {
   });
 
   it('should log a info message', () => {
-    const logger = new ConsoleLogger('TestPrefix');
+    const logger = new ConsoleLogger('TestPrefix', true);
     logger.info('Test message');
 
     expect(mockConsole.info).toHaveBeenCalledWith(
@@ -43,7 +43,7 @@ describe('ConsoleLogger', () => {
   });
 
   it('should log a warn message', () => {
-    const logger = new ConsoleLogger('TestPrefix');
+    const logger = new ConsoleLogger('TestPrefix', true);
     logger.warn('Test message');
 
     expect(mockConsole.warn).toHaveBeenCalledWith(
@@ -52,7 +52,7 @@ describe('ConsoleLogger', () => {
   });
 
   it('should log an error message', () => {
-    const logger = new ConsoleLogger('TestPrefix');
+    const logger = new ConsoleLogger('TestPrefix', true);
     logger.error('Test message');
 
     expect(mockConsole.error).toHaveBeenCalledWith(
@@ -61,12 +61,44 @@ describe('ConsoleLogger', () => {
   });
 
   it('should log with optional parameters', () => {
-    const logger = new ConsoleLogger('TestPrefix');
+    const logger = new ConsoleLogger('TestPrefix', true);
     logger.warn('Test message', { data: 123 });
 
     expect(mockConsole.warn).toHaveBeenCalledWith(
       `TestPrefix: [${now.toISOString()}] WARN: Test message`,
       { data: 123 },
     );
+  });
+
+  it('should not log when logging is disabled', () => {
+    const logger = new ConsoleLogger('TestPrefix', false);
+    logger.log('Test message');
+
+    expect(mockConsole.log).not.toHaveBeenCalled();
+    expect(mockConsole.info).not.toHaveBeenCalled();
+    expect(mockConsole.warn).not.toHaveBeenCalled();
+    expect(mockConsole.error).not.toHaveBeenCalled();
+  });
+
+  it('should log when logging is enabled after being disabled', () => {
+    const logger = new ConsoleLogger('TestPrefix', false);
+    logger.log('Test message');
+    expect(mockConsole.log).not.toHaveBeenCalled();
+
+    logger.toggleLogging(true);
+    logger.log('Test message');
+
+    expect(mockConsole.log).toHaveBeenCalledWith(expect.any(String));
+  });
+
+  it('should log when logging is disabled after being enabled', () => {
+    const logger = new ConsoleLogger('TestPrefix', true);
+    logger.log('Test message');
+    expect(mockConsole.log).toHaveBeenCalledWith(expect.any(String));
+
+    logger.toggleLogging(false);
+    logger.log('Test message');
+
+    expect(mockConsole.log).toHaveBeenCalledTimes(1);
   });
 });
