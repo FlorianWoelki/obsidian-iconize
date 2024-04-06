@@ -9,6 +9,7 @@ import {
   StateField,
 } from '@codemirror/state';
 import IconFolderPlugin from '@app/main';
+import emoji from '@app/emoji';
 
 export type PositionField = StateField<RangeSet<IconPosition>>;
 
@@ -59,12 +60,14 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
       `(${identifier})((\\w{1,64}:\\d{17,18})|(\\w{1,64}))(${identifier})`,
       'g',
     );
-    for (const { 0: rawCode, index: offset } of text.matchAll(regex)) {
+    const iconMatch = text.matchAll(regex);
+    const emojiMatch = text.matchAll(emoji.regex);
+    for (const { 0: rawCode, index: offset } of [...iconMatch, ...emojiMatch]) {
       const iconName = rawCode.substring(
         identifier.length,
         rawCode.length - identifier.length,
       );
-      if (!icon.getIconByName(iconName)) {
+      if (!icon.getIconByName(iconName) && !emoji.isEmoji(iconName)) {
         continue;
       }
 

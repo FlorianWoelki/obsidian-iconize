@@ -6,7 +6,7 @@ import {
   ViewPlugin,
   ViewUpdate,
 } from '@codemirror/view';
-import { buildTextDecorations } from '../decorations';
+import { buildTextDecorations } from '@app/editor/live-preview/decorations';
 
 export const buildIconInTextPlugin = (plugin: IconFolderPlugin) => {
   return ViewPlugin.fromClass(

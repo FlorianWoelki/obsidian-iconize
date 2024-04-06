@@ -55,7 +55,9 @@ export const processIconInLinkMarkdown = (
     plugin.getIconColor(path) ?? plugin.getSettings().iconColor;
 
   if (emoji.isEmoji(iconName)) {
-    rootSpan.innerHTML = iconName;
+    const parsedEmoji =
+      emoji.parseEmoji(plugin.getSettings().emojiStyle, iconName) ?? iconName;
+    rootSpan.innerHTML = parsedEmoji;
   } else {
     const svg = icon.getIconByName(iconName).svgElement;
     if (svg) {

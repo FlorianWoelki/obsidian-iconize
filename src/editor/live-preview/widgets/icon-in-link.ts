@@ -1,3 +1,4 @@
+import emoji from '@app/emoji';
 import { Icon } from '@app/icon-pack-manager';
 import IconFolderPlugin from '@app/main';
 import { WidgetType } from '@codemirror/view';
@@ -27,10 +28,19 @@ export class IconInLinkWidget extends WidgetType {
       iconNode.style.transform = 'translateY(0)';
     }
 
-    iconNode.innerHTML =
+    let innerHTML =
       typeof this.iconData === 'string'
         ? this.iconData
         : this.iconData.svgElement;
+
+    if (emoji.isEmoji(innerHTML)) {
+      innerHTML = emoji.parseEmoji(
+        this.plugin.getSettings().emojiStyle,
+        innerHTML,
+      );
+    }
+
+    iconNode.innerHTML = innerHTML;
     return iconNode;
   }
 

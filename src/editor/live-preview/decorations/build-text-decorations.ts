@@ -1,7 +1,7 @@
 import IconFolderPlugin from '@app/main';
 import { Decoration, EditorView } from '@codemirror/view';
 import { editorLivePreviewField } from 'obsidian';
-import { IconInTextWidget } from '../widgets';
+import { IconInTextWidget } from '@app/editor/live-preview/widgets';
 
 export const buildTextDecorations = (
   view: EditorView,
