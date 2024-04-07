@@ -57,6 +57,7 @@ import {
   processIconInLinkMarkdown,
 } from './editor/markdown-processors';
 import ChangeColorModal from './ui/change-color-modal';
+import { logger } from './lib/logger';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -88,6 +89,7 @@ export default class IconFolderPlugin extends Plugin {
     }
 
     await this.loadIconFolderData();
+    logger.toggleLogging(this.getSettings().debugMode);
     setPath(this.getSettings().iconPacksPath);
 
     await createDefaultDirectory(this);

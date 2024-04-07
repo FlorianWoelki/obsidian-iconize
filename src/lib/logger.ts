@@ -11,6 +11,7 @@ interface Logger {
   info(message: string, ...optionalParams: unknown[]): void;
   warn(message: string, ...optionalParams: unknown[]): void;
   error(message: string, ...optionalParams: unknown[]): void;
+  toggleLogging(enabled: boolean): void;
 }
 
 export class ConsoleLogger implements Logger {
