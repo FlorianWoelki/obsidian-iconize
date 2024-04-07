@@ -69,7 +69,9 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
     }
 
     const defaultMargin = iconNode.style.margin;
-    dom.setIconForNode(this.plugin, iconName, iconNode);
+    const iconColor =
+      this.plugin.getIconColor(filePath) ?? this.plugin.getSettings().iconColor;
+    dom.setIconForNode(this.plugin, iconName, iconNode, iconColor);
     // Reset the margin to the default value to prevent overlapping with the text.
     iconNode.style.margin = defaultMargin;
   }
