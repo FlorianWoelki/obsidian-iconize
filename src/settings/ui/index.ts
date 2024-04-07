@@ -16,6 +16,7 @@ import ToggleFrontmatterIcon from './toggleFrontmatterIcon';
 import ToggleIconsInNotes from './toggleIconsInNotes';
 import ToggleIconsInLinks from './toggleIconsInLinks';
 import IconIdentifierSetting from './iconIdentifier';
+import DebugMode from './debugMode';
 
 export default class IconFolderSettings extends PluginSettingTab {
   private plugin: IconFolderPlugin;
@@ -36,6 +37,7 @@ export default class IconFolderSettings extends PluginSettingTab {
     new IconPacksBackgroundChecker(plugin, containerEl).display();
     new EmojiStyleSetting(plugin, containerEl).display();
     new IconIdentifierSetting(plugin, containerEl).display();
+    new DebugMode(plugin, containerEl).display();
 
     containerEl.createEl('h3', { text: 'Visibility of icons' });
     new ToggleIconInTabs(plugin, containerEl).display();

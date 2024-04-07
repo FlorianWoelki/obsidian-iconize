@@ -145,6 +145,11 @@ export interface IconFolderSettings {
    * @default ':'
    */
   iconIdentifier: string;
+  /**
+   * Sets whether the plugin should be in debug mode. This will enable more logging
+   * in the console.
+   */
+  debugMode?: boolean;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -169,4 +174,5 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   iconsInNotesEnabled: true,
   iconsInLinksEnabled: true,
   iconIdentifier: ':',
+  debugMode: false,
 };
