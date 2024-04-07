@@ -97,7 +97,6 @@ export const processIconInTextMarkdown = (
       .parseEmoji(plugin.getSettings().emojiStyle, emojiName, fontSize)
       .replace(`alt="${emojiName}"`, `alt="${emoji.shortNames[emojiName]}"`);
 
-    console.log(parsedEmoji);
     firstElementChild.innerHTML = firstElementChild.innerHTML.replace(
       emojiName,
       parsedEmoji,
