@@ -10,7 +10,6 @@ import {
 } from '@codemirror/state';
 import IconFolderPlugin from '@app/main';
 import emoji from '@app/emoji';
-import { ExplorerViewState } from '@app/@types/obsidian';
 
 export type PositionField = StateField<RangeSet<IconPosition>>;
 
@@ -55,13 +54,18 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
     excludeTo: number,
     updateRange: UpdateRangeFunc,
   ): void => {
-    const isSourceMode = (
-      plugin.app.workspace.getLeaf().getViewState() as ExplorerViewState
-    )?.state?.source;
+    let isSourceMode = false;
+    // Iterate over all leaves to check if any is in source mode
+    plugin.app.workspace.iterateAllLeaves((leaf) => {
+      if (!isSourceMode && leaf.view.getViewType() === 'markdown') {
+        if (leaf.getViewState().state?.source) {
+          isSourceMode = true;
+        }
+      }
+    });
     if (isSourceMode) {
       return;
     }
-
     const text = state.doc.sliceString(0, state.doc.length);
     const identifier = plugin.getSettings().iconIdentifier;
     const regex = new RegExp(

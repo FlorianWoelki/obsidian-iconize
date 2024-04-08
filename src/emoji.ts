@@ -2,7 +2,7 @@ import twemoji from 'twemoji';
 import { EmojiStyle } from './settings/data';
 
 const regex =
-  /(\p{Emoji}|\p{Emoji_Presentation}|\p{Emoji_Modifier}|\p{Emoji_Modifier_Base}|\p{Emoji_Component}|\p{Extended_Pictographic})/gu;
+  /(?!#)(\p{Emoji}|\p{Emoji_Presentation}|\p{Emoji_Modifier}|\p{Emoji_Modifier_Base}|\p{Emoji_Component}|\p{Extended_Pictographic})/gu;
 
 const shortNames: Record<string, string> = {
   '😀': 'grinning face',
