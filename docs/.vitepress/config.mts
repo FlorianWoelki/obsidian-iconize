@@ -32,11 +32,20 @@ export default defineConfig({
         text: 'Files and Folders',
         collapsed: false,
         items: [
-          { text: 'Icon before file/folder name', link: '/files-and-folders/icon-before-file-or-folder' },
+          {
+            text: 'Icon before file/folder name',
+            link: '/files-and-folders/icon-before-file-or-folder',
+          },
           { text: 'Icon in Tabs', link: '/files-and-folders/icon-tabs' },
           { text: 'Custom Rules', link: '/files-and-folders/custom-rules' },
-          { text: 'Use Frontmatter', link: '/files-and-folders/use-frontmatter' },
-          { text: 'Change individual icon color', link: '/files-and-folders/individual-icon-color' },
+          {
+            text: 'Use Frontmatter',
+            link: '/files-and-folders/use-frontmatter',
+          },
+          {
+            text: 'Change individual icon color',
+            link: '/files-and-folders/individual-icon-color',
+          },
         ],
       },
       {
@@ -52,15 +61,17 @@ export default defineConfig({
         collapsed: true,
         items: [
           { text: 'See icon name', link: '/good-to-know/see-icon-name' },
-          { text: 'Use png in icon pack', link: '/good-to-know/transform-png-to-svg' },
+          {
+            text: 'Use png in icon pack',
+            link: '/good-to-know/transform-png-to-svg',
+          },
+          { text: 'Unicode issue', link: '/good-to-know/unicode-issue' },
         ],
       },
       {
         text: 'Deprecated',
         collapsed: true,
-        items: [
-          { text: 'Inheritance', link: '/deprecated/inheritance' },
-        ],
+        items: [{ text: 'Inheritance', link: '/deprecated/inheritance' }],
       },
     ],
 
