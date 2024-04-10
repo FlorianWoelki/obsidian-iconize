@@ -75,7 +75,7 @@ export interface IconFolderSettings {
   fontSize: number;
   /**
    * Sets the style of the emoji. The option `none` means that no emojis will be used.
-   * @default 'none'
+   * @default 'native'
    */
   emojiStyle: EmojiStyle;
   /**
@@ -156,7 +156,7 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   migrated: 2,
   iconPacksPath: '.obsidian/icons',
   fontSize: 16,
-  emojiStyle: 'none',
+  emojiStyle: 'native',
   iconColor: null,
   recentlyUsedIcons: [],
   recentlyUsedIconsSize: 5,
