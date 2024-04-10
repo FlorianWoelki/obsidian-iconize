@@ -73,7 +73,7 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
       'g',
     );
     const iconMatch = text.matchAll(regex);
-    const emojiMatch = text.matchAll(emoji.regex);
+    const emojiMatch = text.matchAll(emoji.getRegex());
     for (const { 0: rawCode, index: offset } of [...iconMatch, ...emojiMatch]) {
       const iconName = rawCode.substring(
         identifier.length,

@@ -1,8 +1,12 @@
 import twemoji from 'twemoji';
 import { EmojiStyle } from './settings/data';
 
-const regex =
-  /(?!#)(\p{Emoji}|\p{Emoji_Presentation}|\p{Emoji_Modifier}|\p{Emoji_Modifier_Base}|\p{Emoji_Component}|\p{Extended_Pictographic})/gu;
+const getRegex = () => {
+  return new RegExp(
+    /(?!#)(\p{Emoji}|\p{Emoji_Presentation}|\p{Emoji_Modifier}|\p{Emoji_Modifier_Base}|\p{Emoji_Component}|\p{Extended_Pictographic})/,
+    'gu',
+  );
+};
 
 const shortNames: Record<string, string> = {
   '😀': 'grinning face',
@@ -1861,7 +1865,7 @@ const shortNames: Record<string, string> = {
 };
 
 const isEmoji = (str: string): boolean => {
-  const emojiMatches = str.match(regex);
+  const emojiMatches = str.match(getRegex());
   const emojiString = emojiMatches ? emojiMatches.join('') : '';
 
   return !/\d/.test(str) && emojiString === str;
@@ -1906,5 +1910,5 @@ export default {
   isEmoji,
   getShortcode,
   parseEmoji,
-  regex,
+  getRegex,
 };
