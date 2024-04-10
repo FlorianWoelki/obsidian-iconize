@@ -1,3 +1,6 @@
+// TODO: Optimize the code to reduce the number of iterations and improve the
+// performance.
+
 import svg from '@app/lib/util/svg';
 import icon from '@app/lib/icon';
 import {

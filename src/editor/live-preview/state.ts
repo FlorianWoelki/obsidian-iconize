@@ -1,3 +1,6 @@
+// TODO: Optimize the code to reduce the number of iterations and improve the
+// performance.
+
 import { syntaxTree, tokenClassNodeProp } from '@codemirror/language';
 import icon from '@app/lib/icon';
 import {
@@ -150,9 +153,18 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
   return StateField.define<RangeSet<IconPosition>>({
     create: (state) => {
       const rangeSet = new RangeSetBuilder<IconPosition>();
-      // Check all the ranges of the icons in the entire document. There is no
-      // exclusion going on here.
-      checkRanges(state, -1, -1, rangeSet.add.bind(rangeSet));
+      const changedLines: {
+        from: number;
+        to: number;
+        iconPosition: IconPosition;
+      }[] = [];
+      checkRanges(state, -1, -1, (from, to, iconPosition) => {
+        changedLines.push({ from, to, iconPosition });
+      });
+      changedLines.sort((a, b) => a.from - b.from);
+      for (const { from, to, iconPosition } of changedLines) {
+        rangeSet.add(from, to, iconPosition);
+      }
       return rangeSet.finish();
     },
     update: (rangeSet, transaction) => {
