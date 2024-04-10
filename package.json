@@ -60,7 +60,7 @@
     "tslib": "^2.6.2",
     "twemoji": "^14.0.2",
     "typescript": "^5.4.2",
-    "vitepress": "1.0.0-rc.45",
+    "vitepress": "1.1.0",
     "vitest": "^1.4.0"
   },
   "dependencies": {
