@@ -23,6 +23,20 @@ type UpdateRangeFunc = (
   remove: boolean,
 ) => void;
 
+function checkForSourceMode(plugin: IconFolderPlugin): boolean {
+  let isSourceMode = false;
+  // Iterate over all leaves to check if any is in source mode
+  plugin.app.workspace.iterateAllLeaves((leaf) => {
+    if (!isSourceMode && leaf.view.getViewType() === 'markdown') {
+      if (leaf.getViewState().state?.source) {
+        isSourceMode = true;
+      }
+    }
+  });
+
+  return isSourceMode;
+}
+
 class IconPosition extends RangeValue {
   constructor(public text: string) {
     super();
@@ -57,18 +71,8 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
     excludeTo: number,
     updateRange: UpdateRangeFunc,
   ): void => {
-    let isSourceMode = false;
-    // Iterate over all leaves to check if any is in source mode
-    plugin.app.workspace.iterateAllLeaves((leaf) => {
-      if (!isSourceMode && leaf.view.getViewType() === 'markdown') {
-        if (leaf.getViewState().state?.source) {
-          isSourceMode = true;
-        }
-      }
-    });
-    if (isSourceMode) {
-      return;
-    }
+    const isSourceMode = checkForSourceMode(plugin);
+
     const text = state.doc.sliceString(0, state.doc.length);
     const identifier = plugin.getSettings().iconIdentifier;
     const regex = new RegExp(
@@ -94,7 +98,7 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
       }
 
       if (offset < excludeFrom || offset > excludeTo) {
-        updateRange(from, to, new IconPosition(iconName), false);
+        updateRange(from, to, new IconPosition(iconName), isSourceMode);
         continue;
       }
 
@@ -152,6 +156,10 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
 
   return StateField.define<RangeSet<IconPosition>>({
     create: (state) => {
+      if (checkForSourceMode(plugin)) {
+        return new RangeSetBuilder<IconPosition>().finish();
+      }
+
       const rangeSet = new RangeSetBuilder<IconPosition>();
       const changedLines: {
         from: number;
@@ -193,6 +201,17 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
               }
             },
           );
+        } else {
+          checkRanges(transaction.state, -1, -1, (from, to, value, removed) => {
+            rangeSet = rangeSet.update({
+              filterFrom: from,
+              filterTo: to,
+              filter: () => false,
+            });
+            if (!removed) {
+              newRanges.push(value.range(from, to));
+            }
+          });
         }
 
         newRanges.sort((a, b) => a.from - b.from);
