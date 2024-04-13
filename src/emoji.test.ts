@@ -11,12 +11,15 @@ describe('isEmoji', () => {
     expect(emoji.isEmoji('🤔')).toBe(true);
     expect(emoji.isEmoji('😂')).toBe(true);
     expect(emoji.isEmoji('👍🏼')).toBe(true);
+    expect(emoji.isEmoji('😂😂')).toBe(true);
   });
 
   it('should return `false` for invalid emojis', () => {
     expect(emoji.isEmoji('hello')).toBe(false);
     expect(emoji.isEmoji('123')).toBe(false);
-    expect(emoji.isEmoji('😂😂')).toBe(true);
+    expect(emoji.isEmoji('*')).toBe(false);
+    expect(emoji.isEmoji('-')).toBe(false);
+    expect(emoji.isEmoji('#')).toBe(false);
   });
 });
 

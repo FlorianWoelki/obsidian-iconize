@@ -3,7 +3,7 @@ import { EmojiStyle } from './settings/data';
 
 const getRegex = () => {
   return new RegExp(
-    /(?!#)(\p{Emoji}|\p{Emoji_Presentation}|\p{Emoji_Modifier}|\p{Emoji_Modifier_Base}|\p{Emoji_Component}|\p{Extended_Pictographic})/,
+    /(?!(#|\*))(\p{Emoji}|\p{Emoji_Presentation}|\p{Emoji_Modifier}|\p{Emoji_Modifier_Base}|\p{Emoji_Component}|\p{Extended_Pictographic})/,
     'gu',
   );
 };
