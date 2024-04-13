@@ -20,6 +20,7 @@ describe('isEmoji', () => {
     expect(emoji.isEmoji('*')).toBe(false);
     expect(emoji.isEmoji('-')).toBe(false);
     expect(emoji.isEmoji('#')).toBe(false);
+    expect(emoji.isEmoji('+')).toBe(false);
   });
 });
 
