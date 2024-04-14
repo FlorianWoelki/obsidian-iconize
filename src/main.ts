@@ -525,9 +525,15 @@ export default class IconFolderPlugin extends Plugin {
           }
 
           const fileCache = this.app.metadataCache.getFileCache(file);
+          const iconFrontmatterName =
+            this.getSettings().iconInFrontmatterFieldName;
+          const iconColorFrontmatterName =
+            this.getSettings().iconColorInFrontmatterFieldName;
           if (fileCache?.frontmatter) {
-            const { icon: newIconName, iconColor: newIconColor } =
-              fileCache.frontmatter;
+            const {
+              [iconFrontmatterName]: newIconName,
+              [iconColorFrontmatterName]: newIconColor,
+            } = fileCache.frontmatter;
             // If `icon` property is empty, we will remove it from the data and remove the icon.
             if (!newIconName) {
               if (this.frontmatterCache.has(file.path)) {

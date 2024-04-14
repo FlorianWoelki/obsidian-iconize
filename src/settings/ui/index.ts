@@ -12,7 +12,7 @@ import PredefinedIconPacksSetting from './predefinedIconPacks';
 import RecentlyUsedIconsSetting from './recentlyUsedIcons';
 import ToggleIconInTabs from './toggleIconInTabs';
 import ToggleIconInTitle from './toggleIconInTitle';
-import ToggleFrontmatterIcon from './toggleFrontmatterIcon';
+import FrontmatterOptions from './frontmatterOptions';
 import ToggleIconsInNotes from './toggleIconsInNotes';
 import ToggleIconsInLinks from './toggleIconsInLinks';
 import IconIdentifierSetting from './iconIdentifier';
@@ -42,7 +42,7 @@ export default class IconFolderSettings extends PluginSettingTab {
     containerEl.createEl('h3', { text: 'Visibility of icons' });
     new ToggleIconInTabs(plugin, containerEl).display();
     new ToggleIconInTitle(plugin, containerEl).display();
-    new ToggleFrontmatterIcon(plugin, containerEl).display();
+    new FrontmatterOptions(plugin, containerEl).display();
     new ToggleIconsInNotes(plugin, containerEl).display();
     new ToggleIconsInLinks(plugin, containerEl).display();
 

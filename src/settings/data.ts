@@ -130,6 +130,16 @@ export interface IconFolderSettings {
    */
   iconInFrontmatterEnabled: boolean;
   /**
+   * Sets the name of the frontmatter field which contains the icon.
+   * @default 'icon'
+   */
+  iconInFrontmatterFieldName: string;
+  /**
+   * Sets the name of the frontmatter field which contains the color of the icon.
+   * @default 'iconColor'
+   */
+  iconColorInFrontmatterFieldName: string;
+  /**
    * Sets whether the plugin should be able to show icons in the editor while
    * editing notes.
    * @default true
@@ -170,6 +180,8 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   iconInTabsEnabled: false,
   iconInTitleEnabled: false,
   iconInFrontmatterEnabled: false,
+  iconInFrontmatterFieldName: 'icon',
+  iconColorInFrontmatterFieldName: 'iconColor',
   iconsBackgroundCheckEnabled: false,
   iconsInNotesEnabled: true,
   iconsInLinksEnabled: true,
