@@ -16,6 +16,11 @@ export const processIconInLinkMarkdown = (
     return;
   }
 
+  // Skip if the link element e.g., is a tag.
+  if (!linkElement.hasAttribute('data-href')) {
+    return;
+  }
+
   const linkHref = linkElement.getAttribute('href');
   if (!linkHref) {
     logger.warn('Link element does not have an `href` attribute.');
