@@ -85,12 +85,12 @@ export const processIconInTextMarkdown = (
     return;
   }
 
-  const treeWalker = createTreeWalker(plugin, element);
+  const iconTreeWalker = createTreeWalker(plugin, element);
 
   const iconShortcodeRegex = createIconShortcodeRegex(plugin);
   const iconIdentifierLength = plugin.getSettings().iconIdentifier.length;
 
-  checkForTextNodes(treeWalker, iconShortcodeRegex, (text, code) => {
+  checkForTextNodes(iconTreeWalker, iconShortcodeRegex, (text, code) => {
     const shortcode = code.text;
     const iconName = shortcode.slice(
       iconIdentifierLength,
@@ -128,7 +128,8 @@ export const processIconInTextMarkdown = (
     }
   });
 
-  checkForTextNodes(treeWalker, emoji.getRegex(), (text, code) => {
+  const emojiTreeWalker = createTreeWalker(plugin, element);
+  checkForTextNodes(emojiTreeWalker, emoji.getRegex(), (text, code) => {
     if (!emoji.isEmoji(code.text)) {
       return;
     }
