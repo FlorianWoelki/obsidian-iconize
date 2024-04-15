@@ -79,14 +79,12 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
       `(${identifier})((\\w{1,64}:\\d{17,18})|(\\w{1,64}))(${identifier})`,
       'g',
     );
-    const iconMatch = text.matchAll(regex);
-    const emojiMatch = text.matchAll(emoji.getRegex());
-    for (const { 0: rawCode, index: offset } of [...iconMatch, ...emojiMatch]) {
+    for (const { 0: rawCode, index: offset } of text.matchAll(regex)) {
       const iconName = rawCode.substring(
         identifier.length,
         rawCode.length - identifier.length,
       );
-      if (!icon.getIconByName(iconName) && !emoji.isEmoji(iconName)) {
+      if (!icon.getIconByName(iconName)) {
         continue;
       }
 
@@ -103,6 +101,27 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
       }
 
       updateRange(from, to, new IconPosition(iconName), true);
+    }
+
+    for (const { 0: emojiName, index: offset } of text.matchAll(
+      emoji.getRegex(),
+    )) {
+      if (!emoji.isEmoji(emojiName)) {
+        continue;
+      }
+
+      const from = offset;
+      const to = offset + emojiName.length;
+      if (!isNodeInRangeAccepted(state, from, to)) {
+        continue;
+      }
+
+      if (offset < excludeFrom || offset > excludeTo) {
+        updateRange(from, to, new IconPosition(emojiName), isSourceMode);
+        continue;
+      }
+
+      updateRange(from, to, new IconPosition(emojiName), true);
     }
   };
 
@@ -156,10 +175,6 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
 
   return StateField.define<RangeSet<IconPosition>>({
     create: (state) => {
-      if (checkForSourceMode(plugin)) {
-        return new RangeSetBuilder<IconPosition>().finish();
-      }
-
       const rangeSet = new RangeSetBuilder<IconPosition>();
       const changedLines: {
         from: number;
@@ -229,7 +244,16 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
         ]);
       });
 
-      for (const [_, end] of changedLines) {
+      for (const [start, end] of changedLines) {
+        const from = transaction.state.doc.line(start).from;
+        const to = transaction.state.doc.line(end).to;
+
+        rangeSet = rangeSet.update({
+          filterFrom: from,
+          filterTo: to,
+          filter: () => false,
+        });
+
         const lineEnd = transaction.state.doc.line(end).length;
         const lineStart = transaction.state.doc.line(end).from;
 
@@ -240,11 +264,6 @@ export const buildPositionField = (plugin: IconFolderPlugin) => {
           lineStart,
           lineStart + lineEnd,
           (from, to, value, removed) => {
-            rangeSet = rangeSet.update({
-              filterFrom: from,
-              filterTo: to,
-              filter: () => false,
-            });
             if (!removed) {
               newRanges.push(value.range(from, to));
             }
