@@ -313,6 +313,26 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
               rule.useFilePath = value;
             });
 
+          const caseInsensitiveContainer = modal.contentEl.createDiv();
+          caseInsensitiveContainer.style.display = 'flex';
+          caseInsensitiveContainer.style.alignItems = 'center';
+          caseInsensitiveContainer.style.justifyContent = 'space-between';
+          caseInsensitiveContainer.style.marginTop = 'var(--size-4-5)';
+          const caseInsensitiveDescription = caseInsensitiveContainer.createEl(
+            'p',
+            {
+              text: 'Whether to make the setting case insensitive',
+              cls: 'setting-item-description',
+            },
+          );
+          caseInsensitiveDescription.style.margin = '0';
+          caseInsensitiveDescription.style.marginBottom = 'var(--size-2-2)';
+          new ToggleComponent(caseInsensitiveContainer)
+            .setValue(rule.caseInsensitive === true)
+            .onChange((value) => {
+              rule.caseInsensitive = value;
+            });
+
           // Create the change icon button with icon preview.
           this.createDescriptionEl(modal.contentEl, 'Custom rule icon');
           const iconContainer = modal.contentEl.createDiv();

@@ -51,6 +51,11 @@ export interface CustomRule {
    */
   useFilePath?: boolean;
   /**
+   * Controls whether the rule should be applied case sensitively or not
+   * @default false
+   */
+  caseInsensitive?: boolean;
+  /**
    * Controls whether the rule should be applied to files, folders or both.
    * @default 'everything'
    */

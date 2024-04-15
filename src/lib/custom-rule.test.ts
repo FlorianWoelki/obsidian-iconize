@@ -286,6 +286,21 @@ describe('doesMatchPath', () => {
     rule.rule = '.*-test';
     expect(customRule.doesMatchPath(rule, 'test')).toBe(false);
   });
+
+  it('should return `true` if the rule matches the path case insensitively and is case insensitive', () => {
+    rule.caseInsensitive = true;
+    rule.rule = 'Test';
+    expect(customRule.doesMatchPath(rule, 'test')).toBe(true);
+    rule.rule = '.*Test';
+    expect(customRule.doesMatchPath(rule, 'test')).toBe(true);
+  });
+
+  it('should return `false` if the rule matches the path case insensitively and is not case insensitive', () => {
+    rule.rule = 'Test';
+    expect(customRule.doesMatchPath(rule, 'test')).toBe(false);
+    rule.rule = '.*Test';
+    expect(customRule.doesMatchPath(rule, 'test')).toBe(false);
+  });
 });
 
 describe('getFileItems', () => {

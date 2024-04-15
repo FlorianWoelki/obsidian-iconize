@@ -166,13 +166,15 @@ const doesMatchPath = (rule: CustomRule, path: string): boolean => {
   const toMatch = rule.useFilePath ? path : path.split('/').pop();
   try {
     // Rule is in some sort of regex.
-    const regex = new RegExp(rule.rule);
+    const regex = new RegExp(rule.rule, rule.caseInsensitive ? 'i' : '');
     if (toMatch.match(regex)) {
       return true;
     }
   } catch {
     // Rule is not in some sort of regex, check for basic string match.
-    return toMatch.includes(rule.rule);
+    if (rule.caseInsensitive)
+      return toMatch.toLowerCase().includes(rule.rule.toLowerCase());
+    else return toMatch.includes(rule.rule);
   }
 
   return false;
