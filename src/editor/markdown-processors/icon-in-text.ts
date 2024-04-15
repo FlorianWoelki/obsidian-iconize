@@ -130,6 +130,10 @@ export const processIconInTextMarkdown = (
 
   checkForTextNodes(treeWalker, emoji.getRegex(), (text, code) => {
     if (plugin.getSettings().emojiStyle === 'twemoji') {
+      if (!emoji.isEmoji(code.text)) {
+        return;
+      }
+
       const toReplace = text.splitText(code.index);
 
       const tagName = toReplace.parentElement?.tagName?.toLowerCase() ?? '';
