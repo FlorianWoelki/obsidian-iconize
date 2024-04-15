@@ -1,4 +1,4 @@
-import twemoji from 'twemoji';
+import twemoji from '@twemoji/api';
 import { EmojiStyle } from './settings/data';
 
 const getRegex = () => {
@@ -1881,7 +1881,6 @@ const parseEmoji = (
   switch (style) {
     case 'twemoji':
       return twemoji.parse(str, {
-        base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
         folder: 'svg',
         ext: '.svg',
         attributes: () => ({
