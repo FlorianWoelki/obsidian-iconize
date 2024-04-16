@@ -3,7 +3,7 @@ import * as iconPackManager from '../../icon-pack-manager';
 import dom from './dom';
 import svg from './svg';
 import style from './style';
-import twemoji from 'twemoji';
+import twemoji from '@twemoji/api';
 
 describe('removeIconInNode', () => {
   it('should remove the icon node from the provided element', () => {

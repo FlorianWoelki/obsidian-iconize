@@ -1,8 +1,8 @@
 import { Mock, describe, expect, it, vi } from 'vitest';
-import twemoji from 'twemoji';
+import twemoji from '@twemoji/api';
 import emoji from './emoji';
 
-vi.mock('twemoji');
+vi.mock('@twemoji/api');
 
 describe('isEmoji', () => {
   it('should return `true` for valid emojis', () => {
