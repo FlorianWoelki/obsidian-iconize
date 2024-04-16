@@ -57,6 +57,13 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Compatibility with Plugins',
+        collapsed: true,
+        items: [
+          { text: 'Metadatamenu', link: '/compatibility-plugins/metadatamenu' },
+        ],
+      },
+      {
         text: 'Good to know',
         collapsed: true,
         items: [
