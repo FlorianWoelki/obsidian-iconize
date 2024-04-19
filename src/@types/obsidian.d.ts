@@ -1,4 +1,11 @@
-import { TAbstractFile, TFile, View, ViewState, WorkspaceLeaf } from 'obsidian';
+import {
+  Editor,
+  TAbstractFile,
+  TFile,
+  View,
+  ViewState,
+  WorkspaceLeaf,
+} from 'obsidian';
 
 interface InternalPlugin {
   enabled: boolean;
@@ -113,4 +120,10 @@ interface FileItem {
   selfEl: HTMLDivElement;
   innerEl: HTMLDivElement;
   file: TAbstractFile;
+}
+
+interface EditorWithEditorComponent extends Editor {
+  editorComponent?: {
+    file?: TFile;
+  };
 }

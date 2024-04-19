@@ -8,6 +8,7 @@ import {
   Notice,
 } from 'obsidian';
 import {
+  EditorWithEditorComponent,
   ExplorerView,
   InlineTitleView,
   TabHeaderLeaf,
@@ -101,6 +102,49 @@ export default class IconFolderPlugin extends Plugin {
     await loadUsedIcons(this, usedIconNames);
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
+
+    this.addCommand({
+      id: 'iconize:set-icon-for-file',
+      name: 'Set icon for file',
+      hotkeys: [
+        {
+          modifiers: ['Mod', 'Shift'],
+          key: 'i',
+        },
+      ],
+      editorCallback: async (editor: EditorWithEditorComponent) => {
+        const file = editor.editorComponent?.file;
+        if (!file) {
+          logger.warn(
+            '`editor.editorComponent?.file` is undefined for file:',
+            file,
+          );
+          return;
+        }
+
+        const modal = new IconsPickerModal(this.app, this, file.path);
+        modal.open();
+
+        modal.onSelect = (iconName: string): void => {
+          IconCache.getInstance().set(file.path, {
+            iconNameWithPrefix: iconName,
+          });
+
+          // Update icon in tab when setting is enabled.
+          if (this.getSettings().iconInTabsEnabled) {
+            const tabLeaves = iconTabs.getTabLeavesOfFilePath(this, file.path);
+            for (const tabLeaf of tabLeaves) {
+              iconTabs.update(this, iconName, tabLeaf.tabHeaderInnerIconEl);
+            }
+          }
+
+          // Update icon in title when setting is enabled.
+          if (this.getSettings().iconInTitleEnabled) {
+            this.addIconInTitle(iconName);
+          }
+        };
+      },
+    });
 
     this.registerEvent(
       // Registering file menu event for listening to file pinning and unpinning.
