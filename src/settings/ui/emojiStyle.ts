@@ -1,10 +1,14 @@
-import { Setting } from 'obsidian';
+import { MarkdownView, Setting } from 'obsidian';
 import emoji from '@app/emoji';
 import customRule from '@lib/custom-rule';
 import dom from '@lib/util/dom';
 import { FolderIconObject } from '@app/main';
 import iconTabs from '@app/lib/icon-tabs';
 import IconFolderSetting from './iconFolderSetting';
+import titleIcon from '@app/lib/icon-title';
+import { getAllOpenedFiles } from '@app/util';
+import { InlineTitleView } from '@app/@types/obsidian';
+import { calculateInlineTitleSize } from '@app/lib/util/text';
 
 export default class EmojiStyleSetting extends IconFolderSetting {
   public display(): void {
@@ -53,7 +57,17 @@ export default class EmojiStyleSetting extends IconFolderSetting {
             );
           }
 
-          this.plugin.addIconInTitle(iconName);
+          for (const openedFile of getAllOpenedFiles(this.plugin)) {
+            const activeView = openedFile.leaf.view as InlineTitleView;
+            if (
+              activeView instanceof MarkdownView &&
+              openedFile.path === path
+            ) {
+              titleIcon.add(this.plugin, activeView.inlineTitleEl, iconName, {
+                fontSize: calculateInlineTitleSize(),
+              });
+            }
+          }
         }
       }
     }
