@@ -109,7 +109,7 @@ export default class IconFolderPlugin extends Plugin {
       hotkeys: [
         {
           modifiers: ['Mod', 'Shift'],
-          key: 'i',
+          key: 'j',
         },
       ],
       editorCallback: async (editor: EditorWithEditorComponent) => {
