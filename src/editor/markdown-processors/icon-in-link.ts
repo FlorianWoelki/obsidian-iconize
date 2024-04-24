@@ -9,66 +9,66 @@ export const processIconInLinkMarkdown = (
   element: HTMLElement,
   ctx: MarkdownPostProcessorContext,
 ) => {
-  const linkElement = element.querySelector('a') as
-    | HTMLAnchorElement
-    | undefined;
-  if (!linkElement) {
+  const linkElements = element.querySelectorAll('a');
+  if (!linkElements || linkElements.length === 0) {
     return;
   }
 
-  // Skip if the link element e.g., is a tag.
-  if (!linkElement.hasAttribute('data-href')) {
-    return;
-  }
-
-  const linkHref = linkElement.getAttribute('href');
-  if (!linkHref) {
-    logger.warn('Link element does not have an `href` attribute.');
-    return;
-  }
-
-  const file = plugin.app.metadataCache.getFirstLinkpathDest(
-    linkHref,
-    ctx.sourcePath,
-  );
-  if (!file) {
-    logger.warn('Link element does not have a linkpath to a file.');
-    return;
-  }
-
-  const path = file.path;
-  const iconValue = icon.getIconByPath(plugin, path);
-  if (!iconValue) {
-    return;
-  }
-
-  const iconName =
-    typeof iconValue === 'string'
-      ? iconValue
-      : iconValue.prefix + iconValue.name;
-
-  const rootSpan = createSpan({
-    cls: 'iconize-icon-in-link',
-    attr: {
-      title: iconName,
-      'aria-label': iconName,
-      'data-icon': iconName,
-      'aria-hidden': 'true',
-    },
-  });
-  rootSpan.style.color =
-    plugin.getIconColor(path) ?? plugin.getSettings().iconColor;
-
-  if (emoji.isEmoji(iconName)) {
-    const parsedEmoji =
-      emoji.parseEmoji(plugin.getSettings().emojiStyle, iconName) ?? iconName;
-    rootSpan.innerHTML = parsedEmoji;
-  } else {
-    const svg = icon.getIconByName(iconName).svgElement;
-    if (svg) {
-      rootSpan.innerHTML = svg;
+  linkElements.forEach((linkElement) => {
+    // Skip if the link element e.g., is a tag.
+    if (!linkElement.hasAttribute('data-href')) {
+      return;
     }
-  }
 
-  linkElement.prepend(rootSpan);
+    const linkHref = linkElement.getAttribute('href');
+    if (!linkHref) {
+      logger.warn('Link element does not have an `href` attribute.');
+      return;
+    }
+
+    const file = plugin.app.metadataCache.getFirstLinkpathDest(
+      linkHref,
+      ctx.sourcePath,
+    );
+    if (!file) {
+      logger.warn('Link element does not have a linkpath to a file.');
+      return;
+    }
+
+    const path = file.path;
+    const iconValue = icon.getIconByPath(plugin, path);
+    if (!iconValue) {
+      return;
+    }
+
+    const iconName =
+      typeof iconValue === 'string'
+        ? iconValue
+        : iconValue.prefix + iconValue.name;
+
+    const rootSpan = createSpan({
+      cls: 'iconize-icon-in-link',
+      attr: {
+        title: iconName,
+        'aria-label': iconName,
+        'data-icon': iconName,
+        'aria-hidden': 'true',
+      },
+    });
+    rootSpan.style.color =
+      plugin.getIconColor(path) ?? plugin.getSettings().iconColor;
+
+    if (emoji.isEmoji(iconName)) {
+      const parsedEmoji =
+        emoji.parseEmoji(plugin.getSettings().emojiStyle, iconName) ?? iconName;
+      rootSpan.innerHTML = parsedEmoji;
+    } else {
+      const svg = icon.getIconByName(iconName).svgElement;
+      if (svg) {
+        rootSpan.innerHTML = svg;
+      }
+    }
+
+    linkElement.prepend(rootSpan);
+  });
 };
