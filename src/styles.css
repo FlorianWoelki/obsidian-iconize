@@ -1,7 +1,9 @@
 .iconize-title-icon {
+  display: inline-block;
   max-width: var(--max-width);
   width: var(--line-width);
-  margin-inline: var(--content-margin) !important;
+  margin-right: var(--size-4-2);
+  transform: translateY(13%);
 }
 
 .iconize-icon-in-link {

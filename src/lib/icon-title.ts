@@ -2,6 +2,7 @@ import IconFolderPlugin from '@app/main';
 import config from '@app/config';
 import emoji from '@app/emoji';
 import svg from './util/svg';
+import { IconInTitlePosition } from '@app/settings/data';
 
 const getTitleIcon = (leaf: HTMLElement): HTMLElement | null => {
   return leaf.querySelector(`.${config.TITLE_ICON_CLASS}`);
@@ -31,7 +32,7 @@ const add = (
     titleIcon = document.createElement('div');
   }
 
-  titleIcon.style.display = 'block';
+  titleIcon.style.removeProperty('display');
   titleIcon.classList.add(config.TITLE_ICON_CLASS);
   // Checks if the passed element is an emoji.
   if (emoji.isEmoji(svgElement) && options.fontSize) {
@@ -45,7 +46,15 @@ const add = (
   }
   titleIcon.innerHTML = svgElement;
   if (!hadTitleIcon) {
-    inlineTitleEl.parentElement.prepend(titleIcon);
+    if (
+      plugin.getSettings().iconInTitlePosition === IconInTitlePosition.Above
+    ) {
+      inlineTitleEl.parentElement.prepend(titleIcon);
+    } else if (
+      plugin.getSettings().iconInTitlePosition === IconInTitlePosition.Inline
+    ) {
+      inlineTitleEl.prepend(titleIcon);
+    }
   }
 };
 
