@@ -1,5 +1,10 @@
 export type EmojiStyle = 'none' | 'native' | 'twemoji';
 
+export enum IconInTitlePosition {
+  Above = 'above',
+  Inline = 'inline',
+}
+
 export interface ExtraMarginSettings {
   /**
    * Controls the extra margin on the top of the icon.
@@ -120,6 +125,11 @@ export interface IconFolderSettings {
    */
   iconInTitleEnabled: boolean;
   /**
+   * Sets the default position of the icon in the title of a file.
+   * @default 'above'
+   */
+  iconInTitlePosition: IconInTitlePosition;
+  /**
    * Sets whether the plugin should check in the background if icons are missing.
    * @default false
    */
@@ -179,6 +189,7 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   },
   iconInTabsEnabled: false,
   iconInTitleEnabled: false,
+  iconInTitlePosition: IconInTitlePosition.Above,
   iconInFrontmatterEnabled: false,
   iconInFrontmatterFieldName: 'icon',
   iconColorInFrontmatterFieldName: 'iconColor',
