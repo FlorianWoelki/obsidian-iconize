@@ -32,7 +32,19 @@ const add = (
     titleIcon = document.createElement('div');
   }
 
-  titleIcon.style.removeProperty('display');
+  const isInline =
+    plugin.getSettings().iconInTitlePosition === IconInTitlePosition.Inline;
+
+  if (isInline) {
+    titleIcon.style.display = 'inline-block';
+    titleIcon.style.removeProperty('margin-inline');
+    titleIcon.style.removeProperty('width');
+  } else {
+    titleIcon.style.display = 'block';
+    titleIcon.style.width = 'var(--line-width)';
+    titleIcon.style.marginInline = 'var(--content-margin)';
+  }
+
   titleIcon.classList.add(config.TITLE_ICON_CLASS);
   // Checks if the passed element is an emoji.
   if (emoji.isEmoji(svgElement) && options.fontSize) {
@@ -50,9 +62,7 @@ const add = (
       plugin.getSettings().iconInTitlePosition === IconInTitlePosition.Above
     ) {
       inlineTitleEl.parentElement.prepend(titleIcon);
-    } else if (
-      plugin.getSettings().iconInTitlePosition === IconInTitlePosition.Inline
-    ) {
+    } else if (isInline) {
       inlineTitleEl.prepend(titleIcon);
     }
   }
