@@ -1,4 +1,4 @@
-export type EmojiStyle = 'none' | 'native' | 'twemoji';
+export type EmojiStyle = 'native' | 'twemoji';
 
 export enum IconInTitlePosition {
   Above = 'above',

@@ -16,11 +16,10 @@ export default class EmojiStyleSetting extends IconFolderSetting {
       .setName('Emoji style')
       .setDesc('Change the style of your emojis.');
     emojiStyle.addDropdown((dropdown) => {
-      dropdown.addOption('none', 'None');
       dropdown.addOption('native', 'Native');
       dropdown.addOption('twemoji', 'Twemoji');
       dropdown.setValue(this.plugin.getSettings().emojiStyle);
-      dropdown.onChange(async (value: 'none' | 'native' | 'twemoji') => {
+      dropdown.onChange(async (value: 'native' | 'twemoji') => {
         this.plugin.getSettings().emojiStyle = value;
         this.updateDOM();
         await this.plugin.saveIconFolderData();

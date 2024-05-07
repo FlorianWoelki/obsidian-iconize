@@ -65,7 +65,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     if (this.inputEl.value.length === 0) {
       this.renderIndex = 0;
       this.recentlyUsedItems.forEach((iconName) => {
-        if (this.plugin.isSomeEmojiStyleActive() && emoji.isEmoji(iconName)) {
+        if (emoji.isEmoji(iconName)) {
           iconKeys.push({
             name: emoji.shortNames[iconName],
             prefix: 'Emoji',
@@ -96,22 +96,20 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       });
     }
 
-    if (this.plugin.isSomeEmojiStyleActive()) {
-      Object.entries(emoji.shortNames).forEach(([unicode, shortName]) => {
-        iconKeys.push({
-          name: shortName,
-          prefix: 'Emoji',
-          displayName: unicode,
-          iconPackName: null,
-        });
-        iconKeys.push({
-          name: unicode,
-          prefix: 'Emoji',
-          displayName: unicode,
-          iconPackName: null,
-        });
+    Object.entries(emoji.shortNames).forEach(([unicode, shortName]) => {
+      iconKeys.push({
+        name: shortName,
+        prefix: 'Emoji',
+        displayName: unicode,
+        iconPackName: null,
       });
-    }
+      iconKeys.push({
+        name: unicode,
+        prefix: 'Emoji',
+        displayName: unicode,
+        iconPackName: null,
+      });
+    });
 
     return iconKeys;
   }

@@ -308,10 +308,6 @@ export default class IconFolderPlugin extends Plugin {
     this.addSettingTab(new IconFolderSettingsUI(this.app, this));
   }
 
-  public isSomeEmojiStyleActive(): boolean {
-    return this.getSettings().emojiStyle !== 'none';
-  }
-
   public notifyPlugins(): void {
     this.modifiedInternalPlugins.forEach((internalPlugin) => {
       if (internalPlugin.enabled) {
