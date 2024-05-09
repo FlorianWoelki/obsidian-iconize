@@ -47,24 +47,31 @@ export default class EmojiStyleSetting extends IconFolderSetting {
 
         if (emoji.isEmoji(iconName)) {
           dom.createIconNode(this.plugin, path, iconName);
-          const tabLeaves = iconTabs.getTabLeavesOfFilePath(this.plugin, path);
-          for (const tabLeaf of tabLeaves) {
-            iconTabs.update(
+          if (this.plugin.getSettings().iconInTabsEnabled) {
+            const tabLeaves = iconTabs.getTabLeavesOfFilePath(
               this.plugin,
-              iconName,
-              tabLeaf.tabHeaderInnerIconEl,
+              path,
             );
+            for (const tabLeaf of tabLeaves) {
+              iconTabs.update(
+                this.plugin,
+                iconName,
+                tabLeaf.tabHeaderInnerIconEl,
+              );
+            }
           }
 
-          for (const openedFile of getAllOpenedFiles(this.plugin)) {
-            const activeView = openedFile.leaf.view as InlineTitleView;
-            if (
-              activeView instanceof MarkdownView &&
-              openedFile.path === path
-            ) {
-              titleIcon.add(this.plugin, activeView.inlineTitleEl, iconName, {
-                fontSize: calculateInlineTitleSize(),
-              });
+          if (this.plugin.getSettings().iconInTitleEnabled) {
+            for (const openedFile of getAllOpenedFiles(this.plugin)) {
+              const activeView = openedFile.leaf.view as InlineTitleView;
+              if (
+                activeView instanceof MarkdownView &&
+                openedFile.path === path
+              ) {
+                titleIcon.add(this.plugin, activeView.inlineTitleEl, iconName, {
+                  fontSize: calculateInlineTitleSize(),
+                });
+              }
             }
           }
         }
