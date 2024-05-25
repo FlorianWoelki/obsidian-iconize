@@ -27,7 +27,6 @@ const add = (
   }
 
   let titleIcon = getTitleIcon(inlineTitleEl.parentElement);
-  const hadTitleIcon = titleIcon !== null;
   if (!titleIcon) {
     titleIcon = document.createElement('div');
   }
@@ -57,15 +56,45 @@ const add = (
     titleIcon.style.fontSize = `${options.fontSize}px`;
   }
   titleIcon.innerHTML = svgElement;
-  if (!hadTitleIcon) {
-    if (
-      plugin.getSettings().iconInTitlePosition === IconInTitlePosition.Above
-    ) {
-      inlineTitleEl.parentElement.prepend(titleIcon);
-    } else if (isInline) {
-      inlineTitleEl.prepend(titleIcon);
-    }
+
+  let wrapperElement = inlineTitleEl.parentElement;
+  // Checks the parent and selects the correct wrapper element.
+  // This should only happen in the beginning.
+  if (
+    wrapperElement &&
+    !wrapperElement.classList.contains(config.INLINE_TITLE_WRAPPER_CLASS)
+  ) {
+    wrapperElement = wrapperElement.querySelector(
+      `.${config.INLINE_TITLE_WRAPPER_CLASS}`,
+    );
   }
+
+  // Whenever there is no correct wrapper element, we create one.
+  if (!wrapperElement) {
+    wrapperElement = inlineTitleEl.parentElement.createDiv();
+    wrapperElement.classList.add(config.INLINE_TITLE_WRAPPER_CLASS);
+  }
+
+  // Avoiding adding the same nodes together when changing the title.
+  if (wrapperElement !== inlineTitleEl.parentElement) {
+    inlineTitleEl.parentElement.prepend(wrapperElement);
+  }
+
+  if (isInline) {
+    wrapperElement.style.display = 'flex';
+    wrapperElement.style.alignItems = 'flex-start';
+    if (emoji.isEmoji(svgElement)) {
+      titleIcon.style.transform = 'translateY(-9%)';
+    } else {
+      titleIcon.style.transform = 'translateY(9%)';
+    }
+  } else {
+    wrapperElement.style.display = 'block';
+    titleIcon.style.transform = 'translateY(9%)';
+  }
+
+  wrapperElement.append(titleIcon);
+  wrapperElement.append(inlineTitleEl);
 };
 
 const updateStyle = (inlineTitleEl: HTMLElement, options: Options): void => {

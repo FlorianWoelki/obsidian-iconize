@@ -1,7 +1,6 @@
 .iconize-title-icon {
   max-width: var(--max-width);
   margin-right: var(--size-4-2);
-  transform: translateY(13%);
 }
 
 .iconize-icon-in-link {
