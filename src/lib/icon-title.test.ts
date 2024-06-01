@@ -15,6 +15,13 @@ describe('add', () => {
         };
       },
     };
+
+    const originalCreateElement = document.createElement;
+    document.createElement = vi.fn().mockImplementation((tagName) => {
+      const actual = originalCreateElement.call(document, tagName);
+      actual.createDiv = vi.fn(() => document.createElement('div'));
+      return actual;
+    });
   });
 
   it('should create a title icon', () => {
@@ -25,12 +32,17 @@ describe('add', () => {
     titleIcon.add(plugin, inlineTitleEl, '<svg></svg>');
     expect(parentEl).toMatchInlineSnapshot(`<div>
   <div
-    class="iconize-title-icon"
-    style="display: block; width: var(--line-width);"
+    class="iconize-inline-title-wrapper"
+    style="display: block;"
   >
-    <svg />
+    <div
+      class="iconize-title-icon"
+      style="display: block; width: var(--line-width); transform: translateY(9%);"
+    >
+      <svg />
+    </div>
+    <div />
   </div>
-  <div />
 </div>`);
   });
 
@@ -42,12 +54,17 @@ describe('add', () => {
     titleIcon.add(plugin, inlineTitleEl, '👍', { fontSize: 10 });
     expect(parentEl).toMatchInlineSnapshot(`<div>
   <div
-    class="iconize-title-icon"
-    style="display: block; width: var(--line-width); font-size: 10px;"
+    class="iconize-inline-title-wrapper"
+    style="display: block;"
   >
-    👍
+    <div
+      class="iconize-title-icon"
+      style="display: block; width: var(--line-width); font-size: 10px; transform: translateY(9%);"
+    >
+      👍
+    </div>
+    <div />
   </div>
-  <div />
 </div>`);
   });
 
@@ -62,12 +79,17 @@ describe('add', () => {
     titleIcon.add(plugin, inlineTitleEl, '<svg></svg>');
     expect(parentEl).toMatchInlineSnapshot(`<div>
   <div
-    class="iconize-title-icon"
-    style="display: block; width: var(--line-width);"
+    class="iconize-inline-title-wrapper"
+    style="display: block;"
   >
-    <svg />
+    <div
+      class="iconize-title-icon"
+      style="display: block; width: var(--line-width); transform: translateY(9%);"
+    >
+      <svg />
+    </div>
+    <div />
   </div>
-  <div />
 </div>`);
   });
 
