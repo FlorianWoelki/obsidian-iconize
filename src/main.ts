@@ -116,8 +116,7 @@ export default class IconFolderPlugin extends Plugin {
         const file = editor.editorComponent?.file;
         if (!file) {
           logger.warn(
-            '`editor.editorComponent?.file` is undefined for file:',
-            file,
+            `'editor.editorComponent?.file' is undefined for file: ${file}`,
           );
           return;
         }
@@ -616,7 +615,9 @@ export default class IconFolderPlugin extends Plugin {
                 saveIconToIconPack(this, newIconName);
               }
             } catch (e) {
-              console.error(e);
+              logger.warn(
+                `Something went wrong while saving icon to icon pack (error: ${e})`,
+              );
               new Notice(e.message);
               return;
             }

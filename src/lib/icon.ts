@@ -19,6 +19,7 @@ import {
 import config from '@app/config';
 import { Notice } from 'obsidian';
 import { IconCache } from './icon-cache';
+import { logger } from './logger';
 
 const checkMissingIcons = async (
   plugin: IconFolderPlugin,
@@ -37,7 +38,9 @@ const checkMissingIcons = async (
 
     const icon = getIconFromIconPack(iconPackName, iconPrefix, iconName);
     if (!icon) {
-      console.error(`Icon file ${iconNameWithPrefix} could not be found.`);
+      logger.error(
+        `Icon file with name ${iconNameWithPrefix} could not be found`,
+      );
       return null;
     }
 
@@ -48,7 +51,9 @@ const checkMissingIcons = async (
     if (!doesIconFileExists) {
       const possibleIcon = getSvgFromLoadedIcon(iconPrefix, iconName);
       if (!possibleIcon) {
-        console.error(`Icon SVG ${iconNameWithPrefix} could not be found.`);
+        logger.error(
+          `Icon SVG with name ${iconNameWithPrefix} could not be found`,
+        );
         return null;
       }
 
@@ -143,8 +148,8 @@ const checkMissingIcons = async (
         const path = `${getPath()}/${iconPack.name}/${iconName}.svg`;
         const doesPathExist = await plugin.app.vault.adapter.exists(path);
         if (doesPathExist) {
-          console.info(
-            `[${config.PLUGIN_NAME}] Removing icon ${path} because it is not used anymore.`,
+          logger.info(
+            `Removing icon with path '${path}' because it is not used anymore`,
           );
           // Removes the icon file.
           await plugin.app.vault.adapter.remove(

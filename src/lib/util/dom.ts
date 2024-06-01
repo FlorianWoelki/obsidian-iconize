@@ -1,5 +1,6 @@
 import config from '@app/config';
 import IconFolderPlugin from '@app/main';
+import { logger } from '@app/lib/logger';
 import { getSvgFromLoadedIcon, nextIdentifier } from '@app/icon-pack-manager';
 import style from './style';
 import svg from './svg';
@@ -35,7 +36,7 @@ const removeIconInPath = (path: string, options?: RemoveOptions): void => {
   const node =
     options?.container ?? document.querySelector(`[data-path="${path}"]`);
   if (!node) {
-    console.error('element with data path not found', path);
+    logger.warn(`Element with data path not found (path: ${path})`);
     return;
   }
 
@@ -110,7 +111,7 @@ const createIconNode = (
   const node =
     options?.container ?? document.querySelector(`[data-path="${path}"]`);
   if (!node) {
-    console.error('element with data path not found', path);
+    logger.warn(`Element with data path not found (path: ${path})`);
     return;
   }
 
@@ -120,7 +121,7 @@ const createIconNode = (
     titleNode = node.querySelector('.nav-file-title-content');
 
     if (!titleNode) {
-      console.error('element with title not found');
+      logger.warn(`Element with title node not found (path: ${path})`);
       return;
     }
   }

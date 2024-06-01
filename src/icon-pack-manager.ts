@@ -3,6 +3,7 @@ import svg from './lib/util/svg';
 import { getFileFromJSZipFile, readZipFile } from './zip-util';
 import JSZip from 'jszip';
 import config from '@app/config';
+import { logger } from '@app/lib/logger';
 import IconFolderPlugin from './main';
 import { getExtraPath } from './icon-packs';
 
@@ -203,16 +204,16 @@ export const createFile = async (
         `${path}/${iconPackName}/${newFilename}`,
         content,
       );
-      console.info(
-        `[${config.PLUGIN_NAME}] Renamed old file ${normalizedFilename} to ${newFilename} because of duplication.`,
+      logger.info(
+        `Renamed old file ${normalizedFilename} to ${newFilename} due to duplication`,
       );
       new Notice(
         `[${config.PLUGIN_NAME}] Renamed ${normalizedFilename} to ${newFilename} to avoid duplication.`,
         8000,
       );
     } else {
-      console.warn(
-        `[${config.PLUGIN_NAME}] Could not create icons with duplicated file names (${normalizedFilename}).`,
+      logger.warn(
+        `Could not create icons with duplicated file names (file name: ${normalizedFilename})`,
       );
       new Notice(
         `[${config.PLUGIN_NAME}] Could not create duplicated icon name (${normalizedFilename})`,
@@ -268,7 +269,7 @@ const generateIcon = (
     iconName.charAt(0).toUpperCase() + iconName.substring(1);
 
   if (!validIconName.exec(normalizedName)) {
-    console.log(`skipping icon with invalid name: ${iconName}`);
+    logger.info(`Skipping icon with invalid name: ${iconName}`);
     return null;
   }
 
@@ -280,7 +281,7 @@ const generateIcon = (
 
   const svgContentMatch = content.match(svgContentRegex);
   if (!svgContentMatch) {
-    console.log(`skipping icon with invalid svg content: ${content}`);
+    logger.info(`Skipping icon with invalid svg content: ${iconName}`);
     return null;
   }
 
@@ -377,8 +378,8 @@ export const loadIcon = async (
 
   const fullPath = path + '/' + iconPack + '/' + name + '.svg';
   if (!(await plugin.app.vault.adapter.exists(fullPath))) {
-    console.warn(
-      `[iconize] icon with name "${name}" was not found (full path: ${fullPath}).`,
+    logger.info(
+      `Icon with name '${name}' was not found (full path: ${fullPath})`,
     );
     return;
   }
@@ -432,14 +433,15 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
     }
 
     const prefix = createIconPackPrefix(folderName);
-    console.log(folderName, loadedIcons);
     iconPacks.push({
       name: folderName,
       icons: loadedIcons,
       prefix,
       custom: true,
     });
-    console.log(`loaded icon pack ${folderName} (${loadedIcons.length})`);
+    logger.info(
+      `Loaded icon pack '${folderName}' (amount of icons: ${loadedIcons.length})`,
+    );
   }
 
   // Extract all files from the zip files.
@@ -453,7 +455,9 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
       prefix,
       custom: false,
     });
-    console.log(`loaded icon pack ${zipFile} (${loadedIcons.length})`);
+    logger.info(
+      `Loaded icon pack '${zipFile}' (amount of icons: ${loadedIcons.length})`,
+    );
   }
 };
 
@@ -491,17 +495,15 @@ export const addIconToIconPack = (
   iconName = getNormalizedName(iconName);
   const icon = generateIcon(iconPackName, iconName, iconContent);
   if (!icon) {
-    console.warn(
-      `[iconize] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`,
+    logger.warn(
+      `Icon could not be generated (icon: ${iconName}, content: ${iconContent})`,
     );
     return undefined;
   }
 
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   if (!iconPack) {
-    console.warn(
-      `[iconize] iconpack with name "${iconPackName}" was not found.`,
-    );
+    logger.warn(`Iconpack with name '${iconPackName}' was not found`);
     return undefined;
   }
 
@@ -565,7 +567,9 @@ export const registerIconPack = async (
   const loadedIcons: Icon[] = await getLoadedIconsFromZipFile(name, files);
   const prefix = createIconPackPrefix(name);
   iconPacks.push({ name, icons: loadedIcons, prefix, custom: false });
-  console.log(`loaded icon pack ${name} (${loadedIcons.length})`);
+  logger.info(
+    `Loaded icon pack ${name} (amount of icons: ${loadedIcons.length})`,
+  );
 };
 
 export const doesIconExists = (iconName: string): boolean => {

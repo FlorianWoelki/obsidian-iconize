@@ -22,7 +22,7 @@ export const processIconInLinkMarkdown = (
 
     const linkHref = linkElement.getAttribute('href');
     if (!linkHref) {
-      logger.warn('Link element does not have an `href` attribute.');
+      logger.warn('Link element does not have an `href` attribute');
       return;
     }
 
@@ -31,7 +31,7 @@ export const processIconInLinkMarkdown = (
       ctx.sourcePath,
     );
     if (!file) {
-      logger.warn('Link element does not have a linkpath to a file.');
+      logger.warn('Link element does not have a linkpath to a file');
       return;
     }
 
