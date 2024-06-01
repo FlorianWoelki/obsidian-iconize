@@ -41,7 +41,7 @@ const add = (
   } else {
     titleIcon.style.display = 'block';
     titleIcon.style.width = 'var(--line-width)';
-    titleIcon.style.marginInline = 'var(--content-margin)';
+    titleIcon.style.marginInline = '0';
   }
 
   titleIcon.classList.add(config.TITLE_ICON_CLASS);

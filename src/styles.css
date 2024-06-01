@@ -1,3 +1,8 @@
+.iconize-inline-title-wrapper {
+  width: var(--line-width);
+  margin-inline: var(--content-margin);
+}
+
 .iconize-title-icon {
   max-width: var(--max-width);
   margin-right: var(--size-4-2);
