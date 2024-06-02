@@ -87,15 +87,20 @@ const refreshIconNodes = (
           const pathValue = plugin.getData()[path];
           const hasIndividualColor =
             typeof pathValue === 'object' && pathValue.iconColor;
-          if (hasIndividualColor) {
-            return;
-          }
 
           iconNode.innerHTML = applyStyles(
             plugin,
             iconNode.innerHTML,
             iconNode,
           );
+          if (hasIndividualColor) {
+            iconNode.style.color = pathValue.iconColor;
+            const colorizedInnerHtml = svg.colorize(
+              iconNode.innerHTML,
+              pathValue.iconColor,
+            );
+            iconNode.innerHTML = colorizedInnerHtml;
+          }
         }
       }
     });
