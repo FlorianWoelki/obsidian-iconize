@@ -10,9 +10,15 @@ const calculateFontTextSize = (): number => {
 
 const calculateInlineTitleSize = (): number => {
   const fontSize = calculateFontTextSize();
-  const inlineTitleSize = parseFloat(
-    getComputedStyle(document.body).getPropertyValue('--inline-title-size'),
+  const inlineTitleSizeValue = getComputedStyle(document.body).getPropertyValue(
+    '--inline-title-size',
   );
+  const unit = inlineTitleSizeValue.replace(/[\d.]/g, '');
+  let inlineTitleSize = parseFloat(inlineTitleSizeValue);
+  if (unit === 'px') {
+    inlineTitleSize /= 16;
+  }
+
   return fontSize * inlineTitleSize;
 };
 
