@@ -25,6 +25,12 @@ describe('calculateInlineTitleSize', () => {
     document.body.style.setProperty('--inline-title-size', '2');
     expect(calculateInlineTitleSize()).toBe(32);
   });
+
+  it('should transform `px` to `em` values', () => {
+    document.body.style.setProperty('--font-text-size', '16px');
+    document.body.style.setProperty('--inline-title-size', '32px');
+    expect(calculateInlineTitleSize()).toBe(32);
+  });
 });
 
 describe('isHeader', () => {
