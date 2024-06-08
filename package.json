@@ -1,6 +1,6 @@
 {
   "name": "@florianwoelki/obsidian-iconize",
-  "version": "2.12.1",
+  "version": "0.0.1",
   "description": "API for adding icons to obsidian.",
   "main": "lib/index.js",
   "type": "module",
@@ -39,6 +39,7 @@
     "@commitlint/cli": "^17.8.1",
     "@commitlint/config-conventional": "^17.8.1",
     "@rollup/plugin-alias": "^5.1.0",
+    "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
@@ -64,7 +65,6 @@
     "vitest": "^1.4.0"
   },
   "dependencies": {
-    "@rollup/plugin-babel": "^6.0.4",
     "jszip": "^3.10.1"
   }
 }
