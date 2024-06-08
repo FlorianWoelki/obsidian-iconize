@@ -83,6 +83,12 @@ const add = (
   if (isInline) {
     wrapperElement.style.display = 'flex';
     wrapperElement.style.alignItems = 'flex-start';
+    const inlineTitlePaddingTop = getComputedStyle(
+      inlineTitleEl,
+      null,
+    ).getPropertyValue('padding-top');
+    titleIcon.style.paddingTop = inlineTitlePaddingTop;
+
     if (emoji.isEmoji(svgElement)) {
       titleIcon.style.transform = 'translateY(-9%)';
     } else {
