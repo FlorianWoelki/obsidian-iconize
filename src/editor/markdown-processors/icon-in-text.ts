@@ -12,7 +12,7 @@ import {
 import IconFolderPlugin from '@app/main';
 import emoji from '@app/emoji';
 
-const createIconShortcodeRegex = (plugin: IconFolderPlugin): RegExp => {
+export const createIconShortcodeRegex = (plugin: IconFolderPlugin): RegExp => {
   return new RegExp(
     `(${
       plugin.getSettings().iconIdentifier

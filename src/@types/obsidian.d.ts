@@ -48,12 +48,15 @@ interface BookmarkInternalPlugin extends InternalPlugin {
   };
 }
 
+interface OutlineInternalPlugin extends InternalPlugin {}
+
 type FileExplorerInternalPlugin = InternalPlugin;
 
 interface InternalPlugins {
   starred: StarredInternalPlugin;
   bookmarks: BookmarkInternalPlugin;
   'file-explorer': FileExplorerInternalPlugin;
+  outline: OutlineInternalPlugin;
 }
 
 declare module 'obsidian' {

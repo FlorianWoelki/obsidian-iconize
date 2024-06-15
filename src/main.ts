@@ -35,6 +35,7 @@ import dom from './lib/util/dom';
 import customRule from './lib/custom-rule';
 import icon from './lib/icon';
 import BookmarkInternalPlugin from './internal-plugins/bookmark';
+import OutlineInternalPlugin from './internal-plugins/outline';
 import {
   getAllOpenedFiles,
   isHexadecimal,
@@ -88,6 +89,8 @@ export default class IconFolderPlugin extends Plugin {
     } else if (requireApiVersion('1.2.0')) {
       this.modifiedInternalPlugins.push(new BookmarkInternalPlugin(this));
     }
+
+    this.modifiedInternalPlugins.push(new OutlineInternalPlugin(this));
 
     await this.loadIconFolderData();
     logger.toggleLogging(this.getSettings().debugMode);
