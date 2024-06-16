@@ -60,6 +60,7 @@ import {
 } from './editor/markdown-processors';
 import ChangeColorModal from './ui/change-color-modal';
 import { logger } from './lib/logger';
+import { EventEmitter } from './lib/event/event';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -78,6 +79,8 @@ export default class IconFolderPlugin extends Plugin {
   public positionField: PositionField = buildPositionField(this);
 
   private frontmatterCache = new Set<string>();
+
+  private eventEmitter = new EventEmitter();
 
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
@@ -388,6 +391,8 @@ export default class IconFolderPlugin extends Plugin {
           await icon.checkMissingIcons(this, data);
           resetPreloadedIcons();
         }
+
+        this.eventEmitter.emit({ type: 'allIconsLoaded' });
       });
 
       if (this.getSettings().iconInFrontmatterEnabled) {
@@ -880,6 +885,10 @@ export default class IconFolderPlugin extends Plugin {
         );
       await this.saveIconFolderData();
     }
+  }
+
+  getEventEmitter(): EventEmitter {
+    return this.eventEmitter;
   }
 
   getData(): Record<
