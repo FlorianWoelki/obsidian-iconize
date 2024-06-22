@@ -23,7 +23,6 @@ export default abstract class InternalPluginInjector {
     ) as unknown as FileExplorerWorkspaceLeaf[];
   }
 
-  // eslint-disable-next-line
   onMount(): void {}
 
   abstract get enabled(): boolean;

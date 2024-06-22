@@ -2,7 +2,7 @@ import InternalPluginInjector from '@app/@types/internal-plugin-injector';
 import { createIconShortcodeRegex } from '@app/editor/markdown-processors';
 import svg from '@app/lib/util/svg';
 import icon from '@app/lib/icon';
-import { logger } from '@app/lib/logger';
+import { LoggerPrefix, logger } from '@app/lib/logger';
 import IconFolderPlugin from '@app/main';
 import { View } from 'obsidian';
 
@@ -23,7 +23,8 @@ export default class OutlineInternalPlugin extends InternalPluginInjector {
   register(): void {
     if (!this.enabled) {
       logger.info(
-        `Outline: Skipping internal plugin registration because it is not enabled.`,
+        'Skipping internal plugin registration because it is not enabled.',
+        LoggerPrefix.Outline,
       );
       return;
     }
@@ -91,16 +92,44 @@ export default class OutlineInternalPlugin extends InternalPluginInjector {
 
     this.plugin.getEventEmitter().once('allIconsLoaded', () => {
       updateTreeItems();
+
+      const callback = (mutations: MutationRecord[]) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type !== 'childList') {
+            return;
+          }
+
+          const addedNodes = mutation.addedNodes;
+          if (addedNodes.length === 0) {
+            return;
+          }
+
+          updateTreeItems();
+        });
+
+        if (!this.enabled) {
+          observer.disconnect();
+        }
+      };
+
+      const observer = new MutationObserver(callback);
+
+      observer.observe(this.leaf.tree.containerEl, {
+        childList: true,
+        subtree: true,
+      });
     });
   }
 
   get leaf(): OutlineView | undefined {
     const leaf = this.plugin.app.workspace.getLeavesOfType('outline');
     if (!leaf) {
+      logger.log('`leaf` in outline is undefined', LoggerPrefix.Outline);
       return undefined;
     }
 
     if (leaf.length === 0) {
+      logger.log('`leaf` length in outline is 0', LoggerPrefix.Outline);
       return undefined;
     }
 
