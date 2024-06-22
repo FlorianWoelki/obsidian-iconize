@@ -1,5 +1,9 @@
 import config from '@app/config';
 
+export enum LoggerPrefix {
+  Outline = 'Outline',
+}
+
 type LogLevel = 'log' | 'info' | 'warn' | 'error';
 
 interface LogLevelInformation {
@@ -7,10 +11,26 @@ interface LogLevelInformation {
 }
 
 interface Logger {
-  log(message: string, ...optionalParams: unknown[]): void;
-  info(message: string, ...optionalParams: unknown[]): void;
-  warn(message: string, ...optionalParams: unknown[]): void;
-  error(message: string, ...optionalParams: unknown[]): void;
+  log(
+    message: string,
+    prefix?: LoggerPrefix,
+    ...optionalParams: unknown[]
+  ): void;
+  info(
+    message: string,
+    prefix?: LoggerPrefix,
+    ...optionalParams: unknown[]
+  ): void;
+  warn(
+    message: string,
+    prefix?: LoggerPrefix,
+    ...optionalParams: unknown[]
+  ): void;
+  error(
+    message: string,
+    prefix?: LoggerPrefix,
+    ...optionalParams: unknown[]
+  ): void;
   toggleLogging(enabled: boolean): void;
 }
 
@@ -33,37 +53,63 @@ export class ConsoleLogger implements Logger {
   private formatMessage(
     level: LogLevel,
     message: string,
+    prefix: LoggerPrefix | null,
     optionalParams: unknown[],
   ): [string, ...unknown[]] {
     const timestamp = new Date().toISOString();
     const { label } = this.logLevels[level];
+    const prefixAsStr = !prefix ? '' : `/${prefix}`;
     return [
-      `${this.projectPrefix}: [${timestamp}] ${label} ${message}`,
+      `${this.projectPrefix}${prefixAsStr}: [${timestamp}] ${label} ${message}`,
       ...optionalParams,
     ];
   }
 
-  log(message: string, ...optionalParams: unknown[]): void {
+  log(
+    message: string,
+    prefix?: LoggerPrefix,
+    ...optionalParams: unknown[]
+  ): void {
     if (this.enabled) {
-      console.log(...this.formatMessage('log', message, optionalParams));
+      console.log(
+        ...this.formatMessage('log', message, prefix, optionalParams),
+      );
     }
   }
 
-  info(message: string, ...optionalParams: unknown[]): void {
+  info(
+    message: string,
+    prefix?: LoggerPrefix,
+    ...optionalParams: unknown[]
+  ): void {
     if (this.enabled) {
-      console.info(...this.formatMessage('info', message, optionalParams));
+      console.info(
+        ...this.formatMessage('info', message, prefix, optionalParams),
+      );
     }
   }
 
-  warn(message: string, ...optionalParams: unknown[]): void {
+  warn(
+    message: string,
+    prefix?: LoggerPrefix,
+    ...optionalParams: unknown[]
+  ): void {
     if (this.enabled) {
-      console.warn(...this.formatMessage('warn', message, optionalParams));
+      console.warn(
+        ...this.formatMessage('warn', message, prefix, optionalParams),
+      );
     }
   }
 
-  error(message: string, ...optionalParams: unknown[]): void {
+  error(
+    message: string,
+    prefix?: LoggerPrefix,
+    ...optionalParams: unknown[]
+  ): void {
     if (this.enabled) {
-      console.error(...this.formatMessage('error', message, optionalParams));
+      console.error(
+        ...this.formatMessage('error', message, prefix, optionalParams),
+      );
     }
   }
 
