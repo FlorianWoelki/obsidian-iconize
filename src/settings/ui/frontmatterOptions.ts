@@ -114,9 +114,9 @@ export default class FrontmatterOptions extends IconFolderSetting {
             }
 
             if (typeof iconName !== 'string') {
-              const message = `[${config.PLUGIN_NAME}]\n${file.path}\nFrontmatter property type \`${frontmatterIconKey}\` has to be of type \`text\`.`;
+              const message = `${file.path}\nFrontmatter property type \`${frontmatterIconKey}\` has to be of type \`text\`.`;
               logger.warn(message);
-              new Notice(message);
+              new Notice(`[${config.PLUGIN_NAME}]\n${message}`);
               continue;
             }
 
@@ -128,9 +128,9 @@ export default class FrontmatterOptions extends IconFolderSetting {
             }
 
             if (typeof iconColor !== 'string') {
-              const message = `[${config.PLUGIN_NAME}]\n${file.path}\nFrontmatter property type \`${frontmatterIconColorKey}\` has to be of type \`text\`.`;
+              const message = `${file.path}\nFrontmatter property type \`${frontmatterIconColorKey}\` has to be of type \`text\`.`;
               logger.warn(message);
-              new Notice(message);
+              new Notice(`[${config.PLUGIN_NAME}]\n${message}`);
               continue;
             }
 
