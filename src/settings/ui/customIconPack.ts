@@ -7,6 +7,7 @@ import {
   deleteIconPack,
   doesIconPackExist,
   getAllIconPacks,
+  NATIVE_LUCIDE_ICON_PACK_NAME,
 } from '@app/icon-pack-manager';
 import IconFolderPlugin from '@app/main';
 import { readFileSync } from '@app/util';
@@ -99,7 +100,11 @@ export default class CustomIconPackSetting extends IconFolderSetting {
         });
       });
 
-    getAllIconPacks().forEach((iconPack) => {
+    const iconPacks = getAllIconPacks().filter(
+      (iconPack) => iconPack.name !== NATIVE_LUCIDE_ICON_PACK_NAME,
+    );
+
+    iconPacks.forEach((iconPack) => {
       const iconPackSetting = new Setting(this.containerEl)
         .setName(`${iconPack.name} (${iconPack.prefix})`)
         .setDesc(`Total icons: ${iconPack.icons.length}`);
