@@ -100,11 +100,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
         });
       });
 
-    const iconPacks = getAllIconPacks().filter(
-      (iconPack) => iconPack.name !== NATIVE_LUCIDE_ICON_PACK_NAME,
-    );
-
-    iconPacks.forEach((iconPack) => {
+    getAllIconPacks().forEach((iconPack) => {
       const iconPackSetting = new Setting(this.containerEl)
         .setName(`${iconPack.name} (${iconPack.prefix})`)
         .setDesc(`Total icons: ${iconPack.icons.length}`);
@@ -140,6 +136,11 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       //     });
       //   });
       // });
+
+      if (iconPack.name === NATIVE_LUCIDE_ICON_PACK_NAME) {
+        return;
+      }
+
       iconPackSetting.addButton((btn) => {
         btn.setIcon('plus');
         btn.setTooltip('Add an icon');
