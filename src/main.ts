@@ -14,6 +14,7 @@ import {
   TabHeaderLeaf,
 } from './@types/obsidian';
 import {
+  addNativeLucideIcons,
   createDefaultDirectory,
   getNormalizedName,
   getPreloadedIcons,
@@ -105,6 +106,7 @@ export default class IconFolderPlugin extends Plugin {
     await migrate(this);
 
     const usedIconNames = icon.getAllWithPath(this).map((value) => value.icon);
+    addNativeLucideIcons();
     await loadUsedIcons(this, usedIconNames);
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());

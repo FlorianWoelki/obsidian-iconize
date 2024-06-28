@@ -1,4 +1,4 @@
-import { Notice, Plugin } from 'obsidian';
+import { getIcon, getIconIds, Notice, Plugin } from 'obsidian';
 import svg from './lib/util/svg';
 import { getFileFromJSZipFile, readZipFile } from './zip-util';
 import JSZip from 'jszip';
@@ -6,6 +6,8 @@ import config from '@app/config';
 import { logger } from '@app/lib/logger';
 import IconFolderPlugin from './main';
 import { getExtraPath } from './icon-packs';
+
+export const NATIVE_LUCIDE_ICON_PACK_NAME = 'lucide-icons';
 
 export interface Icon {
   name: string;
@@ -56,6 +58,29 @@ interface IconPack {
 let iconPacks: IconPack[] = [];
 export const setIconPacks = (newIconPacks: IconPack[]): void => {
   iconPacks = newIconPacks;
+};
+
+export const addNativeLucideIcons = (): void => {
+  iconPacks.push({
+    name: NATIVE_LUCIDE_ICON_PACK_NAME,
+    prefix: 'Li',
+    custom: false,
+    icons: getIconIds()
+      .map((iconId) => iconId.replace(/^lucide-/, ''))
+      .map((iconId) => {
+        const iconEl = getIcon(iconId);
+        iconEl.removeClass('svg-icon'); // Removes native `svg-icon` class.
+        return {
+          name: getNormalizedName(iconId),
+          filename: iconId,
+          prefix: 'Li',
+          svgElement: iconEl?.outerHTML,
+          svgContent: iconEl?.innerHTML,
+          svgViewbox: '',
+          iconPackName: NATIVE_LUCIDE_ICON_PACK_NAME,
+        };
+      }),
+  });
 };
 
 export const moveIconPackDirectories = async (
@@ -324,9 +349,12 @@ export const loadUsedIcons = async (
   plugin: IconFolderPlugin,
   icons: string[],
 ) => {
-  const iconPacks = (await listPath(plugin)).folders.map((iconPack) =>
-    iconPack.split('/').pop(),
-  );
+  const iconPacks = [
+    ...(await listPath(plugin)).folders.map((iconPack) =>
+      iconPack.split('/').pop(),
+    ),
+    NATIVE_LUCIDE_ICON_PACK_NAME,
+  ];
 
   for (let i = 0; i < icons.length; i++) {
     const entry = icons[i];
@@ -352,14 +380,14 @@ export const nextIdentifier = (iconName: string) => {
 
 export const loadIcon = async (
   plugin: IconFolderPlugin,
-  iconPacks: string[],
+  iconPackNames: string[],
   iconName: string,
 ): Promise<void> => {
   const nextLetter = nextIdentifier(iconName);
   const prefix = iconName.substring(0, nextLetter);
   const name = iconName.substring(nextLetter);
 
-  const iconPack = iconPacks.find((folder) => {
+  const iconPack = iconPackNames.find((folder) => {
     const folderPrefix = createIconPackPrefix(folder);
     return prefix === folderPrefix;
   });
@@ -373,6 +401,16 @@ export const loadIcon = async (
         5000,
       );
     }
+    return;
+  }
+
+  if (iconPack === NATIVE_LUCIDE_ICON_PACK_NAME) {
+    // Icons already exist for Obsidian.
+    const lucideIcons = iconPacks.find(
+      (iconPack) => iconPack.name === 'lucide-icons',
+    );
+    const icon = lucideIcons.icons.find((icon) => icon.name === name);
+    preloadedIcons.push(icon);
     return;
   }
 

@@ -3,6 +3,7 @@ import {
   getIconFromIconPack,
   getIconPackNameByPrefix,
   getSvgFromLoadedIcon,
+  NATIVE_LUCIDE_ICON_PACK_NAME,
   nextIdentifier,
   removeIconFromIconPackDirectory,
 } from '@app/icon-pack-manager';
@@ -88,6 +89,10 @@ export const saveIconToIconPack = (
   }
 
   const iconPackName = getIconPackNameByPrefix(iconPrefix);
+  if (iconPackName === NATIVE_LUCIDE_ICON_PACK_NAME) {
+    return;
+  }
+
   const icon = getIconFromIconPack(iconPackName, iconPrefix, iconName);
   extractIconToIconPack(plugin, icon, possibleIcon);
 };
