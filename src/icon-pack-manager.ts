@@ -405,9 +405,9 @@ export const loadIcon = async (
   }
 
   if (iconPack === NATIVE_LUCIDE_ICON_PACK_NAME) {
-    // Icons already exist for Obsidian.
+    // Lucide icons already exist for Obsidian.
     const lucideIcons = iconPacks.find(
-      (iconPack) => iconPack.name === 'lucide-icons',
+      (iconPack) => iconPack.name === NATIVE_LUCIDE_ICON_PACK_NAME,
     );
     const icon = lucideIcons.icons.find((icon) => icon.name === name);
     preloadedIcons.push(icon);
