@@ -410,6 +410,13 @@ export const loadIcon = async (
       (iconPack) => iconPack.name === NATIVE_LUCIDE_ICON_PACK_NAME,
     );
     const icon = lucideIcons.icons.find((icon) => icon.name === name);
+    if (!icon) {
+      logger.warn(
+        `Icon ${icon} does not exist in the native Lucide icon pack.`,
+      );
+      return;
+    }
+
     preloadedIcons.push(icon);
     return;
   }
