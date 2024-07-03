@@ -5,6 +5,7 @@ import { RangeSetBuilder } from '@codemirror/state';
 import { syntaxTree, tokenClassNodeProp } from '@codemirror/language';
 import icon from '@lib/icon';
 import { IconInLinkWidget } from '../widgets';
+import { HeaderToken } from '@app/lib/util/text';
 
 export const buildLinkDecorations = (
   view: EditorView,
@@ -22,6 +23,14 @@ export const buildLinkDecorations = (
         if (tokenProps) {
           const props = new Set(tokenProps.split(' '));
           const isLink = props.has('hmd-internal-link');
+          const headerType = [
+            'header-1',
+            'header-2',
+            'header-3',
+            'header-4',
+            'header-5',
+            'header-6',
+          ].find((header) => props.has(header)) as HeaderToken | null;
 
           if (isLink) {
             let linkText = view.state.doc.sliceString(node.from, node.to);
@@ -36,7 +45,12 @@ export const buildLinkDecorations = (
 
               if (possibleIcon) {
                 const iconDecoration = Decoration.widget({
-                  widget: new IconInLinkWidget(plugin, possibleIcon, file.path),
+                  widget: new IconInLinkWidget(
+                    plugin,
+                    possibleIcon,
+                    file.path,
+                    headerType,
+                  ),
                 });
 
                 builder.add(node.from, node.from, iconDecoration);

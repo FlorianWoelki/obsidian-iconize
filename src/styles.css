@@ -9,6 +9,7 @@
 }
 
 .iconize-icon-in-link {
+  transform: translateY(20%);
   margin-right: var(--size-2-2);
   display: inline-flex;
 }

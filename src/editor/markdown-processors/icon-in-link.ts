@@ -1,6 +1,13 @@
 import emoji from '@app/emoji';
+import svg from '@app/lib/util/svg';
 import icon from '@app/lib/icon';
 import { logger } from '@app/lib/logger';
+import {
+  calculateFontTextSize,
+  calculateHeaderSize,
+  HTMLHeader,
+  isHeader,
+} from '@app/lib/util/text';
 import IconFolderPlugin from '@app/main';
 import { MarkdownPostProcessorContext } from 'obsidian';
 
@@ -41,6 +48,12 @@ export const processIconInLinkMarkdown = (
       return;
     }
 
+    let fontSize = calculateFontTextSize();
+    const tagName = linkElement.parentElement?.tagName?.toLowerCase() ?? '';
+    if (isHeader(tagName)) {
+      fontSize = calculateHeaderSize(tagName as HTMLHeader);
+    }
+
     const iconName =
       typeof iconValue === 'string'
         ? iconValue
@@ -60,12 +73,16 @@ export const processIconInLinkMarkdown = (
 
     if (emoji.isEmoji(iconName)) {
       const parsedEmoji =
-        emoji.parseEmoji(plugin.getSettings().emojiStyle, iconName) ?? iconName;
+        emoji.parseEmoji(plugin.getSettings().emojiStyle, iconName, fontSize) ??
+        iconName;
+      rootSpan.style.transform = 'translateY(0)';
       rootSpan.innerHTML = parsedEmoji;
     } else {
-      const svg = icon.getIconByName(iconName).svgElement;
-      if (svg) {
-        rootSpan.innerHTML = svg;
+      let svgEl = icon.getIconByName(iconName).svgElement;
+      svgEl = svg.setFontSize(svgEl, fontSize);
+      if (svgEl) {
+        rootSpan.style.transform = 'translateY(20%)';
+        rootSpan.innerHTML = svgEl;
       }
     }
 

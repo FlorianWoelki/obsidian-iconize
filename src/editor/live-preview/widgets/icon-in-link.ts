@@ -1,13 +1,20 @@
 import emoji from '@app/emoji';
 import { Icon } from '@app/icon-pack-manager';
+import {
+  calculateFontTextSize,
+  calculateHeaderSize,
+  HeaderToken,
+} from '@app/lib/util/text';
+import svg from '@app/lib/util/svg';
 import IconFolderPlugin from '@app/main';
 import { WidgetType } from '@codemirror/view';
 
 export class IconInLinkWidget extends WidgetType {
   constructor(
-    public plugin: IconFolderPlugin,
-    public iconData: Icon | string,
-    public path: string,
+    private plugin: IconFolderPlugin,
+    private iconData: Icon | string,
+    private path: string,
+    private headerType: HeaderToken | null,
   ) {
     super();
   }
@@ -33,11 +40,19 @@ export class IconInLinkWidget extends WidgetType {
         ? this.iconData
         : this.iconData.svgElement;
 
+    let fontSize = calculateFontTextSize();
+    if (this.headerType) {
+      fontSize = calculateHeaderSize(this.headerType);
+    }
+
     if (emoji.isEmoji(innerHTML)) {
       innerHTML = emoji.parseEmoji(
         this.plugin.getSettings().emojiStyle,
         innerHTML,
+        fontSize,
       );
+    } else {
+      innerHTML = svg.setFontSize(innerHTML, fontSize);
     }
 
     iconNode.innerHTML = innerHTML;

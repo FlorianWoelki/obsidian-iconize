@@ -2,7 +2,7 @@ import emoji from '@app/emoji';
 import icon from '@app/lib/icon';
 import svg from '@app/lib/util/svg';
 import {
-  Header,
+  HTMLHeader,
   calculateFontTextSize,
   calculateHeaderSize,
 } from '@app/lib/util/text';
@@ -35,7 +35,7 @@ export class IconInTextWidget extends WidgetType {
     const line = view.state.doc.lineAt(this.end);
     const headerMatch = line.text.match(/^#{1,6}\s/);
     if (headerMatch && headerMatch[0].trim()) {
-      const mapping: Record<string, Header> = {
+      const mapping: Record<string, HTMLHeader> = {
         '#': 'h1',
         '##': 'h2',
         '###': 'h3',

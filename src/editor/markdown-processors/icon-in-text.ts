@@ -4,7 +4,7 @@
 import svg from '@app/lib/util/svg';
 import icon from '@app/lib/icon';
 import {
-  Header,
+  HTMLHeader,
   calculateFontTextSize,
   calculateHeaderSize,
   isHeader,
@@ -115,7 +115,7 @@ export const processIconInTextMarkdown = (
       let fontSize = calculateFontTextSize();
 
       if (isHeader(tagName)) {
-        fontSize = calculateHeaderSize(tagName as Header);
+        fontSize = calculateHeaderSize(tagName as HTMLHeader);
         const svgElement = svg.setFontSize(iconObject.svgElement, fontSize);
         rootSpan.innerHTML = svgElement;
       } else {
@@ -141,7 +141,7 @@ export const processIconInTextMarkdown = (
       let fontSize = calculateFontTextSize();
 
       if (isHeader(tagName)) {
-        fontSize = calculateHeaderSize(tagName as Header);
+        fontSize = calculateHeaderSize(tagName as HTMLHeader);
       }
 
       const emojiValue = emoji.parseEmoji(
