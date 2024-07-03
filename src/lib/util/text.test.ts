@@ -55,4 +55,10 @@ describe('calculateHeaderSize', () => {
     document.body.style.setProperty('--h1-size', '2');
     expect(calculateHeaderSize('h1')).toBe(32);
   });
+
+  it('should calculate the header size correctly based on header token', () => {
+    document.body.style.setProperty('--font-text-size', '16px');
+    document.body.style.setProperty('--h1-size', '2');
+    expect(calculateHeaderSize('header-1')).toBe(32);
+  });
 });
