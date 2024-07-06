@@ -10,7 +10,7 @@ export default class IconFontSizeSetting extends IconFolderSetting {
       .setDesc('Change the font size of the displayed icons.')
       .addSlider((slider) => {
         slider
-          .setLimits(10, 24, 1)
+          .setLimits(10, 64, 1)
           .setDynamicTooltip()
           .setValue(
             this.plugin.getSettings().fontSize ?? DEFAULT_SETTINGS.fontSize,
