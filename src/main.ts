@@ -394,7 +394,7 @@ export default class IconFolderPlugin extends Plugin {
           resetPreloadedIcons();
         }
 
-        this.eventEmitter.emit({ type: 'allIconsLoaded' });
+        this.eventEmitter.emit('allIconsLoaded');
       });
 
       if (this.getSettings().iconInFrontmatterEnabled) {

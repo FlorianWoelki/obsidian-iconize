@@ -1,6 +1,5 @@
 import { describe, it, vi, expect, beforeEach } from 'vitest';
 import { EventEmitter } from './event';
-import { AllIconsLoadedEvent } from './events';
 
 describe('EventEmitter', () => {
   let emitter: EventEmitter;
@@ -11,32 +10,34 @@ describe('EventEmitter', () => {
 
   it('should register and emit event listeners', () => {
     const listener = vi.fn();
-    emitter.on<AllIconsLoadedEvent>('allIconsLoaded', listener);
+    emitter.on('allIconsLoaded', listener);
 
-    emitter.emit({ type: 'allIconsLoaded' });
+    emitter.emit('allIconsLoaded');
 
-    expect(listener).toHaveBeenCalledWith({ type: 'allIconsLoaded' });
+    expect(listener).toHaveBeenCalledWith({ payload: undefined });
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
   it('should unregister event listeners', () => {
     const listener = vi.fn();
-    emitter.on<AllIconsLoadedEvent>('allIconsLoaded', listener);
-    emitter.off<AllIconsLoadedEvent>('allIconsLoaded', listener);
+    emitter.on('allIconsLoaded', listener);
+    emitter.off('allIconsLoaded', listener);
 
-    emitter.emit({ type: 'allIconsLoaded' });
+    emitter.emit('allIconsLoaded');
 
     expect(listener).not.toHaveBeenCalled();
   });
 
   it('should support once-only event listeners', () => {
     const listener = vi.fn();
-    emitter.once<AllIconsLoadedEvent>('allIconsLoaded', listener);
+    emitter.once('allIconsLoaded', listener);
 
-    emitter.emit({ type: 'allIconsLoaded' });
-    emitter.emit({ type: 'allIconsLoaded' });
+    emitter.emit('allIconsLoaded');
+    emitter.emit('allIconsLoaded');
 
-    expect(listener).toHaveBeenCalledWith({ type: 'allIconsLoaded' });
+    expect(listener).toHaveBeenCalledWith({
+      payload: undefined,
+    });
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
@@ -45,11 +46,11 @@ describe('EventEmitter', () => {
     const listener2 = vi.fn();
     const listener3 = vi.fn();
 
-    emitter.on<AllIconsLoadedEvent>('allIconsLoaded', listener1, 1);
-    emitter.on<AllIconsLoadedEvent>('allIconsLoaded', listener2, 2);
-    emitter.on<AllIconsLoadedEvent>('allIconsLoaded', listener3, 3);
+    emitter.on('allIconsLoaded', listener1, 1);
+    emitter.on('allIconsLoaded', listener2, 2);
+    emitter.on('allIconsLoaded', listener3, 3);
 
-    emitter.emit({ type: 'allIconsLoaded' });
+    emitter.emit('allIconsLoaded');
 
     expect(listener3).toHaveBeenCalled();
     expect(listener2).toHaveBeenCalled();

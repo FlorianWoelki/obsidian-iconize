@@ -1,66 +1,71 @@
-type Events = 'allIconsLoaded';
+import type { EventType, EventMap, AnyEvent } from './events';
 
-export interface Event {
-  type: Events;
+export interface Event<P = unknown> {
+  payload?: P;
 }
 
-type EventListener<T extends Event> = (event: T) => void;
+type EventListener<E extends AnyEvent> = (event: E) => void;
 
-interface ListenerEntry<T extends Event> {
-  listener: EventListener<T>;
+interface ListenerEntry<E extends AnyEvent> {
+  listener: EventListener<E>;
   once: boolean;
   priority: number;
 }
 
 export class EventEmitter {
-  private listeners: { [key: string]: ListenerEntry<Event>[] } = {};
+  private listeners: { [K in EventType]?: ListenerEntry<AnyEvent>[] } = {};
 
-  on<T extends Event>(
-    type: T['type'],
-    listener: EventListener<T>,
-    priority: number = 0,
+  on<K extends EventType>(
+    type: K,
+    listener: EventListener<EventMap[K]>,
+    priority = 0,
   ): void {
     this.listeners[type] ??= [];
-    this.listeners[type].push({ listener, once: false, priority });
+    this.listeners[type]?.push({ listener, once: false, priority });
     this.sortListeners(type);
   }
 
-  once<T extends Event>(
-    type: T['type'],
-    listener: EventListener<T>,
-    priority: number = 0,
+  once<K extends EventType>(
+    type: K,
+    listener: EventListener<EventMap[K]>,
+    priority = 0,
   ): void {
     this.listeners[type] ??= [];
-    this.listeners[type].push({ listener, once: true, priority });
+    this.listeners[type]?.push({ listener, once: true, priority });
     this.sortListeners(type);
   }
 
-  off<T extends Event>(type: T['type'], listener: EventListener<T>): void {
+  off<K extends EventType>(
+    type: K,
+    listener: EventListener<EventMap[K]>,
+  ): void {
     if (!this.listeners[type]) {
       return;
     }
 
-    this.listeners[type] = this.listeners[type].filter(
+    this.listeners[type] = this.listeners[type]?.filter(
       (entry) => entry.listener !== listener,
     );
   }
 
-  emit<T extends Event>(event: T): void {
-    if (!this.listeners[event.type]) {
+  emit<K extends EventType>(type: K, payload?: EventMap[K]['payload']): void {
+    const listeners = this.listeners[type];
+    if (!listeners) {
       return;
     }
 
-    this.listeners[event.type].forEach((entry) => {
+    const event = { payload } as EventMap[K];
+    listeners.slice().forEach((entry) => {
       entry.listener(event);
       if (entry.once) {
-        this.off(event.type, entry.listener);
+        this.off(type, entry.listener);
       }
     });
   }
 
-  private sortListeners(type: string): void {
+  private sortListeners(type: EventType): void {
     if (this.listeners[type]) {
-      this.listeners[type].sort((a, b) => b.priority - a.priority);
+      this.listeners[type]?.sort((a, b) => b.priority - a.priority);
     }
   }
 }
