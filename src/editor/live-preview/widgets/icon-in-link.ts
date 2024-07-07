@@ -6,12 +6,12 @@ import {
   HeaderToken,
 } from '@app/lib/util/text';
 import svg from '@app/lib/util/svg';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { WidgetType } from '@codemirror/view';
 
 export class IconInLinkWidget extends WidgetType {
   constructor(
-    private plugin: IconFolderPlugin,
+    private plugin: IconizePlugin,
     private iconData: Icon | string,
     private path: string,
     private headerType: HeaderToken | null,

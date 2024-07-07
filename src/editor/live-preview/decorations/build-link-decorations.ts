@@ -1,4 +1,4 @@
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { Decoration, EditorView } from '@codemirror/view';
 import { MarkdownView, editorInfoField } from 'obsidian';
 import { RangeSetBuilder } from '@codemirror/state';
@@ -9,7 +9,7 @@ import { HeaderToken } from '@app/lib/util/text';
 
 export const buildLinkDecorations = (
   view: EditorView,
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
 ) => {
   const builder = new RangeSetBuilder<Decoration>();
   const mdView = view.state.field(editorInfoField) as MarkdownView;

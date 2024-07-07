@@ -8,11 +8,11 @@ import {
   HTMLHeader,
   isHeader,
 } from '@app/lib/util/text';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { MarkdownPostProcessorContext } from 'obsidian';
 
 export const processIconInLinkMarkdown = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   element: HTMLElement,
   ctx: MarkdownPostProcessorContext,
 ) => {

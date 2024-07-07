@@ -4,7 +4,7 @@ import { getFileFromJSZipFile, readZipFile } from './zip-util';
 import JSZip from 'jszip';
 import config from '@app/config';
 import { logger } from '@app/lib/logger';
-import IconFolderPlugin from './main';
+import IconizePlugin from './main';
 import { getExtraPath } from './icon-packs';
 
 export const NATIVE_LUCIDE_ICON_PACK_NAME = 'lucide-icons';
@@ -345,10 +345,7 @@ export const createIconPackPrefix = (iconPackName: string): string => {
   );
 };
 
-export const loadUsedIcons = async (
-  plugin: IconFolderPlugin,
-  icons: string[],
-) => {
+export const loadUsedIcons = async (plugin: IconizePlugin, icons: string[]) => {
   const iconPacks = [
     ...(await listPath(plugin)).folders.map((iconPack) =>
       iconPack.split('/').pop(),
@@ -379,7 +376,7 @@ export const nextIdentifier = (iconName: string) => {
 };
 
 export const loadIcon = async (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   iconPackNames: string[],
   iconName: string,
 ): Promise<void> => {
@@ -558,7 +555,7 @@ export const addIconToIconPack = (
 };
 
 export const removeIconFromIconPackDirectory = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   iconPackName: string,
   iconName: string,
 ): Promise<void> => {

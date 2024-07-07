@@ -68,7 +68,7 @@ export interface FolderIconObject {
   iconColor?: string;
 }
 
-export default class IconFolderPlugin extends Plugin {
+export default class IconizePlugin extends Plugin {
   private data: Record<
     string,
     boolean | string | IconFolderSettings | FolderIconObject

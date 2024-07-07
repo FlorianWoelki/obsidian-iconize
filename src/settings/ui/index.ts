@@ -1,5 +1,5 @@
 import { App, PluginSettingTab } from 'obsidian';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import CustomIconPackSetting from './customIconPack';
 import CustomIconRuleSetting from './customIconRule';
 import EmojiStyleSetting from './emojiStyle';
@@ -19,9 +19,9 @@ import IconIdentifierSetting from './iconIdentifier';
 import DebugMode from './debugMode';
 
 export default class IconFolderSettings extends PluginSettingTab {
-  private plugin: IconFolderPlugin;
+  private plugin: IconizePlugin;
 
-  constructor(app: App, plugin: IconFolderPlugin) {
+  constructor(app: App, plugin: IconizePlugin) {
     super(app, plugin);
 
     this.plugin = plugin;

@@ -8,7 +8,7 @@ import {
   removeIconFromIconPackDirectory,
 } from '@app/icon-pack-manager';
 import { FileItem, FileWithLeaf } from './@types/obsidian';
-import IconFolderPlugin from './main';
+import IconizePlugin from './main';
 
 // Default obsidian file icon.
 export const DEFAULT_FILE_ICON =
@@ -37,10 +37,10 @@ export const readFileSync = async (file: File): Promise<string> => {
 /**
  * Gets all the currently opened files by getting the markdown leaves and then checking
  * for the `file` property in the view. This also returns the leaf of the file.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  * @returns An array of {@link FileWithLeaf} objects.
  */
-export const getAllOpenedFiles = (plugin: IconFolderPlugin): FileWithLeaf[] => {
+export const getAllOpenedFiles = (plugin: IconizePlugin): FileWithLeaf[] => {
   return plugin.app.workspace
     .getLeavesOfType('markdown')
     .reduce<FileWithLeaf[]>((prev, curr) => {
@@ -73,11 +73,11 @@ export const getFileItemInnerTitleEl = (fileItem: FileItem): HTMLElement => {
 /**
  * A utility function which will add the icon to the icon pack and then extract the icon
  * to the icon pack.
- * @param plugin IconFolderPlugin that will be used for extracting the icon.
+ * @param plugin IconizePlugin that will be used for extracting the icon.
  * @param iconNameWithPrefix String that will be used to add the icon to the icon pack.
  */
 export const saveIconToIconPack = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   iconNameWithPrefix: string,
 ): void => {
   const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
@@ -100,11 +100,11 @@ export const saveIconToIconPack = (
 /**
  * A utility function which will remove the icon from the icon pack by removing the icon
  * file from the icon pack directory.
- * @param plugin IconFolderPlugin that will be used for removing the icon.
+ * @param plugin IconizePlugin that will be used for removing the icon.
  * @param iconNameWithPrefix String that will be used to remove the icon from the icon pack.
  */
 export const removeIconFromIconPack = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   iconNameWithPrefix: string,
 ): void => {
   const identifier = nextIdentifier(iconNameWithPrefix);

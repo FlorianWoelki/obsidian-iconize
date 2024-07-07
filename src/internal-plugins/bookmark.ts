@@ -4,7 +4,7 @@ import InternalPluginInjector from '@app/@types/internal-plugin-injector';
 import { BookmarkItem, BookmarkItemValue } from '@app/@types/obsidian';
 import dom from '@lib/util/dom';
 import icon from '@lib/icon';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import config from '@app/config';
 import { DEFAULT_FILE_ICON, DEFAULT_FOLDER_ICON } from '@app/util';
 
@@ -13,7 +13,7 @@ interface BookmarksView extends View {
 }
 
 export default class BookmarkInternalPlugin extends InternalPluginInjector {
-  constructor(plugin: IconFolderPlugin) {
+  constructor(plugin: IconizePlugin) {
     super(plugin);
   }
 

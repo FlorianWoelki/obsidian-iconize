@@ -6,7 +6,7 @@ import {
   calculateFontTextSize,
   calculateHeaderSize,
 } from '@app/lib/util/text';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { EditorView, WidgetType } from '@codemirror/view';
 
 export class IconInTextWidget extends WidgetType {
@@ -14,7 +14,7 @@ export class IconInTextWidget extends WidgetType {
   private end = -1;
 
   constructor(
-    public plugin: IconFolderPlugin,
+    public plugin: IconizePlugin,
     public id: string,
   ) {
     super();

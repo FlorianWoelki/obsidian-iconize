@@ -3,7 +3,7 @@ import { createIconShortcodeRegex } from '@app/editor/markdown-processors';
 import svg from '@app/lib/util/svg';
 import icon from '@app/lib/icon';
 import { LoggerPrefix, logger } from '@app/lib/logger';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { View } from 'obsidian';
 
 const TREE_ITEM_CLASS = 'tree-item-self';
@@ -16,7 +16,7 @@ interface OutlineView extends View {
 }
 
 export default class OutlineInternalPlugin extends InternalPluginInjector {
-  constructor(plugin: IconFolderPlugin) {
+  constructor(plugin: IconizePlugin) {
     super(plugin);
   }
 

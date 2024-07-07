@@ -9,10 +9,10 @@ import {
   calculateHeaderSize,
   isHeader,
 } from '@app/lib/util/text';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import emoji from '@app/emoji';
 
-export const createIconShortcodeRegex = (plugin: IconFolderPlugin): RegExp => {
+export const createIconShortcodeRegex = (plugin: IconizePlugin): RegExp => {
   return new RegExp(
     `(${
       plugin.getSettings().iconIdentifier
@@ -24,7 +24,7 @@ export const createIconShortcodeRegex = (plugin: IconFolderPlugin): RegExp => {
 };
 
 const createTreeWalker = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   root: HTMLElement,
 ): TreeWalker => {
   return document.createTreeWalker(root, NodeFilter.SHOW_ALL, {
@@ -76,7 +76,7 @@ const checkForTextNodes = (
 };
 
 export const processIconInTextMarkdown = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   element: HTMLElement,
 ) => {
   // Ignore if codeblock

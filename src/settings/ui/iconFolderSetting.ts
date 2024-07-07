@@ -1,10 +1,10 @@
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 
 export default abstract class IconFolderSetting {
-  protected plugin: IconFolderPlugin;
+  protected plugin: IconizePlugin;
   protected containerEl: HTMLElement;
 
-  constructor(plugin: IconFolderPlugin, containerEl: HTMLElement) {
+  constructor(plugin: IconizePlugin, containerEl: HTMLElement) {
     this.plugin = plugin;
     this.containerEl = containerEl;
   }

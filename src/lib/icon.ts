@@ -1,6 +1,6 @@
 import { ExplorerView, TabHeaderLeaf } from '@app/@types/obsidian';
 import emoji from '@app/emoji';
-import IconFolderPlugin, { FolderIconObject } from '@app/main';
+import IconizePlugin, { FolderIconObject } from '@app/main';
 import customRule from './custom-rule';
 import dom from './util/dom';
 import iconTabs from './icon-tabs';
@@ -23,7 +23,7 @@ import { IconCache } from './icon-cache';
 import { logger } from './logger';
 
 const checkMissingIcons = async (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   data: [string, string | FolderIconObject][],
 ): Promise<void> => {
   const missingIcons: Set<Icon> = new Set();
@@ -170,7 +170,7 @@ const checkMissingIcons = async (
  * This function adds all the possible icons to the corresponding nodes. It
  * adds the icons, that are defined in the data as a basic string to the nodes
  * and the custom rule icons.
- * @param plugin Instance of IconFolderPlugin.
+ * @param plugin Instance of IconizePlugin.
  * @param data Data that will be used to add all the icons to the nodes.
  * @param registeredFileExplorers A WeakSet of file explorers that are being used as a
  * cache for already handled file explorers.
@@ -178,7 +178,7 @@ const checkMissingIcons = async (
  * explorer.
  */
 const addAll = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   data: [string, string | FolderIconObject][],
   registeredFileExplorers: WeakSet<ExplorerView>,
   callback?: () => void,
@@ -252,14 +252,11 @@ const addAll = (
 
 /**
  * Gets the icon of a given path. This function returns the first occurrence of an icon.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  * @param path Path to get the icon of.
  * @returns The icon of the path if it exists, undefined otherwise.
  */
-const getByPath = (
-  plugin: IconFolderPlugin,
-  path: string,
-): string | undefined => {
+const getByPath = (plugin: IconizePlugin, path: string): string | undefined => {
   if (path === 'settings' || path === 'migrated') {
     return undefined;
   }
@@ -293,11 +290,11 @@ interface IconWithPath {
 
 /**
  * Gets all the icons with their paths as an object.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  * @returns An object that consists of the path and the icon name for the data
  * or custom rule.
  */
-const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
+const getAllWithPath = (plugin: IconizePlugin): IconWithPath[] => {
   const result: IconWithPath[] = [];
   Object.keys(plugin.getData()).forEach((path) => {
     if (path === 'settings' || path === 'migrated') {
@@ -341,12 +338,12 @@ const getIconByName = (iconNameWithPrefix: string): Icon | null => {
 
 /**
  * Returns the {@link Icon} for the given path.
- * @param plugin IconFolderPlugin instance.
+ * @param plugin IconizePlugin instance.
  * @param path String which is the path to get the icon of.
  * @returns Icon or Emoji as string if it exists, `null` otherwise.
  */
 const getIconByPath = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   path: string,
 ): Icon | string | null => {
   const iconNameWithPrefix = getByPath(plugin, path);

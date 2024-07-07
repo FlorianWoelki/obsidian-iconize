@@ -1,5 +1,5 @@
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import emoji from '@app/emoji';
 import {
   doesIconExists,
@@ -19,7 +19,7 @@ export interface Icon {
 }
 
 export default class IconsPickerModal extends FuzzySuggestModal<any> {
-  private plugin: IconFolderPlugin;
+  private plugin: IconizePlugin;
   private path: string;
 
   private renderIndex = 0;
@@ -28,7 +28,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   public onSelect: (iconName: string) => void | undefined;
 
-  constructor(app: App, plugin: IconFolderPlugin, path: string) {
+  constructor(app: App, plugin: IconizePlugin, path: string) {
     super(app);
     this.plugin = plugin;
     this.path = path;

@@ -9,7 +9,7 @@ import {
   getAllIconPacks,
   NATIVE_LUCIDE_ICON_PACK_NAME,
 } from '@app/icon-pack-manager';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { readFileSync } from '@app/util';
 
 export default class CustomIconPackSetting extends IconFolderSetting {
@@ -20,7 +20,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
   private refreshDisplay: () => void;
 
   constructor(
-    plugin: IconFolderPlugin,
+    plugin: IconizePlugin,
     containerEl: HTMLElement,
     refreshDisplay: () => void,
   ) {

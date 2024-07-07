@@ -6,13 +6,13 @@ import {
   getAllIconPacks,
 } from '@app/icon-pack-manager';
 import iconPacks, { IconPack } from '@app/icon-packs';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { downloadZipFile } from '@app/zip-util';
 
 export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
-  private plugin: IconFolderPlugin;
+  private plugin: IconizePlugin;
 
-  constructor(app: App, plugin: IconFolderPlugin) {
+  constructor(app: App, plugin: IconizePlugin) {
     super(app);
     this.plugin = plugin;
 

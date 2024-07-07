@@ -1,5 +1,5 @@
 import config from '@app/config';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { logger } from '@app/lib/logger';
 import { getSvgFromLoadedIcon, nextIdentifier } from '@app/icon-pack-manager';
 import style from './style';
@@ -46,13 +46,13 @@ const removeIconInPath = (path: string, options?: RemoveOptions): void => {
 /**
  * Sets an icon or emoji for an HTMLElement based on the specified icon name and color.
  * The function manipulates the specified node inline.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  * @param iconName Name of the icon or emoji to add.
  * @param node HTMLElement to which the icon or emoji will be added.
  * @param color Optional color of the icon to add.
  */
 const setIconForNode = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   iconName: string,
   node: HTMLElement,
   color?: string,
@@ -95,13 +95,13 @@ interface CreateOptions {
 
 /**
  * Creates an icon node for the specified path and inserts it to the DOM.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  * @param path Path for which the icon node will be created.
  * @param iconName Name of the icon or emoji to add.
  * @param color Optional color of the icon to add.
  */
 const createIconNode = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   path: string,
   iconName: string,
   options?: CreateOptions,

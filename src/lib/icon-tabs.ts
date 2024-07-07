@@ -1,5 +1,5 @@
 import { TFile } from 'obsidian';
-import IconFolderPlugin, { FolderIconObject } from '@app/main';
+import IconizePlugin, { FolderIconObject } from '@app/main';
 import { DEFAULT_FILE_ICON, getAllOpenedFiles } from '@app/util';
 import { TabHeaderLeaf } from '@app/@types/obsidian';
 import customRule from './custom-rule';
@@ -8,12 +8,12 @@ import dom from './util/dom';
 /**
  * Gets the tab leaves of a specific file path by looping through all opened files and
  * checking if the file path matches.
- * @param plugin IconFolderPlugin instance.
+ * @param plugin IconizePlugin instance.
  * @param path String of the file path to get the tab leaf of.
  * @returns TabHeaderLeaf array that includes all tab leaves of the file path.
  */
 const getTabLeavesOfFilePath = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   path: string,
 ): TabHeaderLeaf[] => {
   const openedFiles = getAllOpenedFiles(plugin);
@@ -40,13 +40,13 @@ interface AddOptions {
 /**
  * Adds an icon to the tab and its container. This function respects the
  * custom rules and individually icon set.
- * @param plugin IconFolderPlugin instance.
+ * @param plugin IconizePlugin instance.
  * @param file TFile instance of the file to add the icon to.
  * @param iconContainer HTMLElement where the icon will be added to.
  * @param options AddOptions for the add function which can optionally be used.
  */
 const add = async (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   file: TFile,
   iconContainer: HTMLElement,
   options?: AddOptions,
@@ -106,12 +106,12 @@ const add = async (
 /**
  * Updates the icon in the tab and container by setting calling the `setIconForNode`
  * function and removing the margin from the icon container.
- * @param plugin IconFolderPlugin instance.
+ * @param plugin IconizePlugin instance.
  * @param iconName String of the icon name to update to.
  * @param iconContainer HTMLElement where the icon is located and will be updated.
  */
 const update = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   iconName: string,
   iconContainer: HTMLElement,
 ) => {

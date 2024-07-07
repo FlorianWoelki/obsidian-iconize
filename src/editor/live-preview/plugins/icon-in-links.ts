@@ -1,4 +1,4 @@
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import {
   DecorationSet,
   EditorView,
@@ -7,11 +7,11 @@ import {
 } from '@codemirror/view';
 import { buildLinkDecorations } from '@app/editor/live-preview/decorations';
 
-export const buildIconInLinksPlugin = (plugin: IconFolderPlugin) => {
+export const buildIconInLinksPlugin = (plugin: IconizePlugin) => {
   return ViewPlugin.fromClass(
     class {
       decorations: DecorationSet;
-      plugin: IconFolderPlugin;
+      plugin: IconizePlugin;
 
       constructor(view: EditorView) {
         this.plugin = plugin;

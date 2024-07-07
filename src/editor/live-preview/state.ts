@@ -11,7 +11,7 @@ import {
   RangeValue,
   StateField,
 } from '@codemirror/state';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import emoji from '@app/emoji';
 
 export type PositionField = StateField<RangeSet<IconPosition>>;
@@ -23,7 +23,7 @@ type UpdateRangeFunc = (
   remove: boolean,
 ) => void;
 
-function checkForSourceMode(plugin: IconFolderPlugin): boolean {
+function checkForSourceMode(plugin: IconizePlugin): boolean {
   let isSourceMode = false;
   // Iterate over all leaves to check if any is in source mode
   plugin.app.workspace.iterateAllLeaves((leaf) => {
@@ -55,7 +55,7 @@ class IconPosition extends RangeValue {
  * Builds a position field for the editor state. This field will track the
  * positions of the icons in the document.
  **/
-export const buildPositionField = (plugin: IconFolderPlugin) => {
+export const buildPositionField = (plugin: IconizePlugin) => {
   /**
    * Checks the ranges of the icons in the document. If the range is not
    * excluded, the range is added to the range set. If the range is excluded,

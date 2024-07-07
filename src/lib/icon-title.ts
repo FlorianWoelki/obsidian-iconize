@@ -1,4 +1,4 @@
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import config from '@app/config';
 import emoji from '@app/emoji';
 import svg from './util/svg';
@@ -13,7 +13,7 @@ interface Options {
 }
 
 const add = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   inlineTitleEl: HTMLElement,
   svgElement: string,
   options?: Options,

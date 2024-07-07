@@ -1,5 +1,5 @@
 import { TAbstractFile, View, WorkspaceLeaf } from 'obsidian';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 
 interface FileExplorerWorkspaceLeaf extends WorkspaceLeaf {
   containerEl: HTMLElement;
@@ -11,9 +11,9 @@ interface FileExplorerView extends View {
 }
 
 export default abstract class InternalPluginInjector {
-  protected plugin: IconFolderPlugin;
+  protected plugin: IconizePlugin;
 
-  constructor(plugin: IconFolderPlugin) {
+  constructor(plugin: IconizePlugin) {
     this.plugin = plugin;
   }
 

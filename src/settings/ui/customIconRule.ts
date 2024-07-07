@@ -10,7 +10,7 @@ import {
 } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import IconsPickerModal from '@app/ui/icons-picker-modal';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import {
   getAllOpenedFiles,
   getFileItemTitleEl,
@@ -33,7 +33,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
   private refreshDisplay: () => void;
 
   constructor(
-    plugin: IconFolderPlugin,
+    plugin: IconizePlugin,
     containerEl: HTMLElement,
     app: App,
     refreshDisplay: () => void,
