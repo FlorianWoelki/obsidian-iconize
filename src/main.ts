@@ -62,6 +62,7 @@ import {
 import ChangeColorModal from './ui/change-color-modal';
 import { logger } from './lib/logger';
 import { EventEmitter } from './lib/event/event';
+import { getApi } from './lib/api';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -80,8 +81,9 @@ export default class IconizePlugin extends Plugin {
   public positionField: PositionField = buildPositionField(this);
 
   private frontmatterCache = new Set<string>();
-
   private eventEmitter = new EventEmitter();
+
+  public readonly api = getApi(this);
 
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);

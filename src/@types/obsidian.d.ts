@@ -1,3 +1,4 @@
+import IconizeAPI from '@app/lib/api';
 import {
   Editor,
   TAbstractFile,
@@ -67,6 +68,14 @@ declare module 'obsidian' {
   }
 
   interface App {
+    plugins: {
+      enabledPlugins: Set<string>;
+      plugins: {
+        ['obsidian-icon-folder']?: {
+          api: IconizeAPI;
+        };
+      };
+    };
     internalPlugins: {
       plugins: InternalPlugins;
       getPluginById<T extends keyof InternalPlugins>(id: T): InternalPlugins[T];
