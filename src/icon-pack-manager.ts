@@ -623,6 +623,12 @@ export const doesIconExists = (iconName: string): boolean => {
   );
 };
 
+export const getIconsFromIconPack = (
+  iconPackName: string,
+): IconPack | undefined => {
+  return iconPacks.find((iconPack) => iconPack.name === iconPackName);
+};
+
 export const getIconFromIconPack = (
   iconPackName: string,
   iconPrefix: string,
