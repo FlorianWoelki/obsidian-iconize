@@ -49,6 +49,13 @@ const iconPacks = {
     downloadLink:
       'https://github.com/simple-icons/simple-icons/archive/refs/tags/11.10.0.zip',
   },
+  lucide: {
+    name: 'lucide-icons',
+    displayName: 'Lucide',
+    path: '',
+    downloadLink:
+      'https://github.com/lucide-icons/lucide/releases/download/0.363.0/lucide-icons-0.363.0.zip',
+  },
   tablerIcons: {
     name: 'tabler-icons',
     displayName: 'Tabler Icons',

@@ -1,6 +1,7 @@
 import { getIcon, getIconIds, Notice, Plugin } from 'obsidian';
+import predefinedIconPacks from './icon-packs';
 import svg from './lib/util/svg';
-import { getFileFromJSZipFile, readZipFile } from './zip-util';
+import { downloadZipFile, getFileFromJSZipFile, readZipFile } from './zip-util';
 import JSZip from 'jszip';
 import config from '@app/config';
 import { logger } from '@app/lib/logger';
@@ -60,7 +61,7 @@ export const setIconPacks = (newIconPacks: IconPack[]): void => {
   iconPacks = newIconPacks;
 };
 
-export const addNativeLucideIcons = (): void => {
+export const addLucideIconsPack = (): void => {
   iconPacks.push({
     name: NATIVE_LUCIDE_ICON_PACK_NAME,
     prefix: 'Li',
@@ -81,6 +82,33 @@ export const addNativeLucideIcons = (): void => {
         };
       }),
   });
+};
+
+export const addCustomLucideIconPack = async (
+  plugin: IconizePlugin,
+): Promise<void> => {
+  const iconPackIndex = iconPacks.findIndex(
+    (iconPack) => iconPack.name === NATIVE_LUCIDE_ICON_PACK_NAME,
+  );
+  if (iconPackIndex > -1) {
+    iconPacks.splice(iconPackIndex);
+  }
+  const iconPack = predefinedIconPacks['lucide'];
+  const arrayBuffer = await downloadZipFile(iconPack.downloadLink);
+  await createZipFile(plugin, `${iconPack.name}.zip`, arrayBuffer);
+  await registerIconPack(iconPack.name, arrayBuffer);
+};
+
+export const removeCustomLucideIconPack = async (
+  plugin: IconizePlugin,
+): Promise<void> => {
+  const iconPackIndex = iconPacks.findIndex(
+    (iconPack) => iconPack.name === NATIVE_LUCIDE_ICON_PACK_NAME,
+  );
+  if (iconPackIndex > -1) {
+    iconPacks.splice(iconPackIndex);
+  }
+  await deleteIconPack(plugin, NATIVE_LUCIDE_ICON_PACK_NAME);
 };
 
 export const moveIconPackDirectories = async (
@@ -491,6 +519,10 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
     const files = zipFiles[zipFile];
     const loadedIcons: Icon[] = await getLoadedIconsFromZipFile(zipFile, files);
     const prefix = createIconPackPrefix(zipFile);
+    if (zipFile === NATIVE_LUCIDE_ICON_PACK_NAME) {
+      continue;
+    }
+
     iconPacks.push({
       name: zipFile,
       icons: loadedIcons,

@@ -8,9 +8,13 @@ import {
   doesIconPackExist,
   getAllIconPacks,
   NATIVE_LUCIDE_ICON_PACK_NAME,
+  removeCustomLucideIconPack,
+  addLucideIconsPack,
+  addCustomLucideIconPack,
 } from '@app/icon-pack-manager';
 import IconizePlugin from '@app/main';
 import { readFileSync } from '@app/util';
+import icon from '@app/lib/icon';
 
 export default class CustomIconPackSetting extends IconFolderSetting {
   private textComponent: TextComponent;
@@ -101,9 +105,14 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       });
 
     getAllIconPacks().forEach((iconPack) => {
+      const isLucideIconPack = iconPack.name === NATIVE_LUCIDE_ICON_PACK_NAME;
+      const additionalLucideDescription =
+        '(Native Pack has fewer icons but 100% Obsidian Sync support)';
       const iconPackSetting = new Setting(this.containerEl)
         .setName(`${iconPack.name} (${iconPack.prefix})`)
-        .setDesc(`Total icons: ${iconPack.icons.length}`);
+        .setDesc(
+          `Total icons: ${iconPack.icons.length}${isLucideIconPack ? ` ${additionalLucideDescription}` : ''}`,
+        );
       // iconPackSetting.addButton((btn) => {
       //   btn.setIcon('broken-link');
       //   btn.setTooltip('Try to fix icon pack');
@@ -137,7 +146,30 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       //   });
       // });
 
-      if (iconPack.name === NATIVE_LUCIDE_ICON_PACK_NAME) {
+      if (isLucideIconPack) {
+        iconPackSetting.addToggle((toggle) => {
+          toggle.setTooltip('Use native Lucide Icons Pack');
+          toggle.setValue(this.plugin.getSettings().useNativeLucideIconPack);
+          toggle.onChange(async (value) => {
+            toggle.setDisabled(true);
+            new Notice('Changing icon packs...');
+            this.plugin.getSettings().useNativeLucideIconPack = value;
+            await this.plugin.saveIconFolderData();
+            if (value) {
+              await removeCustomLucideIconPack(this.plugin);
+              addLucideIconsPack();
+            } else {
+              await addCustomLucideIconPack(this.plugin);
+              await icon.checkMissingIcons(
+                this.plugin,
+                Object.entries(this.plugin.getData()) as any,
+              );
+            }
+
+            toggle.setDisabled(false);
+            new Notice('Done. This change requires a restart of Obsidian');
+          });
+        });
         return;
       }
 

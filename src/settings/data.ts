@@ -166,6 +166,11 @@ export interface IconFolderSettings {
    */
   iconIdentifier: string;
   /**
+   * Whether to use the native lucide icon pack or not.
+   * @default true
+   */
+  useNativeLucideIconPack: boolean;
+  /**
    * Sets whether the plugin should be in debug mode. This will enable more logging
    * in the console.
    */
@@ -197,5 +202,6 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   iconsInNotesEnabled: true,
   iconsInLinksEnabled: true,
   iconIdentifier: ':',
+  useNativeLucideIconPack: true,
   debugMode: false,
 };
