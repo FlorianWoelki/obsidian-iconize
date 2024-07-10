@@ -4,6 +4,8 @@ import {
   calculateHeaderSize,
   calculateInlineTitleSize,
   isHeader,
+  isPx,
+  pxToRem,
 } from './text';
 
 describe('calculateFontTextSize', () => {
@@ -60,5 +62,35 @@ describe('calculateHeaderSize', () => {
     document.body.style.setProperty('--font-text-size', '16px');
     document.body.style.setProperty('--h1-size', '2');
     expect(calculateHeaderSize('header-1')).toBe(32);
+  });
+});
+
+describe('pxToRem', () => {
+  it('should convert px to rem', () => {
+    expect(pxToRem(16)).toBe(1);
+    expect(pxToRem(24)).toBe(1.5);
+    expect(pxToRem(32)).toBe(2);
+  });
+
+  it('should convert px to rem with different base value', () => {
+    expect(pxToRem(16, 20)).toBe(0.8);
+    expect(pxToRem(24, 20)).toBe(1.2);
+    expect(pxToRem(32, 20)).toBe(1.6);
+  });
+});
+
+describe('isPx', () => {
+  it('should return `true` when value is in px format', () => {
+    expect(isPx('16px')).toBe(true);
+    expect(isPx('0px')).toBe(true);
+    expect(isPx('5903px')).toBe(true);
+  });
+
+  it('should return `false` when value is in not px format', () => {
+    expect(isPx('px')).toBe(false);
+    expect(isPx('')).toBe(false);
+    expect(isPx('16rem')).toBe(false);
+    expect(isPx('16em')).toBe(false);
+    expect(isPx('16ch')).toBe(false);
   });
 });
