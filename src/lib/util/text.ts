@@ -49,10 +49,40 @@ const getHTMLHeaderByToken = (header: HeaderToken): HTMLHeader | null => {
 const calculateHeaderSize = (header: HTMLHeader | HeaderToken): number => {
   const fontSize = calculateFontTextSize();
   const htmlHeader = getHTMLHeaderByToken(header as HeaderToken) ?? header;
-  const headerSize = parseFloat(
-    getComputedStyle(document.body).getPropertyValue(`--${htmlHeader}-size`),
+  const headerComputedStyle = getComputedStyle(document.body).getPropertyValue(
+    `--${htmlHeader}-size`,
   );
+  let headerSize = parseFloat(headerComputedStyle);
+  if (isPx(headerComputedStyle)) {
+    headerSize = pxToRem(headerSize, fontSize);
+  }
+
+  // If there is some `calc` operation going on, it has to be evaluated.
+  if (headerComputedStyle.contains('calc')) {
+    const temp = document.createElement('div');
+
+    temp.style.setProperty('font-size', `var(--${htmlHeader}-size)`);
+    document.body.appendChild(temp);
+
+    const computedStyle = window.getComputedStyle(temp);
+    const computedValue = computedStyle.getPropertyValue('font-size');
+    headerSize = parseFloat(computedValue);
+    if (isPx(computedValue)) {
+      headerSize = pxToRem(headerSize, fontSize);
+    }
+
+    document.body.removeChild(temp);
+  }
+
   return fontSize * headerSize;
+};
+
+const pxToRem = (px: number, baseSize = 16): number => {
+  return px / baseSize;
+};
+
+const isPx = (value: string): boolean => {
+  return /^-?\d+(\.\d+)?px$/.test(value);
 };
 
 export {
@@ -60,4 +90,6 @@ export {
   calculateHeaderSize,
   calculateFontTextSize,
   isHeader,
+  isPx,
+  pxToRem,
 };
