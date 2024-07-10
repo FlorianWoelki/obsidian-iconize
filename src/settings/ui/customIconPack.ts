@@ -7,7 +7,7 @@ import {
   deleteIconPack,
   doesIconPackExist,
   getAllIconPacks,
-  NATIVE_LUCIDE_ICON_PACK_NAME,
+  LUCIDE_ICON_PACK_NAME,
   removeCustomLucideIconPack,
   addLucideIconsPack,
   addCustomLucideIconPack,
@@ -105,7 +105,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       });
 
     getAllIconPacks().forEach((iconPack) => {
-      const isLucideIconPack = iconPack.name === NATIVE_LUCIDE_ICON_PACK_NAME;
+      const isLucideIconPack = iconPack.name === LUCIDE_ICON_PACK_NAME;
       const additionalLucideDescription =
         '(Native Pack has fewer icons but 100% Obsidian Sync support)';
       const iconPackSetting = new Setting(this.containerEl)
@@ -148,14 +148,14 @@ export default class CustomIconPackSetting extends IconFolderSetting {
 
       if (isLucideIconPack) {
         iconPackSetting.addToggle((toggle) => {
-          toggle.setTooltip('Use native Lucide Icons Pack');
-          toggle.setValue(this.plugin.getSettings().useNativeLucideIconPack);
+          toggle.setTooltip('Use custom Lucide Icons Pack');
+          toggle.setValue(this.plugin.getSettings().useCustomLucideIconPack);
           toggle.onChange(async (value) => {
             toggle.setDisabled(true);
             new Notice('Changing icon packs...');
-            this.plugin.getSettings().useNativeLucideIconPack = value;
+            this.plugin.getSettings().useCustomLucideIconPack = value;
             await this.plugin.saveIconFolderData();
-            if (value) {
+            if (!value) {
               await removeCustomLucideIconPack(this.plugin);
               addLucideIconsPack();
             } else {
