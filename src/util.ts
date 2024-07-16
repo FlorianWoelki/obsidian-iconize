@@ -91,7 +91,7 @@ export const saveIconToIconPack = (
   const iconPackName = getIconPackNameByPrefix(iconPrefix);
   if (
     iconPackName === LUCIDE_ICON_PACK_NAME &&
-    !plugin.getSettings().useCustomLucideIconPack
+    !plugin.doesUseCustomLucideIconPack()
   ) {
     return;
   }

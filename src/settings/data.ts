@@ -5,6 +5,8 @@ export enum IconInTitlePosition {
   Inline = 'inline',
 }
 
+export type LucideIconPackType = 'none' | 'custom' | 'native';
+
 export interface ExtraMarginSettings {
   /**
    * Controls the extra margin on the top of the icon.
@@ -166,11 +168,13 @@ export interface IconFolderSettings {
    */
   iconIdentifier: string;
   /**
-   * Whether to use the custom or native lucide icon pack or not.
-   * `false` refers to using the native lucide icon pack.
-   * @default false
+   * Specifies which Lucide icon pack to use.
+   * - 'none': Don't use any Lucide icon pack
+   * - 'native': Use the native Lucide icon pack
+   * - 'custom': Use a custom Lucide icon pack
+   * @default 'native'
    */
-  useCustomLucideIconPack: boolean;
+  lucideIconPackType: LucideIconPackType;
   /**
    * Sets whether the plugin should be in debug mode. This will enable more logging
    * in the console.
@@ -203,6 +207,6 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   iconsInNotesEnabled: true,
   iconsInLinksEnabled: true,
   iconIdentifier: ':',
-  useCustomLucideIconPack: false,
+  lucideIconPackType: 'native',
   debugMode: false,
 };

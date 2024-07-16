@@ -108,7 +108,9 @@ export default class IconizePlugin extends Plugin {
     await migrate(this);
 
     const usedIconNames = icon.getAllWithPath(this).map((value) => value.icon);
-    addLucideIconsPack();
+    if (!this.doesUseCustomLucideIconPack()) {
+      addLucideIconsPack(this);
+    }
     await loadUsedIcons(this, usedIconNames);
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
@@ -912,6 +914,14 @@ export default class IconizePlugin extends Plugin {
 
   getRegisteredFileExplorers(): Set<ExplorerView> {
     return this.registeredFileExplorers;
+  }
+
+  doesUseCustomLucideIconPack(): boolean {
+    return this.getSettings().lucideIconPackType === 'custom';
+  }
+
+  doesUseNativeLucideIconPack(): boolean {
+    return this.getSettings().lucideIconPackType === 'native';
   }
 
   /**

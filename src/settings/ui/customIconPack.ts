@@ -15,6 +15,7 @@ import {
 import IconizePlugin from '@app/main';
 import { readFileSync } from '@app/util';
 import icon from '@app/lib/icon';
+import { LucideIconPackType } from '../data';
 
 export default class CustomIconPackSetting extends IconFolderSetting {
   private textComponent: TextComponent;
@@ -104,7 +105,14 @@ export default class CustomIconPackSetting extends IconFolderSetting {
         });
       });
 
-    getAllIconPacks().forEach((iconPack) => {
+    // Sorts lucide icon pack always to the top.
+    const iconPacks = [...getAllIconPacks()].sort((a, b) => {
+      if (a.name === LUCIDE_ICON_PACK_NAME) return -1;
+      if (b.name === LUCIDE_ICON_PACK_NAME) return 1;
+      return a.name.localeCompare(b.name);
+    });
+
+    iconPacks.forEach((iconPack) => {
       const isLucideIconPack = iconPack.name === LUCIDE_ICON_PACK_NAME;
       const additionalLucideDescription =
         '(Native Pack has fewer icons but 100% Obsidian Sync support)';
@@ -147,17 +155,21 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       // });
 
       if (isLucideIconPack) {
-        iconPackSetting.addToggle((toggle) => {
-          toggle.setTooltip('Use custom Lucide Icons Pack');
-          toggle.setValue(this.plugin.getSettings().useCustomLucideIconPack);
-          toggle.onChange(async (value) => {
-            toggle.setDisabled(true);
+        iconPackSetting.addDropdown((dropdown) => {
+          dropdown.addOptions({
+            native: 'Native',
+            custom: 'Custom',
+            none: 'None',
+          } satisfies Record<LucideIconPackType, string>);
+          dropdown.setValue(this.plugin.getSettings().lucideIconPackType);
+          dropdown.onChange(async (value: LucideIconPackType) => {
+            dropdown.setDisabled(true);
             new Notice('Changing icon packs...');
-            this.plugin.getSettings().useCustomLucideIconPack = value;
+            this.plugin.getSettings().lucideIconPackType = value;
             await this.plugin.saveIconFolderData();
-            if (!value) {
+            if (value === 'native' || value === 'none') {
               await removeCustomLucideIconPack(this.plugin);
-              addLucideIconsPack();
+              addLucideIconsPack(this.plugin);
             } else {
               await addCustomLucideIconPack(this.plugin);
               await icon.checkMissingIcons(
@@ -166,7 +178,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
               );
             }
 
-            toggle.setDisabled(false);
+            dropdown.setDisabled(false);
             new Notice('Done. This change requires a restart of Obsidian');
           });
         });

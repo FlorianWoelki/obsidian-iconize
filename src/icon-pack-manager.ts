@@ -61,26 +61,28 @@ export const setIconPacks = (newIconPacks: IconPack[]): void => {
   iconPacks = newIconPacks;
 };
 
-export const addLucideIconsPack = (): void => {
+export const addLucideIconsPack = (plugin: IconizePlugin): void => {
   iconPacks.push({
     name: LUCIDE_ICON_PACK_NAME,
     prefix: 'Li',
     custom: false,
-    icons: getIconIds()
-      .map((iconId) => iconId.replace(/^lucide-/, ''))
-      .map((iconId) => {
-        const iconEl = getIcon(iconId);
-        iconEl.removeClass('svg-icon'); // Removes native `svg-icon` class.
-        return {
-          name: getNormalizedName(iconId),
-          filename: iconId,
-          prefix: 'Li',
-          svgElement: iconEl?.outerHTML,
-          svgContent: iconEl?.innerHTML,
-          svgViewbox: '',
-          iconPackName: LUCIDE_ICON_PACK_NAME,
-        };
-      }),
+    icons: plugin.doesUseNativeLucideIconPack()
+      ? getIconIds()
+          .map((iconId) => iconId.replace(/^lucide-/, ''))
+          .map((iconId) => {
+            const iconEl = getIcon(iconId);
+            iconEl.removeClass('svg-icon'); // Removes native `svg-icon` class.
+            return {
+              name: getNormalizedName(iconId),
+              filename: iconId,
+              prefix: 'Li',
+              svgElement: iconEl?.outerHTML,
+              svgContent: iconEl?.innerHTML,
+              svgViewbox: '',
+              iconPackName: LUCIDE_ICON_PACK_NAME,
+            };
+          })
+      : [],
   });
 };
 
@@ -374,12 +376,12 @@ export const createIconPackPrefix = (iconPackName: string): string => {
 };
 
 export const loadUsedIcons = async (plugin: IconizePlugin, icons: string[]) => {
-  const iconPacks = [
-    ...(await listPath(plugin)).folders.map((iconPack) =>
-      iconPack.split('/').pop(),
-    ),
-    LUCIDE_ICON_PACK_NAME,
-  ];
+  const iconPacks = (await listPath(plugin)).folders.map((iconPack) =>
+    iconPack.split('/').pop(),
+  );
+  if (plugin.doesUseNativeLucideIconPack()) {
+    iconPacks.push(LUCIDE_ICON_PACK_NAME);
+  }
 
   for (let i = 0; i < icons.length; i++) {
     const entry = icons[i];
@@ -431,7 +433,7 @@ export const loadIcon = async (
 
   if (
     iconPack === LUCIDE_ICON_PACK_NAME &&
-    !plugin.getSettings().useCustomLucideIconPack
+    plugin.doesUseNativeLucideIconPack()
   ) {
     // Native lucide icons already exist for Obsidian.
     const lucideIcons = iconPacks.find(
@@ -524,7 +526,7 @@ export const initIconPacks = async (plugin: IconizePlugin): Promise<void> => {
     const prefix = createIconPackPrefix(zipFile);
     if (
       zipFile === LUCIDE_ICON_PACK_NAME &&
-      !plugin.getSettings().useCustomLucideIconPack
+      !plugin.doesUseCustomLucideIconPack()
     ) {
       continue;
     }

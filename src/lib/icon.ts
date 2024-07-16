@@ -7,6 +7,7 @@ import iconTabs from './icon-tabs';
 import { getFileItemInnerTitleEl, getFileItemTitleEl } from '@app/util';
 import {
   Icon,
+  LUCIDE_ICON_PACK_NAME,
   extractIconToIconPack,
   getAllIconPacks,
   getIconFromIconPack,
@@ -36,7 +37,10 @@ const checkMissingIcons = async (
     const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
     const iconPackName = getIconPackNameByPrefix(iconPrefix);
 
-    if (!plugin.getSettings().useCustomLucideIconPack) {
+    if (
+      iconPackName === LUCIDE_ICON_PACK_NAME &&
+      !plugin.doesUseCustomLucideIconPack()
+    ) {
       return;
     }
 
