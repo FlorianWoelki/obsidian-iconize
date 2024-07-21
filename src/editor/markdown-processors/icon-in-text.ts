@@ -111,7 +111,8 @@ export const processIconInTextMarkdown = (
       rootSpan.style.display = 'inline-flex';
       rootSpan.style.transform = 'translateY(13%)';
 
-      const tagName = toReplace.parentElement?.tagName?.toLowerCase() ?? '';
+      const parentElement = toReplace.parentElement;
+      const tagName = parentElement?.tagName?.toLowerCase() ?? '';
       let fontSize = calculateFontTextSize();
 
       if (isHeader(tagName)) {
@@ -123,8 +124,24 @@ export const processIconInTextMarkdown = (
         rootSpan.innerHTML = svgElement;
       }
 
-      toReplace.parentElement?.insertBefore(rootSpan, toReplace);
+      parentElement?.insertBefore(rootSpan, toReplace);
       toReplace.textContent = toReplace.wholeText.substring(code.text.length);
+
+      // Set the font size to its parent font size if defined.
+      // We do this after that to not freeze the insertion while iterating over the tree.
+      // We are also updating the size after the animation because the styling won't be set
+      // in the first place.
+      requestAnimationFrame(() => {
+        const parentFontSize = parseFloat(
+          getComputedStyle(parentElement).fontSize,
+        );
+        if (!isNaN(parentFontSize)) {
+          rootSpan.innerHTML = svg.setFontSize(
+            rootSpan.innerHTML,
+            parentFontSize,
+          );
+        }
+      });
     }
   });
 
