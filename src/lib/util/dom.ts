@@ -56,6 +56,7 @@ const setIconForNode = (
   iconName: string,
   node: HTMLElement,
   color?: string,
+  applyAllStyles: boolean = true, // TODO: Needs some refactor.
 ): void => {
   // Gets the possible icon based on the icon name.
   const iconNextIdentifier = nextIdentifier(iconName);
@@ -66,7 +67,9 @@ const setIconForNode = (
 
   if (possibleIcon) {
     // The icon is possibly not an emoji.
-    let iconContent = style.applyAll(plugin, possibleIcon, node);
+    let iconContent = applyAllStyles
+      ? style.applyAll(plugin, possibleIcon, node)
+      : possibleIcon;
     if (color) {
       node.style.color = color;
       iconContent = svg.colorize(iconContent, color);
@@ -75,7 +78,9 @@ const setIconForNode = (
   } else {
     const parsedEmoji =
       emoji.parseEmoji(plugin.getSettings().emojiStyle, iconName) ?? iconName;
-    node.innerHTML = style.applyAll(plugin, parsedEmoji, node);
+    node.innerHTML = applyAllStyles
+      ? style.applyAll(plugin, parsedEmoji, node)
+      : parsedEmoji;
   }
 
   node.setAttribute('title', iconName);
