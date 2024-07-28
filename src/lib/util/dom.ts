@@ -43,21 +43,28 @@ const removeIconInPath = (path: string, options?: RemoveOptions): void => {
   removeIconInNode(node);
 };
 
+interface SetIconForNodeOptions {
+  color?: string;
+  shouldApplyAllStyles?: boolean;
+}
+
 /**
  * Sets an icon or emoji for an HTMLElement based on the specified icon name and color.
  * The function manipulates the specified node inline.
  * @param plugin Instance of the IconizePlugin.
  * @param iconName Name of the icon or emoji to add.
  * @param node HTMLElement to which the icon or emoji will be added.
- * @param color Optional color of the icon to add.
+ * @param options Options for adjusting settings while the icon is being set.
  */
 const setIconForNode = (
   plugin: IconizePlugin,
   iconName: string,
   node: HTMLElement,
-  color?: string,
-  applyAllStyles: boolean = true, // TODO: Needs some refactor.
+  options?: SetIconForNodeOptions,
 ): void => {
+  options ??= {};
+  options.shouldApplyAllStyles ??= true;
+
   // Gets the possible icon based on the icon name.
   const iconNextIdentifier = nextIdentifier(iconName);
   const possibleIcon = getSvgFromLoadedIcon(
@@ -67,18 +74,18 @@ const setIconForNode = (
 
   if (possibleIcon) {
     // The icon is possibly not an emoji.
-    let iconContent = applyAllStyles
+    let iconContent = options?.shouldApplyAllStyles
       ? style.applyAll(plugin, possibleIcon, node)
       : possibleIcon;
-    if (color) {
-      node.style.color = color;
-      iconContent = svg.colorize(iconContent, color);
+    if (options?.color) {
+      node.style.color = options.color;
+      iconContent = svg.colorize(iconContent, options.color);
     }
     node.innerHTML = iconContent;
   } else {
     const parsedEmoji =
       emoji.parseEmoji(plugin.getSettings().emojiStyle, iconName) ?? iconName;
-    node.innerHTML = applyAllStyles
+    node.innerHTML = options?.shouldApplyAllStyles
       ? style.applyAll(plugin, parsedEmoji, node)
       : parsedEmoji;
   }
@@ -134,14 +141,14 @@ const createIconNode = (
   let iconNode: HTMLDivElement = node.querySelector('.iconize-icon');
   // If the icon is already set in the path, we do not need to create a new div element.
   if (iconNode) {
-    setIconForNode(plugin, iconName, iconNode, options?.color);
+    setIconForNode(plugin, iconName, iconNode, { color: options?.color });
   } else {
     // Creates a new icon node and inserts it to the DOM.
     iconNode = document.createElement('div');
     iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
     iconNode.classList.add('iconize-icon');
 
-    setIconForNode(plugin, iconName, iconNode, options?.color);
+    setIconForNode(plugin, iconName, iconNode, { color: options?.color });
 
     node.insertBefore(iconNode, titleNode);
   }

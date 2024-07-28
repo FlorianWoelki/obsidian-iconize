@@ -94,7 +94,7 @@ describe('add', () => {
       plugin,
       'IbTest',
       iconContainer,
-      'purple',
+      { color: 'purple' },
     );
   });
 
@@ -108,7 +108,7 @@ describe('add', () => {
       plugin,
       'IbTest',
       iconContainer,
-      'blue',
+      { color: 'blue' },
     );
   });
 
@@ -117,13 +117,10 @@ describe('add', () => {
     await iconTabs.add(plugin, file, iconContainer);
     expect(iconContainer.style.margin).toBe('');
     expect(setIconForNode).toBeCalledTimes(1);
-    expect(setIconForNode).toBeCalledWith(
-      plugin,
-      'test',
-      iconContainer,
-      'purple',
-      false,
-    );
+    expect(setIconForNode).toBeCalledWith(plugin, 'test', iconContainer, {
+      color: 'purple',
+      shouldApplyAllStyles: false,
+    });
   });
 
   it('should not call `dom.setIconForNode` when icon is not found in data', async () => {
@@ -156,12 +153,9 @@ describe('add', () => {
     await iconTabs.add(plugin, file, iconContainer);
     expect(iconContainer.style.margin).toBe('');
     expect(setIconForNode).toBeCalledTimes(1);
-    expect(setIconForNode).toBeCalledWith(
-      plugin,
-      'IbTest',
-      iconContainer,
-      undefined,
-    );
+    expect(setIconForNode).toBeCalledWith(plugin, 'IbTest', iconContainer, {
+      color: undefined,
+    });
 
     getSortedRules.mockRestore();
     isApplicable.mockRestore();

@@ -59,7 +59,9 @@ const add = async (
 
   // Only add the icon name manually when it is defined in the options.
   if (options?.iconName) {
-    dom.setIconForNode(plugin, options.iconName, iconContainer, iconColor);
+    dom.setIconForNode(plugin, options.iconName, iconContainer, {
+      color: iconColor,
+    });
     // TODO: Refactor to include option to `insertIconToNode` function.
     iconContainer.style.margin = null;
     return;
@@ -69,7 +71,9 @@ const add = async (
   for (const rule of customRule.getSortedRules(plugin)) {
     const isApplicable = await customRule.isApplicable(plugin, rule, file);
     if (isApplicable) {
-      dom.setIconForNode(plugin, rule.icon, iconContainer, rule.color);
+      dom.setIconForNode(plugin, rule.icon, iconContainer, {
+        color: rule.color,
+      });
       // TODO: Refactor to include option to `insertIconToNode` function.
       iconContainer.style.margin = null;
       break;
@@ -98,7 +102,10 @@ const add = async (
     iconName = value;
   }
 
-  dom.setIconForNode(plugin, iconName, iconContainer, iconColor, false);
+  dom.setIconForNode(plugin, iconName, iconContainer, {
+    color: iconColor,
+    shouldApplyAllStyles: false,
+  });
   // TODO: Refactor to include option to `insertIconToNode` function.
   iconContainer.style.margin = null;
 };

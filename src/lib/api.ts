@@ -50,7 +50,7 @@ export function getApi(plugin: IconizePlugin): IconizeAPI {
     getIconByName: (iconNameWithPrefix: string) =>
       icon.getIconByName(iconNameWithPrefix),
     setIconForNode: (iconName: string, node: HTMLElement, color?: string) =>
-      dom.setIconForNode(plugin, iconName, node, color),
+      dom.setIconForNode(plugin, iconName, node, { color }),
     saveIconToIconPack: (iconNameWithPrefix) =>
       saveIconToIconPack(plugin, iconNameWithPrefix),
     removeIconFromIconPack: (iconNameWithPrefix) =>

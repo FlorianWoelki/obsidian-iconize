@@ -235,7 +235,9 @@ const addAll = (
             IconCache.getInstance().set(dataPath, {
               iconNameWithPrefix: iconName,
             });
-            dom.setIconForNode(plugin, iconName, iconNode, iconColor);
+            dom.setIconForNode(plugin, iconName, iconNode, {
+              color: iconColor,
+            });
 
             titleEl.insertBefore(iconNode, titleInnerEl);
           }
