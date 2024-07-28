@@ -122,6 +122,7 @@ describe('add', () => {
       'test',
       iconContainer,
       'purple',
+      false,
     );
   });
 
