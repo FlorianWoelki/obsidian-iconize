@@ -11,6 +11,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Get Started', link: '/guide/getting-started' },
+      { text: 'API', link: '/api/getting-started' },
     ],
 
     search: {
@@ -55,6 +56,11 @@ export default defineConfig({
           { text: 'Icons in Notes', link: '/notes/icons-in-notes' },
           { text: 'Icon above Title', link: '/notes/title-icon' },
         ],
+      },
+      {
+        text: 'API',
+        collapsed: false,
+        items: [{ text: 'Getting Started', link: '/api/getting-started' }],
       },
       {
         text: 'Compatibility with Plugins',

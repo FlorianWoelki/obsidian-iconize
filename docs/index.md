@@ -10,6 +10,9 @@ hero:
     - theme: brand
       text: Get Started
       link: /guide/getting-started
+    - theme: brand
+      text: API
+      link: /api/getting-started
     - theme: alt
       text: Files and Folders
       link: /files-and-folders/icon-before-file-or-folder
@@ -25,4 +28,3 @@ features:
   - title: Community Driven
     details: The plugin is open source and everyone can contribute bug reports, features, or ideas to it.
 ---
-
