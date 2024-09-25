@@ -81,7 +81,8 @@ export const processIconInTextMarkdown = (
 ) => {
   // Ignore if codeblock
   const codeElement = element.querySelector('pre > code');
-  if (codeElement) {
+  const callOut = element.querySelector('.callout');
+  if (codeElement && !callOut) {
     return;
   }
 
