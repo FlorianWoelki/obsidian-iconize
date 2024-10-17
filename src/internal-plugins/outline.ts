@@ -4,10 +4,14 @@ import svg from '@app/lib/util/svg';
 import icon from '@app/lib/icon';
 import { LoggerPrefix, logger } from '@app/lib/logger';
 import IconizePlugin from '@app/main';
-import { View } from 'obsidian';
+import { requireApiVersion, View, WorkspaceLeaf } from 'obsidian';
 
 const TREE_ITEM_CLASS = 'tree-item-self';
 const TREE_ITEM_INNER = 'tree-item-inner';
+
+interface OutlineLeaf extends WorkspaceLeaf {
+  view: OutlineView;
+}
 
 interface OutlineView extends View {
   tree: {
@@ -18,6 +22,10 @@ interface OutlineView extends View {
 export default class OutlineInternalPlugin extends InternalPluginInjector {
   constructor(plugin: IconizePlugin) {
     super(plugin);
+  }
+
+  onMount(): void {
+    // TODO: Might improve the performance here.
   }
 
   register(): void {
@@ -31,7 +39,7 @@ export default class OutlineInternalPlugin extends InternalPluginInjector {
 
     const updateTreeItems = () => {
       const treeItems = Array.from(
-        this.leaf.tree.containerEl.querySelectorAll(`.${TREE_ITEM_CLASS}`),
+        this.leaf.view.tree.containerEl.querySelectorAll(`.${TREE_ITEM_CLASS}`),
       );
       for (const treeItem of treeItems) {
         const treeItemInner = treeItem.querySelector(`.${TREE_ITEM_INNER}`);
@@ -90,38 +98,47 @@ export default class OutlineInternalPlugin extends InternalPluginInjector {
       }
     };
 
-    this.plugin.getEventEmitter().once('allIconsLoaded', () => {
-      updateTreeItems();
+    const setOutlineIcons = () => {
+      this.plugin.getEventEmitter().once('allIconsLoaded', () => {
+        updateTreeItems();
 
-      const callback = (mutations: MutationRecord[]) => {
-        mutations.forEach((mutation) => {
-          if (mutation.type !== 'childList') {
-            return;
+        const callback = (mutations: MutationRecord[]) => {
+          mutations.forEach((mutation) => {
+            if (mutation.type !== 'childList') {
+              return;
+            }
+
+            const addedNodes = mutation.addedNodes;
+            if (addedNodes.length === 0) {
+              return;
+            }
+
+            updateTreeItems();
+          });
+
+          if (!this.enabled) {
+            observer.disconnect();
           }
+        };
 
-          const addedNodes = mutation.addedNodes;
-          if (addedNodes.length === 0) {
-            return;
-          }
+        const observer = new MutationObserver(callback);
 
-          updateTreeItems();
+        observer.observe(this.leaf.view.tree.containerEl, {
+          childList: true,
+          subtree: true,
         });
-
-        if (!this.enabled) {
-          observer.disconnect();
-        }
-      };
-
-      const observer = new MutationObserver(callback);
-
-      observer.observe(this.leaf.tree.containerEl, {
-        childList: true,
-        subtree: true,
       });
-    });
+    };
+
+    if (requireApiVersion('1.7.2')) {
+      // TODO: Might improve the performance here.
+      this.leaf.loadIfDeferred().then(setOutlineIcons);
+    } else {
+      setOutlineIcons();
+    }
   }
 
-  get leaf(): OutlineView | undefined {
+  get leaf(): OutlineLeaf | undefined {
     const leaf = this.plugin.app.workspace.getLeavesOfType('outline');
     if (!leaf) {
       logger.log('`leaf` in outline is undefined', LoggerPrefix.Outline);
@@ -133,7 +150,7 @@ export default class OutlineInternalPlugin extends InternalPluginInjector {
       return undefined;
     }
 
-    return leaf[0].view as OutlineView;
+    return leaf[0] as OutlineLeaf;
   }
 
   get outline() {

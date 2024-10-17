@@ -18,7 +18,7 @@ import {
   nextIdentifier,
 } from '@app/icon-pack-manager';
 import config from '@app/config';
-import { Notice } from 'obsidian';
+import { MarkdownView, Notice, requireApiVersion } from 'obsidian';
 import { IconCache } from './icon-cache';
 import { logger } from './logger';
 
@@ -189,64 +189,71 @@ const addAll = (
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
 
   for (const fileExplorer of fileExplorers) {
-    if (registeredFileExplorers.has(fileExplorer.view)) {
-      continue;
-    }
+    const setIcons = () => {
+      // Adds icons to already open file tabs.
+      if (plugin.getSettings().iconInTabsEnabled) {
+        for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
+          if (!(leaf.view instanceof MarkdownView)) {
+            continue;
+          }
 
-    registeredFileExplorers.add(fileExplorer.view);
-
-    // Adds icons to already open file tabs.
-    if (plugin.getSettings().iconInTabsEnabled) {
-      for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
-        const file = leaf.view.file;
-        if (file) {
-          const tabHeaderLeaf = leaf as TabHeaderLeaf;
-          const iconColor = plugin.getIconColor(file.path);
-          iconTabs.add(plugin, file, tabHeaderLeaf.tabHeaderInnerIconEl, {
-            iconColor,
-          });
-        }
-      }
-    }
-
-    for (const [dataPath, value] of data) {
-      const fileItem = fileExplorer.view.fileItems[dataPath];
-      if (fileItem) {
-        const titleEl = getFileItemTitleEl(fileItem);
-        const titleInnerEl = getFileItemInnerTitleEl(fileItem);
-
-        // Need to check this because refreshing the plugin will duplicate all the icons.
-        if (titleEl.children.length === 2 || titleEl.children.length === 1) {
-          const iconName = typeof value === 'string' ? value : value.iconName;
-          const iconColor =
-            typeof value === 'string' ? undefined : value.iconColor;
-          if (iconName) {
-            // Removes a possible existing icon.
-            const existingIcon = titleEl.querySelector('.iconize-icon');
-            if (existingIcon) {
-              existingIcon.remove();
-            }
-
-            // Creates the new node with the icon inside.
-            const iconNode = titleEl.createDiv();
-            iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
-            iconNode.classList.add('iconize-icon');
-
-            IconCache.getInstance().set(dataPath, {
-              iconNameWithPrefix: iconName,
+          const file = leaf.view.file;
+          if (file) {
+            const tabHeaderLeaf = leaf as TabHeaderLeaf;
+            const iconColor = plugin.getIconColor(file.path);
+            iconTabs.add(plugin, file, tabHeaderLeaf.tabHeaderInnerIconEl, {
+              iconColor,
             });
-            dom.setIconForNode(plugin, iconName, iconNode, {
-              color: iconColor,
-            });
-
-            titleEl.insertBefore(iconNode, titleInnerEl);
           }
         }
       }
-    }
 
-    // Callback function to register other events to this file explorer.
-    callback?.();
+      for (const [dataPath, value] of data) {
+        const fileItem = fileExplorer.view.fileItems[dataPath];
+        if (fileItem) {
+          const titleEl = getFileItemTitleEl(fileItem);
+          const titleInnerEl = getFileItemInnerTitleEl(fileItem);
+
+          // Need to check this because refreshing the plugin will duplicate all the icons.
+          if (titleEl.children.length === 2 || titleEl.children.length === 1) {
+            const iconName = typeof value === 'string' ? value : value.iconName;
+            const iconColor =
+              typeof value === 'string' ? undefined : value.iconColor;
+            if (iconName) {
+              // Removes a possible existing icon.
+              const existingIcon = titleEl.querySelector('.iconize-icon');
+              if (existingIcon) {
+                existingIcon.remove();
+              }
+
+              // Creates the new node with the icon inside.
+              const iconNode = titleEl.createDiv();
+              iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
+              iconNode.classList.add('iconize-icon');
+
+              IconCache.getInstance().set(dataPath, {
+                iconNameWithPrefix: iconName,
+              });
+              dom.setIconForNode(plugin, iconName, iconNode, {
+                color: iconColor,
+              });
+
+              titleEl.insertBefore(iconNode, titleInnerEl);
+            }
+          }
+        }
+      }
+
+      // Callback function to register other events to this file explorer.
+      callback?.();
+    };
+
+    if (requireApiVersion('1.7.2')) {
+      // TODO: Remove loading deferred view to improve performance.
+      fileExplorer.loadIfDeferred().then(setIcons);
+    } else {
+      setIcons();
+    }
   }
 
   // Handles the custom rules.
