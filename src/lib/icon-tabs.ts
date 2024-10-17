@@ -104,7 +104,7 @@ const add = async (
 
   dom.setIconForNode(plugin, iconName, iconContainer, {
     color: iconColor,
-    shouldApplyAllStyles: false,
+    shouldApplyAllStyles: true,
   });
   // TODO: Refactor to include option to `insertIconToNode` function.
   iconContainer.style.margin = null;
