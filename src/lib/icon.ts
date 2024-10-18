@@ -18,7 +18,7 @@ import {
   nextIdentifier,
 } from '@app/icon-pack-manager';
 import config from '@app/config';
-import { MarkdownView, Notice, requireApiVersion } from 'obsidian';
+import { Notice, requireApiVersion } from 'obsidian';
 import { IconCache } from './icon-cache';
 import { logger } from './logger';
 
@@ -193,15 +193,11 @@ const addAll = (
       // Adds icons to already open file tabs.
       if (plugin.getSettings().iconInTabsEnabled) {
         for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
-          if (!(leaf.view instanceof MarkdownView)) {
-            continue;
-          }
-
-          const file = leaf.view.file;
-          if (file) {
+          const filePath = leaf.view.file?.path ?? leaf.view.getState().file;
+          if (typeof filePath === 'string') {
             const tabHeaderLeaf = leaf as TabHeaderLeaf;
-            const iconColor = plugin.getIconColor(file.path);
-            iconTabs.add(plugin, file, tabHeaderLeaf.tabHeaderInnerIconEl, {
+            const iconColor = plugin.getIconColor(filePath);
+            iconTabs.add(plugin, filePath, tabHeaderLeaf.tabHeaderInnerIconEl, {
               iconColor,
             });
           }

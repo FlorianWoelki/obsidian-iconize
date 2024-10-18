@@ -177,11 +177,7 @@ export default class IconizePlugin extends Plugin {
                 for (const tabLeaf of tabLeaves) {
                   // Add timeout to ensure that the default icon is already set.
                   setTimeout(() => {
-                    iconTabs.add(
-                      this,
-                      file as TFile,
-                      tabLeaf.tabHeaderInnerIconEl,
-                    );
+                    iconTabs.add(this, file.path, tabLeaf.tabHeaderInnerIconEl);
                   }, 5);
                 }
               }
@@ -343,7 +339,7 @@ export default class IconizePlugin extends Plugin {
         this.addIconInTitle(rule.icon);
         const tabLeaves = iconTabs.getTabLeavesOfFilePath(this, file.path);
         for (const tabLeaf of tabLeaves) {
-          iconTabs.add(this, file as TFile, tabLeaf.tabHeaderInnerIconEl, {
+          iconTabs.add(this, file.path, tabLeaf.tabHeaderInnerIconEl, {
             iconName: rule.icon,
           });
         }
@@ -521,7 +517,7 @@ export default class IconizePlugin extends Plugin {
           for (const openedFile of getAllOpenedFiles(this)) {
             const leaf = openedFile.leaf as TabHeaderLeaf;
             const iconColor = this.getIconColor(leaf.view.file.path);
-            iconTabs.add(this, openedFile, leaf.tabHeaderInnerIconEl, {
+            iconTabs.add(this, openedFile.path, leaf.tabHeaderInnerIconEl, {
               iconColor,
             });
           }
@@ -683,7 +679,7 @@ export default class IconizePlugin extends Plugin {
             for (const openedFile of getAllOpenedFiles(this)) {
               const leaf = openedFile.leaf as TabHeaderLeaf;
               const iconColor = this.getIconColor(leaf.view.file.path);
-              iconTabs.add(this, openedFile, leaf.tabHeaderInnerIconEl, {
+              iconTabs.add(this, openedFile.path, leaf.tabHeaderInnerIconEl, {
                 iconColor,
               });
             }
@@ -699,7 +695,7 @@ export default class IconizePlugin extends Plugin {
             const iconColor = this.getIconColor(tabHeaderLeaf.view.file.path);
             iconTabs.add(
               this,
-              tabHeaderLeaf.view.file,
+              tabHeaderLeaf.view.file.path,
               tabHeaderLeaf.tabHeaderInnerIconEl,
               {
                 iconColor,

@@ -30,15 +30,15 @@ const doesMatchFileType = (
  * Determines whether a given file or folder matches a specified custom rule.
  * @param plugin Plugin instance.
  * @param rule CustomRule to check against the file or folder.
- * @param file TAbstractFile to check against the custom rule.
+ * @param filePath String to check against the custom rule.
  * @returns Promise that resolves to `true` if the file matches the rule, `false` otherwise.
  */
 const isApplicable = async (
   plugin: Plugin,
   rule: CustomRule,
-  file: TAbstractFile,
+  filePath: string,
 ): Promise<boolean> => {
-  const metadata = await plugin.app.vault.adapter.stat(file.path);
+  const metadata = await plugin.app.vault.adapter.stat(filePath);
   if (!metadata) {
     return false;
   }
@@ -51,7 +51,7 @@ const isApplicable = async (
     return false;
   }
 
-  return doesMatchPath(rule, file.path);
+  return doesMatchPath(rule, filePath);
 };
 
 /**
@@ -140,7 +140,7 @@ const add = async (
     return false;
   }
 
-  const doesMatch = await isApplicable(plugin, rule, file);
+  const doesMatch = await isApplicable(plugin, rule, file.path);
   if (doesMatch) {
     IconCache.getInstance().set(file.path, {
       iconNameWithPrefix: rule.icon,
@@ -192,7 +192,7 @@ const getFileItems = async (
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);
     for (const fileItem of files) {
-      if (await isApplicable(plugin, rule, fileItem.file)) {
+      if (await isApplicable(plugin, rule, fileItem.file.path)) {
         result.push(fileItem);
       }
     }

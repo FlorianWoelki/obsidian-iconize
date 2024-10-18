@@ -62,7 +62,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         const applicable = await customRule.isApplicable(
           this.plugin,
           rule,
-          openedFile,
+          openedFile.path,
         );
         if (!applicable) {
           continue;
@@ -74,10 +74,15 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             replaceWithDefaultIcon: true,
           });
         } else {
-          iconTabs.add(this.plugin, openedFile, leaf.tabHeaderInnerIconEl, {
-            iconName: rule.icon,
-            iconColor: rule.color,
-          });
+          iconTabs.add(
+            this.plugin,
+            openedFile.path,
+            leaf.tabHeaderInnerIconEl,
+            {
+              iconName: rule.icon,
+              iconColor: rule.color,
+            },
+          );
         }
       }
     }

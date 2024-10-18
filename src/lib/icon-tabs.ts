@@ -1,4 +1,3 @@
-import { TFile } from 'obsidian';
 import IconizePlugin, { FolderIconObject } from '@app/main';
 import { DEFAULT_FILE_ICON, getAllOpenedFiles } from '@app/util';
 import { TabHeaderLeaf } from '@app/@types/obsidian';
@@ -41,13 +40,13 @@ interface AddOptions {
  * Adds an icon to the tab and its container. This function respects the
  * custom rules and individually icon set.
  * @param plugin IconizePlugin instance.
- * @param file TFile instance of the file to add the icon to.
+ * @param filePath String file path to add the icon to.
  * @param iconContainer HTMLElement where the icon will be added to.
  * @param options AddOptions for the add function which can optionally be used.
  */
 const add = async (
   plugin: IconizePlugin,
-  file: TFile,
+  filePath: string,
   iconContainer: HTMLElement,
   options?: AddOptions,
 ): Promise<void> => {
@@ -69,7 +68,7 @@ const add = async (
 
   // Add icons to tabs if a custom rule is applicable.
   for (const rule of customRule.getSortedRules(plugin)) {
-    const isApplicable = await customRule.isApplicable(plugin, rule, file);
+    const isApplicable = await customRule.isApplicable(plugin, rule, filePath);
     if (isApplicable) {
       dom.setIconForNode(plugin, rule.icon, iconContainer, {
         color: rule.color,
@@ -81,7 +80,7 @@ const add = async (
   }
 
   // Add icons to tabs if there is an icon set.
-  const iconData = data.find(([dataPath]) => dataPath === file.path);
+  const iconData = data.find(([dataPath]) => dataPath === filePath);
   if (!iconData) {
     return;
   }

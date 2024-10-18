@@ -26,7 +26,7 @@ export default class ToggleIconInTabs extends IconFolderSetting {
                     // Adds the icons to already opened files.
                     iconTabs.add(
                       this.plugin,
-                      file,
+                      file.path,
                       tabHeaderLeaf.tabHeaderInnerIconEl,
                     );
                   } else {
