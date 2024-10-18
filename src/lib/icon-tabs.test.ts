@@ -85,7 +85,7 @@ describe('add', () => {
 
   it('should only call `dom.setIconForNode` if `options.iconName` is set', async () => {
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, {} as any, iconContainer, {
+    await iconTabs.add(plugin, '', iconContainer, {
       iconName: 'IbTest',
     });
     expect(iconContainer.style.display).toBe('flex');
@@ -100,7 +100,7 @@ describe('add', () => {
 
   it('should use icon color `options.iconColor`', async () => {
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, {} as any, iconContainer, {
+    await iconTabs.add(plugin, '', iconContainer, {
       iconName: 'IbTest',
       iconColor: 'blue',
     });
@@ -114,19 +114,19 @@ describe('add', () => {
 
   it('should call `dom.setIconForNode` when icon is found in data', async () => {
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, file, iconContainer);
+    await iconTabs.add(plugin, file.path, iconContainer);
     expect(iconContainer.style.margin).toBe('');
     expect(setIconForNode).toBeCalledTimes(1);
     expect(setIconForNode).toBeCalledWith(plugin, 'test', iconContainer, {
       color: 'purple',
-      shouldApplyAllStyles: false,
+      shouldApplyAllStyles: true,
     });
   });
 
   it('should not call `dom.setIconForNode` when icon is not found in data', async () => {
     file.path = 'test2';
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, file, iconContainer);
+    await iconTabs.add(plugin, file.path, iconContainer);
     expect(setIconForNode).toBeCalledTimes(0);
   });
 
@@ -150,7 +150,7 @@ describe('add', () => {
       .mockImplementationOnce(() => true as any);
 
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, file, iconContainer);
+    await iconTabs.add(plugin, file.path, iconContainer);
     expect(iconContainer.style.margin).toBe('');
     expect(setIconForNode).toBeCalledTimes(1);
     expect(setIconForNode).toBeCalledWith(plugin, 'IbTest', iconContainer, {
@@ -181,7 +181,7 @@ describe('add', () => {
       .mockImplementationOnce(() => false as any);
 
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, file, iconContainer);
+    await iconTabs.add(plugin, file.path, iconContainer);
     expect(setIconForNode).toBeCalledTimes(0);
 
     getSortedRules.mockRestore();
