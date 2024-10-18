@@ -189,6 +189,12 @@ const addAll = (
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
 
   for (const fileExplorer of fileExplorers) {
+    if (registeredFileExplorers.has(fileExplorer.view)) {
+      continue;
+    }
+
+    registeredFileExplorers.add(fileExplorer.view);
+
     const setIcons = () => {
       // Adds icons to already open file tabs.
       if (plugin.getSettings().iconInTabsEnabled) {

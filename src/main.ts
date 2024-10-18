@@ -333,7 +333,7 @@ export default class IconizePlugin extends Plugin {
 
     // Refreshes the icon tab and title icon for custom rules.
     for (const rule of customRule.getSortedRules(this)) {
-      const applicable = await customRule.isApplicable(this, rule, file);
+      const applicable = await customRule.isApplicable(this, rule, file.path);
       if (applicable) {
         customRule.add(this, rule, file);
         this.addIconInTitle(rule.icon);
@@ -452,7 +452,11 @@ export default class IconizePlugin extends Plugin {
 
           // Updates icon tabs for the renamed file.
           for (const rule of customRule.getSortedRules(this)) {
-            const applicable = await customRule.isApplicable(this, rule, file);
+            const applicable = await customRule.isApplicable(
+              this,
+              rule,
+              file.path,
+            );
             if (!applicable) {
               continue;
             }
