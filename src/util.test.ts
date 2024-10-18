@@ -1,4 +1,4 @@
-import { SpyInstance, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockInstance, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as iconPackManager from './icon-pack-manager';
 import {
   getAllOpenedFiles,
@@ -53,7 +53,7 @@ describe('getAllOpenedFiles', () => {
 });
 
 describe('saveIconToIconPack', () => {
-  let extractIconToIconPack: SpyInstance;
+  let extractIconToIconPack: MockInstance;
 
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -93,7 +93,7 @@ describe('saveIconToIconPack', () => {
 
 describe('removeIconFromIconPack', () => {
   let plugin: any;
-  let removeIconFromIconPackDirectory: SpyInstance;
+  let removeIconFromIconPackDirectory: MockInstance;
   beforeEach(() => {
     vi.restoreAllMocks();
     plugin = {

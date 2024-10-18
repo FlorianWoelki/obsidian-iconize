@@ -1,4 +1,4 @@
-import { beforeEach, it, expect, describe, vi, SpyInstance } from 'vitest';
+import { beforeEach, it, expect, describe, vi, MockInstance } from 'vitest';
 import * as iconPackManager from '../../icon-pack-manager';
 import dom from './dom';
 import svg from './svg';
@@ -85,7 +85,7 @@ describe('getIconFromElement', () => {
 });
 
 describe('setIconForNode', () => {
-  let getSvgFromLoadedIcon: SpyInstance;
+  let getSvgFromLoadedIcon: MockInstance;
   let plugin: any;
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -166,7 +166,7 @@ describe('setIconForNode', () => {
 });
 
 describe('createIconNode', () => {
-  let getSvgFromLoadedIcon: SpyInstance;
+  let getSvgFromLoadedIcon: MockInstance;
   let plugin: any;
   beforeEach(() => {
     document.body.innerHTML = '';

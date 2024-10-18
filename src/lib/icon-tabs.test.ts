@@ -1,4 +1,4 @@
-import { it, describe, beforeEach, expect, vi, SpyInstance } from 'vitest';
+import { it, describe, beforeEach, expect, vi, MockInstance } from 'vitest';
 import { DEFAULT_FILE_ICON } from '@app/util';
 import iconTabs from './icon-tabs';
 import dom from './util/dom';
@@ -59,7 +59,7 @@ describe('getTabLeavesOfFilePath', () => {
 });
 
 describe('add', () => {
-  let setIconForNode: SpyInstance;
+  let setIconForNode: MockInstance;
   let plugin: any;
   let file: any;
   beforeEach(() => {

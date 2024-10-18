@@ -2,8 +2,8 @@ import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import alias from '@rollup/plugin-alias';
-import copyFile from './copy-file';
-import { obsidianExportPath } from './env';
+import copyFile from './copy-file.js';
+import { obsidianExportPath } from './env.js';
 
 const isProd = process.env.BUILD === 'production';
 

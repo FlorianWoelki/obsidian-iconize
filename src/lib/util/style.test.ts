@@ -1,6 +1,6 @@
 import {
   Mock,
-  SpyInstance,
+  MockInstance,
   beforeEach,
   describe,
   expect,
@@ -82,7 +82,7 @@ describe('applyAll', () => {
 
 describe('refreshIconNodes', () => {
   let applyStyles: Mock;
-  let getFileItemTitleElSpy: SpyInstance;
+  let getFileItemTitleElSpy: MockInstance;
   let plugin: any;
   let titleEl: HTMLElement;
   let iconNode: HTMLElement;

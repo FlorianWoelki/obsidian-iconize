@@ -1,4 +1,4 @@
-import { vi, it, describe, beforeEach, expect, SpyInstance } from 'vitest';
+import { vi, it, describe, beforeEach, expect, MockInstance } from 'vitest';
 import { Plugin, TAbstractFile } from 'obsidian';
 import dom from './util/dom';
 import { CustomRule } from '../settings/data';
@@ -93,7 +93,7 @@ describe('isApplicable', () => {
 });
 
 describe('removeFromAllFiles', () => {
-  let removeIconInNode: SpyInstance;
+  let removeIconInNode: MockInstance;
   let plugin: any;
   let rule: CustomRule;
 
@@ -206,7 +206,7 @@ describe('getSortedRules', () => {
 });
 
 describe('add', () => {
-  let createIconNode: SpyInstance;
+  let createIconNode: MockInstance;
   let plugin: any;
   let rule: CustomRule;
   let file: any;
