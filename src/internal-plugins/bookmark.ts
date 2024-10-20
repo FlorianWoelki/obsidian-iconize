@@ -97,6 +97,10 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
       item: BookmarkItem,
       itemDoms: WeakMap<BookmarkItem, BookmarkItemValue>,
     ): void => {
+      if (!itemDoms) {
+        return;
+      }
+      
       const lookupItem = itemDoms.get(item);
       if (!lookupItem) {
         return;
