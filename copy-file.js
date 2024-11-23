@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import path from 'path';
 
 const copyFile = (options = {}) => {
   const { targets = [], hook = 'writeBundle' } = options;
@@ -8,7 +9,7 @@ const copyFile = (options = {}) => {
       targets.forEach(async (target) => {
         try {
           console.log(`copying ${target.src}...`);
-          const destPath = target.dest + target.src.split('/').pop();
+          const destPath = path.join(target.dest, path.basename(target.src));
           await fs.copyFile(target.src, destPath);
         } catch (error) {
           console.log(error);

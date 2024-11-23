@@ -1,4 +1,4 @@
-import { vi, it, describe, beforeEach, expect, SpyInstance } from 'vitest';
+import { vi, it, describe, beforeEach, expect, MockInstance } from 'vitest';
 import { Plugin, TAbstractFile } from 'obsidian';
 import dom from './util/dom';
 import { CustomRule } from '../settings/data';
@@ -67,33 +67,33 @@ describe('isApplicable', () => {
 
   it('should return `false` if metadata is not available', async () => {
     plugin.app.vault.adapter.stat = (): any => null;
-    expect(await customRule.isApplicable(plugin, rule, file)).toBe(false);
+    expect(await customRule.isApplicable(plugin, rule, file.path)).toBe(false);
   });
 
   it('should return `false` if the rule does not match with the name', async () => {
     rule.rule = 'test1';
-    expect(await customRule.isApplicable(plugin, rule, file)).toBe(false);
+    expect(await customRule.isApplicable(plugin, rule, file.path)).toBe(false);
     rule.rule = '.*-test';
-    expect(await customRule.isApplicable(plugin, rule, file)).toBe(false);
+    expect(await customRule.isApplicable(plugin, rule, file.path)).toBe(false);
   });
 
   it('should return `false` if the rule does not match the type', async () => {
     rule.for = 'folders';
     rule.rule = 'test';
-    expect(await customRule.isApplicable(plugin, rule, file)).toBe(false);
+    expect(await customRule.isApplicable(plugin, rule, file.path)).toBe(false);
     rule.rule = 'test.*';
-    expect(await customRule.isApplicable(plugin, rule, file)).toBe(false);
+    expect(await customRule.isApplicable(plugin, rule, file.path)).toBe(false);
   });
 
   it('should return `true` if the rule matches the name and type', async () => {
-    expect(await customRule.isApplicable(plugin, rule, file)).toBe(true);
+    expect(await customRule.isApplicable(plugin, rule, file.path)).toBe(true);
     rule.rule = 'test.*';
-    expect(await customRule.isApplicable(plugin, rule, file)).toBe(true);
+    expect(await customRule.isApplicable(plugin, rule, file.path)).toBe(true);
   });
 });
 
 describe('removeFromAllFiles', () => {
-  let removeIconInNode: SpyInstance;
+  let removeIconInNode: MockInstance;
   let plugin: any;
   let rule: CustomRule;
 
@@ -206,7 +206,7 @@ describe('getSortedRules', () => {
 });
 
 describe('add', () => {
-  let createIconNode: SpyInstance;
+  let createIconNode: MockInstance;
   let plugin: any;
   let rule: CustomRule;
   let file: any;

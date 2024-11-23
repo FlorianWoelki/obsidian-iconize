@@ -3,11 +3,12 @@ import {
   getIconFromIconPack,
   getIconPackNameByPrefix,
   getSvgFromLoadedIcon,
+  LUCIDE_ICON_PACK_NAME,
   nextIdentifier,
   removeIconFromIconPackDirectory,
 } from '@app/icon-pack-manager';
 import { FileItem, FileWithLeaf } from './@types/obsidian';
-import IconFolderPlugin from './main';
+import IconizePlugin from './main';
 
 // Default obsidian file icon.
 export const DEFAULT_FILE_ICON =
@@ -36,16 +37,16 @@ export const readFileSync = async (file: File): Promise<string> => {
 /**
  * Gets all the currently opened files by getting the markdown leaves and then checking
  * for the `file` property in the view. This also returns the leaf of the file.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  * @returns An array of {@link FileWithLeaf} objects.
  */
-export const getAllOpenedFiles = (plugin: IconFolderPlugin): FileWithLeaf[] => {
+export const getAllOpenedFiles = (plugin: IconizePlugin): FileWithLeaf[] => {
   return plugin.app.workspace
     .getLeavesOfType('markdown')
     .reduce<FileWithLeaf[]>((prev, curr) => {
       const file = curr.view.file;
       if (file) {
-        prev.push({ ...file, leaf: curr });
+        prev.push({ ...file, leaf: curr, pinned: false });
       }
       return prev;
     }, []);
@@ -72,11 +73,11 @@ export const getFileItemInnerTitleEl = (fileItem: FileItem): HTMLElement => {
 /**
  * A utility function which will add the icon to the icon pack and then extract the icon
  * to the icon pack.
- * @param plugin IconFolderPlugin that will be used for extracting the icon.
+ * @param plugin IconizePlugin that will be used for extracting the icon.
  * @param iconNameWithPrefix String that will be used to add the icon to the icon pack.
  */
 export const saveIconToIconPack = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   iconNameWithPrefix: string,
 ): void => {
   const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
@@ -88,6 +89,13 @@ export const saveIconToIconPack = (
   }
 
   const iconPackName = getIconPackNameByPrefix(iconPrefix);
+  if (
+    iconPackName === LUCIDE_ICON_PACK_NAME &&
+    !plugin.doesUseCustomLucideIconPack()
+  ) {
+    return;
+  }
+
   const icon = getIconFromIconPack(iconPackName, iconPrefix, iconName);
   extractIconToIconPack(plugin, icon, possibleIcon);
 };
@@ -95,11 +103,11 @@ export const saveIconToIconPack = (
 /**
  * A utility function which will remove the icon from the icon pack by removing the icon
  * file from the icon pack directory.
- * @param plugin IconFolderPlugin that will be used for removing the icon.
+ * @param plugin IconizePlugin that will be used for removing the icon.
  * @param iconNameWithPrefix String that will be used to remove the icon from the icon pack.
  */
 export const removeIconFromIconPack = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   iconNameWithPrefix: string,
 ): void => {
   const identifier = nextIdentifier(iconNameWithPrefix);
@@ -110,4 +118,26 @@ export const removeIconFromIconPack = (
   if (!duplicatedIcon) {
     removeIconFromIconPackDirectory(plugin, iconPackName, iconName);
   }
+};
+
+/**
+ * A utility function which will convert a string to a hexadecimal color.
+ * @param str String that will be converted to a hexadecimal color.
+ * @returns A string which is the hexadecimal color.
+ */
+export const stringToHex = (str: string): string => {
+  const validHex = str.replace(/[^0-9a-fA-F]/g, '');
+  const hex = validHex.padStart(6, '0').substring(0, 6);
+  return `#${hex}`;
+};
+
+/**
+ * A utility function which will check if a string is a hexadecimal color.
+ * @param str String that will be checked if it is a hexadecimal color.
+ * @param includeHash Boolean which will include the hash in the check.
+ * @returns A boolean which is true if the string is a hexadecimal color.
+ */
+export const isHexadecimal = (str: string, includeHash = false): boolean => {
+  const regex = new RegExp(`^${includeHash ? '#' : ''}[0-9A-Fa-f]{1,6}$`);
+  return regex.test(str);
 };

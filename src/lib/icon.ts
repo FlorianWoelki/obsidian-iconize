@@ -1,12 +1,13 @@
 import { ExplorerView, TabHeaderLeaf } from '@app/@types/obsidian';
 import emoji from '@app/emoji';
-import IconFolderPlugin, { FolderIconObject } from '@app/main';
+import IconizePlugin, { FolderIconObject } from '@app/main';
 import customRule from './custom-rule';
 import dom from './util/dom';
 import iconTabs from './icon-tabs';
 import { getFileItemInnerTitleEl, getFileItemTitleEl } from '@app/util';
 import {
   Icon,
+  LUCIDE_ICON_PACK_NAME,
   extractIconToIconPack,
   getAllIconPacks,
   getIconFromIconPack,
@@ -17,11 +18,12 @@ import {
   nextIdentifier,
 } from '@app/icon-pack-manager';
 import config from '@app/config';
-import { Notice } from 'obsidian';
+import { Notice, requireApiVersion } from 'obsidian';
 import { IconCache } from './icon-cache';
+import { logger } from './logger';
 
 const checkMissingIcons = async (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   data: [string, string | FolderIconObject][],
 ): Promise<void> => {
   const missingIcons: Set<Icon> = new Set();
@@ -35,9 +37,18 @@ const checkMissingIcons = async (
     const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
     const iconPackName = getIconPackNameByPrefix(iconPrefix);
 
+    if (
+      iconPackName === LUCIDE_ICON_PACK_NAME &&
+      !plugin.doesUseCustomLucideIconPack()
+    ) {
+      return;
+    }
+
     const icon = getIconFromIconPack(iconPackName, iconPrefix, iconName);
     if (!icon) {
-      console.error(`Icon file ${iconNameWithPrefix} could not be found.`);
+      logger.error(
+        `Icon file with name ${iconNameWithPrefix} could not be found`,
+      );
       return null;
     }
 
@@ -48,7 +59,9 @@ const checkMissingIcons = async (
     if (!doesIconFileExists) {
       const possibleIcon = getSvgFromLoadedIcon(iconPrefix, iconName);
       if (!possibleIcon) {
-        console.error(`Icon SVG ${iconNameWithPrefix} could not be found.`);
+        logger.error(
+          `Icon SVG with name ${iconNameWithPrefix} could not be found`,
+        );
         return null;
       }
 
@@ -143,8 +156,8 @@ const checkMissingIcons = async (
         const path = `${getPath()}/${iconPack.name}/${iconName}.svg`;
         const doesPathExist = await plugin.app.vault.adapter.exists(path);
         if (doesPathExist) {
-          console.info(
-            `[${config.PLUGIN_NAME}] Removing icon ${path} because it is not used anymore.`,
+          logger.info(
+            `Removing icon with path '${path}' because it is not used anymore`,
           );
           // Removes the icon file.
           await plugin.app.vault.adapter.remove(
@@ -160,7 +173,7 @@ const checkMissingIcons = async (
  * This function adds all the possible icons to the corresponding nodes. It
  * adds the icons, that are defined in the data as a basic string to the nodes
  * and the custom rule icons.
- * @param plugin Instance of IconFolderPlugin.
+ * @param plugin Instance of IconizePlugin.
  * @param data Data that will be used to add all the icons to the nodes.
  * @param registeredFileExplorers A WeakSet of file explorers that are being used as a
  * cache for already handled file explorers.
@@ -168,7 +181,7 @@ const checkMissingIcons = async (
  * explorer.
  */
 const addAll = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   data: [string, string | FolderIconObject][],
   registeredFileExplorers: WeakSet<ExplorerView>,
   callback?: () => void,
@@ -182,53 +195,67 @@ const addAll = (
 
     registeredFileExplorers.add(fileExplorer.view);
 
-    // Adds icons to already open file tabs.
-    if (plugin.getSettings().iconInTabsEnabled) {
-      for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
-        const file = leaf.view.file;
-        if (file) {
-          const tabHeaderLeaf = leaf as TabHeaderLeaf;
-          iconTabs.add(plugin, file, tabHeaderLeaf.tabHeaderInnerIconEl);
-        }
-      }
-    }
-
-    for (const [dataPath, value] of data) {
-      const fileItem = fileExplorer.view.fileItems[dataPath];
-      if (fileItem) {
-        const titleEl = getFileItemTitleEl(fileItem);
-        const titleInnerEl = getFileItemInnerTitleEl(fileItem);
-
-        // Need to check this because refreshing the plugin will duplicate all the icons.
-        if (titleEl.children.length === 2 || titleEl.children.length === 1) {
-          const iconName = typeof value === 'string' ? value : value.iconName;
-          const iconColor =
-            typeof value === 'string' ? undefined : value.iconColor;
-          if (iconName) {
-            // Removes a possible existing icon.
-            const existingIcon = titleEl.querySelector('.iconize-icon');
-            if (existingIcon) {
-              existingIcon.remove();
-            }
-
-            // Creates the new node with the icon inside.
-            const iconNode = titleEl.createDiv();
-            iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
-            iconNode.classList.add('iconize-icon');
-
-            IconCache.getInstance().set(dataPath, {
-              iconNameWithPrefix: iconName,
+    const setIcons = () => {
+      // Adds icons to already open file tabs.
+      if (plugin.getSettings().iconInTabsEnabled) {
+        for (const leaf of plugin.app.workspace.getLeavesOfType('markdown')) {
+          const filePath = leaf.view.file?.path ?? leaf.view.getState().file;
+          if (typeof filePath === 'string') {
+            const tabHeaderLeaf = leaf as TabHeaderLeaf;
+            const iconColor = plugin.getIconColor(filePath);
+            iconTabs.add(plugin, filePath, tabHeaderLeaf.tabHeaderInnerIconEl, {
+              iconColor,
             });
-            dom.setIconForNode(plugin, iconName, iconNode, iconColor);
-
-            titleEl.insertBefore(iconNode, titleInnerEl);
           }
         }
       }
-    }
 
-    // Callback function to register other events to this file explorer.
-    callback?.();
+      for (const [dataPath, value] of data) {
+        const fileItem = fileExplorer.view.fileItems[dataPath];
+        if (fileItem) {
+          const titleEl = getFileItemTitleEl(fileItem);
+          const titleInnerEl = getFileItemInnerTitleEl(fileItem);
+
+          // Need to check this because refreshing the plugin will duplicate all the icons.
+          if (titleEl.children.length === 2 || titleEl.children.length === 1) {
+            const iconName = typeof value === 'string' ? value : value.iconName;
+            const iconColor =
+              typeof value === 'string' ? undefined : value.iconColor;
+            if (iconName) {
+              // Removes a possible existing icon.
+              const existingIcon = titleEl.querySelector('.iconize-icon');
+              if (existingIcon) {
+                existingIcon.remove();
+              }
+
+              // Creates the new node with the icon inside.
+              const iconNode = titleEl.createDiv();
+              iconNode.setAttribute(config.ICON_ATTRIBUTE_NAME, iconName);
+              iconNode.classList.add('iconize-icon');
+
+              IconCache.getInstance().set(dataPath, {
+                iconNameWithPrefix: iconName,
+              });
+              dom.setIconForNode(plugin, iconName, iconNode, {
+                color: iconColor,
+              });
+
+              titleEl.insertBefore(iconNode, titleInnerEl);
+            }
+          }
+        }
+      }
+
+      // Callback function to register other events to this file explorer.
+      callback?.();
+    };
+
+    if (requireApiVersion('1.7.2')) {
+      // TODO: Remove loading deferred view to improve performance.
+      fileExplorer.loadIfDeferred().then(setIcons);
+    } else {
+      setIcons();
+    }
   }
 
   // Handles the custom rules.
@@ -239,14 +266,11 @@ const addAll = (
 
 /**
  * Gets the icon of a given path. This function returns the first occurrence of an icon.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  * @param path Path to get the icon of.
  * @returns The icon of the path if it exists, undefined otherwise.
  */
-const getByPath = (
-  plugin: IconFolderPlugin,
-  path: string,
-): string | undefined => {
+const getByPath = (plugin: IconizePlugin, path: string): string | undefined => {
   if (path === 'settings' || path === 'migrated') {
     return undefined;
   }
@@ -280,11 +304,11 @@ interface IconWithPath {
 
 /**
  * Gets all the icons with their paths as an object.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  * @returns An object that consists of the path and the icon name for the data
  * or custom rule.
  */
-const getAllWithPath = (plugin: IconFolderPlugin): IconWithPath[] => {
+const getAllWithPath = (plugin: IconizePlugin): IconWithPath[] => {
   const result: IconWithPath[] = [];
   Object.keys(plugin.getData()).forEach((path) => {
     if (path === 'settings' || path === 'migrated') {
@@ -328,12 +352,12 @@ const getIconByName = (iconNameWithPrefix: string): Icon | null => {
 
 /**
  * Returns the {@link Icon} for the given path.
- * @param plugin IconFolderPlugin instance.
+ * @param plugin IconizePlugin instance.
  * @param path String which is the path to get the icon of.
  * @returns Icon or Emoji as string if it exists, `null` otherwise.
  */
 const getIconByPath = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   path: string,
 ): Icon | string | null => {
   const iconNameWithPrefix = getByPath(plugin, path);

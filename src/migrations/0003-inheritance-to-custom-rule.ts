@@ -1,6 +1,6 @@
 import config from '@app/config';
 import customRule from '@app/lib/custom-rule';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { CustomRule } from '@app/settings/data';
 import { Notice } from 'obsidian';
 
@@ -10,7 +10,7 @@ interface FolderIconObject {
   iconColor?: string;
 }
 
-export default async function migrate(plugin: IconFolderPlugin): Promise<void> {
+export default async function migrate(plugin: IconizePlugin): Promise<void> {
   // Migration for inheritance to custom rule.
   if (plugin.getSettings().migrated === 3) {
     let hasRemovedInheritance = false;

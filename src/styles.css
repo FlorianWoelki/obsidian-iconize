@@ -1,7 +1,17 @@
+.iconize-inline-title-wrapper {
+  width: var(--line-width);
+  margin-inline: var(--content-margin);
+}
+
 .iconize-title-icon {
   max-width: var(--max-width);
-  width: var(--line-width);
-  margin-inline: var(--content-margin) !important;
+  margin-right: var(--size-4-2);
+}
+
+.iconize-icon-in-link {
+  transform: translateY(20%);
+  margin-right: var(--size-2-2);
+  display: inline-flex;
 }
 
 .iconize-icon {
@@ -61,8 +71,7 @@
   line-height: 1.3;
 }
 
-.iconize-modal.prompt-results
-  .suggestion-item.suggestion-item__center {
+.iconize-modal.prompt-results .suggestion-item.suggestion-item__center {
   justify-content: center;
 }
 

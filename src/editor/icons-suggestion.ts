@@ -10,12 +10,12 @@ import { getAllLoadedIconNames } from '../icon-pack-manager';
 import icon from '../lib/icon';
 import emoji from '../emoji';
 import { saveIconToIconPack } from '@app/util';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 
 export default class SuggestionIcon extends EditorSuggest<string> {
   constructor(
     app: App,
-    public plugin: IconFolderPlugin,
+    public plugin: IconizePlugin,
   ) {
     super(app);
   }

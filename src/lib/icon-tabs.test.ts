@@ -1,4 +1,4 @@
-import { it, describe, beforeEach, expect, vi, SpyInstance } from 'vitest';
+import { it, describe, beforeEach, expect, vi, MockInstance } from 'vitest';
 import { DEFAULT_FILE_ICON } from '@app/util';
 import iconTabs from './icon-tabs';
 import dom from './util/dom';
@@ -59,7 +59,7 @@ describe('getTabLeavesOfFilePath', () => {
 });
 
 describe('add', () => {
-  let setIconForNode: SpyInstance;
+  let setIconForNode: MockInstance;
   let plugin: any;
   let file: any;
   beforeEach(() => {
@@ -85,7 +85,7 @@ describe('add', () => {
 
   it('should only call `dom.setIconForNode` if `options.iconName` is set', async () => {
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, {} as any, iconContainer, {
+    await iconTabs.add(plugin, '', iconContainer, {
       iconName: 'IbTest',
     });
     expect(iconContainer.style.display).toBe('flex');
@@ -94,13 +94,13 @@ describe('add', () => {
       plugin,
       'IbTest',
       iconContainer,
-      'purple',
+      { color: 'purple' },
     );
   });
 
   it('should use icon color `options.iconColor`', async () => {
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, {} as any, iconContainer, {
+    await iconTabs.add(plugin, '', iconContainer, {
       iconName: 'IbTest',
       iconColor: 'blue',
     });
@@ -108,27 +108,25 @@ describe('add', () => {
       plugin,
       'IbTest',
       iconContainer,
-      'blue',
+      { color: 'blue' },
     );
   });
 
   it('should call `dom.setIconForNode` when icon is found in data', async () => {
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, file, iconContainer);
+    await iconTabs.add(plugin, file.path, iconContainer);
     expect(iconContainer.style.margin).toBe('');
     expect(setIconForNode).toBeCalledTimes(1);
-    expect(setIconForNode).toBeCalledWith(
-      plugin,
-      'test',
-      iconContainer,
-      'purple',
-    );
+    expect(setIconForNode).toBeCalledWith(plugin, 'test', iconContainer, {
+      color: 'purple',
+      shouldApplyAllStyles: true,
+    });
   });
 
   it('should not call `dom.setIconForNode` when icon is not found in data', async () => {
     file.path = 'test2';
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, file, iconContainer);
+    await iconTabs.add(plugin, file.path, iconContainer);
     expect(setIconForNode).toBeCalledTimes(0);
   });
 
@@ -152,15 +150,12 @@ describe('add', () => {
       .mockImplementationOnce(() => true as any);
 
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, file, iconContainer);
+    await iconTabs.add(plugin, file.path, iconContainer);
     expect(iconContainer.style.margin).toBe('');
     expect(setIconForNode).toBeCalledTimes(1);
-    expect(setIconForNode).toBeCalledWith(
-      plugin,
-      'IbTest',
-      iconContainer,
-      undefined,
-    );
+    expect(setIconForNode).toBeCalledWith(plugin, 'IbTest', iconContainer, {
+      color: undefined,
+    });
 
     getSortedRules.mockRestore();
     isApplicable.mockRestore();
@@ -186,7 +181,7 @@ describe('add', () => {
       .mockImplementationOnce(() => false as any);
 
     const iconContainer = document.createElement('div');
-    await iconTabs.add(plugin, file, iconContainer);
+    await iconTabs.add(plugin, file.path, iconContainer);
     expect(setIconForNode).toBeCalledTimes(0);
 
     getSortedRules.mockRestore();

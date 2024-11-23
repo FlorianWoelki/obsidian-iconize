@@ -1,10 +1,14 @@
-import { Notice, Plugin } from 'obsidian';
+import { getIcon, getIconIds, Notice, Plugin } from 'obsidian';
+import predefinedIconPacks from './icon-packs';
 import svg from './lib/util/svg';
-import { getFileFromJSZipFile, readZipFile } from './zip-util';
+import { downloadZipFile, getFileFromJSZipFile, readZipFile } from './zip-util';
 import JSZip from 'jszip';
 import config from '@app/config';
-import IconFolderPlugin from './main';
+import { logger } from '@app/lib/logger';
+import IconizePlugin from './main';
 import { getExtraPath } from './icon-packs';
+
+export const LUCIDE_ICON_PACK_NAME = 'lucide-icons';
 
 export interface Icon {
   name: string;
@@ -55,6 +59,58 @@ interface IconPack {
 let iconPacks: IconPack[] = [];
 export const setIconPacks = (newIconPacks: IconPack[]): void => {
   iconPacks = newIconPacks;
+};
+
+export const addLucideIconsPack = (plugin: IconizePlugin): void => {
+  iconPacks.push({
+    name: LUCIDE_ICON_PACK_NAME,
+    prefix: 'Li',
+    custom: false,
+    icons: plugin.doesUseNativeLucideIconPack()
+      ? getIconIds()
+          .map((iconId) => iconId.replace(/^lucide-/, ''))
+          .map((iconId) => {
+            const iconEl = getIcon(iconId);
+            iconEl.removeClass('svg-icon'); // Removes native `svg-icon` class.
+            return {
+              name: getNormalizedName(iconId),
+              filename: iconId,
+              prefix: 'Li',
+              svgElement: iconEl?.outerHTML,
+              svgContent: iconEl?.innerHTML,
+              svgViewbox: '',
+              iconPackName: LUCIDE_ICON_PACK_NAME,
+            };
+          })
+      : [],
+  });
+};
+
+export const addCustomLucideIconPack = async (
+  plugin: IconizePlugin,
+): Promise<void> => {
+  const iconPackIndex = iconPacks.findIndex(
+    (iconPack) => iconPack.name === LUCIDE_ICON_PACK_NAME,
+  );
+  if (iconPackIndex > -1) {
+    iconPacks.splice(iconPackIndex);
+  }
+  const iconPack = predefinedIconPacks['lucide'];
+  const arrayBuffer = await downloadZipFile(iconPack.downloadLink);
+  await createZipFile(plugin, `${iconPack.name}.zip`, arrayBuffer);
+  await registerIconPack(iconPack.name, arrayBuffer);
+};
+
+export const removeCustomLucideIconPack = async (
+  plugin: IconizePlugin,
+): Promise<void> => {
+  const iconPackIndex = iconPacks.findIndex(
+    (iconPack) => iconPack.name === LUCIDE_ICON_PACK_NAME,
+  );
+  if (iconPackIndex > -1) {
+    iconPacks.splice(iconPackIndex);
+  }
+  await deleteIconPack(plugin, LUCIDE_ICON_PACK_NAME);
 };
 
 export const moveIconPackDirectories = async (
@@ -203,16 +259,16 @@ export const createFile = async (
         `${path}/${iconPackName}/${newFilename}`,
         content,
       );
-      console.info(
-        `[${config.PLUGIN_NAME}] Renamed old file ${normalizedFilename} to ${newFilename} because of duplication.`,
+      logger.info(
+        `Renamed old file ${normalizedFilename} to ${newFilename} due to duplication`,
       );
       new Notice(
         `[${config.PLUGIN_NAME}] Renamed ${normalizedFilename} to ${newFilename} to avoid duplication.`,
         8000,
       );
     } else {
-      console.warn(
-        `[${config.PLUGIN_NAME}] Could not create icons with duplicated file names (${normalizedFilename}).`,
+      logger.warn(
+        `Could not create icons with duplicated file names (file name: ${normalizedFilename})`,
       );
       new Notice(
         `[${config.PLUGIN_NAME}] Could not create duplicated icon name (${normalizedFilename})`,
@@ -268,7 +324,7 @@ const generateIcon = (
     iconName.charAt(0).toUpperCase() + iconName.substring(1);
 
   if (!validIconName.exec(normalizedName)) {
-    console.log(`skipping icon with invalid name: ${iconName}`);
+    logger.info(`Skipping icon with invalid name: ${iconName}`);
     return null;
   }
 
@@ -280,7 +336,7 @@ const generateIcon = (
 
   const svgContentMatch = content.match(svgContentRegex);
   if (!svgContentMatch) {
-    console.log(`skipping icon with invalid svg content: ${content}`);
+    logger.info(`Skipping icon with invalid svg content: ${iconName}`);
     return null;
   }
 
@@ -319,13 +375,13 @@ export const createIconPackPrefix = (iconPackName: string): string => {
   );
 };
 
-export const loadUsedIcons = async (
-  plugin: IconFolderPlugin,
-  icons: string[],
-) => {
+export const loadUsedIcons = async (plugin: IconizePlugin, icons: string[]) => {
   const iconPacks = (await listPath(plugin)).folders.map((iconPack) =>
     iconPack.split('/').pop(),
   );
+  if (plugin.doesUseNativeLucideIconPack()) {
+    iconPacks.push(LUCIDE_ICON_PACK_NAME);
+  }
 
   for (let i = 0; i < icons.length; i++) {
     const entry = icons[i];
@@ -350,15 +406,15 @@ export const nextIdentifier = (iconName: string) => {
 };
 
 export const loadIcon = async (
-  plugin: IconFolderPlugin,
-  iconPacks: string[],
+  plugin: IconizePlugin,
+  iconPackNames: string[],
   iconName: string,
 ): Promise<void> => {
   const nextLetter = nextIdentifier(iconName);
   const prefix = iconName.substring(0, nextLetter);
   const name = iconName.substring(nextLetter);
 
-  const iconPack = iconPacks.find((folder) => {
+  const iconPack = iconPackNames.find((folder) => {
     const folderPrefix = createIconPackPrefix(folder);
     return prefix === folderPrefix;
   });
@@ -375,10 +431,30 @@ export const loadIcon = async (
     return;
   }
 
+  if (
+    iconPack === LUCIDE_ICON_PACK_NAME &&
+    plugin.doesUseNativeLucideIconPack()
+  ) {
+    // Native lucide icons already exist for Obsidian.
+    const lucideIcons = iconPacks.find(
+      (iconPack) => iconPack.name === LUCIDE_ICON_PACK_NAME,
+    );
+    const icon = lucideIcons.icons.find((icon) => icon.name === name);
+    if (!icon) {
+      logger.warn(
+        `Icon ${icon} does not exist in the native Lucide icon pack.`,
+      );
+      return;
+    }
+
+    preloadedIcons.push(icon);
+    return;
+  }
+
   const fullPath = path + '/' + iconPack + '/' + name + '.svg';
   if (!(await plugin.app.vault.adapter.exists(fullPath))) {
-    console.warn(
-      `[iconize] icon with name "${name}" was not found (full path: ${fullPath}).`,
+    logger.info(
+      `Icon with name '${name}' was not found (full path: ${fullPath})`,
     );
     return;
   }
@@ -388,7 +464,7 @@ export const loadIcon = async (
   preloadedIcons.push(icon);
 };
 
-export const initIconPacks = async (plugin: Plugin): Promise<void> => {
+export const initIconPacks = async (plugin: IconizePlugin): Promise<void> => {
   // Remove the beginning slash because paths which start with `/` are the same as without
   // a slash.
   if (path.startsWith('/')) {
@@ -438,7 +514,9 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
       prefix,
       custom: true,
     });
-    console.log(`loaded icon pack ${folderName} (${loadedIcons.length})`);
+    logger.info(
+      `Loaded icon pack '${folderName}' (amount of icons: ${loadedIcons.length})`,
+    );
   }
 
   // Extract all files from the zip files.
@@ -446,13 +524,22 @@ export const initIconPacks = async (plugin: Plugin): Promise<void> => {
     const files = zipFiles[zipFile];
     const loadedIcons: Icon[] = await getLoadedIconsFromZipFile(zipFile, files);
     const prefix = createIconPackPrefix(zipFile);
+    if (
+      zipFile === LUCIDE_ICON_PACK_NAME &&
+      !plugin.doesUseCustomLucideIconPack()
+    ) {
+      continue;
+    }
+
     iconPacks.push({
       name: zipFile,
       icons: loadedIcons,
       prefix,
       custom: false,
     });
-    console.log(`loaded icon pack ${zipFile} (${loadedIcons.length})`);
+    logger.info(
+      `Loaded icon pack '${zipFile}' (amount of icons: ${loadedIcons.length})`,
+    );
   }
 };
 
@@ -490,17 +577,15 @@ export const addIconToIconPack = (
   iconName = getNormalizedName(iconName);
   const icon = generateIcon(iconPackName, iconName, iconContent);
   if (!icon) {
-    console.warn(
-      `[iconize] icon could not be generated (icon: ${iconName}, content: ${iconContent}).`,
+    logger.warn(
+      `Icon could not be generated (icon: ${iconName}, content: ${iconContent})`,
     );
     return undefined;
   }
 
   const iconPack = iconPacks.find((iconPack) => iconPack.name === iconPackName);
   if (!iconPack) {
-    console.warn(
-      `[iconize] iconpack with name "${iconPackName}" was not found.`,
-    );
+    logger.warn(`Iconpack with name '${iconPackName}' was not found`);
     return undefined;
   }
 
@@ -510,7 +595,7 @@ export const addIconToIconPack = (
 };
 
 export const removeIconFromIconPackDirectory = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   iconPackName: string,
   iconName: string,
 ): Promise<void> => {
@@ -564,7 +649,9 @@ export const registerIconPack = async (
   const loadedIcons: Icon[] = await getLoadedIconsFromZipFile(name, files);
   const prefix = createIconPackPrefix(name);
   iconPacks.push({ name, icons: loadedIcons, prefix, custom: false });
-  console.log(`loaded icon pack ${name} (${loadedIcons.length})`);
+  logger.info(
+    `Loaded icon pack ${name} (amount of icons: ${loadedIcons.length})`,
+  );
 };
 
 export const doesIconExists = (iconName: string): boolean => {
@@ -574,6 +661,12 @@ export const doesIconExists = (iconName: string): boolean => {
       (icon) => icon.name === iconName || icon.prefix + icon.name === iconName,
     ) !== undefined
   );
+};
+
+export const getIconsFromIconPack = (
+  iconPackName: string,
+): IconPack | undefined => {
+  return iconPacks.find((iconPack) => iconPack.name === iconPackName);
 };
 
 export const getIconFromIconPack = (

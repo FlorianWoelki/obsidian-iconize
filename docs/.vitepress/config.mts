@@ -11,6 +11,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Get Started', link: '/guide/getting-started' },
+      { text: 'API', link: '/api/getting-started' },
     ],
 
     search: {
@@ -32,11 +33,20 @@ export default defineConfig({
         text: 'Files and Folders',
         collapsed: false,
         items: [
-          { text: 'Icon before file/folder name', link: '/files-and-folders/icon-before-file-or-folder' },
+          {
+            text: 'Icon before file/folder name',
+            link: '/files-and-folders/icon-before-file-or-folder',
+          },
           { text: 'Icon in Tabs', link: '/files-and-folders/icon-tabs' },
           { text: 'Custom Rules', link: '/files-and-folders/custom-rules' },
-          { text: 'Use Frontmatter', link: '/files-and-folders/use-frontmatter' },
-          { text: 'Change individual icon color', link: '/files-and-folders/individual-icon-color' },
+          {
+            text: 'Use Frontmatter',
+            link: '/files-and-folders/use-frontmatter',
+          },
+          {
+            text: 'Change individual icon color',
+            link: '/files-and-folders/individual-icon-color',
+          },
         ],
       },
       {
@@ -48,18 +58,33 @@ export default defineConfig({
         ],
       },
       {
+        text: 'API',
+        collapsed: false,
+        items: [{ text: 'Getting Started', link: '/api/getting-started' }],
+      },
+      {
+        text: 'Compatibility with Plugins',
+        collapsed: true,
+        items: [
+          { text: 'Metadatamenu', link: '/compatibility-plugins/metadatamenu' },
+        ],
+      },
+      {
         text: 'Good to know',
         collapsed: true,
         items: [
           { text: 'See icon name', link: '/good-to-know/see-icon-name' },
+          {
+            text: 'Use png in icon pack',
+            link: '/good-to-know/transform-png-to-svg',
+          },
+          { text: 'Unicode issue', link: '/good-to-know/unicode-issue' },
         ],
       },
       {
         text: 'Deprecated',
         collapsed: true,
-        items: [
-          { text: 'Inheritance', link: '/deprecated/inheritance' },
-        ],
+        items: [{ text: 'Inheritance', link: '/deprecated/inheritance' }],
       },
     ],
 

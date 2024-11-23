@@ -1,9 +1,9 @@
-import { beforeEach, it, expect, describe, vi, SpyInstance } from 'vitest';
+import { beforeEach, it, expect, describe, vi, MockInstance } from 'vitest';
 import * as iconPackManager from '../../icon-pack-manager';
 import dom from './dom';
 import svg from './svg';
 import style from './style';
-import twemoji from 'twemoji';
+import twemoji from '@twemoji/api';
 
 describe('removeIconInNode', () => {
   it('should remove the icon node from the provided element', () => {
@@ -85,7 +85,7 @@ describe('getIconFromElement', () => {
 });
 
 describe('setIconForNode', () => {
-  let getSvgFromLoadedIcon: SpyInstance;
+  let getSvgFromLoadedIcon: MockInstance;
   let plugin: any;
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -114,7 +114,7 @@ describe('setIconForNode', () => {
       .spyOn(svg, 'colorize')
       .mockImplementationOnce((icon) => icon);
 
-    dom.setIconForNode(plugin, 'IbTest', node, 'purple');
+    dom.setIconForNode(plugin, 'IbTest', node, { color: 'purple' });
 
     expect(colorize).toBeCalledTimes(2); // 2 times because of `applyAll` and `colorize`.
     colorize.mockRestore();
@@ -150,10 +150,23 @@ describe('setIconForNode', () => {
     parse.mockRestore();
     applyAll.mockRestore();
   });
+
+  it('should set `shouldApplyAllStyles` to `true` by default', () => {
+    const applyAll = vi
+      .spyOn(style, 'applyAll')
+      .mockImplementationOnce(() => '');
+
+    const node = document.createElement('div');
+    dom.setIconForNode(plugin, 'IbTest', node, { color: 'blue' });
+    expect(applyAll).toBeCalledTimes(1);
+
+    dom.setIconForNode(plugin, 'IbTest', node);
+    expect(applyAll).toBeCalledTimes(2);
+  });
 });
 
 describe('createIconNode', () => {
-  let getSvgFromLoadedIcon: SpyInstance;
+  let getSvgFromLoadedIcon: MockInstance;
   let plugin: any;
   beforeEach(() => {
     document.body.innerHTML = '';

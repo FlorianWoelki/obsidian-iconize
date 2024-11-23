@@ -1,4 +1,12 @@
-import { TAbstractFile, TFile, View, WorkspaceLeaf } from 'obsidian';
+import IconizeAPI from '@app/lib/api';
+import {
+  Editor,
+  TAbstractFile,
+  TFile,
+  View,
+  ViewState,
+  WorkspaceLeaf,
+} from 'obsidian';
 
 interface InternalPlugin {
   enabled: boolean;
@@ -41,12 +49,15 @@ interface BookmarkInternalPlugin extends InternalPlugin {
   };
 }
 
+interface OutlineInternalPlugin extends InternalPlugin {}
+
 type FileExplorerInternalPlugin = InternalPlugin;
 
 interface InternalPlugins {
   starred: StarredInternalPlugin;
   bookmarks: BookmarkInternalPlugin;
   'file-explorer': FileExplorerInternalPlugin;
+  outline: OutlineInternalPlugin;
 }
 
 declare module 'obsidian' {
@@ -57,6 +68,14 @@ declare module 'obsidian' {
   }
 
   interface App {
+    plugins: {
+      enabledPlugins: Set<string>;
+      plugins: {
+        ['obsidian-icon-folder']?: {
+          api: IconizeAPI;
+        };
+      };
+    };
     internalPlugins: {
       plugins: InternalPlugins;
       getPluginById<T extends keyof InternalPlugins>(id: T): InternalPlugins[T];
@@ -65,7 +84,7 @@ declare module 'obsidian' {
   }
 }
 
-type FileWithLeaf = TFile & { leaf: ExplorerLeaf };
+type FileWithLeaf = TFile & { leaf: ExplorerLeaf; pinned: boolean };
 
 interface ExplorerLeaf extends WorkspaceLeaf {
   view: ExplorerView;
@@ -82,10 +101,18 @@ interface DomChild {
   containerEl: HTMLElement;
 }
 
+interface ExplorerViewState extends ViewState {
+  state: {
+    source: boolean; // true if source view is active
+  };
+}
+
 interface ExplorerView extends View {
   fileItems: Record<string, FileItem>; // keyed by path
   ready: boolean; // true if fileItems is populated
   file?: TFile;
+  getViewState(): ExplorerViewState;
+  getMode(): 'source' | 'preview';
   dom: { children: DomChild[]; changed: () => void };
 }
 
@@ -105,4 +132,10 @@ interface FileItem {
   selfEl: HTMLDivElement;
   innerEl: HTMLDivElement;
   file: TAbstractFile;
+}
+
+interface EditorWithEditorComponent extends Editor {
+  editorComponent?: {
+    file?: TFile;
+  };
 }

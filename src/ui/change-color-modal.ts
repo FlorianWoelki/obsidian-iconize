@@ -1,15 +1,15 @@
 import { App, Modal, ColorComponent, ButtonComponent, Notice } from 'obsidian';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import svg from '@app/lib/util/svg';
 import dom from '@app/lib/util/dom';
 
 export default class ChangeColorModal extends Modal {
-  private plugin: IconFolderPlugin;
+  private plugin: IconizePlugin;
   private path: string;
 
   private usedColor?: string;
 
-  constructor(app: App, plugin: IconFolderPlugin, path: string) {
+  constructor(app: App, plugin: IconizePlugin, path: string) {
     super(app);
     this.plugin = plugin;
     this.path = path;

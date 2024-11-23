@@ -1,5 +1,6 @@
 interface CacheResult {
   iconNameWithPrefix: string;
+  iconColor?: string;
   inCustomRule?: boolean;
 }
 

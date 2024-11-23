@@ -1,15 +1,15 @@
 import customRule from '@lib/custom-rule';
 import style from '@lib/util/style';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { getFileItemTitleEl } from '@app/util';
 import svg from '@app/lib/util/svg';
 
 /**
  * Helper function that refreshes the style of all the icons that are defined
  * or in a custom rule involved.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  */
-const refreshStyleOfIcons = async (plugin: IconFolderPlugin): Promise<void> => {
+const refreshStyleOfIcons = async (plugin: IconizePlugin): Promise<void> => {
   // Refreshes the icon style for all normally added icons.
   style.refreshIconNodes(plugin);
 

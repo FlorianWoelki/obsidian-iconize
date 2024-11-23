@@ -1,5 +1,5 @@
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import emoji from '@app/emoji';
 import {
   doesIconExists,
@@ -19,7 +19,7 @@ export interface Icon {
 }
 
 export default class IconsPickerModal extends FuzzySuggestModal<any> {
-  private plugin: IconFolderPlugin;
+  private plugin: IconizePlugin;
   private path: string;
 
   private renderIndex = 0;
@@ -28,7 +28,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   public onSelect: (iconName: string) => void | undefined;
 
-  constructor(app: App, plugin: IconFolderPlugin, path: string) {
+  constructor(app: App, plugin: IconizePlugin, path: string) {
     super(app);
     this.plugin = plugin;
     this.path = path;
@@ -65,7 +65,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     if (this.inputEl.value.length === 0) {
       this.renderIndex = 0;
       this.recentlyUsedItems.forEach((iconName) => {
-        if (this.plugin.isSomeEmojiStyleActive() && emoji.isEmoji(iconName)) {
+        if (emoji.isEmoji(iconName)) {
           iconKeys.push({
             name: emoji.shortNames[iconName],
             prefix: 'Emoji',
@@ -96,22 +96,20 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       });
     }
 
-    if (this.plugin.isSomeEmojiStyleActive()) {
-      Object.entries(emoji.shortNames).forEach(([unicode, shortName]) => {
-        iconKeys.push({
-          name: shortName,
-          prefix: 'Emoji',
-          displayName: unicode,
-          iconPackName: null,
-        });
-        iconKeys.push({
-          name: unicode,
-          prefix: 'Emoji',
-          displayName: unicode,
-          iconPackName: null,
-        });
+    Object.entries(emoji.shortNames).forEach(([unicode, shortName]) => {
+      iconKeys.push({
+        name: shortName,
+        prefix: 'Emoji',
+        displayName: unicode,
+        iconPackName: null,
       });
-    }
+      iconKeys.push({
+        name: unicode,
+        prefix: 'Emoji',
+        displayName: unicode,
+        iconPackName: null,
+      });
+    });
 
     return iconKeys;
   }

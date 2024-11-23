@@ -1,8 +1,8 @@
 import { Mock, describe, expect, it, vi } from 'vitest';
-import twemoji from 'twemoji';
+import twemoji from '@twemoji/api';
 import emoji from './emoji';
 
-vi.mock('twemoji');
+vi.mock('@twemoji/api');
 
 describe('isEmoji', () => {
   it('should return `true` for valid emojis', () => {
@@ -11,12 +11,16 @@ describe('isEmoji', () => {
     expect(emoji.isEmoji('🤔')).toBe(true);
     expect(emoji.isEmoji('😂')).toBe(true);
     expect(emoji.isEmoji('👍🏼')).toBe(true);
+    expect(emoji.isEmoji('😂😂')).toBe(true);
   });
 
   it('should return `false` for invalid emojis', () => {
     expect(emoji.isEmoji('hello')).toBe(false);
     expect(emoji.isEmoji('123')).toBe(false);
-    expect(emoji.isEmoji('😂😂')).toBe(true);
+    expect(emoji.isEmoji('*')).toBe(false);
+    expect(emoji.isEmoji('-')).toBe(false);
+    expect(emoji.isEmoji('#')).toBe(false);
+    expect(emoji.isEmoji('+')).toBe(false);
   });
 });
 

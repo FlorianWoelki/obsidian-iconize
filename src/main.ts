@@ -10,11 +10,13 @@ import {
   Platform,
 } from 'obsidian';
 import {
+  EditorWithEditorComponent,
   ExplorerView,
   InlineTitleView,
   TabHeaderLeaf,
 } from './@types/obsidian';
 import {
+  addLucideIconsPack,
   createDefaultDirectory,
   getNormalizedName,
   getPreloadedIcons,
@@ -36,28 +38,40 @@ import dom from './lib/util/dom';
 import customRule from './lib/custom-rule';
 import icon from './lib/icon';
 import BookmarkInternalPlugin from './internal-plugins/bookmark';
+import OutlineInternalPlugin from './internal-plugins/outline';
 import {
   getAllOpenedFiles,
+  isHexadecimal,
   removeIconFromIconPack,
   saveIconToIconPack,
+  stringToHex,
 } from '@app/util';
 import config from '@app/config';
 import titleIcon from './lib/icon-title';
 import SuggestionIcon from './editor/icons-suggestion';
 import emoji from './emoji';
 import { IconCache } from './lib/icon-cache';
-import { buildIconPlugin } from './editor/live-preview';
+import {
+  buildIconInLinksPlugin,
+  buildIconInTextPlugin,
+} from './editor/live-preview';
 import { PositionField, buildPositionField } from './editor/live-preview/state';
 import { calculateInlineTitleSize } from './lib/util/text';
-import { processMarkdown } from './editor/markdown-processor';
+import {
+  processIconInTextMarkdown,
+  processIconInLinkMarkdown,
+} from './editor/markdown-processors';
 import ChangeColorModal from './ui/change-color-modal';
+import { logger } from './lib/logger';
+import { EventEmitter } from './lib/event/event';
+import { getApi } from './lib/api';
 
 export interface FolderIconObject {
   iconName: string | null;
   iconColor?: string;
 }
 
-export default class IconFolderPlugin extends Plugin {
+export default class IconizePlugin extends Plugin {
   private data: Record<
     string,
     boolean | string | IconFolderSettings | FolderIconObject
@@ -67,6 +81,11 @@ export default class IconFolderPlugin extends Plugin {
   private modifiedInternalPlugins: InternalPluginInjector[] = [];
 
   public positionField: PositionField = buildPositionField(this);
+
+  private frontmatterCache = new Set<string>();
+  private eventEmitter = new EventEmitter();
+
+  public readonly api = getApi(this);
 
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
@@ -79,7 +98,10 @@ export default class IconFolderPlugin extends Plugin {
       this.modifiedInternalPlugins.push(new BookmarkInternalPlugin(this));
     }
 
+    this.modifiedInternalPlugins.push(new OutlineInternalPlugin(this));
+
     await this.loadIconFolderData();
+    logger.toggleLogging(this.getSettings().debugMode);
     setPath(this.getSettings().iconPacksPath);
 
     await createDefaultDirectory(this);
@@ -88,9 +110,85 @@ export default class IconFolderPlugin extends Plugin {
     await migrate(this);
 
     const usedIconNames = icon.getAllWithPath(this).map((value) => value.icon);
+    if (!this.doesUseCustomLucideIconPack()) {
+      addLucideIconsPack(this);
+    }
     await loadUsedIcons(this, usedIconNames);
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
+
+    this.addCommand({
+      id: 'iconize:set-icon-for-file',
+      name: 'Set icon for file',
+      hotkeys: [
+        {
+          modifiers: ['Mod', 'Shift'],
+          key: 'j',
+        },
+      ],
+      editorCallback: async (editor: EditorWithEditorComponent) => {
+        const file = editor.editorComponent?.file;
+        if (!file) {
+          logger.warn(
+            `'editor.editorComponent?.file' is undefined for file: ${file}`,
+          );
+          return;
+        }
+
+        const modal = new IconsPickerModal(this.app, this, file.path);
+        modal.open();
+
+        modal.onSelect = (iconName: string): void => {
+          IconCache.getInstance().set(file.path, {
+            iconNameWithPrefix: iconName,
+          });
+
+          // Update icon in tab when setting is enabled.
+          if (this.getSettings().iconInTabsEnabled) {
+            const tabLeaves = iconTabs.getTabLeavesOfFilePath(this, file.path);
+            for (const tabLeaf of tabLeaves) {
+              iconTabs.update(this, iconName, tabLeaf.tabHeaderInnerIconEl);
+            }
+          }
+
+          // Update icon in title when setting is enabled.
+          if (this.getSettings().iconInTitleEnabled) {
+            this.addIconInTitle(iconName);
+          }
+        };
+      },
+    });
+
+    this.registerEvent(
+      // Registering file menu event for listening to file pinning and unpinning.
+      this.app.workspace.on('file-menu', (menu, file) => {
+        // I've researched other ways of doing this. However, there is no other way to listen to file pinning and unpinning.
+        menu.onHide(() => {
+          const path = file.path;
+          if (this.getSettings().iconInTabsEnabled) {
+            for (const openedFile of getAllOpenedFiles(this)) {
+              if (openedFile.path === path) {
+                const possibleIcon = IconCache.getInstance().get(path);
+                if (!possibleIcon) {
+                  return;
+                }
+                const tabLeaves = iconTabs.getTabLeavesOfFilePath(
+                  this,
+                  file.path,
+                );
+                for (const tabLeaf of tabLeaves) {
+                  // Add timeout to ensure that the default icon is already set.
+                  setTimeout(() => {
+                    iconTabs.add(this, file.path, tabLeaf.tabHeaderInnerIconEl);
+                  }, 5);
+                }
+              }
+            }
+          }
+        });
+      }),
+    );
+
     this.registerEvent(
       this.app.workspace.on('layout-change', () => this.handleChangeLayout()),
     );
@@ -207,16 +305,27 @@ export default class IconFolderPlugin extends Plugin {
     );
 
     if (this.getSettings().iconsInNotesEnabled) {
-      this.registerMarkdownPostProcessor((el) => processMarkdown(this, el));
+      this.registerMarkdownPostProcessor((el) =>
+        processIconInTextMarkdown(this, el),
+      );
       this.registerEditorSuggest(new SuggestionIcon(this.app, this));
-      this.registerEditorExtension([this.positionField, buildIconPlugin(this)]);
+      this.registerEditorExtension([
+        this.positionField,
+        buildIconInTextPlugin(this),
+      ]);
+    }
+
+    if (this.getSettings().iconsInLinksEnabled) {
+      this.registerMarkdownPostProcessor((el, ctx) =>
+        processIconInLinkMarkdown(this, el, ctx),
+      );
+      this.registerEditorExtension([
+        this.positionField,
+        buildIconInLinksPlugin(this),
+      ]);
     }
 
     this.addSettingTab(new IconFolderSettingsUI(this.app, this));
-  }
-
-  public isSomeEmojiStyleActive(): boolean {
-    return this.getSettings().emojiStyle !== 'none';
   }
 
   public notifyPlugins(): void {
@@ -237,13 +346,13 @@ export default class IconFolderPlugin extends Plugin {
 
     // Refreshes the icon tab and title icon for custom rules.
     for (const rule of customRule.getSortedRules(this)) {
-      const applicable = await customRule.isApplicable(this, rule, file);
+      const applicable = await customRule.isApplicable(this, rule, file.path);
       if (applicable) {
         customRule.add(this, rule, file);
         this.addIconInTitle(rule.icon);
         const tabLeaves = iconTabs.getTabLeavesOfFilePath(this, file.path);
         for (const tabLeaf of tabLeaves) {
-          iconTabs.add(this, file as TFile, tabLeaf.tabHeaderInnerIconEl, {
+          iconTabs.add(this, file.path, tabLeaf.tabHeaderInnerIconEl, {
             iconName: rule.icon,
           });
         }
@@ -297,7 +406,16 @@ export default class IconFolderPlugin extends Plugin {
           await icon.checkMissingIcons(this, data);
           resetPreloadedIcons();
         }
+
+        this.eventEmitter.emit('allIconsLoaded');
       });
+
+      if (this.getSettings().iconInFrontmatterEnabled) {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (activeFile) {
+          this.frontmatterCache.add(activeFile.path);
+        }
+      }
 
       // Adds the title icon to the active leaf view.
       if (this.getSettings().iconInTitleEnabled) {
@@ -347,7 +465,11 @@ export default class IconFolderPlugin extends Plugin {
 
           // Updates icon tabs for the renamed file.
           for (const rule of customRule.getSortedRules(this)) {
-            const applicable = await customRule.isApplicable(this, rule, file);
+            const applicable = await customRule.isApplicable(
+              this,
+              rule,
+              file.path,
+            );
             if (!applicable) {
               continue;
             }
@@ -411,7 +533,10 @@ export default class IconFolderPlugin extends Plugin {
 
           for (const openedFile of getAllOpenedFiles(this)) {
             const leaf = openedFile.leaf as TabHeaderLeaf;
-            iconTabs.add(this, openedFile, leaf.tabHeaderInnerIconEl);
+            const iconColor = this.getIconColor(leaf.view.file.path);
+            iconTabs.add(this, openedFile.path, leaf.tabHeaderInnerIconEl, {
+              iconColor,
+            });
           }
         }),
       );
@@ -466,11 +591,21 @@ export default class IconFolderPlugin extends Plugin {
           }
 
           const fileCache = this.app.metadataCache.getFileCache(file);
+          const iconFrontmatterName =
+            this.getSettings().iconInFrontmatterFieldName;
+          const iconColorFrontmatterName =
+            this.getSettings().iconColorInFrontmatterFieldName;
           if (fileCache?.frontmatter) {
-            const { icon: newIconName } = fileCache.frontmatter;
+            const {
+              [iconFrontmatterName]: newIconName,
+              [iconColorFrontmatterName]: newIconColor,
+            } = fileCache.frontmatter;
             // If `icon` property is empty, we will remove it from the data and remove the icon.
             if (!newIconName) {
-              await this.removeSingleIcon(file);
+              if (this.frontmatterCache.has(file.path)) {
+                await this.removeSingleIcon(file);
+                this.frontmatterCache.delete(file.path);
+              }
               return;
             }
 
@@ -481,25 +616,47 @@ export default class IconFolderPlugin extends Plugin {
               return;
             }
 
-            const cachedIcon = IconCache.getInstance().get(file.path);
-            if (newIconName === cachedIcon?.iconNameWithPrefix) {
+            if (newIconColor && typeof newIconColor !== 'string') {
+              new Notice(
+                `[${config.PLUGIN_NAME}] Frontmatter property type \`iconColor\` has to be of type \`text\`.`,
+              );
               return;
             }
 
+            let iconColor = newIconColor;
+            if (isHexadecimal(iconColor)) {
+              iconColor = stringToHex(iconColor);
+            }
+
+            const cachedIcon = IconCache.getInstance().get(file.path);
+            if (
+              newIconName === cachedIcon?.iconNameWithPrefix &&
+              iconColor === cachedIcon?.iconColor
+            ) {
+              return;
+            }
+
+            this.frontmatterCache.add(file.path);
             try {
               if (!emoji.isEmoji(newIconName)) {
                 saveIconToIconPack(this, newIconName);
               }
             } catch (e) {
-              console.error(e);
+              logger.warn(
+                `Something went wrong while saving icon to icon pack (error: ${e})`,
+              );
               new Notice(e.message);
               return;
             }
 
-            dom.createIconNode(this, file.path, newIconName);
+            dom.createIconNode(this, file.path, newIconName, {
+              color: iconColor,
+            });
             this.addFolderIcon(file.path, newIconName);
+            this.addIconColor(file.path, iconColor);
             IconCache.getInstance().set(file.path, {
               iconNameWithPrefix: newIconName,
+              iconColor,
             });
 
             // Update icon in tab when setting is enabled.
@@ -538,7 +695,10 @@ export default class IconFolderPlugin extends Plugin {
           if (leaf.view.getViewType() === 'file-explorer') {
             for (const openedFile of getAllOpenedFiles(this)) {
               const leaf = openedFile.leaf as TabHeaderLeaf;
-              iconTabs.add(this, openedFile, leaf.tabHeaderInnerIconEl);
+              const iconColor = this.getIconColor(leaf.view.file.path);
+              iconTabs.add(this, openedFile.path, leaf.tabHeaderInnerIconEl, {
+                iconColor,
+              });
             }
             return;
           }
@@ -549,10 +709,14 @@ export default class IconFolderPlugin extends Plugin {
 
           const tabHeaderLeaf = leaf as TabHeaderLeaf;
           if (tabHeaderLeaf.view.file) {
+            const iconColor = this.getIconColor(tabHeaderLeaf.view.file.path);
             iconTabs.add(
               this,
-              tabHeaderLeaf.view.file,
+              tabHeaderLeaf.view.file.path,
               tabHeaderLeaf.tabHeaderInnerIconEl,
+              {
+                iconColor,
+              },
             );
           }
         }),
@@ -626,6 +790,10 @@ export default class IconFolderPlugin extends Plugin {
 
   getIconColor(path: string): string | undefined {
     const pathData = this.getData()[path];
+
+    if (!pathData) {
+      return undefined;
+    }
 
     if (typeof pathData === 'string') {
       return undefined;
@@ -738,6 +906,10 @@ export default class IconFolderPlugin extends Plugin {
     }
   }
 
+  getEventEmitter(): EventEmitter {
+    return this.eventEmitter;
+  }
+
   getData(): Record<
     string,
     boolean | string | IconFolderSettings | FolderIconObject
@@ -755,6 +927,14 @@ export default class IconFolderPlugin extends Plugin {
 
   getRegisteredFileExplorers(): Set<ExplorerView> {
     return this.registeredFileExplorers;
+  }
+
+  doesUseCustomLucideIconPack(): boolean {
+    return this.getSettings().lucideIconPackType === 'custom';
+  }
+
+  doesUseNativeLucideIconPack(): boolean {
+    return this.getSettings().lucideIconPackType === 'native';
   }
 
   /**

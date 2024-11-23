@@ -1,18 +1,18 @@
 import { Setting } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 
-export default class ToggleFrontmatterIcon extends IconFolderSetting {
+export default class DebugMode extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Use icon in frontmatter')
+      .setName('Toggle Debug Mode')
       .setDesc(
-        'Toggles whether to set the icon based on the frontmatter property `icon`.',
+        'Toggle debug mode to see more detailed logs in the console. Do not touch this unless you know what you are doing.',
       )
       .addToggle((toggle) => {
         toggle
-          .setValue(this.plugin.getSettings().iconInFrontmatterEnabled)
+          .setValue(this.plugin.getSettings().debugMode)
           .onChange(async (enabled) => {
-            this.plugin.getSettings().iconInFrontmatterEnabled = enabled;
+            this.plugin.getSettings().debugMode = enabled;
             await this.plugin.saveIconFolderData();
           });
       });

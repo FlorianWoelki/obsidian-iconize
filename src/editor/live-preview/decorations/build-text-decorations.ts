@@ -1,11 +1,11 @@
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import { Decoration, EditorView } from '@codemirror/view';
-import { IconWidget } from './widget';
 import { editorLivePreviewField } from 'obsidian';
+import { IconInTextWidget } from '@app/editor/live-preview/widgets';
 
-export const buildDecorations = (
+export const buildTextDecorations = (
   view: EditorView,
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
 ) => {
   const ranges: [iconId: string, from: number, to: number][] = [];
   const iconInfo = view.state.field(plugin.positionField);
@@ -16,7 +16,7 @@ export const buildDecorations = (
   }
   return Decoration.set(
     ranges.map(([code, from, to]) => {
-      const widget = new IconWidget(plugin, code);
+      const widget = new IconInTextWidget(plugin, code);
       widget.setPosition(from, to);
       if (view.state.field(editorLivePreviewField)) {
         return Decoration.replace({

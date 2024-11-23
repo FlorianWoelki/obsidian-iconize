@@ -1,7 +1,8 @@
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import config from '@app/config';
 import emoji from '@app/emoji';
 import svg from './util/svg';
+import { IconInTitlePosition } from '@app/settings/data';
 
 const getTitleIcon = (leaf: HTMLElement): HTMLElement | null => {
   return leaf.querySelector(`.${config.TITLE_ICON_CLASS}`);
@@ -12,7 +13,7 @@ interface Options {
 }
 
 const add = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   inlineTitleEl: HTMLElement,
   svgElement: string,
   options?: Options,
@@ -26,12 +27,23 @@ const add = (
   }
 
   let titleIcon = getTitleIcon(inlineTitleEl.parentElement);
-  const hadTitleIcon = titleIcon !== null;
   if (!titleIcon) {
     titleIcon = document.createElement('div');
   }
 
-  titleIcon.style.display = 'block';
+  const isInline =
+    plugin.getSettings().iconInTitlePosition === IconInTitlePosition.Inline;
+
+  if (isInline) {
+    titleIcon.style.display = 'inline-block';
+    titleIcon.style.removeProperty('margin-inline');
+    titleIcon.style.removeProperty('width');
+  } else {
+    titleIcon.style.display = 'block';
+    titleIcon.style.width = 'var(--line-width)';
+    titleIcon.style.marginInline = '0';
+  }
+
   titleIcon.classList.add(config.TITLE_ICON_CLASS);
   // Checks if the passed element is an emoji.
   if (emoji.isEmoji(svgElement) && options.fontSize) {
@@ -44,9 +56,51 @@ const add = (
     titleIcon.style.fontSize = `${options.fontSize}px`;
   }
   titleIcon.innerHTML = svgElement;
-  if (!hadTitleIcon) {
-    inlineTitleEl.parentElement.prepend(titleIcon);
+
+  let wrapperElement = inlineTitleEl.parentElement;
+  // Checks the parent and selects the correct wrapper element.
+  // This should only happen in the beginning.
+  if (
+    wrapperElement &&
+    !wrapperElement.classList.contains(config.INLINE_TITLE_WRAPPER_CLASS)
+  ) {
+    wrapperElement = wrapperElement.querySelector(
+      `.${config.INLINE_TITLE_WRAPPER_CLASS}`,
+    );
   }
+
+  // Whenever there is no correct wrapper element, we create one.
+  if (!wrapperElement) {
+    wrapperElement = inlineTitleEl.parentElement.createDiv();
+    wrapperElement.classList.add(config.INLINE_TITLE_WRAPPER_CLASS);
+  }
+
+  // Avoiding adding the same nodes together when changing the title.
+  if (wrapperElement !== inlineTitleEl.parentElement) {
+    inlineTitleEl.parentElement.prepend(wrapperElement);
+  }
+
+  if (isInline) {
+    wrapperElement.style.display = 'flex';
+    wrapperElement.style.alignItems = 'flex-start';
+    const inlineTitlePaddingTop = getComputedStyle(
+      inlineTitleEl,
+      null,
+    ).getPropertyValue('padding-top');
+    titleIcon.style.paddingTop = inlineTitlePaddingTop;
+
+    if (emoji.isEmoji(svgElement)) {
+      titleIcon.style.transform = 'translateY(-9%)';
+    } else {
+      titleIcon.style.transform = 'translateY(9%)';
+    }
+  } else {
+    wrapperElement.style.display = 'block';
+    titleIcon.style.transform = 'translateY(9%)';
+  }
+
+  wrapperElement.append(titleIcon);
+  wrapperElement.append(inlineTitleEl);
 };
 
 const updateStyle = (inlineTitleEl: HTMLElement, options: Options): void => {

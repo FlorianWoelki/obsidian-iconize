@@ -44,7 +44,7 @@ might be some breaking changes in the future.
 
 If you want to add your own icon pack, you can do that by using the option `Add icon pack`
 in the plugin settings of Iconize. You just need to enter the name of the icon pack.
-After that, you can add the icons you want to use in your vault by using the plus icon (`+`) 
+After that, you can add the icons you want to use in your vault by using the plus icon (`+`)
 next to the custom icon pack.
 
 ![Add icon pack](../assets/add-custom-icon-pack.png)
@@ -72,6 +72,6 @@ of Iconize. You can directly use emojis in the icon picker by searching for them
 search for emojis by using the name of the emoji or by using the emoji itself.
 
 Furthermore, you can also adapt the style of the emoji by choosing the emoji style in the
-settings of Iconize. You can choose between `None`, `Native`, and `Twemoji`.
+settings of Iconize. You can choose between `Native` and `Twemoji`.
 
 ![Emoji style](../assets/emoji-style.png)

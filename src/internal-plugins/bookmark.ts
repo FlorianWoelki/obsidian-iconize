@@ -1,19 +1,23 @@
 import { around } from 'monkey-around';
-import { View } from 'obsidian';
+import { requireApiVersion, View, WorkspaceLeaf } from 'obsidian';
 import InternalPluginInjector from '@app/@types/internal-plugin-injector';
 import { BookmarkItem, BookmarkItemValue } from '@app/@types/obsidian';
 import dom from '@lib/util/dom';
 import icon from '@lib/icon';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import config from '@app/config';
-import { DEFAULT_FILE_ICON, DEFAULT_FOLDER_ICON } from '../util';
+import { DEFAULT_FILE_ICON, DEFAULT_FOLDER_ICON } from '@app/util';
 
 interface BookmarksView extends View {
   itemDoms: WeakMap<BookmarkItem, BookmarkItemValue>;
 }
 
+interface BookmarksLeaf extends WorkspaceLeaf {
+  view: BookmarksView;
+}
+
 export default class BookmarkInternalPlugin extends InternalPluginInjector {
-  constructor(plugin: IconFolderPlugin) {
+  constructor(plugin: IconizePlugin) {
     super(plugin);
   }
 
@@ -25,14 +29,14 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
     return this.plugin.app.internalPlugins.getPluginById('bookmarks').enabled;
   }
 
-  get leaf(): BookmarksView | undefined {
+  get leaf(): BookmarksLeaf | undefined {
     const leaf = this.plugin.app.workspace.getLeavesOfType('bookmarks');
     if (!leaf) {
       return undefined;
     }
 
     if (leaf.length === 1) {
-      return leaf[0].view as BookmarksView;
+      return leaf[0] as BookmarksLeaf;
     }
 
     return undefined;
@@ -69,7 +73,9 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
     }
 
     const defaultMargin = iconNode.style.margin;
-    dom.setIconForNode(this.plugin, iconName, iconNode);
+    const iconColor =
+      this.plugin.getIconColor(filePath) ?? this.plugin.getSettings().iconColor;
+    dom.setIconForNode(this.plugin, iconName, iconNode, { color: iconColor });
     // Reset the margin to the default value to prevent overlapping with the text.
     iconNode.style.margin = defaultMargin;
   }
@@ -77,7 +83,7 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
   private computeNodesWithPath(
     callback: (node: HTMLElement, filePath: string) => void,
   ): void {
-    if (!this.leaf) {
+    if (!this.leaf || !this.leaf.view) {
       return;
     }
 
@@ -109,7 +115,7 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
       }
     };
 
-    const { itemDoms } = this.leaf;
+    const { itemDoms } = this.leaf.view;
     // Retrieves all the items of the bookmark plugin which areo objects.
     const items = this.bookmark.instance.items;
     items.forEach((item) => {
@@ -118,14 +124,23 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
   }
 
   onMount(): void {
-    const nodesWithPath: { [key: string]: HTMLElement } = {};
-    this.computeNodesWithPath((node, filePath) => {
-      nodesWithPath[filePath] = node;
-    });
+    const setBookmarkIcon = () => {
+      const nodesWithPath: { [key: string]: HTMLElement } = {};
+      this.computeNodesWithPath((node, filePath) => {
+        nodesWithPath[filePath] = node;
+      });
 
-    Object.entries(nodesWithPath).forEach(([filePath, node]) =>
-      this.setIconOrRemove(filePath, node),
-    );
+      Object.entries(nodesWithPath).forEach(([filePath, node]) =>
+        this.setIconOrRemove(filePath, node),
+      );
+    };
+
+    if (requireApiVersion('1.7.2')) {
+      // TODO: Might improve the performance here.
+      this.leaf.loadIfDeferred().then(setBookmarkIcon);
+    } else {
+      setBookmarkIcon();
+    }
   }
 
   register(): void {

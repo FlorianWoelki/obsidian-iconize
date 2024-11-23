@@ -1,7 +1,7 @@
 import { Notice } from 'obsidian';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 
-export default async function migrate(plugin: IconFolderPlugin): Promise<void> {
+export default async function migrate(plugin: IconizePlugin): Promise<void> {
   // Migration for new syncing mechanism.
   if (plugin.getSettings().migrated === 1) {
     new Notice(

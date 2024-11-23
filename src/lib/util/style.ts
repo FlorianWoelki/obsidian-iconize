@@ -3,7 +3,7 @@
 // dependency is the `svg` library.
 
 import emoji from '../../emoji';
-import IconFolderPlugin from '../../main';
+import IconizePlugin from '../../main';
 import svg from './svg';
 import { getFileItemTitleEl } from '../../util';
 
@@ -29,13 +29,13 @@ const setMargin = (el: HTMLElement, margin: Margin): HTMLElement => {
  * Applies all stylings to the specified svg icon string and applies styling to the node
  * (container). The styling to the specified element is only modified when it is an emoji
  * or extra margin is defined in the settings.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  * @param iconString SVG that will be used to apply the svg styles to.
  * @param el Node for manipulating the style.
  * @returns Icon svg string with the manipulate style attributes.
  */
 const applyAll = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   iconString: string,
   container: HTMLElement,
 ): string => {
@@ -66,12 +66,12 @@ const applyAll = (
 /**
  * Refreshes all the styles of all the applied icons where a `.iconize-icon`
  * class is defined. This function only modifies the styling of the node.
- * @param plugin Instance of the IconFolderPlugin.
+ * @param plugin Instance of the IconizePlugin.
  * @param applyStyles Function that is getting called when the icon node is found and
  * typically applies all the styles to the icon.
  */
 const refreshIconNodes = (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   applyStyles = applyAll,
 ): void => {
   const fileExplorers = plugin.app.workspace.getLeavesOfType('file-explorer');
@@ -87,15 +87,20 @@ const refreshIconNodes = (
           const pathValue = plugin.getData()[path];
           const hasIndividualColor =
             typeof pathValue === 'object' && pathValue.iconColor;
-          if (hasIndividualColor) {
-            return;
-          }
 
           iconNode.innerHTML = applyStyles(
             plugin,
             iconNode.innerHTML,
             iconNode,
           );
+          if (hasIndividualColor) {
+            iconNode.style.color = pathValue.iconColor;
+            const colorizedInnerHtml = svg.colorize(
+              iconNode.innerHTML,
+              pathValue.iconColor,
+            );
+            iconNode.innerHTML = colorizedInnerHtml;
+          }
         }
       }
     });

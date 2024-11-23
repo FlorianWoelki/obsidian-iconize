@@ -1,5 +1,5 @@
 import { Plugin, TAbstractFile } from 'obsidian';
-import IconFolderPlugin from '../main';
+import IconizePlugin from '../main';
 import { CustomRule } from '../settings/data';
 import dom from './util/dom';
 import { getFileItemTitleEl } from '../util';
@@ -30,15 +30,15 @@ const doesMatchFileType = (
  * Determines whether a given file or folder matches a specified custom rule.
  * @param plugin Plugin instance.
  * @param rule CustomRule to check against the file or folder.
- * @param file TAbstractFile to check against the custom rule.
+ * @param filePath String to check against the custom rule.
  * @returns Promise that resolves to `true` if the file matches the rule, `false` otherwise.
  */
 const isApplicable = async (
   plugin: Plugin,
   rule: CustomRule,
-  file: TAbstractFile,
+  filePath: string,
 ): Promise<boolean> => {
-  const metadata = await plugin.app.vault.adapter.stat(file.path);
+  const metadata = await plugin.app.vault.adapter.stat(filePath);
   if (!metadata) {
     return false;
   }
@@ -51,16 +51,16 @@ const isApplicable = async (
     return false;
   }
 
-  return doesMatchPath(rule, file.path);
+  return doesMatchPath(rule, filePath);
 };
 
 /**
  * Removes the icon from the custom rule from all the files and folders, if applicable.
- * @param plugin IconFolderPlugin instance.
+ * @param plugin IconizePlugin instance.
  * @param rule CustomRule where the icons will be removed based on this rule.
  */
 const removeFromAllFiles = async (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   rule: CustomRule,
 ): Promise<void> => {
   const nodesWithIcon = document.querySelectorAll(
@@ -90,10 +90,10 @@ const removeFromAllFiles = async (
 
 /**
  * Gets all the custom rules sorted by their order property in ascending order.
- * @param plugin IconFolderPlugin instance.
+ * @param plugin IconizePlugin instance.
  * @returns CustomRule array sorted by their order property in ascending order.
  */
-const getSortedRules = (plugin: IconFolderPlugin): CustomRule[] => {
+const getSortedRules = (plugin: IconizePlugin): CustomRule[] => {
   return plugin.getSettings().rules.sort((a, b) => a.order - b.order);
 };
 
@@ -101,11 +101,11 @@ const getSortedRules = (plugin: IconFolderPlugin): CustomRule[] => {
  * Tries to add all specific custom rule icons to all registered files and directories.
  * It does that by calling the {@link add} function. Custom rules should have the lowest
  * priority and will get ignored if an icon already exists in the file or directory.
- * @param plugin IconFolderPlugin instance.
+ * @param plugin IconizePlugin instance.
  * @param rule CustomRule that will be applied, if applicable, to all files and folders.
  */
 const addToAllFiles = async (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   rule: CustomRule,
 ): Promise<void> => {
   const fileItems = await getFileItems(plugin, rule);
@@ -117,7 +117,7 @@ const addToAllFiles = async (
 /**
  * Tries to add the icon of the custom rule to a file or folder. This function also checks
  * if the file type matches the `for` property of the custom rule.
- * @param plugin IconFolderPlugin instance.
+ * @param plugin IconizePlugin instance.
  * @param rule CustomRule that will be used to check if the rule is applicable to the file
  * or directory.
  * @param file TAbstractFile that will be used to possibly create the icon for.
@@ -125,7 +125,7 @@ const addToAllFiles = async (
  * @returns A promise that resolves to `true` if the icon was added, `false` otherwise.
  */
 const add = async (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   rule: CustomRule,
   file: TAbstractFile,
   container?: HTMLElement,
@@ -140,7 +140,7 @@ const add = async (
     return false;
   }
 
-  const doesMatch = await isApplicable(plugin, rule, file);
+  const doesMatch = await isApplicable(plugin, rule, file.path);
   if (doesMatch) {
     IconCache.getInstance().set(file.path, {
       iconNameWithPrefix: rule.icon,
@@ -180,19 +180,19 @@ const doesMatchPath = (rule: CustomRule, path: string): boolean => {
 
 /**
  * Gets all the file items that can be applied to the specific custom rule.
- * @param plugin Instance of IconFolderPlugin.
+ * @param plugin Instance of IconizePlugin.
  * @param rule Custom rule that will be checked for.
  * @returns A promise that resolves to an array of file items that match the custom rule.
  */
 const getFileItems = async (
-  plugin: IconFolderPlugin,
+  plugin: IconizePlugin,
   rule: CustomRule,
 ): Promise<FileItem[]> => {
   const result: FileItem[] = [];
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
     const files = Object.values(fileExplorer.fileItems);
     for (const fileItem of files) {
-      if (await isApplicable(plugin, rule, fileItem.file)) {
+      if (await isApplicable(plugin, rule, fileItem.file.path)) {
         result.push(fileItem);
       }
     }

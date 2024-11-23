@@ -1,6 +1,6 @@
 import {
   Mock,
-  SpyInstance,
+  MockInstance,
   beforeEach,
   describe,
   expect,
@@ -134,7 +134,7 @@ describe('renderSuggestion', () => {
 });
 
 describe('getSuggestions', () => {
-  let getAllLoadedIconNamesSpy: SpyInstance;
+  let getAllLoadedIconNamesSpy: MockInstance;
   beforeEach(() => {
     vi.restoreAllMocks();
     getAllLoadedIconNamesSpy = vi.spyOn(

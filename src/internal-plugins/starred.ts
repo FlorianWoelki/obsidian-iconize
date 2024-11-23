@@ -5,7 +5,7 @@ import { StarredFile } from '@app/@types/obsidian';
 import dom from '@lib/util/dom';
 import icon from '@lib/icon';
 import config from '@app/config';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 
 interface StarredView extends View {
   itemLookup: WeakMap<Element, StarredFile>;
@@ -15,7 +15,7 @@ interface StarredView extends View {
  * @deprecated After obsidian 1.2.6 in favor of the bookmarks plugin.
  */
 export default class StarredInternalPlugin extends InternalPluginInjector {
-  constructor(plugin: IconFolderPlugin) {
+  constructor(plugin: IconizePlugin) {
     super(plugin);
   }
 

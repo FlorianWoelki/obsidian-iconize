@@ -1,23 +1,48 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import titleIcon from './icon-title';
 import config from '@app/config';
 import svg from './util/svg';
 
 describe('add', () => {
+  let plugin: any;
+
+  beforeEach(() => {
+    plugin = {
+      getSettings: (): any => {
+        return {
+          iconInTitlePosition: 'above',
+          emojiStyle: 'native',
+        };
+      },
+    };
+
+    const originalCreateElement = document.createElement;
+    document.createElement = vi.fn().mockImplementation((tagName) => {
+      const actual = originalCreateElement.call(document, tagName);
+      actual.createDiv = vi.fn(() => document.createElement('div'));
+      return actual;
+    });
+  });
+
   it('should create a title icon', () => {
     const parentEl = document.createElement('div');
     const inlineTitleEl = document.createElement('div');
     parentEl.appendChild(inlineTitleEl);
 
-    titleIcon.add({} as any, inlineTitleEl, '<svg></svg>');
+    titleIcon.add(plugin, inlineTitleEl, '<svg></svg>');
     expect(parentEl).toMatchInlineSnapshot(`<div>
   <div
-    class="iconize-title-icon"
+    class="iconize-inline-title-wrapper"
     style="display: block;"
   >
-    <svg />
+    <div
+      class="iconize-title-icon"
+      style="display: block; width: var(--line-width); transform: translateY(9%);"
+    >
+      <svg />
+    </div>
+    <div />
   </div>
-  <div />
 </div>`);
   });
 
@@ -26,20 +51,20 @@ describe('add', () => {
     const inlineTitleEl = document.createElement('div');
     parentEl.appendChild(inlineTitleEl);
 
-    titleIcon.add(
-      { getSettings: () => ({ emojiStyle: 'native' }) } as any,
-      inlineTitleEl,
-      '👍',
-      { fontSize: 10 },
-    );
+    titleIcon.add(plugin, inlineTitleEl, '👍', { fontSize: 10 });
     expect(parentEl).toMatchInlineSnapshot(`<div>
   <div
-    class="iconize-title-icon"
-    style="display: block; font-size: 10px;"
+    class="iconize-inline-title-wrapper"
+    style="display: block;"
   >
-    👍
+    <div
+      class="iconize-title-icon"
+      style="display: block; width: var(--line-width); font-size: 10px; transform: translateY(9%);"
+    >
+      👍
+    </div>
+    <div />
   </div>
-  <div />
 </div>`);
   });
 
@@ -51,15 +76,20 @@ describe('add', () => {
     parentEl.appendChild(titleIconEl);
     parentEl.appendChild(inlineTitleEl);
 
-    titleIcon.add({} as any, inlineTitleEl, '<svg></svg>');
+    titleIcon.add(plugin, inlineTitleEl, '<svg></svg>');
     expect(parentEl).toMatchInlineSnapshot(`<div>
   <div
-    class="iconize-title-icon"
+    class="iconize-inline-title-wrapper"
     style="display: block;"
   >
-    <svg />
+    <div
+      class="iconize-title-icon"
+      style="display: block; width: var(--line-width); transform: translateY(9%);"
+    >
+      <svg />
+    </div>
+    <div />
   </div>
-  <div />
 </div>`);
   });
 
@@ -71,7 +101,7 @@ describe('add', () => {
     const inlineTitleEl = document.createElement('div');
     parentEl.appendChild(inlineTitleEl);
 
-    titleIcon.add({} as any, inlineTitleEl, '<svg></svg>', { fontSize: 10 });
+    titleIcon.add(plugin, inlineTitleEl, '<svg></svg>', { fontSize: 10 });
     expect(setFontSize).toBeCalledTimes(1);
     expect(setFontSize).toHaveBeenCalledWith('<svg></svg>', 10);
 

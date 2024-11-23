@@ -10,7 +10,7 @@ import {
 } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
 import IconsPickerModal from '@app/ui/icons-picker-modal';
-import IconFolderPlugin from '@app/main';
+import IconizePlugin from '@app/main';
 import {
   getAllOpenedFiles,
   getFileItemTitleEl,
@@ -33,7 +33,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
   private refreshDisplay: () => void;
 
   constructor(
-    plugin: IconFolderPlugin,
+    plugin: IconizePlugin,
     containerEl: HTMLElement,
     app: App,
     refreshDisplay: () => void,
@@ -62,7 +62,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         const applicable = await customRule.isApplicable(
           this.plugin,
           rule,
-          openedFile,
+          openedFile.path,
         );
         if (!applicable) {
           continue;
@@ -74,10 +74,15 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             replaceWithDefaultIcon: true,
           });
         } else {
-          iconTabs.add(this.plugin, openedFile, leaf.tabHeaderInnerIconEl, {
-            iconName: rule.icon,
-            iconColor: rule.color,
-          });
+          iconTabs.add(
+            this.plugin,
+            openedFile.path,
+            leaf.tabHeaderInnerIconEl,
+            {
+              iconName: rule.icon,
+              iconColor: rule.color,
+            },
+          );
         }
       }
     }
@@ -234,49 +239,6 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
         });
       });
 
-      // Add the configuration button for configuring where the custom rule gets applied to.
-      settingRuleEl.addButton((btn) => {
-        const isFor: typeof rule.for = rule.for ?? 'everything';
-        if (isFor === 'folders') {
-          btn.setIcon('folder');
-        } else if (isFor === 'files') {
-          btn.setIcon('document');
-        } else {
-          btn.setIcon('documents');
-        }
-
-        btn.setTooltip(`Icon applicable to: ${isFor}`);
-
-        btn.onClick(async () => {
-          this.updateIconTabs(rule, true);
-          await customRule.removeFromAllFiles(this.plugin, {
-            ...rule,
-            for: isFor,
-          });
-
-          if (isFor === 'folders') {
-            rule.for = 'everything';
-          } else if (isFor === 'files') {
-            rule.for = 'folders';
-          } else {
-            rule.for = 'files';
-          }
-
-          await customRule.addToAllFiles(this.plugin, rule);
-          this.updateIconTabs(rule, false);
-
-          await this.plugin.saveIconFolderData();
-          this.refreshDisplay();
-
-          customRule
-            .getSortedRules(this.plugin)
-            .forEach(async (previousRule) => {
-              await customRule.addToAllFiles(this.plugin, previousRule);
-              this.updateIconTabs(previousRule, false);
-            });
-        });
-      });
-
       // Add the edit custom rule button.
       settingRuleEl.addButton((btn) => {
         btn.setIcon('pencil');
@@ -302,7 +264,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           useFilePathContainer.style.justifyContent = 'space-between';
           useFilePathContainer.style.marginTop = 'var(--size-4-5)';
           const useFilePathDescription = useFilePathContainer.createEl('p', {
-            text: 'Whether to apply the icon to all files/folders that match the file path.',
+            text: 'Include folders and files that are part of the path.',
             cls: 'setting-item-description',
           });
           useFilePathDescription.style.margin = '0';
@@ -312,6 +274,49 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             .onChange((value) => {
               rule.useFilePath = value;
             });
+
+          // Create the toggle for changing the rule type.
+          const ruleTypeContainer = modal.contentEl.createDiv();
+          ruleTypeContainer.style.display = 'flex';
+          ruleTypeContainer.style.alignItems = 'center';
+          ruleTypeContainer.style.justifyContent = 'space-between';
+          ruleTypeContainer.style.marginTop = 'var(--size-4-5)';
+          const ruleTypeDescription = ruleTypeContainer.createEl('p', {
+            text: 'Where the custom rule gets applied to.',
+            cls: 'setting-item-description',
+          });
+          ruleTypeDescription.style.margin = '0';
+          ruleTypeDescription.style.marginBottom = 'var(--size-2-2)';
+          const ruleTypeButton = new ButtonComponent(ruleTypeContainer);
+          const setButtonContent = (isFor: typeof rule.for) => {
+            if (isFor === 'folders') {
+              ruleTypeButton.setIcon('folder');
+            } else if (isFor === 'files') {
+              ruleTypeButton.setIcon('document');
+            } else {
+              ruleTypeButton.setIcon('documents');
+            }
+            ruleTypeButton.setTooltip(`Icon applicable to: ${isFor}`);
+          };
+          setButtonContent(rule.for ?? 'everything');
+          ruleTypeButton.onClick(async () => {
+            const isFor: typeof rule.for = rule.for ?? 'everything';
+            this.updateIconTabs(rule, true);
+            await customRule.removeFromAllFiles(this.plugin, {
+              ...rule,
+              for: isFor,
+            });
+
+            if (isFor === 'folders') {
+              rule.for = 'everything';
+            } else if (isFor === 'files') {
+              rule.for = 'folders';
+            } else {
+              rule.for = 'files';
+            }
+
+            setButtonContent(rule.for);
+          });
 
           // Create the change icon button with icon preview.
           this.createDescriptionEl(modal.contentEl, 'Custom rule icon');

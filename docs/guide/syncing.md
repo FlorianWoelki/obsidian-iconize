@@ -16,6 +16,16 @@ should look like this:
 
 ![syncing-icon-packs](../assets/syncing-icon-packs.png)
 
+## Lucide Icons
+
+Obsidian supports Lucide icons by default.
+This native integration brings several advantages, such as there is no additional download required and sync seamlessly across all your devices.
+That's why I highly advise, if you are experiencing syncing issues, exclusively use the Lucide icons for now, which are installed by default, and remove all other icon packs from your Obsidian vault.
+
+When the the native Lucide icon pack is disabled, it will look something like this:
+
+![syncing-icon-packs](../assets/lucide-native-icon-pack.png)
+
 ## Background Checker
 
 ::: tip NOTE

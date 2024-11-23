@@ -1,4 +1,11 @@
-export type EmojiStyle = 'none' | 'native' | 'twemoji';
+export type EmojiStyle = 'native' | 'twemoji';
+
+export enum IconInTitlePosition {
+  Above = 'above',
+  Inline = 'inline',
+}
+
+export type LucideIconPackType = 'none' | 'custom' | 'native';
 
 export interface ExtraMarginSettings {
   /**
@@ -75,7 +82,7 @@ export interface IconFolderSettings {
   fontSize: number;
   /**
    * Sets the style of the emoji. The option `none` means that no emojis will be used.
-   * @default 'none'
+   * @default 'native'
    */
   emojiStyle: EmojiStyle;
   /**
@@ -120,6 +127,11 @@ export interface IconFolderSettings {
    */
   iconInTitleEnabled: boolean;
   /**
+   * Sets the default position of the icon in the title of a file.
+   * @default 'above'
+   */
+  iconInTitlePosition: IconInTitlePosition;
+  /**
    * Sets whether the plugin should check in the background if icons are missing.
    * @default false
    */
@@ -130,23 +142,51 @@ export interface IconFolderSettings {
    */
   iconInFrontmatterEnabled: boolean;
   /**
+   * Sets the name of the frontmatter field which contains the icon.
+   * @default 'icon'
+   */
+  iconInFrontmatterFieldName: string;
+  /**
+   * Sets the name of the frontmatter field which contains the color of the icon.
+   * @default 'iconColor'
+   */
+  iconColorInFrontmatterFieldName: string;
+  /**
    * Sets whether the plugin should be able to show icons in the editor while
    * editing notes.
    * @default true
    */
   iconsInNotesEnabled: boolean;
   /**
+   * Sets whether the plugin should be able to show icons in the links.
+   * @default true
+   */
+  iconsInLinksEnabled: boolean;
+  /**
    * Sets the icon identifier used in notes.
    * @default ':'
    */
   iconIdentifier: string;
+  /**
+   * Specifies which Lucide icon pack to use.
+   * - 'none': Don't use any Lucide icon pack
+   * - 'native': Use the native Lucide icon pack
+   * - 'custom': Use a custom Lucide icon pack
+   * @default 'native'
+   */
+  lucideIconPackType: LucideIconPackType;
+  /**
+   * Sets whether the plugin should be in debug mode. This will enable more logging
+   * in the console.
+   */
+  debugMode?: boolean;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
   migrated: 2,
   iconPacksPath: '.obsidian/icons',
   fontSize: 16,
-  emojiStyle: 'none',
+  emojiStyle: 'native',
   iconColor: null,
   recentlyUsedIcons: [],
   recentlyUsedIconsSize: 5,
@@ -159,8 +199,14 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   },
   iconInTabsEnabled: false,
   iconInTitleEnabled: false,
+  iconInTitlePosition: IconInTitlePosition.Above,
   iconInFrontmatterEnabled: false,
+  iconInFrontmatterFieldName: 'icon',
+  iconColorInFrontmatterFieldName: 'iconColor',
   iconsBackgroundCheckEnabled: false,
   iconsInNotesEnabled: true,
+  iconsInLinksEnabled: true,
   iconIdentifier: ':',
+  lucideIconPackType: 'native',
+  debugMode: false,
 };
