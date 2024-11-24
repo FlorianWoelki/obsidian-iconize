@@ -1,10 +1,23 @@
-const calculateFontTextSize = (): number => {
+// Cache for font size
+let cachedFontSize: number | null  = null;
+let fontSizeCacheTime: number = 0;
+
+const calculateFontTextSize = () => {
+  // get cached font size if available
+  const now = Date.now();
+  if (cachedFontSize !== null && now - fontSizeCacheTime < 2000) {
+    return cachedFontSize;
+  }
+
   let fontSize = parseFloat(
     getComputedStyle(document.body).getPropertyValue('--font-text-size') ?? '0',
   );
   if (!fontSize) {
     fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
   }
+  // set font size cache
+  cachedFontSize = fontSize;
+  fontSizeCacheTime = now;
   return fontSize;
 };
 
