@@ -1,5 +1,5 @@
 // Cache for font size
-let cachedFontSize: number | null  = null;
+let cachedFontSize: number | null = null;
 let fontSizeCacheTime: number = 0;
 
 const calculateFontTextSize = () => {
