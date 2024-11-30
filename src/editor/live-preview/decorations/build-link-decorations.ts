@@ -4,7 +4,7 @@ import { MarkdownView, editorInfoField } from 'obsidian';
 import { RangeSetBuilder } from '@codemirror/state';
 import { syntaxTree, tokenClassNodeProp } from '@codemirror/language';
 import icon from '@lib/icon';
-import { IconInLinkWidget } from '../widgets';
+import { IconInLinkWidget } from '@app/editor/live-preview/widgets';
 import { HeaderToken } from '@app/lib/util/text';
 
 export const buildLinkDecorations = (

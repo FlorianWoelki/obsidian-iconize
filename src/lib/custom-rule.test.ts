@@ -1,9 +1,9 @@
 import { vi, it, describe, beforeEach, expect, MockInstance } from 'vitest';
 import { Plugin, TAbstractFile } from 'obsidian';
+import { CustomRule } from '@app/settings/data';
+import config from '@app/config';
 import dom from './util/dom';
-import { CustomRule } from '../settings/data';
 import customRule, { CustomRuleFileType } from './custom-rule';
-import config from '../config';
 
 describe('doesMatchFileType', () => {
   let rule: CustomRule;

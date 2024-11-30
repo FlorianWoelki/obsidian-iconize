@@ -2,10 +2,10 @@
 // only include utility functions for setting styles for nodes or icons. The only
 // dependency is the `svg` library.
 
-import emoji from '../../emoji';
-import IconizePlugin from '../../main';
+import emoji from '@app/emoji';
+import IconizePlugin from '@app/main';
+import { getFileItemTitleEl } from '@app/util';
 import svg from './svg';
-import { getFileItemTitleEl } from '../../util';
 
 interface Margin {
   top: number;
