@@ -508,15 +508,17 @@ export const initIconPacks = async (plugin: IconizePlugin): Promise<void> => {
     }
 
     const prefix = createIconPackPrefix(folderName);
-    iconPacks.push({
-      name: folderName,
-      icons: loadedIcons,
-      prefix,
-      custom: true,
-    });
-    logger.info(
-      `Loaded icon pack '${folderName}' (amount of icons: ${loadedIcons.length})`,
-    );
+    if (!iconPacks.some(iconPack => iconPack.name === folderName)) {
+      iconPacks.push({
+          name: folderName,
+          icons: loadedIcons,
+          prefix,
+          custom: true,
+      });
+      logger.info(
+        `Loaded icon pack '${folderName}' (amount of icons: ${loadedIcons.length})`,
+      );
+    }
   }
 
   // Extract all files from the zip files.
@@ -531,15 +533,17 @@ export const initIconPacks = async (plugin: IconizePlugin): Promise<void> => {
       continue;
     }
 
-    iconPacks.push({
-      name: zipFile,
-      icons: loadedIcons,
-      prefix,
-      custom: false,
-    });
-    logger.info(
-      `Loaded icon pack '${zipFile}' (amount of icons: ${loadedIcons.length})`,
-    );
+    if (!iconPacks.some(iconPack => iconPack.name === zipFile)) {
+      iconPacks.push({
+          name: zipFile,
+          icons: loadedIcons,
+          prefix,
+          custom: false,
+      });
+      logger.info(
+        `Loaded icon pack '${zipFile}' (amount of icons: ${loadedIcons.length})`,
+      );
+    }
   }
 };
 
