@@ -18,6 +18,9 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: [{ find: '@app', replacement: resolve(__dirname, './src') }],
+    alias: [
+      { find: '@app', replacement: resolve(__dirname, './src') },
+      { find: '@lib', replacement: resolve(__dirname, './src/lib') },
+    ],
   },
 });

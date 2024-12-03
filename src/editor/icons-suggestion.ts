@@ -6,9 +6,9 @@ import {
   EditorSuggestContext,
   EditorSuggestTriggerInfo,
 } from 'obsidian';
-import { getAllLoadedIconNames } from '../icon-pack-manager';
-import icon from '../lib/icon';
-import emoji from '../emoji';
+import { getAllLoadedIconNames } from '@app/icon-pack-manager';
+import icon from '@app/lib/icon';
+import emoji from '@app/emoji';
 import { saveIconToIconPack } from '@app/util';
 import IconizePlugin from '@app/main';
 
