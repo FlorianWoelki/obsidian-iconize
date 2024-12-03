@@ -180,7 +180,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
 
         const addedPaths: string[] = [];
         for (const fileExplorer of this.plugin.getRegisteredFileExplorers()) {
-          const files = Object.values(fileExplorer.fileItems);
+          const files = Object.values(fileExplorer.fileItems || {});
           for (const rule of customRule.getSortedRules(this.plugin)) {
             // Removes the icon tabs from all opened files.
             this.updateIconTabs(rule, true, addedPaths);

@@ -190,7 +190,7 @@ const getFileItems = async (
 ): Promise<FileItem[]> => {
   const result: FileItem[] = [];
   for (const fileExplorer of plugin.getRegisteredFileExplorers()) {
-    const files = Object.values(fileExplorer.fileItems);
+    const files = Object.values(fileExplorer.fileItems || {});
     for (const fileItem of files) {
       if (await isApplicable(plugin, rule, fileItem.file.path)) {
         result.push(fileItem);

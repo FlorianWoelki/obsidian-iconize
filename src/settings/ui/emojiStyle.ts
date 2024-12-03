@@ -29,7 +29,7 @@ export default class EmojiStyleSetting extends IconFolderSetting {
 
   private updateDOM(): void {
     for (const fileExplorer of this.plugin.getRegisteredFileExplorers()) {
-      const fileItems = Object.entries(fileExplorer.fileItems);
+      const fileItems = Object.entries(fileExplorer.fileItems || {});
       for (const [path, _] of fileItems) {
         let iconName = this.plugin.getData()[path] as string | undefined | null;
         if (!iconName) {
