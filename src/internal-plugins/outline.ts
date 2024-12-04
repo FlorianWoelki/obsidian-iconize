@@ -38,6 +38,10 @@ export default class OutlineInternalPlugin extends InternalPluginInjector {
     }
 
     const updateTreeItems = () => {
+      if (!this.leaf?.view?.tree) {
+        return;
+      }
+
       const treeItems = Array.from(
         this.leaf.view.tree.containerEl.querySelectorAll(`.${TREE_ITEM_CLASS}`),
       );
