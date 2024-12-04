@@ -508,12 +508,12 @@ export const initIconPacks = async (plugin: IconizePlugin): Promise<void> => {
     }
 
     const prefix = createIconPackPrefix(folderName);
-    if (!iconPacks.some(iconPack => iconPack.name === folderName)) {
+    if (!iconPacks.some((iconPack) => iconPack.name === folderName)) {
       iconPacks.push({
-          name: folderName,
-          icons: loadedIcons,
-          prefix,
-          custom: true,
+        name: folderName,
+        icons: loadedIcons,
+        prefix,
+        custom: true,
       });
       logger.info(
         `Loaded icon pack '${folderName}' (amount of icons: ${loadedIcons.length})`,
@@ -533,12 +533,12 @@ export const initIconPacks = async (plugin: IconizePlugin): Promise<void> => {
       continue;
     }
 
-    if (!iconPacks.some(iconPack => iconPack.name === zipFile)) {
+    if (!iconPacks.some((iconPack) => iconPack.name === zipFile)) {
       iconPacks.push({
-          name: zipFile,
-          icons: loadedIcons,
-          prefix,
-          custom: false,
+        name: zipFile,
+        icons: loadedIcons,
+        prefix,
+        custom: false,
       });
       logger.info(
         `Loaded icon pack '${zipFile}' (amount of icons: ${loadedIcons.length})`,

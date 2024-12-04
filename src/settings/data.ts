@@ -180,6 +180,12 @@ export interface IconFolderSettings {
    * in the console.
    */
   debugMode?: boolean;
+  /**
+   * Adds icons to internal plugins such as the bookmarks and outline plugins.
+   * This is experimental.
+   * @default false
+   */
+  useInternalPlugins?: boolean;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -209,4 +215,5 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   iconIdentifier: ':',
   lucideIconPackType: 'native',
   debugMode: false,
+  useInternalPlugins: false,
 };

@@ -90,19 +90,21 @@ export default class IconizePlugin extends Plugin {
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
 
-    // Registers all modified internal plugins.
-    // Only adds star plugin for obsidian under v0.12.6.
-    if (!requireApiVersion('0.12.6')) {
-      this.modifiedInternalPlugins.push(new StarredInternalPlugin(this));
-    } else if (requireApiVersion('1.2.0')) {
-      this.modifiedInternalPlugins.push(new BookmarkInternalPlugin(this));
-    }
-
-    this.modifiedInternalPlugins.push(new OutlineInternalPlugin(this));
-
     await this.loadIconFolderData();
     logger.toggleLogging(this.getSettings().debugMode);
     setPath(this.getSettings().iconPacksPath);
+
+    if (this.getSettings().useInternalPlugins) {
+      // Registers all modified internal plugins.
+      // Only adds star plugin for obsidian under v0.12.6.
+      if (!requireApiVersion('0.12.6')) {
+        this.modifiedInternalPlugins.push(new StarredInternalPlugin(this));
+      } else if (requireApiVersion('1.2.0')) {
+        this.modifiedInternalPlugins.push(new BookmarkInternalPlugin(this));
+      }
+
+      this.modifiedInternalPlugins.push(new OutlineInternalPlugin(this));
+    }
 
     await createDefaultDirectory(this);
     await this.checkRecentlyUsedIcons();
