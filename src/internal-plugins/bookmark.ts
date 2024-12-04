@@ -137,7 +137,7 @@ export default class BookmarkInternalPlugin extends InternalPluginInjector {
 
     if (requireApiVersion('1.7.2')) {
       // TODO: Might improve the performance here.
-      this.leaf.loadIfDeferred().then(setBookmarkIcon);
+      this.leaf?.loadIfDeferred().then(setBookmarkIcon);
     } else {
       setBookmarkIcon();
     }
