@@ -538,7 +538,7 @@ export default class IconizePlugin extends Plugin {
           }
 
           for (const openedFile of getAllOpenedFiles(this)) {
-            if (openedFile.path !== file.path) {
+            if (!file || !openedFile || openedFile.path !== file.path) {
               continue;
             }
 
