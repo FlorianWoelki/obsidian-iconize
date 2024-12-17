@@ -98,7 +98,7 @@ export const processIconInTextMarkdown = (
       shortcode.length - iconIdentifierLength,
     );
 
-    const iconObject = icon.getIconByName(iconName);
+    const iconObject = icon.getIconByName(plugin, iconName);
     if (iconObject) {
       const toReplace = text.splitText(code.index);
       const rootSpan = createSpan({

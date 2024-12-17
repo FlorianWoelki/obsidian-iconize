@@ -1,10 +1,13 @@
 import config from '@app/config';
 import IconizePlugin from '@app/main';
 import { logger } from '@app/lib/logger';
-import { getSvgFromLoadedIcon, nextIdentifier } from '@app/icon-pack-manager';
 import style from './style';
 import svg from './svg';
 import emoji from '@app/emoji';
+import {
+  getSvgFromLoadedIcon,
+  nextIdentifier,
+} from '@app/icon-pack-manager/util';
 
 /**
  * Removes the `iconize-icon` icon node from the provided HTMLElement.
@@ -68,6 +71,7 @@ const setIconForNode = (
   // Gets the possible icon based on the icon name.
   const iconNextIdentifier = nextIdentifier(iconName);
   const possibleIcon = getSvgFromLoadedIcon(
+    plugin,
     iconName.substring(0, iconNextIdentifier),
     iconName.substring(iconNextIdentifier),
   );

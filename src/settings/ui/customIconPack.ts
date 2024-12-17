@@ -1,21 +1,10 @@
 import { Notice, Setting, TextComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import {
-  addIconToIconPack,
-  createFile,
-  createCustomIconPackDirectory,
-  deleteIconPack,
-  doesIconPackExist,
-  getAllIconPacks,
-  LUCIDE_ICON_PACK_NAME,
-  removeCustomLucideIconPack,
-  addLucideIconsPack,
-  addCustomLucideIconPack,
-} from '@app/icon-pack-manager';
 import IconizePlugin from '@app/main';
 import { readFileSync } from '@app/util';
 import icon from '@app/lib/icon';
 import { LucideIconPackType } from '../data';
+import { LUCIDE_ICON_PACK_NAME } from '@app/icon-pack-manager/lucide';
 
 export default class CustomIconPackSetting extends IconFolderSetting {
   private textComponent: TextComponent;
@@ -93,12 +82,18 @@ export default class CustomIconPackSetting extends IconFolderSetting {
             this.textComponent.getValue(),
           );
 
-          if (await doesIconPackExist(this.plugin, normalizedName)) {
+          if (
+            await this.plugin
+              .getIconPackManager()
+              .doesIconPackExist(normalizedName)
+          ) {
             new Notice('Icon pack already exists.');
             return;
           }
 
-          await createCustomIconPackDirectory(this.plugin, normalizedName);
+          await this.plugin
+            .getIconPackManager()
+            .createCustomIconPackDirectory(normalizedName);
           this.textComponent.setValue('');
           this.refreshDisplay();
           new Notice('Icon pack successfully created.');
@@ -106,20 +101,22 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       });
 
     // Sorts lucide icon pack always to the top.
-    const iconPacks = [...getAllIconPacks()].sort((a, b) => {
-      if (a.name === LUCIDE_ICON_PACK_NAME) return -1;
-      if (b.name === LUCIDE_ICON_PACK_NAME) return 1;
-      return a.name.localeCompare(b.name);
-    });
+    const iconPacks = [...this.plugin.getIconPackManager().getIconPacks()].sort(
+      (a, b) => {
+        if (a.getName() === LUCIDE_ICON_PACK_NAME) return -1;
+        if (b.getName() === LUCIDE_ICON_PACK_NAME) return 1;
+        return a.getName().localeCompare(b.getName());
+      },
+    );
 
     iconPacks.forEach((iconPack) => {
-      const isLucideIconPack = iconPack.name === LUCIDE_ICON_PACK_NAME;
+      const isLucideIconPack = iconPack.getName() === LUCIDE_ICON_PACK_NAME;
       const additionalLucideDescription =
         '(Native Pack has fewer icons but 100% Obsidian Sync support)';
       const iconPackSetting = new Setting(this.containerEl)
-        .setName(`${iconPack.name} (${iconPack.prefix})`)
+        .setName(`${iconPack.getName()} (${iconPack.getPrefix()})`)
         .setDesc(
-          `Total icons: ${iconPack.icons.length}${isLucideIconPack ? ` ${additionalLucideDescription}` : ''}`,
+          `Total icons: ${iconPack.getIcons().length}${isLucideIconPack ? ` ${additionalLucideDescription}` : ''}`,
         );
       // iconPackSetting.addButton((btn) => {
       //   btn.setIcon('broken-link');
@@ -168,10 +165,16 @@ export default class CustomIconPackSetting extends IconFolderSetting {
             this.plugin.getSettings().lucideIconPackType = value;
             await this.plugin.saveIconFolderData();
             if (value === 'native' || value === 'none') {
-              await removeCustomLucideIconPack(this.plugin);
-              addLucideIconsPack(this.plugin);
+              await this.plugin
+                .getIconPackManager()
+                .getLucideIconPack()
+                .removeCustom();
+              this.plugin.getIconPackManager().getLucideIconPack().init();
             } else {
-              await addCustomLucideIconPack(this.plugin);
+              await this.plugin
+                .getIconPackManager()
+                .getLucideIconPack()
+                .addCustom();
               await icon.checkMissingIcons(
                 this.plugin,
                 Object.entries(this.plugin.getData()) as any,
@@ -199,10 +202,18 @@ export default class CustomIconPackSetting extends IconFolderSetting {
             for (let i = 0; i < target.files.length; i++) {
               const file = target.files[i] as File;
               const content = await readFileSync(file);
-              await createFile(this.plugin, iconPack.name, file.name, content);
-              addIconToIconPack(iconPack.name, file.name, content);
+              await this.plugin
+                .getIconPackManager()
+                .getFileManager()
+                .createFile(
+                  iconPack.getName(),
+                  this.plugin.getIconPackManager().getPath(),
+                  file.name,
+                  content,
+                );
+              iconPack.addIcon(file.name, content);
               iconPackSetting.setDesc(
-                `Total icons: ${iconPack.icons.length} (added: ${file.name})`,
+                `Total icons: ${iconPack.getIcons().length} (added: ${file.name})`,
               );
             }
             new Notice('Icons successfully added.');
@@ -213,7 +224,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
         btn.setIcon('trash');
         btn.setTooltip('Remove the icon pack');
         btn.onClick(async () => {
-          await deleteIconPack(this.plugin, iconPack.name);
+          await this.plugin.getIconPackManager().removeIconPack(iconPack);
           this.refreshDisplay();
           new Notice('Icon pack successfully deleted.');
         });
@@ -258,10 +269,18 @@ export default class CustomIconPackSetting extends IconFolderSetting {
 
             successful = true;
             const content = await readFileSync(file);
-            await createFile(this.plugin, iconPack.name, file.name, content);
-            addIconToIconPack(iconPack.name, file.name, content);
+            await this.plugin
+              .getIconPackManager()
+              .getFileManager()
+              .createFile(
+                iconPack.getName(),
+                this.plugin.getIconPackManager().getPath(),
+                file.name,
+                content,
+              );
+            iconPack.addIcon(file.name, content);
             iconPackSetting.setDesc(
-              `Total icons: ${iconPack.icons.length} (added: ${file.name})`,
+              `Total icons: ${iconPack.getIcons().length} (added: ${file.name})`,
             );
           }
 
