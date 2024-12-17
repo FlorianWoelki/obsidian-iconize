@@ -61,7 +61,7 @@ export class IconInTextWidget extends WidgetType {
       },
     });
 
-    const foundIcon = icon.getIconByName(this.id);
+    const foundIcon = icon.getIconByName(this.plugin, this.id);
     const fontSize = this.getSize(view);
 
     if (foundIcon) {

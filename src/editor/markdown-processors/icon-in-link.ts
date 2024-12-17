@@ -78,7 +78,7 @@ export const processIconInLinkMarkdown = (
       rootSpan.style.transform = 'translateY(0)';
       rootSpan.innerHTML = parsedEmoji;
     } else {
-      let svgEl = icon.getIconByName(iconName).svgElement;
+      let svgEl = icon.getIconByName(plugin, iconName).svgElement;
       svgEl = svg.setFontSize(svgEl, fontSize);
       if (svgEl) {
         rootSpan.style.transform = 'translateY(20%)';

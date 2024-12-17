@@ -1,13 +1,6 @@
-import {
-  extractIconToIconPack,
-  getIconFromIconPack,
-  getIconPackNameByPrefix,
-  getSvgFromLoadedIcon,
-  LUCIDE_ICON_PACK_NAME,
-  nextIdentifier,
-  removeIconFromIconPackDirectory,
-} from '@app/icon-pack-manager';
 import { FileItem, FileWithLeaf } from './@types/obsidian';
+import { LUCIDE_ICON_PACK_NAME } from './icon-pack-manager/lucide';
+import { getSvgFromLoadedIcon, nextIdentifier } from './icon-pack-manager/util';
 import IconizePlugin from './main';
 
 // Default obsidian file icon.
@@ -83,21 +76,21 @@ export const saveIconToIconPack = (
   const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
   const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
   const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
-  const possibleIcon = getSvgFromLoadedIcon(iconPrefix, iconName);
+  const possibleIcon = getSvgFromLoadedIcon(plugin, iconPrefix, iconName);
   if (!possibleIcon) {
     throw new Error(`Icon ${iconNameWithPrefix} could not be found.`);
   }
 
-  const iconPackName = getIconPackNameByPrefix(iconPrefix);
+  const iconPack = plugin.getIconPackManager().getIconPackByPrefix(iconPrefix);
   if (
-    iconPackName === LUCIDE_ICON_PACK_NAME &&
+    iconPack.getName() === LUCIDE_ICON_PACK_NAME &&
     !plugin.doesUseCustomLucideIconPack()
   ) {
     return;
   }
 
-  const icon = getIconFromIconPack(iconPackName, iconPrefix, iconName);
-  extractIconToIconPack(plugin, icon, possibleIcon);
+  const icon = iconPack.getIcon(iconName);
+  plugin.getIconPackManager().extractIcon(icon, possibleIcon);
 };
 
 /**
@@ -113,10 +106,10 @@ export const removeIconFromIconPack = (
   const identifier = nextIdentifier(iconNameWithPrefix);
   const prefix = iconNameWithPrefix.substring(0, identifier);
   const iconName = iconNameWithPrefix.substring(identifier);
-  const iconPackName = getIconPackNameByPrefix(prefix);
+  const iconPack = plugin.getIconPackManager().getIconPackByPrefix(prefix);
   const duplicatedIcon = plugin.getDataPathByValue(iconNameWithPrefix);
   if (!duplicatedIcon) {
-    removeIconFromIconPackDirectory(plugin, iconPackName, iconName);
+    iconPack.removeIcon(plugin.getIconPackManager().getPath(), iconName);
   }
 };
 

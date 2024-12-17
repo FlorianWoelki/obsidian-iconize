@@ -4,13 +4,14 @@ import svg from '@lib/util/svg';
 import icon from '@lib/icon';
 import { EventEmitter } from './event/event';
 import { removeIconFromIconPack, saveIconToIconPack } from '@app/util';
-import { getAllIconPacks, getIconsFromIconPack } from '@app/icon-pack-manager';
+import { Icon } from '@app/icon-pack-manager';
+import { IconPack } from '@app/icon-pack-manager/icon-pack';
 
 export { AllIconsLoadedEvent } from '@lib/event/events';
 
 export default interface IconizeAPI {
   getEventEmitter(): EventEmitter;
-  getIconByName: typeof icon.getIconByName;
+  getIconByName(iconNameWithPrefix: string): Icon | null;
   /**
    * Sets an icon or emoji for an HTMLElement based on the specified icon name and color.
    * The function manipulates the specified node inline.
@@ -33,8 +34,7 @@ export default interface IconizeAPI {
    * @param iconNameWithPrefix String that will be used to remove the icon from the icon pack.
    */
   removeIconFromIconPack(iconNameWithPrefix: string): void;
-  getAllIconPacks: typeof getAllIconPacks;
-  getIconsFromIconPack: typeof getIconsFromIconPack;
+  getIconPacks(): IconPack[];
   util: {
     dom: typeof dom;
     svg: typeof svg;
@@ -48,15 +48,14 @@ export function getApi(plugin: IconizePlugin): IconizeAPI {
   return {
     getEventEmitter: () => plugin.getEventEmitter(),
     getIconByName: (iconNameWithPrefix: string) =>
-      icon.getIconByName(iconNameWithPrefix),
+      icon.getIconByName(plugin, iconNameWithPrefix),
     setIconForNode: (iconName: string, node: HTMLElement, color?: string) =>
       dom.setIconForNode(plugin, iconName, node, { color }),
     saveIconToIconPack: (iconNameWithPrefix) =>
       saveIconToIconPack(plugin, iconNameWithPrefix),
     removeIconFromIconPack: (iconNameWithPrefix) =>
       removeIconFromIconPack(plugin, iconNameWithPrefix),
-    getIconsFromIconPack: getIconsFromIconPack,
-    getAllIconPacks: getAllIconPacks,
+    getIconPacks: plugin.getIconPackManager().getIconPacks,
     doesElementHasIconNode: dom.doesElementHasIconNode,
     getIconFromElement: dom.getIconFromElement,
     removeIconInNode: dom.removeIconInNode,

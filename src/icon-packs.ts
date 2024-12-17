@@ -1,11 +1,11 @@
-export interface IconPack {
+export interface PredefinedIconPack {
   name: string;
   displayName: string;
   path: string;
   downloadLink: string;
 }
 
-const iconPacks = {
+const predefinedIconPacks = {
   faBrands: {
     name: 'font-awesome-brands',
     displayName: 'FontAwesome Brands',
@@ -103,7 +103,7 @@ const iconPacks = {
     downloadLink:
       'https://github.com/primer/octicons/archive/refs/tags/v19.8.0.zip',
   },
-} as { [key: string]: IconPack };
+} as { [key: string]: PredefinedIconPack };
 
 /**
  * Returns a possible path to the icon pack.
@@ -112,10 +112,10 @@ const iconPacks = {
  * exist.
  */
 export const getExtraPath = (iconPackName: string): string | undefined => {
-  const path: string | undefined = Object.values(iconPacks).find(
+  const path: string | undefined = Object.values(predefinedIconPacks).find(
     (iconPack) => iconPack.name === iconPackName,
   )?.path;
   return path?.length === 0 ? undefined : path;
 };
 
-export default iconPacks;
+export default predefinedIconPacks;

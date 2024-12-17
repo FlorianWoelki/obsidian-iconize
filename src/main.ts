@@ -13,19 +13,7 @@ import {
   InlineTitleView,
   TabHeaderLeaf,
 } from './@types/obsidian';
-import {
-  addLucideIconsPack,
-  createDefaultDirectory,
-  getNormalizedName,
-  getPreloadedIcons,
-  getSvgFromLoadedIcon,
-  initIconPacks,
-  loadUsedIcons,
-  nextIdentifier,
-  resetPreloadedIcons,
-  setPath,
-} from './icon-pack-manager';
-import IconsPickerModal, { Icon } from './ui/icons-picker-modal';
+import IconsPickerModal from './ui/icons-picker-modal';
 import { DEFAULT_SETTINGS, IconFolderSettings } from '@app/settings/data';
 import { migrate } from '@app/migrations';
 import IconFolderSettingsUI from './settings/ui';
@@ -62,7 +50,13 @@ import {
 import ChangeColorModal from './ui/change-color-modal';
 import { logger } from './lib/logger';
 import { EventEmitter } from './lib/event/event';
-import { getApi } from './lib/api';
+import IconizeAPI, { getApi } from './lib/api';
+import { Icon, IconPackManager } from './icon-pack-manager';
+import {
+  getNormalizedName,
+  getSvgFromLoadedIcon,
+  nextIdentifier,
+} from './icon-pack-manager/util';
 
 export interface FolderIconObject {
   iconName: string | null;
@@ -83,14 +77,21 @@ export default class IconizePlugin extends Plugin {
   private frontmatterCache = new Set<string>();
   private eventEmitter = new EventEmitter();
 
-  public readonly api = getApi(this);
+  private iconPackManager: IconPackManager;
+
+  public api: IconizeAPI;
 
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
 
     await this.loadIconFolderData();
     logger.toggleLogging(this.getSettings().debugMode);
-    setPath(this.getSettings().iconPacksPath);
+    this.iconPackManager = new IconPackManager(
+      this,
+      this.getSettings().iconPacksPath,
+    );
+
+    this.api = getApi(this);
 
     if (this.getSettings().useInternalPlugins) {
       // Registers all modified internal plugins.
@@ -104,16 +105,17 @@ export default class IconizePlugin extends Plugin {
       this.modifiedInternalPlugins.push(new OutlineInternalPlugin(this));
     }
 
-    await createDefaultDirectory(this);
+    await this.iconPackManager.createDefaultDirectory();
     await this.checkRecentlyUsedIcons();
 
     await migrate(this);
 
     const usedIconNames = icon.getAllWithPath(this).map((value) => value.icon);
-    if (!this.doesUseCustomLucideIconPack()) {
-      addLucideIconsPack(this);
-    }
-    await loadUsedIcons(this, usedIconNames);
+    // if (!this.doesUseCustomLucideIconPack()) {
+    await this.iconPackManager.init();
+    // }
+    // TODO: Check if needed
+    await this.iconPackManager.loadUsedIcons(usedIconNames);
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
 
@@ -386,14 +388,15 @@ export default class IconizePlugin extends Plugin {
     icon.addAll(this, data, this.registeredFileExplorers, () => {
       // After initialization of the icon packs, checks the vault for missing icons and
       // adds them.
-      initIconPacks(this).then(async () => {
+      this.iconPackManager.loadAll().then(async () => {
         if (this.getSettings().iconsBackgroundCheckEnabled) {
           const data = Object.entries(this.data) as [
             string,
             string | FolderIconObject,
           ][];
           await icon.checkMissingIcons(this, data);
-          resetPreloadedIcons();
+          // TODO: Check if needed
+          // resetPreloadedIcons();
         }
 
         this.eventEmitter.emit('allIconsLoaded');
@@ -416,6 +419,7 @@ export default class IconizePlugin extends Plugin {
             if (!emoji.isEmoji(iconName)) {
               const iconNextIdentifier = nextIdentifier(iconName);
               possibleIcon = getSvgFromLoadedIcon(
+                this,
                 iconName.substring(0, iconNextIdentifier),
                 iconName.substring(iconNextIdentifier),
               );
@@ -495,13 +499,21 @@ export default class IconizePlugin extends Plugin {
 
               let foundIcon: string = iconNameWithPrefix;
               if (!emoji.isEmoji(foundIcon)) {
-                foundIcon = icon.getIconByName(iconNameWithPrefix)?.svgElement;
+                foundIcon = icon.getIconByName(
+                  this,
+                  iconNameWithPrefix,
+                )?.svgElement;
                 // Check for preloaded icons if no icon was found when the start up was faster
                 // than the loading of the icons.
-                if (!foundIcon && getPreloadedIcons().length > 0) {
-                  foundIcon = getPreloadedIcons().find(
-                    (icon) => icon.prefix + icon.name === iconNameWithPrefix,
-                  )?.svgElement;
+                if (
+                  !foundIcon &&
+                  this.iconPackManager.getPreloadedIcons().length > 0
+                ) {
+                  foundIcon = this.iconPackManager
+                    .getPreloadedIcons()
+                    .find(
+                      (icon) => icon.prefix + icon.name === iconNameWithPrefix,
+                    )?.svgElement;
                 }
               }
 
@@ -551,13 +563,21 @@ export default class IconizePlugin extends Plugin {
 
             let foundIcon: string = iconNameWithPrefix;
             if (!emoji.isEmoji(foundIcon)) {
-              foundIcon = icon.getIconByName(iconNameWithPrefix)?.svgElement;
+              foundIcon = icon.getIconByName(
+                this,
+                iconNameWithPrefix,
+              )?.svgElement;
               // Check for preloaded icons if no icon was found when the start up was faster
               // than the loading of the icons.
-              if (!foundIcon && getPreloadedIcons().length > 0) {
-                foundIcon = getPreloadedIcons().find(
-                  (icon) => icon.prefix + icon.name === iconNameWithPrefix,
-                )?.svgElement;
+              if (
+                !foundIcon &&
+                this.iconPackManager.getPreloadedIcons().length > 0
+              ) {
+                foundIcon = this.iconPackManager
+                  .getPreloadedIcons()
+                  .find(
+                    (icon) => icon.prefix + icon.name === iconNameWithPrefix,
+                  )?.svgElement;
               }
             }
 
@@ -732,7 +752,7 @@ export default class IconizePlugin extends Plugin {
       if (activeView instanceof MarkdownView) {
         let possibleIcon = iconName;
         if (!emoji.isEmoji(iconName)) {
-          possibleIcon = icon.getIconByName(iconName)?.svgElement;
+          possibleIcon = icon.getIconByName(this, iconName)?.svgElement;
         }
 
         if (possibleIcon) {
@@ -952,5 +972,9 @@ export default class IconizePlugin extends Plugin {
         }
       }
     }) as unknown as string;
+  }
+
+  public getIconPackManager(): IconPackManager {
+    return this.iconPackManager;
   }
 }

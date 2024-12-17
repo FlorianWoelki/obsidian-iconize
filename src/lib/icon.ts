@@ -5,22 +5,17 @@ import customRule from './custom-rule';
 import dom from './util/dom';
 import iconTabs from './icon-tabs';
 import { getFileItemInnerTitleEl, getFileItemTitleEl } from '@app/util';
-import {
-  Icon,
-  LUCIDE_ICON_PACK_NAME,
-  extractIconToIconPack,
-  getAllIconPacks,
-  getIconFromIconPack,
-  getIconPackNameByPrefix,
-  getNormalizedName,
-  getPath,
-  getSvgFromLoadedIcon,
-  nextIdentifier,
-} from '@app/icon-pack-manager';
 import config from '@app/config';
 import { Notice, requireApiVersion } from 'obsidian';
 import { IconCache } from './icon-cache';
 import { logger } from './logger';
+import { Icon } from '@app/icon-pack-manager';
+import {
+  getNormalizedName,
+  getSvgFromLoadedIcon,
+  nextIdentifier,
+} from '@app/icon-pack-manager/util';
+import { LUCIDE_ICON_PACK_NAME } from '@app/icon-pack-manager/lucide';
 
 const checkMissingIcons = async (
   plugin: IconizePlugin,
@@ -35,16 +30,22 @@ const checkMissingIcons = async (
     const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
     const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
     const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
-    const iconPackName = getIconPackNameByPrefix(iconPrefix);
+    const iconPack = plugin
+      .getIconPackManager()
+      .getIconPackByPrefix(iconPrefix);
+
+    if (!iconPack) {
+      return;
+    }
 
     if (
-      iconPackName === LUCIDE_ICON_PACK_NAME &&
+      iconPack.getName() === LUCIDE_ICON_PACK_NAME &&
       !plugin.doesUseCustomLucideIconPack()
     ) {
       return;
     }
 
-    const icon = getIconFromIconPack(iconPackName, iconPrefix, iconName);
+    const icon = iconPack.getIcon(iconName);
     if (!icon) {
       logger.error(
         `Icon file with name ${iconNameWithPrefix} could not be found`,
@@ -53,11 +54,11 @@ const checkMissingIcons = async (
     }
 
     const doesIconFileExists = await plugin.app.vault.adapter.exists(
-      `${getPath()}/${iconPackName}/${iconName}.svg`,
+      `${plugin.getIconPackManager().getPath()}/${iconPack.getName()}/${iconName}.svg`,
     );
 
     if (!doesIconFileExists) {
-      const possibleIcon = getSvgFromLoadedIcon(iconPrefix, iconName);
+      const possibleIcon = getSvgFromLoadedIcon(plugin, iconPrefix, iconName);
       if (!possibleIcon) {
         logger.error(
           `Icon SVG with name ${iconNameWithPrefix} could not be found`,
@@ -65,7 +66,7 @@ const checkMissingIcons = async (
         return null;
       }
 
-      await extractIconToIconPack(plugin, icon, possibleIcon);
+      await plugin.getIconPackManager().extractIcon(icon, possibleIcon);
       return icon;
     }
 
@@ -129,17 +130,17 @@ const checkMissingIcons = async (
   }
 
   // Remove all icon files that can not be found in the data.
-  for (const iconPack of getAllIconPacks()) {
+  for (const iconPack of plugin.getIconPackManager().getIconPacks()) {
     // Checks if the icon pack exists.
     const doesIconPackExist = await plugin.app.vault.adapter.exists(
-      `${getPath()}/${iconPack.name}`,
+      `${plugin.getIconPackManager().getPath()}/${iconPack.getName()}`,
     );
     if (!doesIconPackExist) {
       continue;
     }
 
     const iconFiles = await plugin.app.vault.adapter.list(
-      `${getPath()}/${iconPack.name}`,
+      `${plugin.getIconPackManager().getPath()}/${iconPack.getName()}`,
     );
 
     for (const iconFilePath of iconFiles.files) {
@@ -150,10 +151,10 @@ const checkMissingIcons = async (
         iconNameWithExtension.length - 4,
       );
 
-      const iconNameWithPrefix = iconPack.prefix + iconName;
+      const iconNameWithPrefix = iconPack.getPrefix() + iconName;
       const doesIconExist = allIcons.get(iconNameWithPrefix);
       if (!doesIconExist) {
-        const path = `${getPath()}/${iconPack.name}/${iconName}.svg`;
+        const path = `${plugin.getIconPackManager().getPath()}/${iconPack.getName()}/${iconName}.svg`;
         const doesPathExist = await plugin.app.vault.adapter.exists(path);
         if (doesPathExist) {
           logger.info(
@@ -161,7 +162,7 @@ const checkMissingIcons = async (
           );
           // Removes the icon file.
           await plugin.app.vault.adapter.remove(
-            `${getPath()}/${iconPack.name}/${iconName}.svg`,
+            `${plugin.getIconPackManager().getPath()}/${iconPack.getName()}/${iconName}.svg`,
           );
         }
       }
@@ -337,12 +338,19 @@ const getAllWithPath = (plugin: IconizePlugin): IconWithPath[] => {
  * icon name.
  * @returns Icon if it exists, `null` otherwise.
  */
-const getIconByName = (iconNameWithPrefix: string): Icon | null => {
+const getIconByName = (
+  plugin: IconizePlugin,
+  iconNameWithPrefix: string,
+): Icon | null => {
   const iconNextIdentifier = nextIdentifier(iconNameWithPrefix);
   const iconName = iconNameWithPrefix.substring(iconNextIdentifier);
   const iconPrefix = iconNameWithPrefix.substring(0, iconNextIdentifier);
-  const iconPackName = getIconPackNameByPrefix(iconPrefix);
-  const icon = getIconFromIconPack(iconPackName, iconPrefix, iconName);
+  const iconPack = plugin.getIconPackManager().getIconPackByPrefix(iconPrefix);
+  if (!iconPack) {
+    return null;
+  }
+
+  const icon = iconPack.getIcon(iconName);
   if (!icon) {
     return null;
   }
@@ -369,7 +377,7 @@ const getIconByPath = (
     return iconNameWithPrefix;
   }
 
-  return getIconByName(iconNameWithPrefix);
+  return getIconByName(plugin, iconNameWithPrefix);
 };
 
 export default {

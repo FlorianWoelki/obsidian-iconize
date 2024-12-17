@@ -65,7 +65,7 @@ export default class OutlineInternalPlugin extends InternalPluginInjector {
             iconIdentifierLength,
             shortcode.length - iconIdentifierLength,
           );
-          const iconObject = icon.getIconByName(iconName);
+          const iconObject = icon.getIconByName(this.plugin, iconName);
           if (iconObject) {
             const startIndex = code.index - trimmedLength;
             const endIndex = code.index + code.text.length - trimmedLength;
