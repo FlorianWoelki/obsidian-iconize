@@ -3,7 +3,6 @@ import predefinedIconPacks, { PredefinedIconPack } from '@app/icon-packs';
 import IconizePlugin from '@app/main';
 import { downloadZipFile } from '@app/zip-util';
 import { IconPack } from '@app/icon-pack-manager/icon-pack';
-import predefinedIconPacks from '@app/icon-packs';
 
 export default class IconPackBrowserModal extends FuzzySuggestModal<PredefinedIconPack> {
   private plugin: IconizePlugin;

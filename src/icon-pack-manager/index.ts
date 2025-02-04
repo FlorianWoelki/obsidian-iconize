@@ -46,12 +46,10 @@ export class IconPackManager {
       const fileName = loadedIconPacks.files[i];
       if (fileName.endsWith('.zip')) {
         const iconPackName = fileName.split('/').pop().split('.zip')[0];
-        const iconPack = new IconPack(this.plugin, iconPackName, false);
-        if (
-          iconPackName === LUCIDE_ICON_PACK_NAME &&
-          !this.plugin.doesUseCustomLucideIconPack()
-        ) {
-          continue;
+        let iconPack = new IconPack(this.plugin, iconPackName, false);
+
+        if (iconPackName === LUCIDE_ICON_PACK_NAME) {
+          iconPack = this.lucideIconPack.init(iconPack);
         }
 
         this.iconPacks.push(iconPack);
@@ -59,7 +57,10 @@ export class IconPackManager {
       }
     }
 
-    this.lucideIconPack.init();
+    if (this.plugin.doesUseNativeLucideIconPack()) {
+      const iconPack = this.lucideIconPack.init();
+      this.iconPacks.push(iconPack);
+    }
   }
 
   public async loadAll(): Promise<void> {
@@ -172,11 +173,6 @@ export class IconPackManager {
   }
 
   public async loadUsedIcons(icons: string[]): Promise<void> {
-    // const loadedIconPacks = await this.plugin.app.vault.adapter.list(this.path);
-    // const iconPacks = loadedIconPacks.folders.map((iconPack) =>
-    //   iconPack.split('/').pop(),
-    // );
-
     for (let i = 0; i < icons.length; i++) {
       const entry = icons[i];
       if (!entry) {

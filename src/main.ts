@@ -81,6 +81,21 @@ export default class IconizePlugin extends Plugin {
 
   public api: IconizeAPI;
 
+  public getUsedIcons(): Set<string> {
+    // Used icons in paths.
+    const usedIconsInPaths = icon
+      .getAllWithPath(this)
+      .map((value) => value.icon);
+
+    // Used icons in rules.
+    const customRules = customRule.getSortedRules(this);
+    const usedIconsInCustomRules = customRules.map(
+      (customRule) => customRule.icon,
+    );
+
+    return new Set([...usedIconsInPaths, ...usedIconsInCustomRules]);
+  }
+
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
 
@@ -110,12 +125,12 @@ export default class IconizePlugin extends Plugin {
 
     await migrate(this);
 
-    const usedIconNames = icon.getAllWithPath(this).map((value) => value.icon);
+    const usedIconNames = this.getUsedIcons();
     // if (!this.doesUseCustomLucideIconPack()) {
     await this.iconPackManager.init();
     // }
     // TODO: Check if needed
-    await this.iconPackManager.loadUsedIcons(usedIconNames);
+    await this.iconPackManager.loadUsedIcons([...usedIconNames]);
 
     this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
 

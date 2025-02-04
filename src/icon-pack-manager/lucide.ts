@@ -16,7 +16,7 @@ export class LucideIconPack {
     private iconPackManager: IconPackManager,
   ) {}
 
-  public init(): void {
+  public init(iconPack?: IconPack): IconPack {
     // Do not initialize Lucide icon pack when setting is `None`.
     if (
       !this.plugin.doesUseCustomLucideIconPack() &&
@@ -25,7 +25,8 @@ export class LucideIconPack {
       return;
     }
 
-    this.iconPack = new IconPack(this.plugin, LUCIDE_ICON_PACK_NAME, false);
+    this.iconPack =
+      iconPack ?? new IconPack(this.plugin, LUCIDE_ICON_PACK_NAME, false);
     const icons = this.plugin.doesUseNativeLucideIconPack()
       ? getIconIds()
           .map((iconId) => iconId.replace(/^lucide-/, ''))
@@ -45,18 +46,13 @@ export class LucideIconPack {
           })
       : [];
     this.iconPack.setIcons(icons);
-    this.iconPackManager.addIconPack(this.iconPack);
+    return this.iconPack;
   }
 
   public async addCustom(): Promise<void> {
     await this.iconPackManager.removeIconPack(this.iconPack);
 
-    this.iconPack = new IconPack(
-      this.plugin,
-
-      LUCIDE_ICON_PACK_NAME,
-      true,
-    );
+    this.iconPack = new IconPack(this.plugin, LUCIDE_ICON_PACK_NAME, true);
     const arrayBuffer = await downloadZipFile(
       predefinedIconPacks['lucide'].downloadLink,
     );
@@ -67,7 +63,10 @@ export class LucideIconPack {
         `${this.iconPack.getName()}.zip`,
         arrayBuffer,
       );
-    this.iconPackManager.registerIconPack(this.iconPack.getName(), arrayBuffer);
+    await this.iconPackManager.registerIconPack(
+      this.iconPack.getName(),
+      arrayBuffer,
+    );
   }
 
   public async removeCustom(): Promise<void> {
