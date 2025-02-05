@@ -1,5 +1,4 @@
 import { it, describe, beforeEach, expect, vi } from 'vitest';
-import * as iconPackManager from '@app/icon-pack-manager';
 import icon from './icon';
 import customRule from './custom-rule';
 
@@ -117,22 +116,21 @@ describe('getIconByPath', () => {
   });
 
   it('should return the correct icon for a given path', () => {
-    const getIconPackNameByPrefix = vi
-      .spyOn(iconPackManager, 'getIconPackNameByPrefix')
-      .mockImplementationOnce(() => 'icon-brew');
+    const getIconPackByPrefix = vi.fn().mockImplementationOnce(() => ({
+      getIcon: vi.fn(() => 'IbTest'),
+    }));
 
-    const getIconFromIconPack = vi
-      .spyOn(iconPackManager, 'getIconFromIconPack')
-      .mockImplementationOnce(() => 'IbTest' as any);
-
-    plugin.getData = () => ({
-      folder: 'IbTest',
-    });
-    const result = icon.getIconByPath(plugin, 'folder');
+    const newPlugin = {
+      ...plugin,
+      getIconPackManager: () => ({
+        getIconPackByPrefix,
+      }),
+      getData: () => ({
+        folder: 'IbTest',
+      }),
+    };
+    const result = icon.getIconByPath(newPlugin, 'folder');
     expect(result).toBe('IbTest');
-
-    getIconPackNameByPrefix.mockRestore();
-    getIconFromIconPack.mockRestore();
   });
 
   it('should return emoji for a given path', () => {
@@ -150,26 +148,37 @@ describe('getIconByPath', () => {
 });
 
 describe('getIconByName', () => {
+  const getIcon = vi.fn();
+  let plugin: any = {
+    getIconPackManager: () => ({
+      getIconPackByPrefix: () => ({}),
+    }),
+  };
+
   beforeEach(() => {
     vi.restoreAllMocks();
-    vi.spyOn(iconPackManager, 'getIconPackNameByPrefix').mockImplementationOnce(
-      () => 'icon-brew',
-    );
+
+    plugin = {
+      ...plugin,
+      getIconPackManager: () => ({
+        getIconPackByPrefix: () => ({
+          getIcon,
+        }),
+      }),
+    };
   });
 
   it('should return the correct icon for a given name', () => {
-    vi.spyOn(iconPackManager, 'getIconFromIconPack').mockImplementationOnce(
-      () => 'IbTest' as any,
-    );
-    const result = icon.getIconByName('IbTest');
+    getIcon.mockImplementation(() => 'IbTest');
+    const result = icon.getIconByName(plugin, 'IbTest');
     expect(result).toBe('IbTest');
   });
 
   it('should return `null` when no icon was found', () => {
-    vi.spyOn(iconPackManager, 'getIconFromIconPack').mockImplementationOnce(
-      () => null as any,
-    );
-    const result = icon.getIconByName('IbFoo');
+    plugin.getIconPackManager().getIconPackByPrefix().getIcon = ():
+      | string
+      | null => null;
+    const result = icon.getIconByName(plugin, 'IbFoo');
     expect(result).toBe(null);
   });
 });

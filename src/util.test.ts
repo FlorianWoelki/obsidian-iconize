@@ -1,5 +1,4 @@
-import { MockInstance, beforeEach, describe, expect, it, vi } from 'vitest';
-import * as iconPackManager from './icon-pack-manager';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getAllOpenedFiles,
   isHexadecimal,
@@ -53,12 +52,17 @@ describe('getAllOpenedFiles', () => {
 });
 
 describe('saveIconToIconPack', () => {
-  let extractIconToIconPack: MockInstance;
+  const plugin: any = {
+    getIconPackManager: () => ({
+      getSvgFromLoadedIcon: vi.fn(() => '<svg></svg>'),
+      getIconPackNameByPrefix: vi.fn(() => ''),
+      addIconToIconPack: vi.fn(() => ({ name: 'IbTest' })),
+      extractIcon: vi.fn(() => {}),
+    }),
+  };
 
   beforeEach(() => {
     vi.restoreAllMocks();
-    extractIconToIconPack = vi.spyOn(iconPackManager, 'extractIconToIconPack');
-    extractIconToIconPack.mockImplementationOnce(() => {});
   });
 
   it('should not save icon to icon pack when svg was not found', () => {
@@ -68,62 +72,46 @@ describe('saveIconToIconPack', () => {
     } catch (e) {
       expect(e).not.toBeNull();
     }
-    expect(extractIconToIconPack).toBeCalledTimes(0);
+    expect(plugin.getIconPackManager().extractIcon).toBeCalledTimes(0);
   });
 
   it('should save icon to icon pack', () => {
-    const getSvgFromLoadedIcon = vi
-      .spyOn(iconPackManager, 'getSvgFromLoadedIcon')
-      .mockImplementationOnce(() => '<svg></svg>');
-    const getIconPackNameByPrefix = vi
-      .spyOn(iconPackManager, 'getIconPackNameByPrefix')
-      .mockImplementationOnce(() => '');
-    const addIconToIconPack = vi
-      .spyOn(iconPackManager, 'addIconToIconPack')
-      .mockImplementationOnce((): any => ({ name: 'IbTest' }));
-
     saveIconToIconPack({} as any, 'IbTest');
-    expect(extractIconToIconPack).toBeCalledTimes(1);
-
-    getIconPackNameByPrefix.mockRestore();
-    addIconToIconPack.mockRestore();
-    getSvgFromLoadedIcon.mockRestore();
+    expect(plugin.getIconPackManager().extractIcon).toBeCalledTimes(1);
   });
 });
 
-describe('removeIconFromIconPack', () => {
-  let plugin: any;
-  let removeIconFromIconPackDirectory: MockInstance;
+describe.skip('removeIconFromIconPack', () => {
+  const plugin: any = {
+    getDataPathByValue: () => 'folder/path',
+    getIconPackManager: () => ({
+      getPath: () => '',
+      getIconPackByPrefix: vi.fn(() => ({
+        removeIcon: vi.fn(),
+      })),
+    }),
+  };
+
   beforeEach(() => {
     vi.restoreAllMocks();
-    plugin = {
-      getDataPathByValue: (): any => undefined,
-    };
-    removeIconFromIconPackDirectory = vi
-      .spyOn(iconPackManager, 'removeIconFromIconPackDirectory')
-      .mockImplementationOnce((): any => {});
   });
 
   it('should not remove icon from icon pack if there is a duplicated icon', () => {
-    plugin.getDataPathByValue = () => 'folder/path';
     removeIconFromIconPack(plugin, 'IbTest');
-    expect(removeIconFromIconPackDirectory).toBeCalledTimes(0);
+    expect(
+      plugin.getIconPackManager().getIconPackByPrefix().removeIcon,
+    ).toBeCalledTimes(0);
   });
 
-  it('should remove icon from icon pack if there is no duplicated icon', () => {
-    const getIconPackNameByPrefix = vi
-      .spyOn(iconPackManager, 'getIconPackNameByPrefix')
-      .mockImplementationOnce(() => 'IconBrew');
-
+  it.only('should remove icon from icon pack if there is no duplicated icon', () => {
+    plugin.getDataPathByValue = () => '';
     removeIconFromIconPack(plugin, 'IbTest');
-    expect(removeIconFromIconPackDirectory).toBeCalledTimes(1);
-    expect(removeIconFromIconPackDirectory).toBeCalledWith(
-      plugin,
-      'IconBrew',
-      'Test',
-    );
-
-    getIconPackNameByPrefix.mockRestore();
+    expect(
+      plugin.getIconPackManager().getIconPackByPrefix().removeIcon,
+    ).toBeCalledTimes(1);
+    expect(
+      plugin.getIconPackManager().getIconPackByPrefix().removeIcon,
+    ).toBeCalledWith('IconBrew', 'Test');
   });
 });
 

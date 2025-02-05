@@ -6,7 +6,6 @@ import {
   EditorSuggestContext,
   EditorSuggestTriggerInfo,
 } from 'obsidian';
-import { getAllLoadedIconNames } from '@app/icon-pack-manager';
 import icon from '@app/lib/icon';
 import emoji from '@app/emoji';
 import { saveIconToIconPack } from '@app/util';
@@ -69,8 +68,9 @@ export default class SuggestionIcon extends EditorSuggest<string> {
       .toLowerCase();
 
     // Store all icons corresponding to the current query.
-    const iconsNameArray = getAllLoadedIconNames()
-      .filter((iconObject) => {
+    const iconsNameArray = this.plugin
+      .getIconPackManager()
+      .allLoadedIconNames.filter((iconObject) => {
         const name =
           iconObject.prefix.toLowerCase() + iconObject.name.toLowerCase();
         return name.toLowerCase().includes(queryLowerCase);
@@ -87,7 +87,7 @@ export default class SuggestionIcon extends EditorSuggest<string> {
   }
 
   renderSuggestion(value: string, el: HTMLElement): void {
-    const iconObject = icon.getIconByName(value);
+    const iconObject = icon.getIconByName(this.plugin, value);
     el.style.display = 'flex';
     el.style.alignItems = 'center';
     el.style.gap = '0.25rem';

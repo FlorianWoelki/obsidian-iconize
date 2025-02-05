@@ -1,5 +1,5 @@
 import { beforeEach, it, expect, describe, vi, MockInstance } from 'vitest';
-import * as iconPackManager from '@app/icon-pack-manager';
+import * as util from '@app/icon-pack-manager/util';
 import dom from './dom';
 import svg from './svg';
 import style from './style';
@@ -94,8 +94,12 @@ describe('setIconForNode', () => {
         emojiStyle: 'native',
         extraMargin: {},
       }),
+      getIconPackManager: () => ({
+        getIconPacks: (): any => [],
+        getPreloadedIcons: (): any => [],
+      }),
     };
-    getSvgFromLoadedIcon = vi.spyOn(iconPackManager, 'getSvgFromLoadedIcon');
+    getSvgFromLoadedIcon = vi.spyOn(util, 'getSvgFromLoadedIcon');
     getSvgFromLoadedIcon.mockImplementationOnce(
       () => '<svg test-icon="IbTest"></svg>',
     );
@@ -176,7 +180,7 @@ describe('createIconNode', () => {
         extraMargin: {},
       }),
     };
-    getSvgFromLoadedIcon = vi.spyOn(iconPackManager, 'getSvgFromLoadedIcon');
+    getSvgFromLoadedIcon = vi.spyOn(util, 'getSvgFromLoadedIcon');
     getSvgFromLoadedIcon.mockImplementationOnce(
       () => '<svg test-icon="IbTest"></svg>',
     );

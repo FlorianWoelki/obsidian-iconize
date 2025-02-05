@@ -84,7 +84,7 @@ export const buildPositionField = (plugin: IconizePlugin) => {
         identifier.length,
         rawCode.length - identifier.length,
       );
-      if (!icon.getIconByName(iconName)) {
+      if (!icon.getIconByName(plugin, iconName)) {
         continue;
       }
 

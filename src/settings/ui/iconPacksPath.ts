@@ -1,10 +1,5 @@
 import { Notice, Setting, TextComponent } from 'obsidian';
 import IconFolderSetting from './iconFolderSetting';
-import {
-  createDefaultDirectory,
-  moveIconPackDirectories,
-  setPath,
-} from '@app/icon-pack-manager';
 
 export default class IconPacksPathSetting extends IconFolderSetting {
   private iconPacksSettingTextComp: TextComponent;
@@ -30,9 +25,11 @@ export default class IconPacksPathSetting extends IconFolderSetting {
         }
 
         new Notice('Saving in progress...');
-        setPath(newPath);
-        await createDefaultDirectory(this.plugin);
-        await moveIconPackDirectories(this.plugin, oldPath, newPath);
+        this.plugin.getIconPackManager().setPath(newPath);
+        await this.plugin.getIconPackManager().createDefaultDirectory();
+        await this.plugin
+          .getIconPackManager()
+          .moveIconPackDirectories(oldPath, newPath);
 
         this.plugin.getSettings().iconPacksPath = newPath;
         await this.plugin.saveIconFolderData();
