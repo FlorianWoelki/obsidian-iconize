@@ -1,13 +1,14 @@
 import { Notice, Setting } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 import config from '@app/config';
 
 export default class ToggleIconsInLinks extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Toggle icons in links')
+      .setName(T('Toggle icons in links'))
       .setDesc(
-        'Toggles whether you are able to see icons in the links to other notes',
+        T('Toggles whether you are able to see icons in the links to other notes'),
       )
       .addToggle((toggle) => {
         toggle

@@ -1,12 +1,13 @@
 import { Setting } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 
 export default class DebugMode extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Toggle Debug Mode')
+      .setName(T('Toggle Debug Mode'))
       .setDesc(
-        'Toggle debug mode to see more detailed logs in the console. Do not touch this unless you know what you are doing.',
+        T('Toggle debug mode to see more detailed logs in the console. Do not touch this unless you know what you are doing.'),
       )
       .addToggle((toggle) => {
         toggle

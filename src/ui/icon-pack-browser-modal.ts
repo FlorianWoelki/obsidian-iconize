@@ -1,4 +1,5 @@
 import { App, FuzzyMatch, FuzzySuggestModal, Notice } from 'obsidian';
+import { T } from '../locales/translations';
 import predefinedIconPacks, { PredefinedIconPack } from '@app/icon-packs';
 import IconizePlugin from '@app/main';
 import { downloadZipFile } from '@app/zip-util';
@@ -12,7 +13,7 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<PredefinedIc
     this.plugin = plugin;
 
     this.resultContainerEl.classList.add('iconize-browse-modal');
-    this.inputEl.placeholder = 'Select to download icon pack';
+    this.inputEl.placeholder = T('Select to download icon pack');
   }
 
   // eslint-disable-next-line

@@ -6,7 +6,9 @@ import {
   requireApiVersion,
   MarkdownView,
   Notice,
+  getLanguage,
 } from 'obsidian';
+import { T, setLanguage } from './locales/translations';
 import {
   EditorWithEditorComponent,
   ExplorerView,
@@ -99,6 +101,10 @@ export default class IconizePlugin extends Plugin {
   async onload() {
     console.log(`loading ${config.PLUGIN_NAME}`);
 
+    const lang = getLanguage();
+
+    setLanguage(lang);
+
     await this.loadIconFolderData();
     logger.toggleLogging(this.getSettings().debugMode);
     this.iconPackManager = new IconPackManager(
@@ -136,7 +142,7 @@ export default class IconizePlugin extends Plugin {
 
     this.addCommand({
       id: 'iconize:set-icon-for-file',
-      name: 'Set icon for file',
+      name: T('Set icon for file'),
       hotkeys: [
         {
           modifiers: ['Mod', 'Shift'],
@@ -213,7 +219,7 @@ export default class IconizePlugin extends Plugin {
     this.registerEvent(
       this.app.workspace.on('file-menu', (menu, file: TFile) => {
         const addIconMenuItem = (item: MenuItem) => {
-          item.setTitle('Change icon');
+          item.setTitle(T('Change icon'));
           item.setIcon('hashtag');
           item.onClick(() => {
             const modal = new IconsPickerModal(this.app, this, file.path);
@@ -244,7 +250,7 @@ export default class IconizePlugin extends Plugin {
         };
 
         const removeIconMenuItem = (item: MenuItem) => {
-          item.setTitle('Remove icon');
+          item.setTitle(T('Remove icon'));
           item.setIcon('trash');
           item.onClick(async () => {
             await this.removeSingleIcon(file);
@@ -252,7 +258,7 @@ export default class IconizePlugin extends Plugin {
         };
 
         const changeColorOfIcon = (item: MenuItem) => {
-          item.setTitle('Change color of icon');
+          item.setTitle(T('Change color of icon'));
           item.setIcon('palette');
           item.onClick(() => {
             const modal = new ChangeColorModal(this.app, this, file.path);

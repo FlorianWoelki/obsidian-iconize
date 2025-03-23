@@ -1,4 +1,5 @@
 import { Setting } from 'obsidian';
+import { T } from '../../locales/translations';
 import iconTabs from '@lib/icon-tabs';
 import { TabHeaderLeaf } from '@app/@types/obsidian';
 import IconFolderSetting from './iconFolderSetting';
@@ -6,8 +7,8 @@ import IconFolderSetting from './iconFolderSetting';
 export default class ToggleIconInTabs extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Toggle icon in tabs')
-      .setDesc('Toggles the visibility of an icon for a file in the tab bar.')
+      .setName(T('Toggle icon in tabs'))
+      .setDesc(T('Toggles the visibility of an icon for a file in the tab bar.'))
       .addToggle((toggle) => {
         toggle
           .setValue(this.plugin.getSettings().iconInTabsEnabled)

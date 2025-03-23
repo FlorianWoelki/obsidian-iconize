@@ -1,4 +1,5 @@
 import { Notice, Setting, TextComponent } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 
 export default class IconIdentifierSetting extends IconFolderSetting {
@@ -6,8 +7,8 @@ export default class IconIdentifierSetting extends IconFolderSetting {
 
   public display(): void {
     const setting = new Setting(this.containerEl)
-      .setName('Icon identifier')
-      .setDesc('Change the icon identifier used in notes.')
+      .setName(T('Icon identifier'))
+      .setDesc(T('Change the icon identifier used in notes.'))
       .setClass('iconize-setting');
 
     setting.addText((text) => {
@@ -16,7 +17,7 @@ export default class IconIdentifierSetting extends IconFolderSetting {
     });
 
     setting.addButton((btn) => {
-      btn.setButtonText('Save');
+      btn.setButtonText(T('Save'));
       btn.onClick(async () => {
         const newIdentifier = this.textComp.getValue();
         const oldIdentifier = this.plugin.getSettings().iconIdentifier;
@@ -27,7 +28,7 @@ export default class IconIdentifierSetting extends IconFolderSetting {
 
         this.plugin.getSettings().iconIdentifier = newIdentifier;
         await this.plugin.saveIconFolderData();
-        new Notice('...saved successfully');
+        new Notice(T('...saved successfully'));
       });
     });
   }
