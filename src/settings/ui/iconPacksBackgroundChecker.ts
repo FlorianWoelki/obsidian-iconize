@@ -1,12 +1,13 @@
 import { Notice, Setting } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 
 export default class IconPacksBackgroundChecker extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Icons background check')
+      .setName(T('Icons background check'))
       .setDesc(
-        'Check in the background on every load of Obsidian, if icons are missing and it will try to add them to the specific icon pack.',
+        T('Check in the background on every load of Obsidian, if icons are missing and it will try to add them to the specific icon pack.'),
       )
       .addToggle((toggle) => {
         toggle
@@ -17,7 +18,7 @@ export default class IconPacksBackgroundChecker extends IconFolderSetting {
 
             if (enabled) {
               new Notice(
-                'You need to reload Obsidian for this to take effect.',
+                T('You need to reload Obsidian for this to take effect.'),
                 10000,
               );
             }

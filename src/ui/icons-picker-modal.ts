@@ -1,4 +1,5 @@
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
+import { T } from '../locales/translations';
 import IconizePlugin from '@app/main';
 import emoji from '@app/emoji';
 import { type Icon } from '@app/icon-pack-manager';
@@ -149,14 +150,14 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       if (this.renderIndex === 0) {
         const subheadline = this.resultContainerEl.createDiv();
         subheadline.classList.add('iconize-subheadline');
-        subheadline.innerText = 'Recently used Icons:';
+        subheadline.innerText = T('Recently used Icons:');
         this.resultContainerEl.prepend(subheadline);
       }
 
       if (this.renderIndex === this.recentlyUsedItems.size - 1) {
         const subheadline = this.resultContainerEl.createDiv();
         subheadline.classList.add('iconize-subheadline');
-        subheadline.innerText = 'All Icons:';
+        subheadline.innerText = T('All Icons:');
         this.resultContainerEl.append(subheadline);
       }
     }
