@@ -375,7 +375,7 @@ export class IconPackManager {
     if (iconPackIndex > -1) {
       this.iconPacks.splice(iconPackIndex);
     }
-    await iconPack.delete();
+    await iconPack?.delete();
   }
 
   public getLucideIconPack(): LucideIconPack {

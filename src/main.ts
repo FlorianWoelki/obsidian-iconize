@@ -870,7 +870,7 @@ export default class IconizePlugin extends Plugin {
 
   addFolderIcon(path: string, icon: Icon | string): void {
     const iconName = getNormalizedName(
-      typeof icon === 'object' ? icon.displayName : icon,
+      typeof icon === 'object' ? `${icon.prefix}${icon.name}` : icon,
     );
 
     this.data[path] = iconName;
