@@ -1,13 +1,14 @@
 import { Notice, Setting } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 import config from '@app/config';
 
 export default class UseInternalPlugins extends IconFolderSetting {
   public display(): void {
     new Setting(this.containerEl)
-      .setName('EXPERIMENTAL: Use internal plugins')
+      .setName(T('EXPERIMENTAL: Use internal plugins'))
       .setDesc(
-        'Toggles whether to try to add icons to the bookmark and outline internal plugins.',
+        T('Toggles whether to try to add icons to the bookmark and outline internal plugins.'),
       )
       .addToggle((toggle) => {
         toggle

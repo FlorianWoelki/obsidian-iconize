@@ -1,4 +1,5 @@
 import { Setting, TextComponent } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 import { Notice } from 'obsidian';
 import config from '@app/config';
@@ -11,9 +12,9 @@ export default class FrontmatterOptions extends IconFolderSetting {
 
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Use icon in frontmatter')
+      .setName(T('Use icon in frontmatter'))
       .setDesc(
-        'Toggles whether to set the icon based on the frontmatter property `icon`.',
+        T('Toggles whether to set the icon based on the frontmatter property `icon`.'),
       )
       .addToggle((toggle) => {
         toggle
@@ -25,16 +26,16 @@ export default class FrontmatterOptions extends IconFolderSetting {
       });
 
     new Setting(this.containerEl)
-      .setName('Frontmatter icon field name')
+      .setName(T('Frontmatter icon field name'))
       .setDesc(
-        'Sets the name of the frontmatter field which contains the icon.',
+        T('Sets the name of the frontmatter field which contains the icon.'),
       )
       .addText((text) => {
         this.iconFieldNameTextComp = text;
         text.setValue(this.plugin.getSettings().iconInFrontmatterFieldName);
       })
       .addButton((button) => {
-        button.setButtonText('Save');
+        button.setButtonText(T('Save'));
         button.onClick(async () => {
           const newValue = this.iconFieldNameTextComp.getValue();
           const oldValue = this.plugin.getSettings().iconInFrontmatterFieldName;
@@ -45,14 +46,14 @@ export default class FrontmatterOptions extends IconFolderSetting {
 
           this.plugin.getSettings().iconInFrontmatterFieldName = newValue;
           await this.plugin.saveIconFolderData();
-          new Notice('...saved successfully');
+          new Notice(T('...saved successfully'));
         });
       });
 
     new Setting(this.containerEl)
-      .setName('Frontmatter icon color field name')
+      .setName(T('Frontmatter icon color field name'))
       .setDesc(
-        'Sets the name of the frontmatter field which contains the icon color.',
+        T('Sets the name of the frontmatter field which contains the icon color.'),
       )
       .addText((text) => {
         this.iconColorFieldNameTextComp = text;
@@ -61,7 +62,7 @@ export default class FrontmatterOptions extends IconFolderSetting {
         );
       })
       .addButton((button) => {
-        button.setButtonText('Save');
+        button.setButtonText(T('Save'));
         button.onClick(async () => {
           const newValue = this.iconColorFieldNameTextComp.getValue();
           const oldValue =
@@ -73,17 +74,17 @@ export default class FrontmatterOptions extends IconFolderSetting {
 
           this.plugin.getSettings().iconColorInFrontmatterFieldName = newValue;
           await this.plugin.saveIconFolderData();
-          new Notice('...saved successfully');
+          new Notice(T('...saved successfully'));
         });
       });
 
     new Setting(this.containerEl)
-      .setName('Refresh icons from frontmatter')
+      .setName(T('Refresh icons from frontmatter'))
       .setDesc(
-        'Sets the icon and color for each note in the vault based on the frontmatter properties. WARNING: This will change any manually set icons to the one defined in the frontmatter. IF A NOTE HAS NO FRONTMATTER, THE CURRENT ICON WILL BE REMOVED. Please restart Obsidian after this completes to see the changes.',
+        T('Sets the icon and color for each note in the vault based on the frontmatter properties. WARNING: This will change any manually set icons to the one defined in the frontmatter. IF A NOTE HAS NO FRONTMATTER, THE CURRENT ICON WILL BE REMOVED. Please restart Obsidian after this completes to see the changes.'),
       )
       .addButton((btn) => {
-        btn.setButtonText('Refresh').onClick(async () => {
+        btn.setButtonText(T('Refresh')).onClick(async () => {
           if (!this.plugin.getSettings().iconInFrontmatterEnabled) {
             new Notice(
               `[${config.PLUGIN_NAME}] Please enable "Use icon in frontmatter".`,

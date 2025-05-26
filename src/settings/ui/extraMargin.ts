@@ -1,4 +1,5 @@
 import { DropdownComponent, Setting, SliderComponent } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 import { ExtraMarginSettings } from '../data';
 import helper from '../helper';
@@ -6,8 +7,8 @@ import helper from '../helper';
 export default class ExtraMarginSetting extends IconFolderSetting {
   public display(): void {
     const extraMarginSetting = new Setting(this.containerEl)
-      .setName('Extra margin (in pixels)')
-      .setDesc('Change the margin of the icons.')
+      .setName(T('Extra margin (in pixels)'))
+      .setDesc(T('Change the margin of the icons.'))
       .setClass('iconize-setting');
 
     const extraMarginDropdown = new DropdownComponent(
