@@ -1789,7 +1789,7 @@ const shortNames: Record<string, string> = {
   '🇵🇲': 'flag: St. Pierre & Miquelon',
   '🇵🇳': 'flag: Pitcairn Islands',
   '🇵🇷': 'flag: Puerto Rico',
-  '🇵🇸': 'flag: Palestinian Territories',
+  '🇵🇸': 'flag: Palestine',
   '🇵🇹': 'flag: Portugal',
   '🇵🇼': 'flag: Palau',
   '🇵🇾': 'flag: Paraguay',
