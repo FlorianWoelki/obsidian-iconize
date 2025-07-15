@@ -133,7 +133,17 @@ export default class IconizePlugin extends Plugin {
     // TODO: Check if needed
     await this.iconPackManager.loadUsedIcons([...usedIconNames]);
 
-    this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
+    this.app.workspace.onLayoutReady(async () => {
+      this.handleChangeLayout();
+
+      // Evaluate frontmatter rules for all files on plugin load.
+      if (this.getSettings().frontmatterRulesEnabled) {
+        const markdownFiles = this.app.vault.getMarkdownFiles();
+        for (const file of markdownFiles) {
+          await frontmatterRule.evaluateFileRules(this, file.path);
+        }
+      }
+    });
 
     this.addCommand({
       id: 'iconize:set-icon-for-file',
