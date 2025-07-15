@@ -23,6 +23,7 @@ import iconTabs from './lib/icon-tabs';
 import dom from './lib/util/dom';
 import customRule from './lib/custom-rule';
 import icon from './lib/icon';
+import frontmatterRule from './lib/frontmatter-rule';
 import BookmarkInternalPlugin from './internal-plugins/bookmark';
 import OutlineInternalPlugin from './internal-plugins/outline';
 import {
@@ -559,7 +560,14 @@ export default class IconizePlugin extends Plugin {
 
       // Register `file-open` event for adding icon to title.
       this.registerEvent(
-        this.app.workspace.on('file-open', (file) => {
+        this.app.workspace.on('file-open', async (file) => {
+          if (!file) {
+            return;
+          }
+
+          // Evaluate frontmatter rules for the opened file.
+          await frontmatterRule.evaluateFileRules(this, file.path);
+
           if (!this.getSettings().iconInTitleEnabled) {
             return;
           }
@@ -603,6 +611,15 @@ export default class IconizePlugin extends Plugin {
             } else {
               titleIcon.hide(leaf.inlineTitleEl);
             }
+          }
+        }),
+      );
+
+      // Register event for file modification.
+      this.registerEvent(
+        this.app.vault.on('modify', async (file) => {
+          if (file instanceof TFile) {
+            await frontmatterRule.evaluateFileRules(this, file.path);
           }
         }),
       );
@@ -703,6 +720,9 @@ export default class IconizePlugin extends Plugin {
               this.addIconInTitle(newIconName);
             }
           }
+
+          // Evaluate frontmatter rules for the file.
+          frontmatterRule.evaluateFileRules(this, file.path);
         }),
       );
 
@@ -870,7 +890,7 @@ export default class IconizePlugin extends Plugin {
 
   addFolderIcon(path: string, icon: Icon | string): void {
     const iconName = getNormalizedName(
-      typeof icon === 'object' ? icon.displayName : icon,
+      typeof icon === 'object' ? `${icon.prefix}${icon.name}` : icon,
     );
 
     this.data[path] = iconName;

@@ -137,7 +137,7 @@ describe.skip('getSuggestions', () => {
   let getAllLoadedIconNamesSpy: MockInstance;
   beforeEach(() => {
     vi.restoreAllMocks();
-    getAllLoadedIconNamesSpy = vi.spyOn(iconPackManager, 'allLoadedIconNames');
+    getAllLoadedIconNamesSpy = vi.spyOn(iconPackManager.IconPackManager.prototype, 'allLoadedIconNames', 'get');
     getAllLoadedIconNamesSpy.mockImplementationOnce(() => [
       {
         name: 'winking_face',

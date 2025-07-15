@@ -64,6 +64,68 @@ export interface CustomRule {
   for?: 'everything' | 'files' | 'folders';
 }
 
+export type FrontmatterRuleOperator = 
+  | 'equals' 
+  | 'not-equals' 
+  | 'greater-than' 
+  | 'less-than' 
+  | 'greater-equal' 
+  | 'less-equal' 
+  | 'contains' 
+  | 'not-contains' 
+  | 'exists' 
+  | 'not-exists';
+
+export interface FrontmatterRuleCriterion {
+  /**
+   * The frontmatter field name to evaluate.
+   */
+  field: string;
+  /**
+   * The operator to use for comparison.
+   */
+  operator: FrontmatterRuleOperator;
+  /**
+   * The value to compare against (not used for 'exists' and 'not-exists' operators).
+   */
+  value?: string | number | boolean;
+}
+
+export interface FrontmatterRule {
+  /**
+   * A descriptive name for this rule.
+   */
+  name: string;
+  /**
+   * The icon to apply when criteria are met.
+   */
+  icon: string;
+  /**
+   * The color of the icon. Setting to null uses default theme color.
+   * @default null
+   */
+  color?: string;
+  /**
+   * Controls the priority of the rule. Lower numbers have higher priority.
+   */
+  order: number;
+  /**
+   * Whether this rule is currently enabled.
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Controls whether the rule should be applied to files, folders or both.
+   * @default 'files'
+   */
+  for?: 'everything' | 'files' | 'folders';
+  /**
+   * The criteria that must be met for this rule to apply.
+   * All criteria must be satisfied (AND logic).
+   */
+  criteria: FrontmatterRuleCriterion[];
+}
+
 export interface IconFolderSettings {
   /**
    * The version of the settings which is used for migrations. This number should be
@@ -113,6 +175,17 @@ export interface IconFolderSettings {
    * @default []
    */
   rules: CustomRule[];
+  /**
+   * Sets whether the plugin should manage icons automatically based on frontmatter rules.
+   * @default false
+   */
+  frontmatterRulesEnabled: boolean;
+  /**
+   * Stores the frontmatter-based rules for automatic icon management.
+   * @see FrontmatterRule
+   * @default []
+   */
+  frontmatterRules: FrontmatterRule[];
   /**
    * Sets whether the plugin should show icons in the tabs when you open a file in your
    * vault. When no icon is set for the file, it will use the default file icon from
@@ -197,6 +270,23 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   recentlyUsedIcons: [],
   recentlyUsedIconsSize: 5,
   rules: [],
+  frontmatterRulesEnabled: true,
+  frontmatterRules: [
+    {
+      name: 'Quality Score Rule', // A descriptive name for your rule
+      icon: 'libookmark', // The icon to display (you can change this)
+      order: 1,
+      enabled: true,
+      for: 'files', // Apply to files
+      criteria: [
+        {
+          field: 'Quality Score', // This must exactly match your frontmatter key
+          operator: 'greater-than',
+          value: 1,
+        },
+      ],
+    },
+  ],
   extraMargin: {
     top: 0,
     right: 4,

@@ -2,6 +2,7 @@ interface CacheResult {
   iconNameWithPrefix: string;
   iconColor?: string;
   inCustomRule?: boolean;
+  inFrontmatterRule?: boolean;
 }
 
 export class IconCache {

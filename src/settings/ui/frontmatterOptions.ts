@@ -10,19 +10,7 @@ export default class FrontmatterOptions extends IconFolderSetting {
   private iconColorFieldNameTextComp: TextComponent;
 
   public display(): void {
-    new Setting(this.containerEl)
-      .setName('Use icon in frontmatter')
-      .setDesc(
-        'Toggles whether to set the icon based on the frontmatter property `icon`.',
-      )
-      .addToggle((toggle) => {
-        toggle
-          .setValue(this.plugin.getSettings().iconInFrontmatterEnabled)
-          .onChange(async (enabled) => {
-            this.plugin.getSettings().iconInFrontmatterEnabled = enabled;
-            await this.plugin.saveIconFolderData();
-          });
-      });
+    
 
     new Setting(this.containerEl)
       .setName('Frontmatter icon field name')
@@ -84,13 +72,6 @@ export default class FrontmatterOptions extends IconFolderSetting {
       )
       .addButton((btn) => {
         btn.setButtonText('Refresh').onClick(async () => {
-          if (!this.plugin.getSettings().iconInFrontmatterEnabled) {
-            new Notice(
-              `[${config.PLUGIN_NAME}] Please enable "Use icon in frontmatter".`,
-            );
-            return;
-          }
-
           new Notice(
             `[${config.PLUGIN_NAME}] Refreshing icons from frontmatter, please wait...`,
           );

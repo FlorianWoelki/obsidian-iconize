@@ -263,6 +263,12 @@ const addAll = (
   for (const rule of customRule.getSortedRules(plugin)) {
     customRule.addToAllFiles(plugin, rule);
   }
+
+  // Handles the frontmatter rules.
+  if (plugin.getSettings().frontmatterRulesEnabled) {
+    // Note: Frontmatter rules are handled dynamically in the metadata cache events
+    // to avoid circular dependencies and async issues during initial load
+  }
 };
 
 /**
