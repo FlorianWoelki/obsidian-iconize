@@ -2,6 +2,7 @@ import { App, PluginSettingTab } from 'obsidian';
 import IconizePlugin from '@app/main';
 import CustomIconPackSetting from './customIconPack';
 import CustomIconRuleSetting from './customIconRule';
+import FrontmatterIconRuleSetting from './frontmatterIconRule';
 import EmojiStyleSetting from './emojiStyle';
 import ExtraMarginSetting from './extraMargin';
 import IconColorSetting from './iconColor';
@@ -18,7 +19,6 @@ import ToggleIconsInLinks from './toggleIconsInLinks';
 import IconIdentifierSetting from './iconIdentifier';
 import DebugMode from './debugMode';
 import UseInternalPlugins from './useInternalPlugins';
-import FrontmatterRuleManagement from './frontmatterRuleManagement';
 
 export default class IconFolderSettings extends PluginSettingTab {
   private plugin: IconizePlugin;
@@ -49,9 +49,6 @@ export default class IconFolderSettings extends PluginSettingTab {
     new ToggleIconsInNotes(plugin, containerEl).display();
     new ToggleIconsInLinks(plugin, containerEl).display();
 
-    containerEl.createEl('h1', { text: 'Frontmatter Rules' });
-    new FrontmatterRuleManagement(plugin, containerEl, app, () => this.display()).display();
-
     containerEl.createEl('h1', {
       text: 'Icon customization for files/folders',
     });
@@ -61,6 +58,11 @@ export default class IconFolderSettings extends PluginSettingTab {
 
     containerEl.createEl('h1', { text: 'Custom icon rules' });
     new CustomIconRuleSetting(plugin, containerEl, app, () =>
+      this.display(),
+    ).display();
+
+    containerEl.createEl('h1', { text: 'Frontmatter-based icon rules' });
+    new FrontmatterIconRuleSetting(plugin, containerEl, app, () =>
       this.display(),
     ).display();
 
