@@ -18,6 +18,7 @@ export default class EmojiStyleSetting extends IconFolderSetting {
     emojiStyle.addDropdown((dropdown) => {
       dropdown.addOption('native', 'Native');
       dropdown.addOption('twemoji', 'Twemoji');
+      dropdown.addOption('disabled', 'Disabled');
       dropdown.setValue(this.plugin.getSettings().emojiStyle);
       dropdown.onChange(async (value: 'native' | 'twemoji') => {
         this.plugin.getSettings().emojiStyle = value;
