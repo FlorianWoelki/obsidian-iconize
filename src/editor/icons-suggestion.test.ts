@@ -1,6 +1,5 @@
 import {
   Mock,
-  MockInstance,
   beforeEach,
   describe,
   expect,
@@ -8,7 +7,6 @@ import {
   vi,
 } from 'vitest';
 import icon from '@lib/icon';
-import * as iconPackManager from '@app/icon-pack-manager';
 import * as util from '@app/util';
 import SuggestionIcon from './icons-suggestion';
 
@@ -33,6 +31,18 @@ beforeEach(() => {
     getSettings: () => ({
       iconIdentifier: ':',
     }),
+    getIconPackManager: () => ({
+      getAllLoadedIconNames: () => [
+        {
+          name: 'winking_face',
+          prefix: 'Ib',
+        },
+        {
+          name: 'heart',
+          prefix: 'Ib',
+        },
+      ]
+    })
   };
   suggestionIcon = new SuggestionIcon(app, plugin);
   replaceRangeMock = vi.fn();
@@ -133,23 +143,7 @@ describe('renderSuggestion', () => {
   });
 });
 
-describe.skip('getSuggestions', () => {
-  let getAllLoadedIconNamesSpy: MockInstance;
-  beforeEach(() => {
-    vi.restoreAllMocks();
-    getAllLoadedIconNamesSpy = vi.spyOn(iconPackManager, 'allLoadedIconNames');
-    getAllLoadedIconNamesSpy.mockImplementationOnce(() => [
-      {
-        name: 'winking_face',
-        prefix: 'Ib',
-      },
-      {
-        name: 'heart',
-        prefix: 'Ib',
-      },
-    ]);
-  });
-
+describe('getSuggestions', () => {
   it('should return an array of icon names and emoji shortcodes', () => {
     suggestionIcon.context = {
       ...suggestionIcon.context,

@@ -368,16 +368,65 @@ export class IconPackManager {
     this.path = newPath;
   }
 
-  public async removeIconPack(iconPack: IconPack): Promise<void> {
-    const iconPackIndex = this.iconPacks.findIndex(
-      (ip) => ip.getName() === iconPack.getName(),
-    );
-    if (iconPackIndex > -1) {
-      this.iconPacks.splice(iconPackIndex);
-    }
-    await iconPack.delete();
+  // error handling
+public async removeIconPack(iconPack: IconPack): Promise<void> {
+  if (!iconPack) {
+    console.warn('Cannot remove null/undefined icon pack');
+    return;
   }
 
+  const iconPackIndex = this.iconPacks.findIndex(
+    (ip) => ip.getName() === iconPack.getName(),
+  );
+
+  if (iconPackIndex > -1) {
+    this.iconPacks.splice(iconPackIndex, 1);
+  }
+
+  try {
+    await iconPack.delete();
+  } catch (error) {
+    console.error('Error deleting icon pack:', error);
+  }
+}
+
+public getAllLoadedIconNames(): Array<{name: string, prefix: string}> {
+  const allIcons: Array<{name: string, prefix: string}> = [];
+
+  // Get icons from regular icon packs
+  for (const iconPack of this.iconPacks) {
+    const icons = iconPack.getIcons();
+    for (const icon of icons) {
+      allIcons.push({
+        name: icon.name,
+        prefix: icon.prefix
+      });
+    }
+  }
+
+  // Handle Lucide icons through existing getter pattern
+  const lucideIconPack = this.getLucideIconPack();
+  if (lucideIconPack) {
+    try {
+      const lucideIcons = lucideIconPack.init();
+      if (lucideIcons) {
+        const icons = lucideIcons.getIcons();
+        for (const icon of icons) {
+          allIcons.push({
+            name: icon.name,
+            prefix: icon.prefix
+          });
+        }
+      }
+    } catch (error) {
+      console.warn('Error getting Lucide icons:', error);
+    }
+  }
+
+  return allIcons;
+}
+
+// getters
   public getLucideIconPack(): LucideIconPack {
     return this.lucideIconPack;
   }

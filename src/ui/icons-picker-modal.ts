@@ -161,16 +161,22 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
     if (item.item.name !== 'default') {
       if (item.item.prefix === 'Emoji') {
-        const displayName = emoji.parseEmoji(
-          this.plugin.getSettings().emojiStyle,
-          item.item.displayName,
-        );
-        if (!displayName) {
-          return;
-        }
+  let displayName = emoji.parseEmoji(
+    this.plugin.getSettings().emojiStyle,
+    item.item.displayName,
+  );
 
-        el.innerHTML = `<div>${el.innerHTML}</div><div class="iconize-icon-preview">${displayName}</div>`;
-      } else {
+  // FIXED: Fall back to native emoji if twemoji fails (like for ♟)
+  if (!displayName && this.plugin.getSettings().emojiStyle === 'twemoji') {
+    displayName = item.item.displayName;
+  }
+
+  if (!displayName) {
+    return;
+  }
+
+  el.innerHTML = `<div>${el.innerHTML}</div><div class="iconize-icon-preview">${displayName}</div>`;
+} else {
         el.innerHTML = `<div>${
           el.innerHTML
         }</div><div class="iconize-icon-preview">${getSvgFromLoadedIcon(
