@@ -273,7 +273,7 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   frontmatterRulesEnabled: true,
   frontmatterRules: [
     {
-      name: 'Quality Score Rule', // A descriptive name for your rule
+      name: 'Quality Score Rule (Capitalized)', // A descriptive name for your rule
       icon: 'libookmark', // The icon to display (you can change this)
       order: 1,
       enabled: true,
@@ -281,6 +281,20 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
       criteria: [
         {
           field: 'Quality Score', // This must exactly match your frontmatter key
+          operator: 'greater-than',
+          value: 1,
+        },
+      ],
+    },
+    {
+      name: 'Quality Score Rule (Lowercase)', // For users who use lowercase field names
+      icon: 'libookmark', // Same icon for consistency
+      order: 2,
+      enabled: true,
+      for: 'files', // Apply to files
+      criteria: [
+        {
+          field: 'quality score', // Lowercase version
           operator: 'greater-than',
           value: 1,
         },

@@ -2,6 +2,7 @@ import { App, Setting, ButtonComponent, TextComponent, DropdownComponent, Toggle
 import IconizePlugin from '@app/main';
 import IconFolderSetting from './iconFolderSetting';
 import { FrontmatterRule, FrontmatterRuleCriterion, FrontmatterRuleOperator } from '@app/settings/data';
+import frontmatterRule from '@app/lib/frontmatter-rule';
 
 export default class FrontmatterRuleManagement extends IconFolderSetting {
   constructor(plugin: IconizePlugin, containerEl: HTMLElement, private app: App, private displayCallback: () => void) {
@@ -120,6 +121,11 @@ export default class FrontmatterRuleManagement extends IconFolderSetting {
       });
 
     new Setting(ruleContainer)
+      .addButton((button: ButtonComponent) => {
+        button.setButtonText('Apply to All Files').onClick(async () => {
+          await frontmatterRule.addToAllFiles(this.plugin, rule);
+        });
+      })
       .addButton((button: ButtonComponent) => {
         button.setButtonText('Delete Rule').setWarning().onClick(async () => {
           this.plugin.getSettings().frontmatterRules.splice(index, 1);

@@ -629,7 +629,10 @@ export default class IconizePlugin extends Plugin {
       this.registerEvent(
         this.app.vault.on('modify', async (file) => {
           if (file instanceof TFile) {
-            await frontmatterRule.evaluateFileRules(this, file.path);
+            // Add a small delay to allow metadata cache to update before evaluating frontmatter rules
+            setTimeout(async () => {
+              await frontmatterRule.evaluateFileRules(this, file.path);
+            }, 100);
           }
         }),
       );
@@ -637,6 +640,9 @@ export default class IconizePlugin extends Plugin {
       // Register event for frontmatter icon registration.
       this.registerEvent(
         this.app.metadataCache.on('resolve', async (file) => {
+          // Always evaluate frontmatter rules first, regardless of iconInFrontmatterEnabled setting
+          await frontmatterRule.evaluateFileRules(this, file.path);
+
           if (!this.getSettings().iconInFrontmatterEnabled) {
             return;
           }
@@ -730,9 +736,6 @@ export default class IconizePlugin extends Plugin {
               this.addIconInTitle(newIconName);
             }
           }
-
-          // Evaluate frontmatter rules for the file.
-          frontmatterRule.evaluateFileRules(this, file.path);
         }),
       );
 
