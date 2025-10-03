@@ -273,30 +273,44 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   frontmatterRulesEnabled: true,
   frontmatterRules: [
     {
-      name: 'Quality Score Rule (Capitalized)', // A descriptive name for your rule
-      icon: 'libookmark', // The icon to display (you can change this)
+      name: 'Example: Quality Score (High)', // Example rule - you can modify or delete this
+      icon: 'libookmark', // The icon to display
       order: 1,
-      enabled: true,
+      enabled: false, // Disabled by default - users can enable if they want this example
       for: 'files', // Apply to files
       criteria: [
         {
-          field: 'Quality Score', // This must exactly match your frontmatter key
+          field: 'Quality Score', // Example field name - change to match your frontmatter
           operator: 'greater-than',
           value: 1,
         },
       ],
     },
     {
-      name: 'Quality Score Rule (Lowercase)', // For users who use lowercase field names
-      icon: 'libookmark', // Same icon for consistency
+      name: 'Example: Priority (High)', // Another example rule
+      icon: 'liflag', // Different icon for variety
       order: 2,
-      enabled: true,
-      for: 'files', // Apply to files
+      enabled: false, // Disabled by default
+      for: 'files',
       criteria: [
         {
-          field: 'quality score', // Lowercase version
-          operator: 'greater-than',
-          value: 1,
+          field: 'Priority', // Example field name
+          operator: 'equals',
+          value: 'High',
+        },
+      ],
+    },
+    {
+      name: 'Example: Status (Complete)', // Third example rule
+      icon: 'lischeck-circle', // Checkmark icon
+      order: 3,
+      enabled: false, // Disabled by default
+      for: 'files',
+      criteria: [
+        {
+          field: 'Status', // Example field name
+          operator: 'equals',
+          value: 'Complete',
         },
       ],
     },
