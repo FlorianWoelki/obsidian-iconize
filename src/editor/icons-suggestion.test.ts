@@ -32,7 +32,7 @@ beforeEach(() => {
       iconIdentifier: ':',
     }),
     getIconPackManager: () => ({
-      getAllLoadedIconNames: () => [
+      allLoadedIconNames: [
         {
           name: 'winking_face',
           prefix: 'Ib',
@@ -41,8 +41,8 @@ beforeEach(() => {
           name: 'heart',
           prefix: 'Ib',
         },
-      ]
-    })
+      ],
+    }),
   };
   suggestionIcon = new SuggestionIcon(app, plugin);
   replaceRangeMock = vi.fn();
@@ -194,6 +194,40 @@ describe('onTrigger', () => {
         ch: 5,
       },
       query: ':wink',
+    });
+  });
+
+  it('should return the correct position when there are multiple shortcodes on the same line', () => {
+    cursor.ch = 19;
+    editor.getLine = () => ':wink: some text :w';
+    const result = suggestionIcon.onTrigger(cursor, editor);
+    expect(result).toEqual({
+      start: {
+        line: 0,
+        ch: 17,
+      },
+      end: {
+        line: 0,
+        ch: 19,
+      },
+      query: ':w',
+    });
+  });
+
+  it('should handle duplicate shortcodes on the same line', () => {
+    cursor.ch = 23;
+    editor.getLine = () => ':heart: some text :hear';
+    const result = suggestionIcon.onTrigger(cursor, editor);
+    expect(result).toEqual({
+      start: {
+        line: 0,
+        ch: 18,
+      },
+      end: {
+        line: 0,
+        ch: 23,
+      },
+      query: ':hear',
     });
   });
 });
