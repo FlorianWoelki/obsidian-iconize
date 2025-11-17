@@ -100,26 +100,18 @@ const isApplicable = async (
 
   const file = plugin.app.vault.getAbstractFileByPath(filePath);
   if (!file || file.path !== filePath) {
-    console.log('[Frontmatter Rules] File not found:', filePath);
     return false;
   }
 
-  console.log('[Frontmatter Rules] File found:', file.path, 'type:', file.constructor.name);
   const fileCache = plugin.app.metadataCache.getFileCache(file as any);
-  console.log('[Frontmatter Rules] File cache:', fileCache ? 'exists' : 'null');
   
   if (!fileCache || !fileCache.frontmatter) {
-    console.log('[Frontmatter Rules] No frontmatter found for', filePath, 'fileCache exists:', !!fileCache);
     return rule.criteria.every(criterion => criterion.operator === 'not-exists');
   }
 
-  console.log('[Frontmatter Rules] Frontmatter found:', fileCache.frontmatter);
-
   return rule.criteria.every(criterion => {
     const frontmatterValue = fileCache.frontmatter[criterion.field];
-    console.log('[Frontmatter Rules] Checking field:', criterion.field, 'value:', frontmatterValue, 'operator:', criterion.operator, 'against:', criterion.value);
     const result = evaluateCriterion(criterion, frontmatterValue);
-    console.log('[Frontmatter Rules] Criterion result:', result);
     return result;
   });
 };
@@ -215,39 +207,29 @@ const evaluateFileRules = async (
   plugin: IconizePlugin,
   filePath: string,
 ): Promise<void> => {
-  console.log(`[Iconize] Evaluating file for frontmatter rules: ${filePath}`);
-
   if (!plugin.getSettings().frontmatterRulesEnabled) {
-    console.log('[Iconize] Frontmatter rules are disabled in settings.');
     return;
   }
 
   const file = plugin.app.vault.getAbstractFileByPath(filePath);
   if (!file) {
-    console.log(`[Iconize] Could not find file: ${filePath}`);
     return;
   }
 
   const rules = getSortedRules(plugin);
   if (rules.length === 0) {
-    console.log('[Iconize] No enabled frontmatter rules found.');
     return;
   }
-
-  console.log(`[Iconize] Checking ${rules.length} frontmatter rules for ${filePath}...`);
 
   let ruleApplied = false;
 
   for (const rule of rules) {
     const applicable = await isApplicable(plugin, rule, filePath);
-    console.log(`[Iconize] Rule "${rule.name}" applicable: ${applicable}`);
 
     if (applicable) {
-      console.log(`[Iconize] Applying rule "${rule.name}" to ${filePath}`);
       const cachedIcon = IconCache.getInstance().get(filePath);
 
       if (cachedIcon?.iconNameWithPrefix !== rule.icon) {
-        console.log(`[Iconize] Icon changed from "${cachedIcon?.iconNameWithPrefix}" to "${rule.icon}". Updating DOM.`);
         IconCache.getInstance().set(filePath, {
           iconNameWithPrefix: rule.icon,
           inFrontmatterRule: true,
@@ -259,12 +241,7 @@ const evaluateFileRules = async (
         if (fileItem) {
           dom.removeIconInNode(fileItem as HTMLElement);
           dom.createIconNode(plugin, filePath, rule.icon, { container: fileItem as HTMLElement, color: rule.color });
-          console.log(`[Iconize] Successfully applied icon "${rule.icon}" to DOM element for ${filePath}.`);
-        } else {
-          console.log(`[Iconize] Could not find DOM element for ${filePath} to apply icon.`);
         }
-      } else {
-        console.log(`[Iconize] Icon "${rule.icon}" is already set and cached. No DOM change needed.`);
       }
 
       ruleApplied = true;
@@ -273,10 +250,8 @@ const evaluateFileRules = async (
   }
 
   if (!ruleApplied) {
-    console.log(`[Iconize] No frontmatter rules were applicable to ${filePath}.`);
     const cachedIcon = IconCache.getInstance().get(filePath);
     if (cachedIcon?.inFrontmatterRule) {
-      console.log(`[Iconize] Removing previously set frontmatter rule icon for ${filePath}.`);
       const fileItem = document.querySelector(`[data-path="${filePath}"]`);
       if (fileItem) {
         dom.removeIconInNode(fileItem as HTMLElement);
