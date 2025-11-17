@@ -98,8 +98,6 @@ export default class IconizePlugin extends Plugin {
   }
 
   async onload() {
-    console.log(`loading ${config.PLUGIN_NAME}`);
-
     await this.loadIconFolderData();
     logger.toggleLogging(this.getSettings().debugMode);
     this.iconPackManager = new IconPackManager(
@@ -813,7 +811,6 @@ export default class IconizePlugin extends Plugin {
   }
 
   onunload() {
-    console.log('unloading obsidian-icon-folder');
   }
 
   renameFolder(newPath: string, oldPath: string): void {
