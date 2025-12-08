@@ -2,6 +2,8 @@
 
 ![Preview Image](./docs/preview-image.png)
 
+Project Deprecation and End of Maintenance: [read more](https://github.com/FlorianWoelki/obsidian-iconize/discussions/646)
+
 ## What is it?
 
 This obsidian plugin allows you to add **any** custom icon (of type `.svg`) or from an icon pack to anything you want.

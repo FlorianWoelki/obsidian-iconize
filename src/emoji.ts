@@ -1789,7 +1789,7 @@ const shortNames: Record<string, string> = {
   '🇵🇲': 'flag: St. Pierre & Miquelon',
   '🇵🇳': 'flag: Pitcairn Islands',
   '🇵🇷': 'flag: Puerto Rico',
-  '🇵🇸': 'flag: Palestinian Territories',
+  '🇵🇸': 'flag: Palestine',
   '🇵🇹': 'flag: Portugal',
   '🇵🇼': 'flag: Palau',
   '🇵🇾': 'flag: Paraguay',
@@ -1879,7 +1879,7 @@ const parseEmoji = (
 ): string | null => {
   switch (style) {
     case 'twemoji':
-      return twemoji.parse(str, {
+      let parsedStr = twemoji.parse(str, {
         folder: 'svg',
         ext: '.svg',
         attributes: () => ({
@@ -1887,6 +1887,9 @@ const parseEmoji = (
           height: `${size}px`,
         }),
       });
+      // Some characters like "©" are treated as non-emoji, and
+      // isEmoji method passes those. Use below expression to anticipate that.
+      return parsedStr === str ? null : parsedStr;
     case 'native':
       return str;
     default:

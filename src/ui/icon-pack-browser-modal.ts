@@ -1,15 +1,10 @@
 import { App, FuzzyMatch, FuzzySuggestModal, Notice } from 'obsidian';
-import {
-  registerIconPack,
-  createIconPackPrefix,
-  createZipFile,
-  getAllIconPacks,
-} from '@app/icon-pack-manager';
-import iconPacks, { IconPack } from '@app/icon-packs';
+import predefinedIconPacks, { PredefinedIconPack } from '@app/icon-packs';
 import IconizePlugin from '@app/main';
 import { downloadZipFile } from '@app/zip-util';
+import { IconPack } from '@app/icon-pack-manager/icon-pack';
 
-export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
+export default class IconPackBrowserModal extends FuzzySuggestModal<PredefinedIconPack> {
   private plugin: IconizePlugin;
 
   constructor(app: App, plugin: IconizePlugin) {
@@ -31,36 +26,49 @@ export default class IconPackBrowserModal extends FuzzySuggestModal<IconPack> {
     this.contentEl.empty();
   }
 
-  getItemText(item: IconPack): string {
-    const prefix = createIconPackPrefix(item.name);
-    return `${item.displayName} (${prefix})`;
+  getItemText(item: PredefinedIconPack): string {
+    // TODO: refactor this
+    const tempIconPack = new IconPack(this.plugin, item.name, false);
+    return `${item.displayName} (${tempIconPack.getPrefix()})`;
   }
 
-  getItems(): IconPack[] {
-    const predefinedIconPacks = Object.values(iconPacks);
-    const allIconPacks = getAllIconPacks();
+  getItems(): PredefinedIconPack[] {
+    const iconPacks = Object.values(predefinedIconPacks);
+    const allIconPacks = this.plugin.getIconPackManager().getIconPacks();
 
-    return predefinedIconPacks.filter(
+    return iconPacks.filter(
       (iconPack) =>
-        allIconPacks.find((ip) => iconPack.name === ip.name) === undefined,
+        allIconPacks.find((ip) => iconPack.name === ip.getName()) === undefined,
     );
   }
 
   async onChooseItem(
-    item: IconPack,
+    item: PredefinedIconPack,
     _event: MouseEvent | KeyboardEvent,
   ): Promise<void> {
     new Notice(`Adding ${item.displayName}...`);
 
     const arrayBuffer = await downloadZipFile(item.downloadLink);
-    await createZipFile(this.plugin, `${item.name}.zip`, arrayBuffer);
-    await registerIconPack(item.name, arrayBuffer);
+    await this.plugin
+      .getIconPackManager()
+      .getFileManager()
+      .createZipFile(
+        this.plugin.getIconPackManager().getPath(),
+        `${item.name}.zip`,
+        arrayBuffer,
+      );
+    await this.plugin
+      .getIconPackManager()
+      .registerIconPack(item.name, arrayBuffer);
 
     new Notice(`...${item.displayName} added`);
     this.onAddedIconPack();
   }
 
-  renderSuggestion(item: FuzzyMatch<IconPack>, el: HTMLElement): void {
+  renderSuggestion(
+    item: FuzzyMatch<PredefinedIconPack>,
+    el: HTMLElement,
+  ): void {
     super.renderSuggestion(item, el);
 
     el.innerHTML = `<div>${el.innerHTML}</div>`;
