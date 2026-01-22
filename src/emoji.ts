@@ -1879,7 +1879,7 @@ const parseEmoji = (
 ): string | null => {
   switch (style) {
     case 'twemoji':
-      let parsedStr = twemoji.parse(str, {
+      const parsedStr = twemoji.parse(str, {
         folder: 'svg',
         ext: '.svg',
         attributes: () => ({

@@ -153,7 +153,6 @@ export const processIconInTextMarkdown = (
     }
 
     if (plugin.getSettings().emojiStyle === 'twemoji') {
-  
       const tagName = text.parentElement?.tagName?.toLowerCase() ?? ''; // "text" has the same parent as "toReplace"
       let fontSize = calculateFontTextSize();
 

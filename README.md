@@ -11,10 +11,6 @@ This obsidian plugin allows you to add **any** custom icon (of type `.svg`) or f
 Refer to the official documentation for more information:
 [https://florianwoelki.github.io/obsidian-iconize/](https://florianwoelki.github.io/obsidian-iconize/) about the plugin and its functionalities.
 
-If you like this plugin, feel free to support the development by buying a coffee:
-
-<a href="https://www.buymeacoffee.com/florianwoelki" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-
 ## Key Highlights
 
 [Icons before file/folder name](https://florianwoelki.github.io/obsidian-iconize/files-and-folders/icon-before-file-or-folder.html),
