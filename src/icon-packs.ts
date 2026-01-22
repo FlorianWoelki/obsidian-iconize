@@ -45,9 +45,9 @@ const predefinedIconPacks = {
   simpleIcons: {
     name: 'simple-icons',
     displayName: 'Simple Icons',
-    path: 'simple-icons-11.10.0/icons/',
+    path: 'simple-icons-16.5.0/icons/',
     downloadLink:
-      'https://github.com/simple-icons/simple-icons/archive/refs/tags/11.10.0.zip',
+      'https://github.com/simple-icons/simple-icons/archive/refs/tags/16.5.0.zip',
   },
   lucide: {
     name: 'lucide-icons',
