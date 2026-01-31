@@ -22,8 +22,8 @@ import InternalPluginInjector from './@types/internal-plugin-injector';
 import iconTabs from './lib/icon-tabs';
 import dom from './lib/util/dom';
 import customRule from './lib/custom-rule';
-import icon from './lib/icon';
 import frontmatterRule from './lib/frontmatter-rule';
+import icon from './lib/icon';
 import BookmarkInternalPlugin from './internal-plugins/bookmark';
 import OutlineInternalPlugin from './internal-plugins/outline';
 import {
@@ -98,6 +98,8 @@ export default class IconizePlugin extends Plugin {
   }
 
   async onload() {
+    console.log(`loading ${config.PLUGIN_NAME}`);
+
     await this.loadIconFolderData();
     logger.toggleLogging(this.getSettings().debugMode);
     this.iconPackManager = new IconPackManager(
@@ -131,17 +133,7 @@ export default class IconizePlugin extends Plugin {
     // TODO: Check if needed
     await this.iconPackManager.loadUsedIcons([...usedIconNames]);
 
-    this.app.workspace.onLayoutReady(async () => {
-      this.handleChangeLayout();
-
-      // Evaluate frontmatter rules for all files on plugin load.
-      if (this.getSettings().frontmatterRulesEnabled) {
-        const markdownFiles = this.app.vault.getMarkdownFiles();
-        for (const file of markdownFiles) {
-          await frontmatterRule.evaluateFileRules(this, file.path);
-        }
-      }
-    });
+    this.app.workspace.onLayoutReady(() => this.handleChangeLayout());
 
     this.addCommand({
       id: 'iconize:set-icon-for-file',
@@ -568,14 +560,7 @@ export default class IconizePlugin extends Plugin {
 
       // Register `file-open` event for adding icon to title.
       this.registerEvent(
-        this.app.workspace.on('file-open', async (file) => {
-          if (!file) {
-            return;
-          }
-
-          // Evaluate frontmatter rules for the opened file.
-          await frontmatterRule.evaluateFileRules(this, file.path);
-
+        this.app.workspace.on('file-open', (file) => {
           if (!this.getSettings().iconInTitleEnabled) {
             return;
           }
@@ -623,24 +608,9 @@ export default class IconizePlugin extends Plugin {
         }),
       );
 
-      // Register event for file modification.
-      this.registerEvent(
-        this.app.vault.on('modify', async (file) => {
-          if (file instanceof TFile) {
-            // Add a small delay to allow metadata cache to update before evaluating frontmatter rules
-            setTimeout(async () => {
-              await frontmatterRule.evaluateFileRules(this, file.path);
-            }, 100);
-          }
-        }),
-      );
-
       // Register event for frontmatter icon registration.
       this.registerEvent(
         this.app.metadataCache.on('resolve', async (file) => {
-          // Always evaluate frontmatter rules first, regardless of iconInFrontmatterEnabled setting
-          await frontmatterRule.evaluateFileRules(this, file.path);
-
           if (!this.getSettings().iconInFrontmatterEnabled) {
             return;
           }
@@ -734,6 +704,15 @@ export default class IconizePlugin extends Plugin {
               this.addIconInTitle(newIconName);
             }
           }
+
+          // Evaluate frontmatter rules for automatic icon management
+          try {
+            await frontmatterRule.evaluateFileRules(this, file.path);
+          } catch (e) {
+            logger.warn(
+              `Something went wrong while evaluating frontmatter rules (error: ${e})`,
+            );
+          }
         }),
       );
 
@@ -811,6 +790,7 @@ export default class IconizePlugin extends Plugin {
   }
 
   onunload() {
+    console.log('unloading obsidian-icon-folder');
   }
 
   renameFolder(newPath: string, oldPath: string): void {

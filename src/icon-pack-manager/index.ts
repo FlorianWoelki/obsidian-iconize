@@ -368,12 +368,19 @@ export class IconPackManager {
     this.path = newPath;
   }
 
-  public async removeIconPack(iconPack: IconPack): Promise<void> {
+  public async removeIconPack(iconPack?: IconPack): Promise<void> {
+    if (!iconPack) {
+      logger.warn(
+        `[${config.PLUGIN_NAME}] Tried to remove an icon pack that is not registered.`,
+      );
+      return;
+    }
+
     const iconPackIndex = this.iconPacks.findIndex(
       (ip) => ip.getName() === iconPack.getName(),
     );
     if (iconPackIndex > -1) {
-      this.iconPacks.splice(iconPackIndex);
+      this.iconPacks.splice(iconPackIndex, 1);
     }
     await iconPack.delete();
   }

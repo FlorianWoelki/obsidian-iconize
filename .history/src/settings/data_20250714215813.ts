@@ -176,17 +176,6 @@ export interface IconFolderSettings {
    */
   rules: CustomRule[];
   /**
-   * Sets whether the plugin should manage icons automatically based on frontmatter rules.
-   * @default false
-   */
-  frontmatterRulesEnabled: boolean;
-  /**
-   * Stores the frontmatter-based rules for automatic icon management.
-   * @see FrontmatterRule
-   * @default []
-   */
-  frontmatterRules: FrontmatterRule[];
-  /**
    * Sets whether the plugin should show icons in the tabs when you open a file in your
    * vault. When no icon is set for the file, it will use the default file icon from
    * Obsidian.
@@ -270,51 +259,6 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   recentlyUsedIcons: [],
   recentlyUsedIconsSize: 5,
   rules: [],
-  frontmatterRulesEnabled: true,
-  frontmatterRules: [
-    {
-      name: 'Example: Quality Score (High)', // Example rule - you can modify or delete this
-      icon: 'libookmark', // The icon to display
-      order: 1,
-      enabled: false, // Disabled by default - users can enable if they want this example
-      for: 'files', // Apply to files
-      criteria: [
-        {
-          field: 'Quality Score', // Example field name - change to match your frontmatter
-          operator: 'greater-than',
-          value: 1,
-        },
-      ],
-    },
-    {
-      name: 'Example: Priority (High)', // Another example rule
-      icon: 'liflag', // Different icon for variety
-      order: 2,
-      enabled: false, // Disabled by default
-      for: 'files',
-      criteria: [
-        {
-          field: 'Priority', // Example field name
-          operator: 'equals',
-          value: 'High',
-        },
-      ],
-    },
-    {
-      name: 'Example: Status (Complete)', // Third example rule
-      icon: 'lischeck-circle', // Checkmark icon
-      order: 3,
-      enabled: false, // Disabled by default
-      for: 'files',
-      criteria: [
-        {
-          field: 'Status', // Example field name
-          operator: 'equals',
-          value: 'Complete',
-        },
-      ],
-    },
-  ],
   extraMargin: {
     top: 0,
     right: 4,

@@ -152,11 +152,10 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
         subheadline.innerText = 'Recently used Icons:';
         this.resultContainerEl.prepend(subheadline);
         if (this.renderIndex === this.recentlyUsedItems.size - 1) {
-          const subheadline = this.resultContainerEl.createDiv();
-          subheadline.classList.add('iconize-subheadline');
-          subheadline.innerText = 'All Icons:';
-          this.resultContainerEl.append(subheadline);
-        }
+        const subheadline = this.resultContainerEl.createDiv();
+        subheadline.classList.add('iconize-subheadline');
+        subheadline.innerText = 'All Icons:';
+        this.resultContainerEl.append(subheadline);
       }
     }
 

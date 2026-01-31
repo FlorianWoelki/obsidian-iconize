@@ -266,8 +266,10 @@ const addAll = (
 
   // Handles the frontmatter rules.
   if (plugin.getSettings().frontmatterRulesEnabled) {
-    // Note: Frontmatter rules are handled dynamically in the metadata cache events
-    // to avoid circular dependencies and async issues during initial load
+    const frontmatterRule = await import('./frontmatter-rule');
+    for (const rule of frontmatterRule.default.getSortedRules(plugin)) {
+      frontmatterRule.default.addToAllFiles(plugin, rule);
+    }
   }
 };
 
