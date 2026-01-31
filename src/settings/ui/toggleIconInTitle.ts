@@ -1,4 +1,5 @@
 import { DropdownComponent, MarkdownView, Setting } from 'obsidian';
+import { T } from '../../locales/translations';
 import { calculateInlineTitleSize } from '@app/lib/util/text';
 import IconFolderSetting from './iconFolderSetting';
 import icon from '@lib/icon';
@@ -50,14 +51,14 @@ export default class ToggleIconInTitle extends IconFolderSetting {
 
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Toggle icon in title')
-      .setDesc('Toggles the visibility of an icon above the title of a file.')
+      .setName(T('Toggle icon in title'))
+      .setDesc(T('Toggles the visibility of an icon above the title of a file.'))
       .addDropdown((dropdown) => {
         this.dropdown = dropdown;
         dropdown.setDisabled(!this.plugin.getSettings().iconInTitleEnabled);
         dropdown.addOptions({
-          above: 'Above title',
-          inline: 'Next to title',
+          above: T('Above title'),
+          inline: T('Next to title'),
         });
         dropdown.setValue(this.plugin.getSettings().iconInTitlePosition);
         dropdown.onChange(async (value) => {

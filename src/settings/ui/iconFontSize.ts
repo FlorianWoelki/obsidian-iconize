@@ -1,4 +1,5 @@
 import { Setting, SliderComponent } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 import { DEFAULT_SETTINGS } from '../data';
 import helper from '../helper';
@@ -16,8 +17,8 @@ export default class IconFontSizeSetting extends IconFolderSetting {
 
   public display(): void {
     const setting = new Setting(this.containerEl)
-      .setName('Icon font size (in pixels)')
-      .setDesc('Change the font size of the displayed icons.');
+      .setName(T('Icon font size (in pixels)'))
+      .setDesc(T('Change the font size of the displayed icons.'));
 
     new ResetButtonComponent(setting.controlEl).onClick(() => {
       this.slider.setValue(values.default);

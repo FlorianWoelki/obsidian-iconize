@@ -1,4 +1,5 @@
 import { App, FuzzyMatch, FuzzySuggestModal } from 'obsidian';
+import { T } from '../locales/translations';
 import IconizePlugin from '@app/main';
 import emoji from '@app/emoji';
 import { type Icon } from '@app/icon-pack-manager';
@@ -77,7 +78,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
         const iconPrefix = iconName.substring(0, nextLetter);
         const iconPackName = this.plugin
           .getIconPackManager()
-          .getIconPackByName(iconPrefix)
+          .getIconPackByPrefix(iconPrefix)
           .getName();
         iconKeys.push({
           name: iconName.substring(nextLetter),
@@ -124,7 +125,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
   onChooseItem(item: Icon | string): void {
     const iconNameWithPrefix =
-      typeof item === 'object' ? item.displayName : item;
+      typeof item === 'object' ? `${item.prefix}${item.name}` : item;
     dom.createIconNode(this.plugin, this.path, iconNameWithPrefix);
     this.onSelect?.(iconNameWithPrefix);
     this.plugin.addFolderIcon(this.path, item);
@@ -149,12 +150,14 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
       if (this.renderIndex === 0) {
         const subheadline = this.resultContainerEl.createDiv();
         subheadline.classList.add('iconize-subheadline');
-        subheadline.innerText = 'Recently used Icons:';
+        subheadline.innerText = T('Recently used Icons:');
         this.resultContainerEl.prepend(subheadline);
-      } else if (this.renderIndex === this.recentlyUsedItems.size - 1) {
+      }
+
+      if (this.renderIndex === this.recentlyUsedItems.size - 1) {
         const subheadline = this.resultContainerEl.createDiv();
         subheadline.classList.add('iconize-subheadline');
-        subheadline.innerText = 'All Icons:';
+        subheadline.innerText = T('All Icons:');
         this.resultContainerEl.append(subheadline);
       }
     }
