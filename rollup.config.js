@@ -2,7 +2,7 @@ import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import alias from '@rollup/plugin-alias';
-import copyFile from './copy-file.js';
+import copy from 'rollup-plugin-copy';
 import { obsidianExportPath } from './env.js';
 
 const isProd = process.env.BUILD === 'production';
@@ -40,7 +40,7 @@ const cmModules = [
 export default {
   input: './src/main.ts',
   output: {
-    dir: '.',
+    file: './main.js',
     sourcemap: 'inline',
     sourcemapExcludeSources: isProd,
     format: 'cjs',
@@ -58,12 +58,13 @@ export default {
     typescript(),
     nodeResolve({ browser: true }),
     commonjs(),
-    copyFile({
+    copy({
       targets: [
         { src: './main.js', dest: obsidianExportPath },
         { src: './manifest.json', dest: obsidianExportPath },
         { src: './src/styles.css', dest: obsidianExportPath },
       ],
+      hook: 'writeBundle',
     }),
   ],
   onwarn: (warning) => {
