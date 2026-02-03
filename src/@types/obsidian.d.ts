@@ -49,7 +49,7 @@ interface BookmarkInternalPlugin extends InternalPlugin {
   };
 }
 
-interface OutlineInternalPlugin extends InternalPlugin {}
+type OutlineInternalPlugin = InternalPlugin;
 
 type FileExplorerInternalPlugin = InternalPlugin;
 

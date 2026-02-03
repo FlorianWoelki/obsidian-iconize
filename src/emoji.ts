@@ -1878,7 +1878,7 @@ const parseEmoji = (
   size = 16,
 ): string | null => {
   switch (style) {
-    case 'twemoji':
+    case 'twemoji': {
       const parsedStr = twemoji.parse(str, {
         folder: 'svg',
         ext: '.svg',
@@ -1890,6 +1890,7 @@ const parseEmoji = (
       // Some characters like "©" are treated as non-emoji, and
       // isEmoji method passes those. Use below expression to anticipate that.
       return parsedStr === str ? null : parsedStr;
+    }
     case 'native':
       return str;
     default:
