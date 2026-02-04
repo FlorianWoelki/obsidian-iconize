@@ -22,57 +22,60 @@ describe('extract', () => {
     expect(output).not.toMatch(/style=""/);
   });
 
-  const mockParseFromString = (width: number | null, height: number | null) => {
-    return {
-      parseFromString: vi.fn(
-        () =>
-          ({
-            querySelector: vi.fn(() => ({
-              querySelector: vi.fn(),
-              hasAttribute: vi.fn(() => true),
-              setAttribute: vi.fn(),
-              style: { width: '', height: '' },
-              viewBox: { baseVal: { width: 0, height: 0 } },
-              width: { baseVal: { value: width } },
-              height: { baseVal: { value: height } },
-            })),
-          }) as unknown as Document,
-      ),
-    };
-  };
-
   it('should set `viewbox` width and height if they are `0` to the SVG width and height', () => {
-    const s = vi
-      .spyOn(window, 'DOMParser')
-      .mockImplementationOnce(() => mockParseFromString(12, 12));
+    const mockSVG = {
+      querySelector: vi.fn(),
+      hasAttribute: vi.fn(() => true),
+      setAttribute: vi.fn(),
+      style: { width: '', height: '' },
+      viewBox: { baseVal: { width: 0, height: 0 } },
+      width: { baseVal: { value: 12 } },
+      height: { baseVal: { value: 12 } },
+    };
+
+    const mockParseFromString = vi.fn().mockReturnValue({
+      querySelector: vi.fn(() => mockSVG),
+    });
+
+    vi.spyOn(global, 'DOMParser').mockImplementation(function (this: any) {
+      this.parseFromString = mockParseFromString;
+      return this;
+    } as any);
 
     const input =
       '<svg viewBox="0 0 0 0"><circle cx="50" cy="50" r="10" /></svg>';
     svg.extract(input);
 
-    // TODO: Maybe find better alternative to this.
-    const extractedSVG =
-      s.mock.results[0].value.parseFromString.mock.results[0].value
-        .querySelector.mock.results[0].value;
-    expect(extractedSVG.viewBox.baseVal.width).toBe(12);
-    expect(extractedSVG.viewBox.baseVal.height).toBe(12);
+    expect(mockSVG.viewBox.baseVal.width).toBe(12);
+    expect(mockSVG.viewBox.baseVal.height).toBe(12);
   });
 
   it('should set `viewbox` width and height if they are `0` to the SVG width and height', () => {
-    const s = vi
-      .spyOn(window, 'DOMParser')
-      .mockImplementationOnce(() => mockParseFromString(null, null));
+    const mockSVG = {
+      querySelector: vi.fn(),
+      hasAttribute: vi.fn(() => true),
+      setAttribute: vi.fn(),
+      style: { width: '', height: '' },
+      viewBox: { baseVal: { width: 0, height: 0 } },
+      width: { baseVal: { value: null as any } },
+      height: { baseVal: { value: null as any } },
+    };
+
+    const mockParseFromString = vi.fn().mockReturnValue({
+      querySelector: vi.fn(() => mockSVG),
+    });
+
+    vi.spyOn(global, 'DOMParser').mockImplementation(function (this: any) {
+      this.parseFromString = mockParseFromString;
+      return this;
+    } as any);
 
     const input =
       '<svg viewBox="0 0 0 0"><circle cx="50" cy="50" r="10" /></svg>';
     svg.extract(input);
 
-    // TODO: Maybe find better alternative to this.
-    const extractedSVG =
-      s.mock.results[0].value.parseFromString.mock.results[0].value
-        .querySelector.mock.results[0].value;
-    expect(extractedSVG.viewBox.baseVal.width).toBe(16);
-    expect(extractedSVG.viewBox.baseVal.height).toBe(16);
+    expect(mockSVG.viewBox.baseVal.width).toBe(16);
+    expect(mockSVG.viewBox.baseVal.height).toBe(16);
   });
 
   it('should set `fill` attribute to `currentColor` if not present', () => {

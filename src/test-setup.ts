@@ -5,6 +5,11 @@
  */
 import { writeFileSync } from 'fs';
 import { join } from 'path';
+import { beforeEach, vi } from 'vitest';
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 (async () => {
   const obsidianModuleDir = join(__dirname, '../node_modules/obsidian');

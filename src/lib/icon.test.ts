@@ -54,7 +54,6 @@ describe('getAllWithPath', () => {
 describe('getByPath', () => {
   let plugin: any;
   beforeEach(() => {
-    vi.restoreAllMocks();
     plugin = {
       getData: () => ({
         folder: 'IbTest',
@@ -63,9 +62,6 @@ describe('getByPath', () => {
         },
       }),
     };
-    vi.spyOn(customRule, 'getSortedRules').mockImplementationOnce(
-      () => [] as any,
-    );
   });
 
   it('should return `undefined` when path is `settings` or `migrated', () => {
@@ -98,6 +94,7 @@ describe('getByPath', () => {
   });
 
   it('should return `undefined` when no icon is found', () => {
+    vi.spyOn(customRule, 'getSortedRules').mockReturnValue([] as any);
     const result = icon.getByPath(plugin, 'foo');
     expect(result).toBe(undefined);
   });
@@ -175,9 +172,7 @@ describe('getIconByName', () => {
   });
 
   it('should return `null` when no icon was found', () => {
-    plugin.getIconPackManager().getIconPackByPrefix().getIcon = ():
-      | string
-      | null => null;
+    getIcon.mockReturnValueOnce(null);
     const result = icon.getIconByName(plugin, 'IbFoo');
     expect(result).toBe(null);
   });
