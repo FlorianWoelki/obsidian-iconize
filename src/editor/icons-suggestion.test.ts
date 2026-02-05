@@ -8,7 +8,7 @@ import {
   vi,
 } from 'vitest';
 import icon from '@lib/icon';
-import * as iconPackManager from '@app/icon-pack-manager';
+import { IconPackManager } from '@app/icon-pack-manager';
 import * as util from '@app/util';
 import SuggestionIcon from './icons-suggestion';
 
@@ -137,7 +137,11 @@ describe.skip('getSuggestions', () => {
   let getAllLoadedIconNamesSpy: MockInstance;
   beforeEach(() => {
     vi.restoreAllMocks();
-    getAllLoadedIconNamesSpy = vi.spyOn(iconPackManager, 'allLoadedIconNames');
+    getAllLoadedIconNamesSpy = vi.spyOn(
+      IconPackManager.prototype,
+      'allLoadedIconNames',
+      'get',
+    );
     getAllLoadedIconNamesSpy.mockImplementationOnce(() => [
       {
         name: 'winking_face',
