@@ -647,6 +647,11 @@ export default class IconizePlugin extends Plugin {
               return;
             }
 
+            let iconName = newIconName;
+            if (iconName.startsWith(":") && iconName.endsWith(":")) {
+              iconName = iconName.slice(1, iconName.length - 1);
+            }
+
             let iconColor = newIconColor;
             if (isHexadecimal(iconColor)) {
               iconColor = stringToHex(iconColor);
@@ -654,7 +659,7 @@ export default class IconizePlugin extends Plugin {
 
             const cachedIcon = IconCache.getInstance().get(file.path);
             if (
-              newIconName === cachedIcon?.iconNameWithPrefix &&
+              iconName === cachedIcon?.iconNameWithPrefix &&
               iconColor === cachedIcon?.iconColor
             ) {
               return;
@@ -662,8 +667,8 @@ export default class IconizePlugin extends Plugin {
 
             this.frontmatterCache.add(file.path);
             try {
-              if (!emoji.isEmoji(newIconName)) {
-                saveIconToIconPack(this, newIconName);
+              if (!emoji.isEmoji(iconName)) {
+                saveIconToIconPack(this, iconName);
               }
             } catch (e) {
               logger.warn(
@@ -673,13 +678,13 @@ export default class IconizePlugin extends Plugin {
               return;
             }
 
-            dom.createIconNode(this, file.path, newIconName, {
+            dom.createIconNode(this, file.path, iconName, {
               color: iconColor,
             });
-            this.addFolderIcon(file.path, newIconName);
+            this.addFolderIcon(file.path, iconName);
             this.addIconColor(file.path, iconColor);
             IconCache.getInstance().set(file.path, {
-              iconNameWithPrefix: newIconName,
+              iconNameWithPrefix: iconName,
               iconColor,
             });
 
@@ -692,7 +697,7 @@ export default class IconizePlugin extends Plugin {
               for (const tabLeaf of tabLeaves) {
                 iconTabs.update(
                   this,
-                  newIconName,
+                  iconName,
                   tabLeaf.tabHeaderInnerIconEl,
                 );
               }
@@ -700,7 +705,7 @@ export default class IconizePlugin extends Plugin {
 
             // Update icon in title when setting is enabled.
             if (this.getSettings().iconInTitleEnabled) {
-              this.addIconInTitle(newIconName);
+              this.addIconInTitle(iconName);
             }
           }
         }),
