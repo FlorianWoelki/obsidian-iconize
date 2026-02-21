@@ -77,6 +77,9 @@ export default class SuggestionIcon extends EditorSuggest<string> {
       })
       .map((iconObject) => iconObject.prefix + iconObject.name);
 
+    if (this.plugin.getSettings().emojiStyle === 'disabled') {
+        return [...iconsNameArray]
+    }
     // Store all emojis correspoding to the current query - parsing whitespaces and
     // colons for shortcodes compatibility.
     const emojisNameArray = Object.keys(emoji.shortNames).filter((e) =>
