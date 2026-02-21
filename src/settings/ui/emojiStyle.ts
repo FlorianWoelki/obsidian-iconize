@@ -1,4 +1,5 @@
 import { MarkdownView, Setting } from 'obsidian';
+import { T } from '../../locales/translations';
 import emoji from '@app/emoji';
 import customRule from '@lib/custom-rule';
 import dom from '@lib/util/dom';
@@ -13,8 +14,8 @@ import { calculateInlineTitleSize } from '@app/lib/util/text';
 export default class EmojiStyleSetting extends IconFolderSetting {
   public display(): void {
     const emojiStyle = new Setting(this.containerEl)
-      .setName('Emoji style')
-      .setDesc('Change the style of your emojis.');
+      .setName(T('Emoji style'))
+      .setDesc(T('Change the style of your emojis.'));
     emojiStyle.addDropdown((dropdown) => {
       dropdown.addOption('native', 'Native');
       dropdown.addOption('twemoji', 'Twemoji');

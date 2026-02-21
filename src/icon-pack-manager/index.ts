@@ -56,7 +56,7 @@ export class IconPackManager {
         logger.info(`Initialized icon pack '${iconPackName}'`);
       }
     }
-
+    
     if (this.plugin.doesUseNativeLucideIconPack()) {
       const iconPack = this.lucideIconPack.init();
       this.iconPacks.push(iconPack);
@@ -375,7 +375,7 @@ export class IconPackManager {
     if (iconPackIndex > -1) {
       this.iconPacks.splice(iconPackIndex);
     }
-    await iconPack.delete();
+    await iconPack?.delete();
   }
 
   public getLucideIconPack(): LucideIconPack {

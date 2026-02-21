@@ -1,4 +1,5 @@
 import { Notice, Setting, TextComponent } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 
 export default class IconPacksPathSetting extends IconFolderSetting {
@@ -6,8 +7,8 @@ export default class IconPacksPathSetting extends IconFolderSetting {
 
   public display(): void {
     const iconPacksPathSetting = new Setting(this.containerEl)
-      .setName('Icon packs folder path')
-      .setDesc('Change the default icon packs folder path.');
+      .setName(T('Icon packs folder path'))
+      .setDesc(T('Change the default icon packs folder path.'));
 
     iconPacksPathSetting.addText((text) => {
       this.iconPacksSettingTextComp = text;
@@ -15,7 +16,7 @@ export default class IconPacksPathSetting extends IconFolderSetting {
     });
 
     iconPacksPathSetting.addButton((btn) => {
-      btn.setButtonText('Save');
+      btn.setButtonText(T('Save'));
       btn.onClick(async () => {
         const newPath = this.iconPacksSettingTextComp.getValue();
         const oldPath = this.plugin.getSettings().iconPacksPath;
@@ -24,7 +25,7 @@ export default class IconPacksPathSetting extends IconFolderSetting {
           return;
         }
 
-        new Notice('Saving in progress...');
+        new Notice(T('Saving in progress...'));
         this.plugin.getIconPackManager().setPath(newPath);
         await this.plugin.getIconPackManager().createDefaultDirectory();
         await this.plugin
@@ -33,7 +34,7 @@ export default class IconPacksPathSetting extends IconFolderSetting {
 
         this.plugin.getSettings().iconPacksPath = newPath;
         await this.plugin.saveIconFolderData();
-        new Notice('...saved successfully');
+        new Notice(T('...saved successfully'));
       });
     });
   }

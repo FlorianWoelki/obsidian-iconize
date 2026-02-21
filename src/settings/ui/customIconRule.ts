@@ -8,6 +8,7 @@ import {
   Modal,
   ToggleComponent,
 } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 import IconsPickerModal from '@app/ui/icons-picker-modal';
 import IconizePlugin from '@app/main';
@@ -98,9 +99,9 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
 
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Add icon rule')
+      .setName(T('Add icon rule'))
       .setDesc(
-        'Will add the icon based on the defined rule (as a plain string or in regex format).',
+        T('Will add the icon based on the defined rule (as a plain string or in regex format).'),
       )
       .addText((text) => {
         text.onChange((value) => {
@@ -110,12 +111,12 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           this.chooseIconBtn.buttonEl.style.opacity =
             value.length === 0 ? '50%' : '100%';
         });
-        text.setPlaceholder('regex or simple string');
+        text.setPlaceholder(T('regex or simple string'));
         this.textComponent = text;
       })
       .addButton((btn) => {
         btn.setDisabled(true);
-        btn.setButtonText('Choose icon');
+        btn.setButtonText(T('Choose icon'));
         btn.onClick(async () => {
           if (this.textComponent.getValue().length === 0) {
             return;
@@ -140,7 +141,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             await this.plugin.saveIconFolderData();
 
             this.refreshDisplay();
-            new Notice('Icon rule added.');
+            new Notice(T('Icon rule added.'));
             this.textComponent.setValue('');
 
             saveIconToIconPack(this.plugin, rule.icon);
@@ -217,7 +218,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           : 'default';
         btn.extraSettingsEl.style.opacity = isFirstOrder ? '50%' : '100%';
         btn.setIcon('arrow-up');
-        btn.setTooltip('Prioritize the custom rule');
+        btn.setTooltip(T('Prioritize the custom rule'));
         btn.onClick(async () => {
           await orderCustomRules(-1);
         });
@@ -233,7 +234,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           : 'default';
         btn.extraSettingsEl.style.opacity = isLastOrder ? '50%' : '100%';
         btn.setIcon('arrow-down');
-        btn.setTooltip('Deprioritize the custom rule');
+        btn.setTooltip(T('Deprioritize the custom rule'));
         btn.onClick(async () => {
           await orderCustomRules(1);
         });
@@ -242,16 +243,16 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
       // Add the edit custom rule button.
       settingRuleEl.addButton((btn) => {
         btn.setIcon('pencil');
-        btn.setTooltip('Edit the custom rule');
+        btn.setTooltip(T('Edit the custom rule'));
         btn.onClick(() => {
           // Create modal and its children elements.
           const modal = new Modal(this.plugin.app);
           modal.contentEl.style.display = 'block';
           modal.modalEl.classList.add('iconize-custom-modal');
-          modal.titleEl.setText('Edit custom rule');
+          modal.titleEl.setText(T('Edit custom rule'));
 
           // Create the input for the rule.
-          this.createDescriptionEl(modal.contentEl, 'Regex or simple string');
+          this.createDescriptionEl(modal.contentEl, T('Regex or simple string'));
           const input = new TextComponent(modal.contentEl);
           input.setValue(rule.rule);
           input.onChange(async (value) => {
@@ -264,7 +265,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           useFilePathContainer.style.justifyContent = 'space-between';
           useFilePathContainer.style.marginTop = 'var(--size-4-5)';
           const useFilePathDescription = useFilePathContainer.createEl('p', {
-            text: 'Include folders and files that are part of the path.',
+            text: T('Include folders and files that are part of the path.'),
             cls: 'setting-item-description',
           });
           useFilePathDescription.style.margin = '0';
@@ -282,7 +283,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           ruleTypeContainer.style.justifyContent = 'space-between';
           ruleTypeContainer.style.marginTop = 'var(--size-4-5)';
           const ruleTypeDescription = ruleTypeContainer.createEl('p', {
-            text: 'Where the custom rule gets applied to.',
+            text: T('Where the custom rule gets applied to.'),
             cls: 'setting-item-description',
           });
           ruleTypeDescription.style.margin = '0';
@@ -319,7 +320,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           });
 
           // Create the change icon button with icon preview.
-          this.createDescriptionEl(modal.contentEl, 'Custom rule icon');
+          this.createDescriptionEl(modal.contentEl, T('Custom rule icon'));
           const iconContainer = modal.contentEl.createDiv();
           iconContainer.style.display = 'flex';
           iconContainer.style.alignItems = 'center';
@@ -343,7 +344,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           iconNameEl.innerText = rule.icon;
 
           const changeIconBtn = new ButtonComponent(iconContainer);
-          changeIconBtn.setButtonText('Change icon');
+          changeIconBtn.setButtonText(T('Change icon'));
           changeIconBtn.onClick(async () => {
             const modal = new IconsPickerModal(
               this.app,
@@ -364,7 +365,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           });
 
           // Create the color picker for the rule.
-          this.createDescriptionEl(modal.contentEl, 'Color of the icon');
+          this.createDescriptionEl(modal.contentEl, T('Color of the icon'));
           const colorContainer = modal.contentEl.createDiv();
           colorContainer.style.display = 'flex';
           colorContainer.style.alignItems = 'center';
@@ -375,8 +376,8 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
               rule.color = value;
             });
           const defaultColorButton = new ButtonComponent(colorContainer);
-          defaultColorButton.setTooltip('Set color to the default one');
-          defaultColorButton.setButtonText('Default');
+          defaultColorButton.setTooltip(T('Set color to the default one'));
+          defaultColorButton.setButtonText(T('Default'));
           defaultColorButton.onClick(() => {
             colorPicker.setValue('#000000');
             rule.color = undefined;
@@ -386,7 +387,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           const button = new ButtonComponent(modal.contentEl);
           button.buttonEl.style.marginTop = 'var(--size-4-4)';
           button.buttonEl.style.float = 'right';
-          button.setButtonText('Save Changes');
+          button.setButtonText(T('Save Changes'));
           button.onClick(async () => {
             if (!emoji.isEmoji(oldRule.icon)) {
               // Tries to remove the previously used icon from the icon pack.
@@ -400,7 +401,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
             }
 
             this.refreshDisplay();
-            new Notice('Custom rule updated.');
+            new Notice(T('Custom rule updated.'));
 
             // Refresh the DOM.
             await customRule.removeFromAllFiles(this.plugin, oldRule);
@@ -421,7 +422,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
       // Add the delete custom rule button.
       settingRuleEl.addButton((btn) => {
         btn.setIcon('trash');
-        btn.setTooltip('Remove the custom rule');
+        btn.setTooltip(T('Remove the custom rule'));
         btn.onClick(async () => {
           const newRules = this.plugin
             .getSettings()
@@ -436,7 +437,7 @@ export default class CustomIconRuleSetting extends IconFolderSetting {
           await this.plugin.saveIconFolderData();
 
           this.refreshDisplay();
-          new Notice('Custom rule deleted.');
+          new Notice(T('Custom rule deleted.'));
 
           await customRule.removeFromAllFiles(this.plugin, rule);
 

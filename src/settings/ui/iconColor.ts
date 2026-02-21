@@ -1,4 +1,5 @@
 import { Setting, ColorComponent } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 import helper from '../helper';
 import { ResetButtonComponent } from '../ResetButtonComponent';
@@ -9,8 +10,8 @@ const DEFAULT_VALUE = DEFAULT_SETTINGS.iconColor;
 export default class IconColorSetting extends IconFolderSetting {
   public display(): void {
     const setting = new Setting(this.containerEl)
-      .setName('Icon color')
-      .setDesc('Change the color of the displayed icons.');
+      .setName(T('Icon color'))
+      .setDesc(T('Change the color of the displayed icons.'));
 
     new ResetButtonComponent(setting.controlEl).onClick(async () => {
       colorPicker.setValue(DEFAULT_VALUE);
