@@ -9,21 +9,21 @@ const predefinedIconPacks = {
   faBrands: {
     name: 'font-awesome-brands',
     displayName: 'FontAwesome Brands',
-    path: 'fontawesome-free-6.5.1-web/svgs/brands/',
+    path: 'fontawesome-free-7.2.0-web/svgs/brands/',
     downloadLink:
       'https://github.com/FortAwesome/Font-Awesome/releases/download/7.2.0/fontawesome-free-7.2.0-web.zip',
   },
   faRegular: {
     name: 'font-awesome-regular',
     displayName: 'FontAwesome Regular',
-    path: 'fontawesome-free-6.5.1-web/svgs/regular/',
+    path: 'fontawesome-free-7.2.0-web/svgs/regular/',
     downloadLink:
       'https://github.com/FortAwesome/Font-Awesome/releases/download/7.2.0/fontawesome-free-7.2.0-web.zip',
   },
   faSolid: {
     name: 'font-awesome-solid',
     displayName: 'FontAwesome Solid',
-    path: 'fontawesome-free-6.5.1-web/svgs/solid/',
+    path: 'fontawesome-free-7.2.0-web/svgs/solid/',
     downloadLink:
       'https://github.com/FortAwesome/Font-Awesome/releases/download/7.2.0/fontawesome-free-7.2.0-web.zip',
   },
@@ -45,7 +45,7 @@ const predefinedIconPacks = {
   simpleIcons: {
     name: 'simple-icons',
     displayName: 'Simple Icons',
-    path: 'simple-icons-16.5.0/icons/',
+    path: 'simple-icons-16.15.0/icons/',
     downloadLink:
       'https://github.com/simple-icons/simple-icons/archive/refs/tags/16.15.0.zip',
   },
