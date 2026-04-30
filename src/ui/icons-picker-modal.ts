@@ -24,6 +24,7 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     this.plugin = plugin;
     this.path = path;
     this.limit = 150;
+    this.emojiStyle = plugin.getSettings().emojiStyle;
 
     const pluginRecentltyUsedItems = [
       ...plugin.getSettings().recentlyUsedIcons,
@@ -59,6 +60,9 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     if (this.inputEl.value.length === 0) {
       this.renderIndex = 0;
       this.recentlyUsedItems.forEach((iconName) => {
+        if (this.emojiStyle === 'disabled' && emoji.isEmoji(iconName)) {
+          return;
+        }
         if (emoji.isEmoji(iconName)) {
           iconKeys.push({
             name: emoji.shortNames[iconName],
@@ -95,30 +99,30 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
     for (const icon of this.plugin.getIconPackManager().allLoadedIconNames) {
       iconKeys.push(icon);
     }
-
-    Object.entries(emoji.shortNames).forEach(([unicode, shortName]) => {
-      iconKeys.push({
-        name: shortName,
-        prefix: 'Emoji',
-        displayName: unicode,
-        iconPackName: null,
-        filename: '',
-        svgContent: '',
-        svgElement: '',
-        svgViewbox: '',
+    if (this.emojiStyle !== 'disabled') {
+      Object.entries(emoji.shortNames).forEach(([unicode, shortName]) => {
+        iconKeys.push({
+          name: shortName,
+          prefix: 'Emoji',
+          displayName: unicode,
+          iconPackName: null,
+          filename: '',
+          svgContent: '',
+          svgElement: '',
+          svgViewbox: '',
+        });
+        iconKeys.push({
+          name: unicode,
+          prefix: 'Emoji',
+          displayName: unicode,
+          iconPackName: null,
+          filename: '',
+          svgContent: '',
+          svgElement: '',
+          svgViewbox: '',
+        });
       });
-      iconKeys.push({
-        name: unicode,
-        prefix: 'Emoji',
-        displayName: unicode,
-        iconPackName: null,
-        filename: '',
-        svgContent: '',
-        svgElement: '',
-        svgViewbox: '',
-      });
-    });
-
+    }
     return iconKeys;
   }
 
