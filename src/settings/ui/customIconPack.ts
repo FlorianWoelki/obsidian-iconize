@@ -1,4 +1,5 @@
 import { Notice, Setting, TextComponent } from 'obsidian';
+import { T } from '../../locales/translations';
 import IconFolderSetting from './iconFolderSetting';
 import IconizePlugin from '@app/main';
 import { readFileSync } from '@app/util';
@@ -64,14 +65,14 @@ export default class CustomIconPackSetting extends IconFolderSetting {
 
   public display(): void {
     new Setting(this.containerEl)
-      .setName('Add custom icon pack')
-      .setDesc('Add a custom icon pack.')
+      .setName(T('Add custom icon pack'))
+      .setDesc(T('Add a custom icon pack.'))
       .addText((text) => {
-        text.setPlaceholder('Your icon pack name');
+        text.setPlaceholder(T('Your icon pack name'));
         this.textComponent = text;
       })
       .addButton((btn) => {
-        btn.setButtonText('Add icon pack');
+        btn.setButtonText(T('Add icon pack'));
         btn.onClick(async () => {
           const name = this.textComponent.getValue();
           if (name.length === 0) {
@@ -87,7 +88,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
               .getIconPackManager()
               .doesIconPackExist(normalizedName)
           ) {
-            new Notice('Icon pack already exists.');
+            new Notice(T('Icon pack already exists.'));
             return;
           }
 
@@ -96,7 +97,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
             .createCustomIconPackDirectory(normalizedName);
           this.textComponent.setValue('');
           this.refreshDisplay();
-          new Notice('Icon pack successfully created.');
+          new Notice(T('Icon pack successfully created.'));
         });
       });
 
@@ -154,14 +155,14 @@ export default class CustomIconPackSetting extends IconFolderSetting {
       if (isLucideIconPack) {
         iconPackSetting.addDropdown((dropdown) => {
           dropdown.addOptions({
-            native: 'Native',
-            custom: 'Custom',
-            none: 'None',
+            native: T('Native'),
+            custom: T('Custom'),
+            none: T('None'),
           } satisfies Record<LucideIconPackType, string>);
           dropdown.setValue(this.plugin.getSettings().lucideIconPackType);
           dropdown.onChange(async (value: LucideIconPackType) => {
             dropdown.setDisabled(true);
-            new Notice('Changing icon packs...');
+            new Notice(T('Changing icon packs...'));
             this.plugin.getSettings().lucideIconPackType = value;
             await this.plugin.saveIconFolderData();
             if (value === 'native' || value === 'none') {
@@ -182,7 +183,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
             }
 
             dropdown.setDisabled(false);
-            new Notice('Done. This change requires a restart of Obsidian');
+            new Notice(T('Done. This change requires a restart of Obsidian'));
           });
         });
         return;
@@ -190,7 +191,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
 
       iconPackSetting.addButton((btn) => {
         btn.setIcon('plus');
-        btn.setTooltip('Add an icon');
+        btn.setTooltip(T('Add an icon'));
         btn.onClick(async () => {
           const fileSelector = document.createElement('input');
           fileSelector.setAttribute('type', 'file');
@@ -216,17 +217,17 @@ export default class CustomIconPackSetting extends IconFolderSetting {
                 `Total icons: ${iconPack.getIcons().length} (added: ${file.name})`,
               );
             }
-            new Notice('Icons successfully added.');
+            new Notice(T('Icons successfully added.'));
           };
         });
       });
       iconPackSetting.addButton((btn) => {
         btn.setIcon('trash');
-        btn.setTooltip('Remove the icon pack');
+        btn.setTooltip(T('Remove the icon pack'));
         btn.onClick(async () => {
           await this.plugin.getIconPackManager().removeIconPack(iconPack);
           this.refreshDisplay();
-          new Notice('Icon pack successfully deleted.');
+          new Notice(T('Icon pack successfully deleted.'));
         });
       });
 
@@ -285,7 +286,7 @@ export default class CustomIconPackSetting extends IconFolderSetting {
           }
 
           if (successful) {
-            new Notice('Icons successfully added.');
+            new Notice(T('Icons successfully added.'));
           }
         },
         false,
