@@ -12,12 +12,16 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "build": "rollup --config rollup.config.js --environment BUILD:production",
+    "cli-build": "node openclaw-iconize-cli.cjs help > /dev/null",
     "build:lib": "tsc --project tsconfig.lib.json",
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "prettify": "prettier --write '*/**/*.{js,ts,tsx}'"
+  },
+  "bin": {
+    "obsidian-iconize-cli": "./openclaw-iconize-cli.cjs"
   },
   "keywords": [],
   "repository": {
