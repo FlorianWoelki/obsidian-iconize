@@ -5,22 +5,22 @@ description: Use this skill when an OpenClaw agent needs to list, set, or remove
 
 # Obsidian Iconize CLI
 
-Use this repo's CLI to manage note icons through frontmatter. Always pass `--vault <vault>`.
+Use the CLI shipped in the installed plugin folder. Always pass `--vault <vault>`.
 
 ```bash
-PLUGIN_REPO=/path/to/obsidian-iconize
-npm --prefix "$PLUGIN_REPO" run cli-build
-node "$PLUGIN_REPO/openclaw-iconize-cli.cjs" list --vault <vault>
+VAULT=/path/to/vault
+CLI="$VAULT/.obsidian/plugins/obsidian-icon-folder/openclaw-iconize-cli.cjs"
+node "$CLI" list --vault "$VAULT"
 ```
 
 Set or remove an icon:
 
 ```bash
-node "$PLUGIN_REPO/openclaw-iconize-cli.cjs" set --vault <vault> --path "Projects/Plan.md" --icon LiBookOpen --color "#4488ff"
-node "$PLUGIN_REPO/openclaw-iconize-cli.cjs" remove --vault <vault> --path "Projects/Plan.md"
+node "$CLI" set --vault "$VAULT" --path "Projects/Plan.md" --icon LiBookOpen --color "#4488ff"
+node "$CLI" remove --vault "$VAULT" --path "Projects/Plan.md"
 ```
 
-If the package is installed or linked, `obsidian-iconize-cli ...` may be used instead of `node "$PLUGIN_REPO/..."`.
+If the installed plugin does not include the CLI yet, use `obsidian-iconize-cli` from `PATH` or `node "$PLUGIN_REPO/openclaw-iconize-cli.cjs"` from a checkout.
 
 ## Safety
 
