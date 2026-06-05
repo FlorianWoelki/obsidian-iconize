@@ -1,6 +1,5 @@
 import {
   Mock,
-  MockInstance,
   beforeEach,
   describe,
   expect,
@@ -8,7 +7,6 @@ import {
   vi,
 } from 'vitest';
 import icon from '@lib/icon';
-import { IconPackManager } from '@app/icon-pack-manager';
 import * as util from '@app/util';
 import SuggestionIcon from './icons-suggestion';
 
@@ -32,6 +30,18 @@ beforeEach(() => {
   plugin = {
     getSettings: () => ({
       iconIdentifier: ':',
+    }),
+    getIconPackManager: () => ({
+      allLoadedIconNames: [
+        {
+          name: 'winking_face',
+          prefix: 'Ib',
+        },
+        {
+          name: 'heart',
+          prefix: 'Ib',
+        },
+      ],
     }),
   };
   suggestionIcon = new SuggestionIcon(app, plugin);
@@ -133,27 +143,7 @@ describe('renderSuggestion', () => {
   });
 });
 
-describe.skip('getSuggestions', () => {
-  let getAllLoadedIconNamesSpy: MockInstance;
-  beforeEach(() => {
-    vi.restoreAllMocks();
-    getAllLoadedIconNamesSpy = vi.spyOn(
-      IconPackManager.prototype,
-      'allLoadedIconNames',
-      'get',
-    );
-    getAllLoadedIconNamesSpy.mockImplementationOnce(() => [
-      {
-        name: 'winking_face',
-        prefix: 'Ib',
-      },
-      {
-        name: 'heart',
-        prefix: 'Ib',
-      },
-    ]);
-  });
-
+describe('getSuggestions', () => {
   it('should return an array of icon names and emoji shortcodes', () => {
     suggestionIcon.context = {
       ...suggestionIcon.context,
@@ -204,6 +194,40 @@ describe('onTrigger', () => {
         ch: 5,
       },
       query: ':wink',
+    });
+  });
+
+  it('should return the correct position when there are multiple shortcodes on the same line', () => {
+    cursor.ch = 19;
+    editor.getLine = () => ':wink: some text :w';
+    const result = suggestionIcon.onTrigger(cursor, editor);
+    expect(result).toEqual({
+      start: {
+        line: 0,
+        ch: 17,
+      },
+      end: {
+        line: 0,
+        ch: 19,
+      },
+      query: ':w',
+    });
+  });
+
+  it('should handle duplicate shortcodes on the same line', () => {
+    cursor.ch = 23;
+    editor.getLine = () => ':heart: some text :hear';
+    const result = suggestionIcon.onTrigger(cursor, editor);
+    expect(result).toEqual({
+      start: {
+        line: 0,
+        ch: 18,
+      },
+      end: {
+        line: 0,
+        ch: 23,
+      },
+      query: ':hear',
     });
   });
 });

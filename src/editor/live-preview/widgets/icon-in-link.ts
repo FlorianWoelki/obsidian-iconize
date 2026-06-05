@@ -46,11 +46,15 @@ export class IconInLinkWidget extends WidgetType {
     }
 
     if (emoji.isEmoji(innerHTML)) {
-      innerHTML = emoji.parseEmoji(
+      let emojiValue = emoji.parseEmoji(
         this.plugin.getSettings().emojiStyle,
         innerHTML,
         fontSize,
       );
+      if (!emojiValue && this.plugin.getSettings().emojiStyle === 'twemoji') {
+        emojiValue = innerHTML;
+      }
+      innerHTML = emojiValue || innerHTML;
     } else {
       innerHTML = svg.setFontSize(innerHTML, fontSize);
     }

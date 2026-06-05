@@ -16,7 +16,7 @@
     "release": "mkdir -p dist && mv main.js dist/ && cp src/styles.css dist/ && cp manifest.json dist/",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
+    "lint": "eslint --quiet --fix",
     "prettify": "prettier --write '*/**/*.{js,ts,tsx}'"
   },
   "keywords": [],

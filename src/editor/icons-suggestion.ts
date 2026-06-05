@@ -45,18 +45,16 @@ export default class SuggestionIcon extends EditorSuggest<string> {
       return null;
     }
 
-    const startingIndex = editor
-      .getLine(cursor.line)
-      .indexOf(regexOngoingShortcode[0]);
-
+    // Use shortcodeStart (which was found using lastIndexOf) instead of indexOf
+    // to ensure we get the correct position when there are multiple shortcodes on the same line
     return {
       start: {
         line: cursor.line,
-        ch: startingIndex,
+        ch: shortcodeStart,
       },
       end: {
         line: cursor.line,
-        ch: startingIndex + regexOngoingShortcode[0].length,
+        ch: shortcodeStart + regexOngoingShortcode[0].length,
       },
       query: regexOngoingShortcode[0],
     };

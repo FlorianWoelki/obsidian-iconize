@@ -369,12 +369,18 @@ export class IconPackManager {
   }
 
   public async removeIconPack(iconPack: IconPack): Promise<void> {
+    if (!iconPack) {
+      return;
+    }
+
     const iconPackIndex = this.iconPacks.findIndex(
       (ip) => ip.getName() === iconPack.getName(),
     );
+
     if (iconPackIndex > -1) {
-      this.iconPacks.splice(iconPackIndex);
+      this.iconPacks.splice(iconPackIndex, 1);
     }
+
     await iconPack.delete();
   }
 

@@ -70,11 +70,17 @@ export class IconInTextWidget extends WidgetType {
       wrap.style.transform = 'translateY(13%)';
       wrap.innerHTML = svgElement;
     } else if (emoji.isEmoji(this.id)) {
-      wrap.innerHTML = emoji.parseEmoji(
+      let emojiValue = emoji.parseEmoji(
         this.plugin.getSettings().emojiStyle,
         this.id,
         fontSize,
       );
+      if (!emojiValue && this.plugin.getSettings().emojiStyle === 'twemoji') {
+        emojiValue = this.id;
+      }
+      if (emojiValue) {
+        wrap.innerHTML = emojiValue;
+      }
     } else {
       wrap.append(
         `${this.plugin.getSettings().iconIdentifier}${this.id}${

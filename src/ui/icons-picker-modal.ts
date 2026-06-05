@@ -138,12 +138,6 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
   renderSuggestion(item: FuzzyMatch<Icon>, el: HTMLElement): void {
     super.renderSuggestion(item, el);
 
-    // if (getAllIconPacks().length === 0) {
-    //   this.resultContainerEl.style.display = 'block';
-    //   this.resultContainerEl.innerHTML = '<div class="suggestion-empty">You need to create an icon pack.</div>';
-    //   return;
-    // }
-
     // Render subheadlines for modal.
     if (this.recentlyUsedItems.size !== 0 && this.inputEl.value.length === 0) {
       if (this.renderIndex === 0) {
@@ -161,14 +155,19 @@ export default class IconsPickerModal extends FuzzySuggestModal<any> {
 
     if (item.item.name !== 'default') {
       if (item.item.prefix === 'Emoji') {
-        const displayName = emoji.parseEmoji(
+        let displayName = emoji.parseEmoji(
           this.plugin.getSettings().emojiStyle,
           item.item.displayName,
         );
+        if (
+          !displayName &&
+          this.plugin.getSettings().emojiStyle === 'twemoji'
+        ) {
+          displayName = item.item.displayName;
+        }
         if (!displayName) {
           return;
         }
-
         el.innerHTML = `<div>${el.innerHTML}</div><div class="iconize-icon-preview">${displayName}</div>`;
       } else {
         el.innerHTML = `<div>${

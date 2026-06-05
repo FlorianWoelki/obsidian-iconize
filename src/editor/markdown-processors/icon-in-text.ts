@@ -47,32 +47,62 @@ const createTreeWalker = (
   });
 };
 
+const findTextNodesRecursively = (
+  node: Node,
+  match: RegExp,
+  results: Text[] = []
+): Text[] => {
+  if (node.nodeType === Node.TEXT_NODE) {
+    const textNode = node as Text;
+    if (textNode.textContent && match.test(textNode.textContent)) {
+      results.push(textNode);
+    }
+  } else if (node.nodeType === Node.ELEMENT_NODE) {
+    const element = node as Element;
+    if (element.tagName === 'CODE') {
+      return results;
+    }
+    for (const child of Array.from(element.childNodes)) {
+      findTextNodesRecursively(child, match, results);
+    }
+  }
+  return results;
+};
+
 const checkForTextNodes = (
   treeWalker: TreeWalker,
   match: RegExp,
   cb: (text: Text, code: { text: string; index: number }) => void,
 ): void => {
-  let currentNode = treeWalker.currentNode;
-  while (currentNode) {
-    if (currentNode.nodeType === Node.TEXT_NODE) {
-      const text = currentNode as Text;
-      const textNodes = [...Array.from(text.parentElement!.childNodes)].filter(
-        (n): n is Text => n instanceof Text,
-      );
-      for (const text of textNodes) {
-        for (const code of [...text.wholeText.matchAll(match)]
-          .sort((a, b) => b.index - a.index)
-          .map((arr) => ({ text: arr[0], index: arr.index! }))) {
-          if (!text.textContent) {
-            continue;
-          }
+  const root = treeWalker.root as HTMLElement;
+  const textNodesWithMatches = findTextNodesRecursively(root, match);
 
-          cb(text, code);
+  textNodesWithMatches.forEach((textNode) => {
+    if (!textNode.parentElement || !textNode.textContent) {
+      return;
+    }
+
+    const textNodes = [...Array.from(textNode.parentElement.childNodes)].filter(
+      (n): n is Text => n instanceof Text,
+    );
+
+    for (const text of textNodes) {
+      if (!text.textContent) {
+        continue;
+      }
+
+      const matches = [...text.wholeText.matchAll(match)]
+        .sort((a, b) => b.index! - a.index!)
+        .map((arr) => ({ text: arr[0], index: arr.index! }));
+
+      for (const code of matches) {
+        if (!text.textContent || !text.parentElement) {
+          continue;
         }
+        cb(text, code);
       }
     }
-    currentNode = treeWalker.nextNode();
-  }
+  });
 };
 
 export const processIconInTextMarkdown = (
@@ -128,9 +158,7 @@ export const processIconInTextMarkdown = (
       parentElement?.insertBefore(rootSpan, toReplace);
       toReplace.textContent = toReplace.wholeText.substring(code.text.length);
 
-      // Set the font size to its parent font size if defined.
-      // We do this after that to not freeze the insertion while iterating over the tree.
-      // We are also updating the size after the animation because the styling won't be set
+      // We update the size after the animation because the styling won't be set
       // in the first place.
       requestAnimationFrame(() => {
         const parentFontSize = parseFloat(
@@ -152,39 +180,33 @@ export const processIconInTextMarkdown = (
       return;
     }
 
-    if (plugin.getSettings().emojiStyle === 'twemoji') {
-      const tagName = text.parentElement?.tagName?.toLowerCase() ?? ''; // "text" has the same parent as "toReplace"
-      let fontSize = calculateFontTextSize();
+    const tagName = text.parentElement?.tagName?.toLowerCase() ?? '';
+    let fontSize = calculateFontTextSize();
 
-      if (isHeader(tagName)) {
-        fontSize = calculateHeaderSize(tagName as HTMLHeader);
-      }
+    if (isHeader(tagName)) {
+      fontSize = calculateHeaderSize(tagName as HTMLHeader);
+    }
 
-      // If emojiValue was an unparsed HTML img string, it will be skipped
-      // by the treewalker, as img doesn't have any text node derived from it.
-      // But, unfortunately, when passing certain character like "©" as the
-      // second parameter of emoji.parseEmoji (before it was fixed), it will return
-      // the string itself due to twemoji.parse perceive it as a normal character (non-emoji).
-      // If it is the case, the string will be interpreted as a text node.
-      const emojiValue = emoji.parseEmoji(
-        plugin.getSettings().emojiStyle,
-        code.text,
-        fontSize,
-      );
-      if (!emojiValue) {
+    let emojiValue = emoji.parseEmoji(
+      plugin.getSettings().emojiStyle,
+      code.text,
+      fontSize,
+    );
+
+    // When twemoji doesn't recognise a character (e.g. ♟), fall back to native
+    // rendering rather than silently dropping it.
+    if (!emojiValue) {
+      if (plugin.getSettings().emojiStyle === 'twemoji') {
+        emojiValue = code.text;
+      } else {
         return;
       }
-
-      // Split the text node only after checking emojiValue.
-      const toReplace = text.splitText(code.index);
-      const emojiNode = createSpan();
-      // emojiValue should not be interpreted as a text node or as an element
-      // containing text node, otherwise it will cause endlessly loop
-      // due to TreeWalker considering the first part as its current node,
-      // not the second one (except you add another TreeWalker.nextNode() here).
-      emojiNode.innerHTML = emojiValue;
-      toReplace.parentElement?.insertBefore(emojiNode, toReplace);
-      toReplace.textContent = toReplace.wholeText.substring(code.text.length);
     }
+
+    const toReplace = text.splitText(code.index);
+    const emojiNode = createSpan();
+    emojiNode.innerHTML = emojiValue;
+    toReplace.parentElement?.insertBefore(emojiNode, toReplace);
+    toReplace.textContent = toReplace.wholeText.substring(code.text.length);
   });
 };
