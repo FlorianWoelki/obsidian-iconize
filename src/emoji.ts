@@ -1864,12 +1864,42 @@ const shortNames: Record<string, string> = {
   '🏴󠁧󠁢󠁷󠁬󠁳󠁿': 'flag: Wales',
 };
 
+// Text-presentation characters that require U+FE0F to be treated as emoji.
+// Without the variation selector, isEmoji must return false to avoid
+// triggering twemoji CDN requests (e.g. "™" freezing hover previews).
+const TEXT_PRESENTATION_CHARS = new Set([
+  '\u00A9', '\u00AE', '\u2122', '\u2139', '\u203C', '\u2049',
+  '\u2194', '\u2195', '\u2196', '\u2197', '\u2198', '\u2199',
+  '\u21A9', '\u21AA', '\u231A', '\u231B', '\u2328', '\u23CF',
+  '\u24C2', '\u25AA', '\u25AB', '\u25B6', '\u25C0', '\u25FB',
+  '\u25FC', '\u25FE', '\u260E', '\u2611', '\u2614', '\u2615',
+  '\u2618', '\u261D', '\u2620', '\u2622', '\u2623', '\u2626',
+  '\u262A', '\u262E', '\u262F', '\u2638', '\u2639', '\u263A',
+  '\u2640', '\u2642', '\u2648', '\u2649', '\u264A', '\u264B',
+  '\u264C', '\u264D', '\u264E', '\u264F', '\u2650', '\u2651',
+  '\u2652', '\u2653', '\u265F', '\u2660', '\u2663', '\u2665',
+  '\u2666', '\u2668', '\u267B', '\u267E', '\u267F', '\u2692',
+  '\u2694', '\u2695', '\u2696', '\u2697', '\u2699', '\u269B',
+  '\u269C', '\u26A0', '\u26A7', '\u26AA', '\u26B0', '\u26B1',
+  '\u2702', '\u2708', '\u2709', '\u270C', '\u270D', '\u270F',
+  '\u2712', '\u2714', '\u2716', '\u271D', '\u2721', '\u2733',
+  '\u2734', '\u2744', '\u2747', '\u2757', '\u2763', '\u27A1',
+]);
+
 const isEmoji = (str: string): boolean => {
   const regex = getRegex();
   const emojiMatches = str.match(regex);
   const emojiString = emojiMatches ? emojiMatches.join('') : '';
 
-  return !/\d/.test(str) && emojiString === str;
+  if (!/\d/.test(str) && emojiString === str) {
+    // Reject text-presentation characters without emoji variation selector (U+FE0F).
+    // e.g. "\u2122" (™) → false, "\u2122\uFE0F" (™️) → true.
+    if (TEXT_PRESENTATION_CHARS.has(str) && !str.endsWith('\uFE0F')) {
+      return false;
+    }
+    return true;
+  }
+  return false;
 };
 
 const parseEmoji = (

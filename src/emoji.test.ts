@@ -22,6 +22,21 @@ describe('isEmoji', () => {
     expect(emoji.isEmoji('#')).toBe(false);
     expect(emoji.isEmoji('+')).toBe(false);
   });
+
+  it('should return `false` for text-presentation characters without variation selector', () => {
+    // These characters are text by default; without U+FE0F they must not be
+    // treated as emoji (avoids spurious twemoji CDN requests / hover freeze).
+    expect(emoji.isEmoji('\u2122')).toBe(false);  // ™ trade mark sign
+    expect(emoji.isEmoji('\u00A9')).toBe(false);  // © copyright sign
+    expect(emoji.isEmoji('\u00AE')).toBe(false);  // ® registered sign
+    expect(emoji.isEmoji('\u2139')).toBe(false);  // ℹ information source
+  });
+
+  it('should return `true` for text-presentation characters WITH variation selector', () => {
+    expect(emoji.isEmoji('\u2122\uFE0F')).toBe(true);  // ™️
+    expect(emoji.isEmoji('\u00A9\uFE0F')).toBe(true);  // ©️
+    expect(emoji.isEmoji('\u00AE\uFE0F')).toBe(true);  // ®️
+  });
 });
 
 describe('getShortcode', () => {
