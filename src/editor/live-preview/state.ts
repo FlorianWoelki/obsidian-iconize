@@ -193,31 +193,18 @@ export const buildPositionField = (plugin: IconizePlugin) => {
     update: (rangeSet, transaction) => {
       const newRanges: Range<IconPosition>[] = [];
       if (!transaction.docChanged) {
-        if (transaction.selection) {
-          const from = transaction.selection.ranges[0].from;
-          const to = transaction.selection.ranges[0].to;
-          const lineEnd = transaction.state.doc.lineAt(to).length;
-          const lineStart = transaction.state.doc.lineAt(from).from;
+        // Some view updates do not explicitly set Transaction.selection. Use
+        // the selection stored in the resulting state so that the active line
+        // remains excluded from icon rendering.
+        const { from, to } = transaction.state.selection.main;
+        const lineStart = transaction.state.doc.lineAt(from).from;
+        const lineEnd = transaction.state.doc.lineAt(to).to;
 
-          // Checks the ranges of the icons in the document except for the
-          // excluded line start and end.
-          checkRanges(
-            transaction.state,
-            lineStart,
-            lineStart + lineEnd,
-            (from, to, value, removed) => {
-              rangeSet = rangeSet.update({
-                filterFrom: from,
-                filterTo: to,
-                filter: () => false,
-              });
-              if (!removed) {
-                newRanges.push(value.range(from, to));
-              }
-            },
-          );
-        } else {
-          checkRanges(transaction.state, -1, -1, (from, to, value, removed) => {
+        checkRanges(
+          transaction.state,
+          lineStart,
+          lineEnd,
+          (from, to, value, removed) => {
             rangeSet = rangeSet.update({
               filterFrom: from,
               filterTo: to,
@@ -226,8 +213,8 @@ export const buildPositionField = (plugin: IconizePlugin) => {
             if (!removed) {
               newRanges.push(value.range(from, to));
             }
-          });
-        }
+          },
+        );
 
         newRanges.sort((a, b) => a.from - b.from);
         rangeSet = rangeSet.update({ add: newRanges });
