@@ -9,6 +9,34 @@ import {
   nextIdentifier,
 } from '@app/icon-pack-manager/util';
 
+export const TREE_LINE_COLOR_PROPERTY = '--iconize-folder-color';
+
+/**
+ * Mirrors the color of a folder's icon onto its `.nav-folder` element as a CSS custom
+ * property, so `styles.css` can color the folder's tree line with it. Does nothing for
+ * icons that are not directly inside a folder title.
+ * @param iconNode Icon node, already attached to the DOM.
+ * @param color Color of the icon. If not defined, a previously set color is removed.
+ */
+const setFolderTreeLineColor = (
+  iconNode: HTMLElement,
+  color?: string,
+): void => {
+  const title = iconNode.parentElement;
+  const folder = title?.classList.contains('nav-folder-title')
+    ? title.parentElement
+    : null;
+  if (!folder) {
+    return;
+  }
+
+  if (color) {
+    folder.style.setProperty(TREE_LINE_COLOR_PROPERTY, color);
+  } else {
+    folder.style.removeProperty(TREE_LINE_COLOR_PROPERTY);
+  }
+};
+
 /**
  * Removes the `iconize-icon` icon node from the provided HTMLElement.
  * @param el HTMLElement from which the icon node will be removed.
@@ -19,6 +47,7 @@ const removeIconInNode = (el: HTMLElement): void => {
     return;
   }
 
+  setFolderTreeLineColor(iconNode as HTMLElement);
   iconNode.remove();
 };
 
@@ -95,6 +124,7 @@ const setIconForNode = (
   }
 
   node.setAttribute('title', iconName);
+  setFolderTreeLineColor(node, possibleIcon ? options.color : undefined);
 };
 
 interface CreateOptions {
@@ -155,6 +185,8 @@ const createIconNode = (
     setIconForNode(plugin, iconName, iconNode, { color: options?.color });
 
     node.insertBefore(iconNode, titleNode);
+    // The icon only has a parent now, so the tree line color is set here.
+    setFolderTreeLineColor(iconNode, options?.color);
   }
 };
 

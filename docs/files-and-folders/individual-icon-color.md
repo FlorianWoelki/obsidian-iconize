@@ -10,3 +10,10 @@ editor color.
 
 ![Individual icon color change](../assets/individual-icon-color.png)
 
+
+## Color the tree line like the icon
+
+If you want the indentation line next to a folder's children to match the
+folder's icon color, enable `Settings > Iconize > Color tree lines like folder
+icons`. Folders without an icon color keep the theme's line color, and their
+subfolders inherit the color of the nearest colored parent.

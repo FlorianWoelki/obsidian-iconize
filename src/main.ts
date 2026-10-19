@@ -107,6 +107,7 @@ export default class IconizePlugin extends Plugin {
     );
 
     this.api = getApi(this);
+    this.applyColorTreeLines();
 
     if (this.getSettings().useInternalPlugins) {
       // Registers all modified internal plugins.
@@ -781,6 +782,7 @@ export default class IconizePlugin extends Plugin {
 
   onunload() {
     console.log('unloading obsidian-icon-folder');
+    document.body.classList.remove('iconize-color-tree-lines');
   }
 
   renameFolder(newPath: string, oldPath: string): void {
@@ -910,6 +912,17 @@ export default class IconizePlugin extends Plugin {
       });
     }
     this.data = Object.assign({ settings: { ...DEFAULT_SETTINGS } }, {}, data);
+  }
+
+  /**
+   * Adds or removes the body class that makes `styles.css` color the tree lines of
+   * folders, depending on the `colorTreeLines` setting.
+   */
+  applyColorTreeLines(): void {
+    document.body.classList.toggle(
+      'iconize-color-tree-lines',
+      this.getSettings().colorTreeLines,
+    );
   }
 
   async saveIconFolderData(): Promise<void> {

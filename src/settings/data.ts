@@ -186,6 +186,12 @@ export interface IconFolderSettings {
    * @default false
    */
   useInternalPlugins?: boolean;
+  /**
+   * Colors the indentation line next to the children of a folder with the color of
+   * the folder's icon.
+   * @default false
+   */
+  colorTreeLines: boolean;
 }
 
 export const DEFAULT_SETTINGS: IconFolderSettings = {
@@ -216,4 +222,5 @@ export const DEFAULT_SETTINGS: IconFolderSettings = {
   lucideIconPackType: 'native',
   debugMode: false,
   useInternalPlugins: false,
+  colorTreeLines: false,
 };
