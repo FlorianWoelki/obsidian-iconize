@@ -14,6 +14,7 @@ import ToggleIconInTabs from './toggleIconInTabs';
 import ToggleIconInTitle from './toggleIconInTitle';
 import FrontmatterOptions from './frontmatterOptions';
 import ToggleIconsInNotes from './toggleIconsInNotes';
+import ToggleColorTreeLines from './toggleColorTreeLines';
 import ToggleIconsInLinks from './toggleIconsInLinks';
 import IconIdentifierSetting from './iconIdentifier';
 import DebugMode from './debugMode';
@@ -54,6 +55,7 @@ export default class IconFolderSettings extends PluginSettingTab {
     new IconFontSizeSetting(plugin, containerEl).display();
     new IconColorSetting(plugin, containerEl).display();
     new ExtraMarginSetting(plugin, containerEl).display();
+    new ToggleColorTreeLines(plugin, containerEl).display();
 
     containerEl.createEl('h1', { text: 'Custom icon rules' });
     new CustomIconRuleSetting(plugin, containerEl, app, () =>

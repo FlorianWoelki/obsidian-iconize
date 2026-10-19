@@ -274,3 +274,37 @@ describe('createIconNode', () => {
     expect(document.body.innerHTML).toEqual('<div data-path="test"></div>');
   });
 });
+
+describe('tree line color', () => {
+  const mockIcon = () => {
+    vi.spyOn(util, 'getSvgFromLoadedIcon').mockReturnValue('<svg></svg>');
+    vi.spyOn(util, 'nextIdentifier').mockReturnValue(2);
+    vi.spyOn(style, 'applyAll').mockImplementation((_p, s) => s);
+  };
+  const plugin = { getSettings: () => ({}) } as any;
+
+  it('should set and remove the folder color when an icon is created and removed', () => {
+    document.body.innerHTML =
+      '<div class="nav-folder"><div class="nav-folder-title" data-path="f"><div class="nav-folder-title-content"></div></div></div>';
+    mockIcon();
+
+    dom.createIconNode(plugin, 'f', 'LiStar', { color: '#ff0000' });
+    const folder = document.querySelector('.nav-folder') as HTMLElement;
+    expect(folder.style.getPropertyValue('--iconize-folder-color')).toBe(
+      '#ff0000',
+    );
+
+    dom.removeIconInPath('f');
+    expect(folder.style.getPropertyValue('--iconize-folder-color')).toBe('');
+  });
+
+  it('should not color the ancestor folder when the icon belongs to a file', () => {
+    document.body.innerHTML =
+      '<div class="nav-folder"><div class="nav-file"><div class="nav-file-title" data-path="a.md"><div class="nav-file-title-content"></div></div></div></div>';
+    mockIcon();
+
+    dom.createIconNode(plugin, 'a.md', 'LiStar', { color: '#ff0000' });
+    const folder = document.querySelector('.nav-folder') as HTMLElement;
+    expect(folder.style.getPropertyValue('--iconize-folder-color')).toBe('');
+  });
+});

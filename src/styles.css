@@ -28,6 +28,13 @@
   align-items: center;
 }
 
+.iconize-color-tree-lines .nav-folder-children {
+  border-left-color: var(
+    --iconize-folder-color,
+    var(--nav-indentation-guide-color)
+  );
+}
+
 .iconize-setting input[type='color'] {
   margin: 0 6px;
 }
